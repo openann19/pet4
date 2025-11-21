@@ -8,7 +8,6 @@ import {
   withTiming,
   Easing,
   interpolate,
-  Extrapolation,
   type SharedValue,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
@@ -160,12 +159,10 @@ export function useAiReplyAnimation(
       return { opacity: 0 };
     }
 
-    const translateX = interpolate(
-      shimmerProgress.value,
-      [0, 1],
-      [-100, 100],
-      { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-    );
+    const translateX = interpolate(shimmerProgress.value, [0, 1], [-100, 100], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
 
     return {
       opacity: 0.3,

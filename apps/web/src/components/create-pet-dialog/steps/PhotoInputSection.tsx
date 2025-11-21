@@ -4,11 +4,13 @@ import { Label } from '@/components/ui/label';
 import { ProgressiveImage } from '@/components/enhanced/ProgressiveImage';
 import type { CreatePetFormActions } from '../create-pet-types';
 
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 interface PhotoInputSectionProps {
   photo: string;
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
 }
+/* eslint-enable @typescript-eslint/consistent-type-imports */
 
 export function PhotoInputSection({ photo, photoPresence, actions }: PhotoInputSectionProps) {
   return (
@@ -39,4 +41,3 @@ export function PhotoInputSection({ photo, photoPresence, actions }: PhotoInputS
     </div>
   );
 }
-

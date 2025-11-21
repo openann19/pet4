@@ -13,13 +13,15 @@ import { getStorageItem, setStorageItem, removeStorageItem } from '@/lib/cache/l
 import { createLogger } from '@/lib/logger';
 import type {
   ConsentCategory,
-  ConsentStatus,
   ConsentPreferences,
   ConsentRecord,
   ConsentUpdateRequest,
-  ConsentManager,
 } from '@petspark/shared';
-import { ConsentManager as ConsentManagerUtil, CONSENT_VERSION, DEFAULT_CONSENT_PREFERENCES } from '@petspark/shared';
+import {
+  ConsentManager as ConsentManagerUtil,
+  CONSENT_VERSION,
+  DEFAULT_CONSENT_PREFERENCES,
+} from '@petspark/shared';
 
 const logger = createLogger('ConsentManager');
 
@@ -121,9 +123,7 @@ export interface UseConsentManagerReturn {
 /**
  * Hook to manage user consent preferences
  */
-export function useConsentManager(
-  options: UseConsentManagerOptions = {}
-): UseConsentManagerReturn {
+export function useConsentManager(options: UseConsentManagerOptions = {}): UseConsentManagerReturn {
   const { userId: providedUserId, autoLoad = true } = options;
   const queryClient = useQueryClient();
 
@@ -195,10 +195,19 @@ export function useConsentManager(
   const hasConsent = useCallback(
     (category: ConsentCategory): boolean => {
       if (category === 'third_party') {
-        return ConsentManagerUtil.hasConsent(consents, category) || state.preferences.thirdParty === true;
+        return (
+          ConsentManagerUtil.hasConsent(consents, category) || state.preferences.thirdParty === true
+        );
       }
-      const prefKey = category === 'essential' ? 'essential' : category === 'analytics' ? 'analytics' : 'marketing';
-      return ConsentManagerUtil.hasConsent(consents, category) || state.preferences[prefKey] === true;
+      const prefKey =
+        category === 'essential'
+          ? 'essential'
+          : category === 'analytics'
+            ? 'analytics'
+            : 'marketing';
+      return (
+        ConsentManagerUtil.hasConsent(consents, category) || state.preferences[prefKey] === true
+      );
     },
     [consents, state.preferences]
   );
@@ -376,7 +385,10 @@ export function useConsentManager(
             });
           } catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('Failed to update consent in API', err, { userId, category: 'third_party' });
+            logger.error('Failed to update consent in API', err, {
+              userId,
+              category: 'third_party',
+            });
           }
         }
       }
@@ -401,7 +413,7 @@ export function useConsentManager(
           .then((module) => {
             module.analytics.clear();
           })
-          .catch((error: unknown) => {
+          .catch((_error: unknown) => {
             // Silently fail analytics clear - non-critical operation
             // Error is intentionally swallowed
           });

@@ -40,7 +40,7 @@ export function PremiumToggle({
 
   useEffect(() => {
     const config = SIZE_CONFIG[size];
-    const maxTranslate = config.width - config.thumb - 4;
+    const _maxTranslate = config.width - config.thumb - 4;
     animate(thumbPosition, checked ? 1 : 0, {
       type: 'spring',
       damping: springConfigs.bouncy.damping,
@@ -54,14 +54,14 @@ export function PremiumToggle({
   }, [checked, thumbPosition, glowOpacity, size]);
 
   const config = SIZE_CONFIG[size];
-  const maxTranslate = config.width - config.thumb - 4;
+  const _maxTranslate = config.width - config.thumb - 4;
 
   const thumbVariants: Variants = {
     off: {
       x: 0,
     },
     on: {
-      x: maxTranslate,
+      x: config.width - config.thumb - 4,
       transition: {
         type: 'spring',
         damping: springConfigs.bouncy.damping,

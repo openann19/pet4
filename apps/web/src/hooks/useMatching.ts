@@ -114,7 +114,7 @@ export function useMatching({ userPet, otherPet, autoCalculate = true }: UseMatc
           isMatch: response.canMatch && response.score.totalScore >= 70,
           compatibility: response.score.totalScore,
         };
-      } catch (err) {
+      } catch {
         // Return default values on error
         return { isMatch: false, compatibility: 0 };
       }

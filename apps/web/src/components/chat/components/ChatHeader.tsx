@@ -69,7 +69,7 @@ export function ChatHeader({
         <Avatar className="w-10 h-10 ring-2 ring-white/30">
           <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName} />
           <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
-            {room.matchedPetName?.[0] || '?'}
+            {room.matchedPetName?.[0] ?? '?'}
           </AvatarFallback>
         </Avatar>
 

@@ -2,11 +2,11 @@ import { Check } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
 import { PET_TYPES } from '../create-pet-constants';
-import type { PetType } from '@/lib/pet-profile-templates';
 import type { CreatePetFormActions } from '../create-pet-types';
 
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 interface TypeStepProps {
-  petType: PetType;
+  petType: string;
   stepStyle: AnimatedStyle;
   petTypeIndicatorStyle: AnimatedStyle;
   petTypeButtonHover: ReturnType<typeof import('@/effects/reanimated/use-hover-lift').useHoverLift>;
@@ -14,6 +14,7 @@ interface TypeStepProps {
   actions: CreatePetFormActions;
   onNext: () => void;
 }
+/* eslint-enable @typescript-eslint/consistent-type-imports */
 
 export function TypeStep({
   petType,
@@ -43,11 +44,10 @@ export function TypeStep({
                   onNext();
                 }, 400);
               }}
-              className={`relative p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
-                petType === type.value
-                  ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
-                  : 'border-border bg-card hover:border-primary/50 hover:bg-card/80'
-              }`}
+              className={`relative p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${petType === type.value
+                ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                : 'border-border bg-card hover:border-primary/50 hover:bg-card/80'
+                }`}
               onMouseEnter={petTypeButtonHover.handleEnter}
               onMouseLeave={petTypeButtonHover.handleLeave}
             >
@@ -73,4 +73,3 @@ export function TypeStep({
     </MotionView>
   );
 }
-

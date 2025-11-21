@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { chatApi } from '@/api/chat-api';
-import { useOutbox, type UseOutboxReturn } from '@petspark/chat-core';
+import { useOutbox } from '@petspark/chat-core';
 import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
 import { generateMessageId } from '@/lib/chat-utils';
 import type { InputRef } from '@/components/ui/input';
@@ -40,7 +40,7 @@ export function useChatMessageSending({
   inputRef,
 }: UseChatMessageSendingProps) {
   // TypeScript may show error type warnings here, but useOutbox is properly typed
-   
+
   const outbox = useOutbox({
     sendFn: async (payload: unknown): Promise<void> => {
       try {
@@ -63,7 +63,7 @@ export function useChatMessageSending({
     },
   });
   // TypeScript may show error type warnings here, but outbox is properly typed
-   
+
   const { enqueue } = outbox;
 
   const sendMessage = (
@@ -100,7 +100,6 @@ export function useChatMessageSending({
     setShowTemplates(false);
     void typingSend();
 
-     
     void enqueue(msg.id, {
       messageId: msg.id,
       roomId: room.id,
@@ -121,4 +120,3 @@ export function useChatMessageSending({
 
   return { sendMessage };
 }
-

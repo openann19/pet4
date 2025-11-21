@@ -143,7 +143,7 @@ export function DetailedPetAnalytics({
                       stat.borderColor
                     )}
                     role="group"
-                    aria-label={`${stat.label}: ${stat.value}${stat.suffix || ''}`}
+                    aria-label={`${stat.label}: ${stat.value}${stat.suffix ?? ''}`}
                   >
                     <div className={cn('rounded-lg', getSpacingClassesFromConfig({ padding: 'sm' }), stat.bgColor)}>
                       <stat.icon size={24} className={stat.color} weight="duotone" aria-hidden="true" />

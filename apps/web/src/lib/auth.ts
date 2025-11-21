@@ -6,7 +6,7 @@ import { hashPassword, verifyPassword } from './password-utils';
 import { log } from './logger';
 import type { User, UserRole, AuthTokens } from './contracts';
 
-class AuthError extends Error {
+export class AuthError extends Error {
   code: string;
   timestamp: string;
 

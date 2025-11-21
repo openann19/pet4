@@ -24,7 +24,7 @@ export interface TranslationButtonProps {
 }
 
 export function TranslationButton({
-  messageId,
+  messageId: _messageId,
   originalText,
   originalLanguage,
   targetLanguage = 'en',

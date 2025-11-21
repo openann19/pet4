@@ -348,17 +348,17 @@ export class EnhancedNotificationService {
   /**
    * Create digest for low-priority notifications
    */
-  async createDigest(userId: string, notifications: Notification[]): Promise<Notification | null> {
+  createDigest(userId: string, notifications: Notification[]): Promise<Notification | null> {
     if (notifications.length === 0) {
-      return null;
+      return Promise.resolve(null);
     }
 
     const summary =
       notifications.length === 1 && notifications[0]
-        ? notifications[0].body ?? 'New notification'
+        ? (notifications[0].body ?? 'New notification')
         : `You have ${notifications.length} new notifications`;
 
-    return {
+    return Promise.resolve({
       id: `digest-${String(userId ?? '')}-${String(Date.now() ?? '')}`,
       userId,
       type: 'like_received',
@@ -370,7 +370,7 @@ export class EnhancedNotificationService {
       },
       read: false,
       createdAt: new Date().toISOString(),
-    };
+    });
   }
 }
 

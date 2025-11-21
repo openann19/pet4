@@ -35,7 +35,17 @@ export function normalizeError(error: unknown): Error {
   }
 
   try {
-    return new Error(String(error));
+    return new Error(
+      error instanceof Error
+        ? error.message
+        : typeof error === 'string'
+          ? error
+          : typeof error === 'object'
+            ? JSON.stringify(error)
+            : typeof error === 'number' || typeof error === 'boolean'
+              ? String(error)
+              : 'Unknown error type'
+    );
   } catch {
     return new Error('Failed to convert error to string');
   }
@@ -61,9 +71,12 @@ export function getErrorMessage(error: unknown): string {
   }
 
   try {
-    return String(error);
+    return typeof error === 'object'
+      ? JSON.stringify(error)
+      : typeof error === 'number' || typeof error === 'boolean'
+        ? String(error)
+        : 'Unknown error type';
   } catch {
     return 'Failed to convert error to string';
   }
 }
-

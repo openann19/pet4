@@ -220,7 +220,7 @@ export function useGroupCall(
       addToHistory({
         id: activeGroupCall.call.id,
         roomId: activeGroupCall.call.roomId,
-        matchedPetName: activeGroupCall.call.title || 'Group Call',
+        matchedPetName: activeGroupCall.call.title ?? 'Group Call',
         matchedPetPhoto: '',
         type: activeGroupCall.call.type,
         status: activeGroupCall.call.status === 'active' ? 'ended' : 'missed',
@@ -229,7 +229,7 @@ export function useGroupCall(
         participantCount,
       });
 
-      stopMediaStream(localStreamRef.current || undefined);
+      stopMediaStream(localStreamRef.current ?? undefined);
       localStreamRef.current = null;
 
       participantStreamsRef.current.forEach((stream) => {
@@ -307,7 +307,7 @@ export function useGroupCall(
   };
 
   const addToHistory = (item: CallHistoryItem) => {
-    setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
+    void setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
   };
 
   return {

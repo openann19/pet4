@@ -145,10 +145,7 @@ function loadConsentHistory(): ConsentRecord[] {
   }
 }
 
-function needsConsentUpdate(
-  currentVersion: string | null,
-  requiredVersion: string
-): boolean {
+function needsConsentUpdate(currentVersion: string | null, requiredVersion: string): boolean {
   if (!currentVersion) return true;
 
   // Simple version comparison (assumes semantic versioning)
@@ -202,8 +199,7 @@ export function usePrivacyConsent(config: PrivacyConsentConfig = {}) {
       consentVersion: existingRecord.version,
       consentTimestamp: existingRecord.timestamp,
       needsUpdate: needsConsentUpdate(existingRecord.version, requiredVersion),
-      dataDeletionRequested:
-        localStorage.getItem(STORAGE_KEY_DELETION) !== null,
+      dataDeletionRequested: localStorage.getItem(STORAGE_KEY_DELETION) !== null,
     };
   });
 
@@ -323,7 +319,7 @@ export function usePrivacyConsent(config: PrivacyConsentConfig = {}) {
   // Data Rights (GDPR)
   // ============================================================================
 
-  const requestDataDeletion = useCallback(async () => {
+  const requestDataDeletion = useCallback(() => {
     // Mark deletion request
     const deletionRecord = {
       userId: userId ?? 'anonymous',
@@ -349,7 +345,7 @@ export function usePrivacyConsent(config: PrivacyConsentConfig = {}) {
     // 4. Notify user when complete (30 days typically)
   }, [userId, onDataDeletionRequest]);
 
-  const requestDataExport = useCallback(async (): Promise<DataExportData> => {
+  const requestDataExport = useCallback((): DataExportData => {
     const consentHistory = loadConsentHistory();
 
     // In production, gather all user data from various systems

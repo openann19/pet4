@@ -35,7 +35,14 @@ export function useMessageManagement(
 ): UseMessageManagementReturn {
   const { room, currentUserId, currentUserName, currentUserAvatar } = options;
 
-  const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, []);
+  const [messages, _setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, []);
+
+  const setMessages = useCallback(
+    (updater: React.SetStateAction<ChatMessage[]>) => {
+      void _setMessages(updater);
+    },
+    [_setMessages]
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback((): void => {
@@ -80,30 +87,30 @@ export function useMessageManagement(
         ...(metadata ? { metadata } : {}),
       };
 
-      setMessages((current) => [...(current ?? []), newMessage]);
+      void setMessages((current) => [...(current ?? []), newMessage]);
 
       toast.success('Message sent!', {
         duration: 1500,
         position: 'top-center',
       });
     },
-    [room.id, currentUserId, currentUserName, currentUserAvatar, setMessages]
+    [room.id, currentUserId, currentUserName, currentUserAvatar, _setMessages]
   );
 
   const updateMessage = useCallback(
     (messageId: string, updates: Partial<ChatMessage>): void => {
-      setMessages((current) =>
+      void setMessages((current) =>
         (current ?? []).map((msg) => (msg.id === messageId ? { ...msg, ...updates } : msg))
       );
     },
-    [setMessages]
+    [_setMessages]
   );
 
   const deleteMessage = useCallback(
     (messageId: string): void => {
-      setMessages((current) => (current ?? []).filter((msg) => msg.id !== messageId));
+      void setMessages((current) => (current ?? []).filter((msg) => msg.id !== messageId));
     },
-    [setMessages]
+    [_setMessages]
   );
 
   return {

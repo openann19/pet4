@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-  Extrapolation,
-} from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, interpolate } from '@petspark/motion';
 import { useMemo, useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 
@@ -66,8 +60,14 @@ export function useMessageAgeEffect(
     }
 
     const progress = Math.min((age - fadeStartAge) / (fadeEndAge - fadeStartAge), 1);
-    const targetOpacity = interpolate(progress, [0, 1], [1, opacityMin], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
-    const targetScale = interpolate(progress, [0, 1], [1, scaleMin], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+    const targetOpacity = interpolate(progress, [0, 1], [1, opacityMin], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const targetScale = interpolate(progress, [0, 1], [1, scaleMin], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
 
     opacity.value = withTiming(targetOpacity, timingConfigs.smooth);
     scale.value = withTiming(targetScale, timingConfigs.smooth);

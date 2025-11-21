@@ -7,7 +7,6 @@ import {
   withRepeat,
   withSequence,
   interpolate,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { useGlowPulse } from '@/effects/reanimated';

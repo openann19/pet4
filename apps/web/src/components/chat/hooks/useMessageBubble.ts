@@ -128,7 +128,6 @@ export interface UseMessageBubbleReturn {
   onUndo?: (messageId: string) => void;
 }
 
-/* eslint-disable max-lines-per-function -- Consolidated hook managing multiple animations, state, and handlers */
 export function useMessageBubble({
   message,
   isOwn,

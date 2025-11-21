@@ -76,8 +76,7 @@ const STORE_NAME = 'keys';
 function arrayBufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    const byte = bytes[i];
+  for (const byte of bytes) {
     if (byte !== undefined) {
       binary += String.fromCharCode(byte);
     }
@@ -110,7 +109,7 @@ async function openKeyDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(String(request.error)));
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
@@ -143,7 +142,7 @@ async function storeKeys(
       createdAt: Date.now(),
     });
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(String(request.error)));
     request.onsuccess = () => resolve();
   });
 }
@@ -158,9 +157,13 @@ async function retrieveKeys(
     const store = transaction.objectStore(STORE_NAME);
     const request = store.get(userId);
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(String(request.error)));
     request.onsuccess = async () => {
-      const data = request.result;
+      const data = request.result as {
+        publicKey: JsonWebKey;
+        privateKey: JsonWebKey;
+        createdAt: number;
+      };
       if (!data) {
         resolve(null);
         return;
@@ -192,7 +195,7 @@ async function retrieveKeys(
 
         resolve({ publicKey, privateKey });
       } catch (error) {
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
     };
   });
@@ -321,58 +324,52 @@ export function useEncryption(config: EncryptionConfig) {
   // Symmetric Encryption (AES-GCM)
   // ============================================================================
 
-  const encrypt = useCallback(
-    async (data: string): Promise<EncryptedData> => {
-      if (!aesKeyRef.current) {
-        throw new Error('Encryption key not initialized');
-      }
+  const encrypt = useCallback(async (data: string): Promise<EncryptedData> => {
+    if (!aesKeyRef.current) {
+      throw new Error('Encryption key not initialized');
+    }
 
-      const iv = generateIV();
-      const encoder = new TextEncoder();
-      const encoded = encoder.encode(data);
+    const iv = generateIV();
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(data);
 
-      const ciphertext = await crypto.subtle.encrypt(
-        {
-          name: AES_ALGORITHM,
-          iv: new Uint8Array(iv.buffer as ArrayBuffer),
-        },
-        aesKeyRef.current,
-        encoded
-      );
+    const ciphertext = await crypto.subtle.encrypt(
+      {
+        name: AES_ALGORITHM,
+        iv: new Uint8Array(iv.buffer as ArrayBuffer),
+      },
+      aesKeyRef.current,
+      encoded
+    );
 
-      return {
-        ciphertext: arrayBufferToBase64(ciphertext),
-        iv: arrayBufferToBase64(iv.buffer as ArrayBuffer),
-        algorithm: AES_ALGORITHM,
-        timestamp: Date.now(),
-      };
-    },
-    []
-  );
+    return {
+      ciphertext: arrayBufferToBase64(ciphertext),
+      iv: arrayBufferToBase64(iv.buffer as ArrayBuffer),
+      algorithm: AES_ALGORITHM,
+      timestamp: Date.now(),
+    };
+  }, []);
 
-  const decrypt = useCallback(
-    async (encryptedData: EncryptedData): Promise<string> => {
-      if (!aesKeyRef.current) {
-        throw new Error('Encryption key not initialized');
-      }
+  const decrypt = useCallback(async (encryptedData: EncryptedData): Promise<string> => {
+    if (!aesKeyRef.current) {
+      throw new Error('Encryption key not initialized');
+    }
 
-      const ciphertext = base64ToArrayBuffer(encryptedData.ciphertext);
-      const iv = base64ToArrayBuffer(encryptedData.iv);
+    const ciphertext = base64ToArrayBuffer(encryptedData.ciphertext);
+    const iv = base64ToArrayBuffer(encryptedData.iv);
 
-      const decrypted = await crypto.subtle.decrypt(
-        {
-          name: AES_ALGORITHM,
-          iv,
-        },
-        aesKeyRef.current,
-        ciphertext
-      );
+    const decrypted = await crypto.subtle.decrypt(
+      {
+        name: AES_ALGORITHM,
+        iv,
+      },
+      aesKeyRef.current,
+      ciphertext
+    );
 
-      const decoder = new TextDecoder();
-      return decoder.decode(decrypted);
-    },
-    []
-  );
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+  }, []);
 
   // ============================================================================
   // Asymmetric Encryption (RSA-OAEP)
@@ -408,87 +405,78 @@ export function useEncryption(config: EncryptionConfig) {
     []
   );
 
-  const decryptWithPrivateKey = useCallback(
-    async (ciphertext: string): Promise<string> => {
-      if (!privateKeyRef.current) {
-        throw new Error('Private key not available');
-      }
+  const decryptWithPrivateKey = useCallback(async (ciphertext: string): Promise<string> => {
+    if (!privateKeyRef.current) {
+      throw new Error('Private key not available');
+    }
 
-      const encrypted = base64ToArrayBuffer(ciphertext);
+    const encrypted = base64ToArrayBuffer(ciphertext);
 
-      const decrypted = await crypto.subtle.decrypt(
-        {
-          name: RSA_ALGORITHM,
-        },
-        privateKeyRef.current,
-        encrypted
-      );
+    const decrypted = await crypto.subtle.decrypt(
+      {
+        name: RSA_ALGORITHM,
+      },
+      privateKeyRef.current,
+      encrypted
+    );
 
-      const decoder = new TextDecoder();
-      return decoder.decode(decrypted);
-    },
-    []
-  );
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
+  }, []);
 
   // ============================================================================
   // HMAC for Message Authentication
   // ============================================================================
 
-  const generateHMAC = useCallback(
-    async (data: string): Promise<string> => {
-      if (!aesKeyRef.current) {
-        throw new Error('Key not initialized');
-      }
+  const generateHMAC = useCallback(async (data: string): Promise<string> => {
+    if (!aesKeyRef.current) {
+      throw new Error('Key not initialized');
+    }
 
-      // Derive HMAC key from AES key
-      const rawKey = await crypto.subtle.exportKey('raw', aesKeyRef.current);
-      const hmacKey = await crypto.subtle.importKey(
-        'raw',
-        rawKey,
-        {
-          name: 'HMAC',
-          hash: 'SHA-256',
-        },
-        false,
-        ['sign']
-      );
+    // Derive HMAC key from AES key
+    const rawKey = await crypto.subtle.exportKey('raw', aesKeyRef.current);
+    const hmacKey = await crypto.subtle.importKey(
+      'raw',
+      rawKey,
+      {
+        name: 'HMAC',
+        hash: 'SHA-256',
+      },
+      false,
+      ['sign']
+    );
 
-      const encoder = new TextEncoder();
-      const encoded = encoder.encode(data);
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(data);
 
-      const signature = await crypto.subtle.sign('HMAC', hmacKey, encoded);
+    const signature = await crypto.subtle.sign('HMAC', hmacKey, encoded);
 
-      return arrayBufferToBase64(signature);
-    },
-    []
-  );
+    return arrayBufferToBase64(signature);
+  }, []);
 
-  const verifyHMAC = useCallback(
-    async (data: string, signature: string): Promise<boolean> => {
-      if (!aesKeyRef.current) {
-        throw new Error('Key not initialized');
-      }
+  const verifyHMAC = useCallback(async (data: string, signature: string): Promise<boolean> => {
+    if (!aesKeyRef.current) {
+      throw new Error('Key not initialized');
+    }
 
-      const rawKey = await crypto.subtle.exportKey('raw', aesKeyRef.current);
-      const hmacKey = await crypto.subtle.importKey(
-        'raw',
-        rawKey,
-        {
-          name: 'HMAC',
-          hash: 'SHA-256',
-        },
-        false,
-        ['verify']
-      );
+    const rawKey = await crypto.subtle.exportKey('raw', aesKeyRef.current);
+    const hmacKey = await crypto.subtle.importKey(
+      'raw',
+      rawKey,
+      {
+        name: 'HMAC',
+        hash: 'SHA-256',
+      },
+      false,
+      ['verify']
+    );
 
-      const encoder = new TextEncoder();
-      const encoded = encoder.encode(data);
-      const signatureBuffer = base64ToArrayBuffer(signature);
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(data);
+    const signatureBuffer = base64ToArrayBuffer(signature);
 
-      return await crypto.subtle.verify('HMAC', hmacKey, signatureBuffer, encoded);
-    },
-    []
-  );
+    return await crypto.subtle.verify('HMAC', hmacKey, signatureBuffer, encoded);
+  }, []);
 
   // ============================================================================
   // Initialization

@@ -5,8 +5,9 @@ import * as Sentry from '@sentry/browser';
 const logger = createLogger('Sentry');
 
 // Sentry configuration from environment (optional)
-const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
-const SENTRY_ENVIRONMENT = import.meta.env.MODE ?? import.meta.env.VITE_ENVIRONMENT ?? 'development';
+const SENTRY_DSN = (import.meta.env.VITE_SENTRY_DSN as string | undefined) ?? undefined;
+const SENTRY_ENVIRONMENT =
+  import.meta.env.MODE ?? (import.meta.env.VITE_ENVIRONMENT as string | undefined) ?? 'development';
 const SENTRY_TRACES_SAMPLE_RATE = import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE
   ? parseFloat(String(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE))
   : 0.1;
@@ -58,7 +59,7 @@ class SentryConfigImpl {
     this.initialized = true;
     logger.info('Sentry initialized', {
       environment: SENTRY_ENVIRONMENT,
-      dsn: SENTRY_DSN?.substring(0, 20) + '...',
+      dsn: SENTRY_DSN ? SENTRY_DSN.substring(0, 20) + '...' : undefined,
     });
   }
 

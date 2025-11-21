@@ -6,9 +6,8 @@
 import * as React from 'react'
 
 const { useState } = React
-import { Button, LoadingButton, IconButton, ButtonGroup } from '../ui/button'
+import { Button, LoadingButton, ButtonGroup } from '../ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label, Field } from '../ui/label'
 import { Checkbox, CheckboxGroup } from '../ui/checkbox'
 import { useTheme } from '@/hooks/use-theme'
@@ -42,7 +41,7 @@ export const AdvancedFormDemo: React.FC = () => {
     preferences: [] as string[]
   })
 
-    const [formType, setFormType] = useState<'signin' | 'signup'>('signin')
+  const [formType, setFormType] = useState<'signin' | 'signup'>('signin')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -81,7 +80,7 @@ export const AdvancedFormDemo: React.FC = () => {
           <p className="text-muted-foreground">
             You are successfully authenticated using our advanced components.
           </p>
-          
+
           <div className="space-y-2">
             <p className="text-sm">Current theme: <strong>{theme}</strong></p>
             <p className="text-sm">Current language: <strong>{language}</strong></p>
@@ -89,14 +88,14 @@ export const AdvancedFormDemo: React.FC = () => {
           </div>
 
           <ButtonGroup>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={toggleTheme}
               leftIcon={<TestIcon />}
             >
               Toggle Theme
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setLanguage(language === 'en' ? 'bg' : 'en')}
             >
@@ -110,7 +109,7 @@ export const AdvancedFormDemo: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">
@@ -324,7 +323,7 @@ export const ComponentShowcase: React.FC = () => {
             <Button variant="destructive">Destructive</Button>
             <Button variant="link">Link</Button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             <Button size="xs">Extra Small</Button>
             <Button size="sm">Small</Button>
@@ -349,27 +348,27 @@ export const ComponentShowcase: React.FC = () => {
           <Input placeholder="Default input" />
           <Input variant="filled" placeholder="Filled input" />
           <Input variant="underlined" placeholder="Underlined input" />
-          <Input 
+          <Input
             placeholder="With icon"
             leftIcon={<TestIcon />}
             rightIcon={<TestIcon />}
           />
-          <Input 
+          <Input
             placeholder="Clearable"
             clearable
             defaultValue="Clear me"
           />
-          <Input 
+          <Input
             placeholder="With counter"
             showCounter
             maxLength={50}
           />
-          <Input 
+          <Input
             placeholder="Error state"
             error
             errorMessage="This field has an error"
           />
-          <Input 
+          <Input
             placeholder="Success state"
             success
             successMessage="Looks good!"

@@ -115,7 +115,7 @@ export function ReportDialog({
 
       onReported?.();
       handleClose();
-    } catch (error) {
+    } catch {
       toast.error('Failed to submit report. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -209,7 +209,7 @@ export function ReportDialog({
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
             disabled={!selectedReason || isSubmitting}
             className="bg-destructive hover:bg-destructive/90"
             aria-label="Submit report"

@@ -1086,12 +1086,399 @@ vi.mock('@petspark/motion', () => {
     // Export Animated as named export (matches motion package exports)
     Animated: AnimatedNamespace,
     motion: {
-      div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
-        React.createElement('div', props, children),
-      span: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
-        React.createElement('span', props, children),
-      button: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
-        React.createElement('button', props, children),
+      div: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        // Filter out framer-motion specific props that shouldn't be passed to DOM elements
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('div', { className, style, ...domProps }, children);
+      },
+      span: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('span', { className, style, ...domProps }, children);
+      },
+      button: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('button', { className, style, ...domProps }, children);
+      },
+      input: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('input', { className, style, ...domProps }, children);
+      },
+      a: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('a', { className, style, ...domProps }, children);
+      },
+      img: ({
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('img', { className, style, ...domProps });
+      },
+      form: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('form', { className, style, ...domProps }, children);
+      },
+      label: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('label', { className, style, ...domProps }, children);
+      },
+      select: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('select', { className, style, ...domProps }, children);
+      },
+      option: ({
+        children,
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        children?: React.ReactNode;
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('option', { className, style, ...domProps }, children);
+      },
+      textarea: ({
+        className,
+        style,
+        whileTap,
+        whileHover,
+        variants,
+        initial,
+        animate,
+        exit,
+        transition,
+        ...props
+      }: {
+        className?: string;
+        style?: Record<string, unknown>;
+        whileTap?: Record<string, unknown>;
+        whileHover?: Record<string, unknown>;
+        variants?: Record<string, Record<string, unknown>>;
+        initial?: string | Record<string, unknown>;
+        animate?: string | Record<string, unknown>;
+        exit?: string | Record<string, unknown>;
+        transition?: Record<string, unknown>;
+        [key: string]: unknown;
+      }) => {
+        const domProps = { ...props };
+        delete domProps.whileTap;
+        delete domProps.whileHover;
+        delete domProps.variants;
+        delete domProps.initial;
+        delete domProps.animate;
+        delete domProps.exit;
+        delete domProps.transition;
+
+        return React.createElement('textarea', { className, style, ...domProps });
+      },
     },
     MotionView,
     MotionText: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>

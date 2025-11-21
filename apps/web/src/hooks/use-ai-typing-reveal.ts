@@ -55,7 +55,7 @@ export function useAITypingReveal(options: UseAITypingRevealOptions): UseAITypin
   const [isComplete, setIsComplete] = useState(false);
 
   const start = useCallback(() => {
-    if (!enabled || text.length === 0) return () => {};
+    if (!enabled || text.length === 0) return;
 
     setIsComplete(false);
     setRevealedText('');

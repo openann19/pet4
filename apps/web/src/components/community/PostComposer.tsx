@@ -298,7 +298,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
     const el = videoPreviewRef.current;
     if (!el) return;
     if (isVideoPlaying) el.pause();
-    else el.play();
+    else void el.play();
     setIsVideoPlaying(!isVideoPlaying);
     haptics.light();
   };
@@ -341,7 +341,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       const postData: Parameters<typeof communityAPI.createPost>[0] = {
         authorId: user.id,
-        authorName: user.login || 'User',
+        authorName: user.login ?? 'User',
         authorAvatar: user.avatarUrl ?? undefined,
         kind: 'post' as PostKind,
         text: text.trim(),
@@ -353,8 +353,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       if (location) {
         postData.location = {
-          city: location.placeName?.split(',')[0] || 'Unknown',
-          country: location.placeName?.split(',').pop()?.trim() || 'Unknown',
+          city: location.placeName?.split(',')[0] ?? 'Unknown',
+          country: location.placeName?.split(',').pop()?.trim() ?? 'Unknown',
           lat: location.lat,
           lon: location.lng,
         };
@@ -621,11 +621,10 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                             <MotionView
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
-                              className={`p-3 rounded-lg border-2 transition-all ${
-                                cropSize === value
-                                  ? 'border-primary bg-primary/10'
-                                  : 'border-border hover:border-primary/50'
-                              }`}
+                              className={`p-3 rounded-lg border-2 transition-all ${cropSize === value
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:border-primary/50'
+                                }`}
                             >
                               <div className="text-xl mb-0.5">{icon}</div>
                               <div className="text-xs font-medium">{label}</div>
@@ -764,8 +763,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     haptics.selection();
                   }}
                   className={`p-3 rounded-lg border-2 transition-all ${visibility === value
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-primary/50'
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
                     }`}
                   aria-pressed={visibility === value}
                 >

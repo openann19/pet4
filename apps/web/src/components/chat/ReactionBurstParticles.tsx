@@ -31,46 +31,46 @@ function Particle({ tx, ty, delay, size, color, reduced, dur, onFinish, enabled 
   const opacity = useMotionValue(0);
   const x = useTransform(sx, (v) => v * tx);
   const y = useTransform(sx, (v) => v * ty);
-  
+
   useEffect(() => {
     if (!enabled) return;
-    
+
     if (reduced) {
-      animate(opacity, 0, { duration: 0 });
-      animate(scale, 1, { duration: 0 });
-      animate(sx, 1, { 
-        duration: getReducedMotionDuration(120, true) / 1000 
+      void animate(opacity, 0, { duration: 0 });
+      void animate(scale, 1, { duration: 0 });
+      void animate(sx, 1, {
+        duration: getReducedMotionDuration(120, true) / 1000
       }).then(() => {
         onFinish();
       });
       return;
     }
-    
+
     const timeoutId = setTimeout(() => {
-      animate(opacity, 1, { 
+      void animate(opacity, 1, {
         duration: Math.max(80, dur * 0.25) / 1000,
         ease: [0.33, 1, 0.68, 1]
       });
-      animate(scale, 1, { 
+      void animate(scale, 1, {
         type: 'spring',
         stiffness: 220,
         damping: 22
       });
-      animate(sx, 1, { 
+      void animate(sx, 1, {
         duration: dur / 1000,
         ease: [0.33, 1, 0.68, 1]
       }).then(() => {
-        animate(opacity, 0, { 
-          duration: Math.max(100, dur * 0.35) / 1000 
+        void animate(opacity, 0, {
+          duration: Math.max(100, dur * 0.35) / 1000
         }).then(() => {
           onFinish();
         });
       });
     }, delay);
-    
+
     return () => clearTimeout(timeoutId);
   }, [enabled, reduced, dur, delay, onFinish, sx, scale, opacity, tx, ty]);
-  
+
   return (
     <motion.div
       style={{
@@ -114,8 +114,8 @@ export function ReactionBurstParticles({
   size = 6,
   staggerMs = 8,
 }: ReactionBurstParticlesProps) {
-    const _uiConfig = useUIConfig();
-    const reduced = useReducedMotion();
+  const _uiConfig = useUIConfig();
+  const reduced = useReducedMotion();
   const dur = getReducedMotionDuration(600, reduced);
 
   // Generate particle positions using deterministic RNG
@@ -130,9 +130,9 @@ export function ReactionBurstParticles({
       return { tx, ty, delay: i * staggerMs };
     });
   }, [count, radius, seed, staggerMs]);
-  
+
   const finishedCount = useRef(0);
-  
+
   const handleParticleFinish = () => {
     finishedCount.current += 1;
     if (finishedCount.current === particleData.length && onComplete) {
@@ -144,7 +144,7 @@ export function ReactionBurstParticles({
   return (
     <div className={`absolute inset-0 pointer-events-none ${className ?? ''}`}>
       {particleData.map((p, idx) => (
-        <Particle 
+        <Particle
           key={idx}
           tx={p.tx}
           ty={p.ty}

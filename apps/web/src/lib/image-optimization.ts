@@ -1,5 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 export interface ImageDimensions {
   width: number;
   height: number;

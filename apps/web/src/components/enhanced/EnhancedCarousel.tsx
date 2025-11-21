@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
-import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
 interface EnhancedCarouselProps {
   items: React.ReactNode[];

@@ -91,7 +91,6 @@ export function useMedia(options: UseMediaOptions): UseMediaReturn {
       try {
         const { buildLLMPrompt } = await import('@/lib/llm-prompt');
         const { llmService } = await import('@/lib/llm-service');
-        const { parseLLMError } = await import('@/lib/llm-utils');
         const prompt = buildLLMPrompt`Translate the following message to English. Return only the translated text without any explanation: "${message.content}"`;
         const translated = await llmService.llm(prompt, 'gpt-4o-mini');
 

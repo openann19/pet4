@@ -180,7 +180,7 @@ export default function OAuthButtons({
     try {
       const appleAuth = getAppleAuth();
       if (appleAuth) {
-        const clientId = import.meta.env.VITE_APPLE_CLIENT_ID;
+        const clientId = import.meta.env.VITE_APPLE_CLIENT_ID as string | undefined;
         if (!clientId) {
           logger.error('Missing Apple client ID');
           onAppleSignIn?.();

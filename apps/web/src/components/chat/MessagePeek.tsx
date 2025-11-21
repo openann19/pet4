@@ -27,7 +27,7 @@ export interface MessagePeekProps {
  * Opens within 120ms, respects reduced motion
  * Manages focus: traps focus when open, returns to trigger on close
  */
-export function MessagePeek({ message, visible, onClose, position, triggerRef }: MessagePeekProps) {
+export function MessagePeek({ message, visible, onClose, position: _position, triggerRef }: MessagePeekProps) {
   const _uiConfig = useUIConfig();
   const reducedMotion = usePrefersReducedMotion();
   const { enableMessagePeek } = useFeatureFlags();

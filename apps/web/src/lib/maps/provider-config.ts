@@ -9,6 +9,9 @@ interface MapProviderConfig {
   MAP_TILES_API_KEY: string;
   GEOCODING_API_KEY: string;
   GEOCODING_ENDPOINT: string;
+  QUOTA_MONITOR_ENDPOINT: string;
+  RATE_LIMIT_ENDPOINT: string;
+  CACHE_TTL: string;
   PROVIDER: 'maplibre' | 'mapbox';
 }
 
@@ -17,6 +20,9 @@ const DEFAULT_PROVIDER_CONFIG: MapProviderConfig = {
   MAP_TILES_API_KEY: '',
   GEOCODING_API_KEY: '',
   GEOCODING_ENDPOINT: 'https://api.maptiler.com/geocoding',
+  QUOTA_MONITOR_ENDPOINT: '',
+  RATE_LIMIT_ENDPOINT: '',
+  CACHE_TTL: '300000',
   PROVIDER: 'maplibre',
 };
 
@@ -28,12 +34,25 @@ function getEnvConfig(): MapProviderConfig {
   const env: MapEnv = allowedEnvs.includes(mode as MapEnv) ? (mode as MapEnv) : 'development';
 
   const baseConfig = {
-    MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-    MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
-    GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
+    MAP_STYLE_URL:
+      (import.meta.env.VITE_MAP_STYLE_URL as string | undefined) ??
+      DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+    MAP_TILES_API_KEY: (import.meta.env.VITE_MAP_TILES_API_KEY as string | undefined) ?? '',
+    GEOCODING_API_KEY: (import.meta.env.VITE_GEOCODING_API_KEY as string | undefined) ?? '',
     GEOCODING_ENDPOINT:
-      import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-    PROVIDER: import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre',
+      (import.meta.env.VITE_GEOCODING_ENDPOINT as string | undefined) ??
+      DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+    QUOTA_MONITOR_ENDPOINT:
+      (import.meta.env.VITE_QUOTA_MONITOR_ENDPOINT as string | undefined) ??
+      DEFAULT_PROVIDER_CONFIG.QUOTA_MONITOR_ENDPOINT,
+    RATE_LIMIT_ENDPOINT:
+      (import.meta.env.VITE_RATE_LIMIT_ENDPOINT as string | undefined) ??
+      DEFAULT_PROVIDER_CONFIG.RATE_LIMIT_ENDPOINT,
+    CACHE_TTL:
+      (import.meta.env.VITE_CACHE_TTL as string | undefined) ?? DEFAULT_PROVIDER_CONFIG.CACHE_TTL,
+    PROVIDER: ((import.meta.env.VITE_MAP_PROVIDER as string | undefined) ?? 'maplibre') as
+      | 'maplibre'
+      | 'mapbox',
   } as const;
 
   const configs: Record<MapEnv, Partial<MapProviderConfig>> = {

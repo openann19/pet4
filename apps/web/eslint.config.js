@@ -319,6 +319,7 @@ export default tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         project: null,
+        tsconfigRootDir: undefined,
         ecmaVersion: 2022,
         sourceType: 'module',
         ecmaFeatures: {
@@ -440,6 +441,9 @@ export default tseslint.config(
       'src/lib/rate-limit/quota-service.test.ts',
       'src/lib/rate-limit/token-bucket.test.ts',
       'src/lib/utils.test.ts',
+      'src/lib/__tests__/adoption-service-fixed.test.ts',
+      'src/lib/__tests__/password-utils-new.test.ts',
+      'src/components/__tests__/EnhancedErrorBoundary.test.tsx',
     ],
     languageOptions: {
       parser: tseslint.parser,

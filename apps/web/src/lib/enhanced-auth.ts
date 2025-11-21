@@ -96,7 +96,7 @@ export class EnhancedAuthService {
     if (Array.isArray(possibleRoles)) {
       for (const role of possibleRoles) {
         if (role === 'admin' || role === 'moderator') {
-          roles.push(role);
+          roles.push(role as UserRole);
         }
       }
     }
@@ -187,9 +187,9 @@ export class EnhancedAuthService {
       clearInterval(this.sessionCheckInterval);
     }
 
-    this.sessionCheckInterval = window.setInterval(async () => {
+    this.sessionCheckInterval = window.setInterval(() => {
       if (this.currentSession) {
-        await this.updateSessionActivity();
+        void this.updateSessionActivity();
       }
     }, 60000);
   }

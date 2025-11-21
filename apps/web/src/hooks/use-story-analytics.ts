@@ -22,14 +22,14 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
     if (!story || !isActive) return;
 
     viewStartTimeRef.current = Date.now();
-    analytics.trackEvent('story_viewed', {
+    void analytics.trackEvent('story_viewed', {
       storyId: story.id,
       userId: story.userId,
       petId: story.petId,
       storyType: story.type,
     });
 
-    realtime.emit('story_viewed', {
+    void realtime.emit('story_viewed', {
       storyId: story.id,
       userId: currentUserId,
       timestamp: new Date().toISOString(),
@@ -42,14 +42,14 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
 
       const viewDuration = (Date.now() - viewStartTimeRef.current) / 1000;
 
-      analytics.trackEvent('story_view_completed' as EventName, {
+      void analytics.trackEvent('story_view_completed' as EventName, {
         storyId: story.id,
         viewDuration,
         completed,
         completionRate: completed ? (viewDuration / story.duration) * 100 : 0,
       });
 
-      realtime.emit('story_view_completed', {
+      void realtime.emit('story_view_completed', {
         storyId: story.id,
         userId: currentUserId,
         viewDuration,
@@ -71,13 +71,13 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
 
       trackedReactionsRef.current.add(reactionKey);
 
-      analytics.trackEvent('story_reaction' as EventName, {
+      void analytics.trackEvent('story_reaction' as EventName, {
         storyId: story.id,
         emoji,
         userId: currentUserId,
       });
 
-      realtime.emit('story_reaction', {
+      void realtime.emit('story_reaction', {
         storyId: story.id,
         userId: currentUserId,
         emoji,
@@ -91,13 +91,13 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
     (type: 'pause' | 'skip' | 'reply' | 'share') => {
       if (!story) return;
 
-      analytics.trackEvent('story_interaction' as EventName, {
+      void analytics.trackEvent('story_interaction' as EventName, {
         storyId: story.id,
         interactionType: type,
         userId: currentUserId,
       });
 
-      realtime.emit('story_interaction', {
+      void realtime.emit('story_interaction', {
         storyId: story.id,
         userId: currentUserId,
         interactionType: type,
@@ -127,7 +127,7 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
     const handleReactionUpdate = (data: unknown) => {
       const event = data as { storyId: string; emoji: string; userId: string };
       if (event.storyId === story.id && event.userId !== currentUserId) {
-        analytics.trackEvent('story_reaction_received' as EventName, {
+        void analytics.trackEvent('story_reaction_received' as EventName, {
           storyId: story.id,
           emoji: event.emoji,
           fromUserId: event.userId,
@@ -138,7 +138,7 @@ export function useStoryAnalytics({ story, currentUserId, isActive }: UseStoryAn
     const handleViewUpdate = (data: unknown) => {
       const event = data as { storyId: string; userId: string };
       if (event.storyId === story.id && event.userId !== currentUserId) {
-        analytics.trackEvent('story_view_received' as EventName, {
+        void analytics.trackEvent('story_view_received' as EventName, {
           storyId: story.id,
           fromUserId: event.userId,
         });

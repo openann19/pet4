@@ -186,10 +186,10 @@ export class PredictivePrefetchManager {
 
     // Distance preference (weight: 0.15)
     if (context.location && pet.location) {
-      const distance = this.calculateDistance(
-        context.location,
-        { lat: pet.location.roundedLat, lng: pet.location.roundedLng }
-      );
+      const distance = this.calculateDistance(context.location, {
+        lat: pet.location.roundedLat,
+        lng: pet.location.roundedLng,
+      });
       const maxDistance = pattern.preferences.distanceRange || 50; // km
       const distanceScore = Math.max(0, 1 - distance / maxDistance);
       score += distanceScore * 0.15;
@@ -397,8 +397,6 @@ let prefetchManager: PredictivePrefetchManager | null = null;
  * Get predictive prefetch manager instance
  */
 export function getPredictivePrefetchManager(): PredictivePrefetchManager {
-  if (!prefetchManager) {
-    prefetchManager = new PredictivePrefetchManager();
-  }
+  prefetchManager ??= new PredictivePrefetchManager();
   return prefetchManager;
 }

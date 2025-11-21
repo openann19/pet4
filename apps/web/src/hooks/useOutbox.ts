@@ -12,7 +12,6 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-client';
 import { idbStorage } from '@/lib/storage-adapter';
 import { createLogger } from '@/lib/logger';
 

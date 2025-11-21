@@ -1,4 +1,3 @@
-import { MotionView } from "@petspark/motion";
 /**
  * Ultra Enhanced Button
  * Button with magnetic hover, elastic scale, and ripple effects
@@ -73,7 +72,7 @@ export function UltraButton({
   children,
   enableMagnetic = true,
   enableElastic = true,
-  enableRipple = true,
+  enableRipple: _enableRipple = true,
   enableGlow = false,
   glowColor = 'rgba(99, 102, 241, 0.5)',
   variant = 'default',

@@ -1,15 +1,6 @@
-import { isTruthy, isDefined } from '@petspark/shared';
+import type { Coordinates, LocationWithDistance } from '@/types/maps';
 
-export interface Coordinates {
-  latitude: number;
-  longitude: number;
-}
-
-export interface LocationWithDistance {
-  location: string;
-  coordinates?: Coordinates;
-  distance?: number;
-}
+export type { Coordinates, LocationWithDistance };
 
 export function parseLocation(location: string): Coordinates | null {
   const patterns = [

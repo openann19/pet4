@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import type { CreatePetFormActions } from '../create-pet-types';
+import type { CreatePetFormActions, CreatePetFormState } from '../create-pet-types';
 
 export function useCreateFormActions(
-  setFormState: React.Dispatch<React.SetStateAction<import('../create-pet-types').CreatePetFormState>>,
+  setFormState: React.Dispatch<React.SetStateAction<CreatePetFormState>>,
   resetForm: () => void
 ): CreatePetFormActions {
   return useMemo(
@@ -51,4 +51,3 @@ export function useCreateFormActions(
     [setFormState, resetForm]
   );
 }
-

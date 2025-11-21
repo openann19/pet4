@@ -20,7 +20,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay = 300
 ): (...args: Parameters<T>) => void {
-  const [timeoutId, setTimeoutId] = useState<number | null>(null);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   return (...args: Parameters<T>) => {
     if (timeoutId) {
@@ -31,6 +31,6 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
       callback(...args);
     }, delay);
 
-    setTimeoutId(newTimeoutId as any);
+    setTimeoutId(newTimeoutId);
   };
 }

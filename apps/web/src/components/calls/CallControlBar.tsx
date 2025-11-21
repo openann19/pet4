@@ -10,7 +10,6 @@ import { Mic, MicOff, Video, VideoOff, Monitor, MonitorOff, PhoneOff } from 'luc
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import { getTypographyClasses } from '@/lib/typography';
 
 export interface CallControlBarProps {
   isMuted: boolean;
@@ -122,4 +121,3 @@ export function CallControlBar({
     </PremiumCard>
   );
 }
-

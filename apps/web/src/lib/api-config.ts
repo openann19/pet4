@@ -71,8 +71,8 @@ export async function getLiveKitConfig() {
 export function isServiceEnabled(service: keyof APIConfig, config: APIConfig | null): boolean {
   if (!config) return false;
   const serviceConfig = config[service];
-  return (serviceConfig && typeof serviceConfig === 'object' && 'enabled' in serviceConfig) 
-    ? Boolean(serviceConfig.enabled) 
+  return serviceConfig && typeof serviceConfig === 'object' && 'enabled' in serviceConfig
+    ? Boolean(serviceConfig.enabled)
     : false;
 }
 
@@ -80,7 +80,10 @@ export function getAPIKey(service: keyof APIConfig, config: APIConfig | null): s
   if (!config) return '';
   const serviceConfig = config[service];
   if (serviceConfig && typeof serviceConfig === 'object' && 'apiKey' in serviceConfig) {
-    return String(serviceConfig.apiKey ?? '');
+    const apiKey = serviceConfig.apiKey;
+    return typeof apiKey === 'string' || typeof apiKey === 'number' || typeof apiKey === 'boolean'
+      ? String(apiKey)
+      : '';
   }
   return '';
 }

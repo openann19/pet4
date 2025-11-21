@@ -60,7 +60,7 @@ export function useLocalStorage<T>(
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
         try {
-          const parsed = JSON.parse(e.newValue);
+          const parsed = JSON.parse(e.newValue) as { value: T };
           setStoredValue(parsed.value);
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
@@ -70,7 +70,9 @@ export function useLocalStorage<T>(
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => { window.removeEventListener('storage', handleStorageChange); };
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [key, syncAcrossTabs]);
 
   return [storedValue, setValue, removeValue];

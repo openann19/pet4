@@ -1,8 +1,4 @@
-import { useAnimatedStyle } from '@petspark/motion';
-import {
-  useButtonAnimations,
-  useTemplatesPanelAnimations,
-} from './useChatAnimations';
+import { useButtonAnimations, useTemplatesPanelAnimations } from './useChatAnimations';
 
 /**
  * Hook for managing chat input bar button animations
@@ -10,21 +6,13 @@ import {
  */
 export function useChatInputAnimations(showTemplates: boolean) {
   const {
-    templateButtonHover: templateHoverBase,
     templateButtonHoverStyle,
-    templateButtonTap: templateTapBase,
     templateButtonTapStyle,
-    stickerButtonHover: stickerHoverBase,
     stickerButtonHoverStyle,
-    stickerButtonTap: stickerTapBase,
     stickerButtonTapStyle,
-    emojiButtonHover: emojiHoverBase,
     emojiButtonHoverStyle,
-    emojiButtonTap: emojiTapBase,
     emojiButtonTapStyle,
-    sendButtonHover: sendHoverBase,
     sendButtonHoverStyle,
-    sendButtonTap: sendTapBase,
     sendButtonTapStyle,
   } = useButtonAnimations();
 
@@ -102,4 +90,3 @@ export function useChatInputAnimations(showTemplates: boolean) {
     sendButtonTap,
   };
 }
-

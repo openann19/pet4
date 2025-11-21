@@ -51,7 +51,7 @@ export function useStorage<T>(
         const stored = await storage.get<T>(key);
 
         if (!cancelled) {
-          setValueState(stored !== undefined ? stored : defaultValueRef.current);
+          setValueState(stored ?? defaultValueRef.current);
           setIsLoading(false);
           isInitializedRef.current = true;
         }
@@ -111,7 +111,7 @@ export function useStorage<T>(
         // Revert on error by loading current value from storage
         try {
           const current = await storage.get<T>(key);
-          setValueState(current !== undefined ? current : defaultValueRef.current);
+          setValueState(current ?? defaultValueRef.current);
         } catch (revertError) {
           logger.error(
             `Failed to revert value for key ${key}`,

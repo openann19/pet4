@@ -468,7 +468,7 @@ class OfflineSyncManager {
         break;
       }
       default:
-        throw new Error(`Unknown action type: ${action.action}`);
+        throw new Error(`Unknown action type: ${action.action as string}`);
     }
   }
 
@@ -564,9 +564,7 @@ class OfflineSyncManager {
 let syncManagerInstance: OfflineSyncManager | null = null;
 
 export function getOfflineSyncManager(): OfflineSyncManager {
-  if (!syncManagerInstance) {
-    syncManagerInstance = new OfflineSyncManager();
-  }
+  syncManagerInstance ??= new OfflineSyncManager();
   return syncManagerInstance;
 }
 

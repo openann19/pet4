@@ -5,7 +5,7 @@
 
 import { useRef, useEffect, useCallback } from 'react';
 import type { RefObject } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 interface LongPressHandlers {
   onLongPress?: () => void;

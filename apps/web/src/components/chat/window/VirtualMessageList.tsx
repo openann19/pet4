@@ -119,7 +119,7 @@ export function VirtualMessageList({
     overscan: useVirtualizedList ? OVERSCAN : 0,
     measureElement:
       typeof window !== 'undefined' && 'ResizeObserver' in window
-        ? (element, entry, instance) => {
+        ? (element, _entry, _instance) => {
           if (!element) {
             return DEFAULT_MESSAGE_HEIGHT;
           }

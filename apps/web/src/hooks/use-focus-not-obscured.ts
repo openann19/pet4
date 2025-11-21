@@ -8,10 +8,14 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { ensureFocusNotObscured, checkFocusNotObscured, type FocusVisibilityResult } from '@/core/a11y/focus-not-obscured';
+import {
+  ensureFocusNotObscured,
+  checkFocusNotObscured,
+  type FocusVisibilityResult,
+} from '@/core/a11y/focus-not-obscured';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('use-focus-not-obscured');
+const _logger = createLogger('use-focus-not-obscured');
 
 /**
  * Options for focus not obscured hook
@@ -33,16 +37,15 @@ export interface UseFocusNotObscuredReturn {
 /**
  * Hook to ensure focused elements are not obscured
  */
-export function useFocusNotObscured(options: UseFocusNotObscuredOptions = {}): UseFocusNotObscuredReturn {
+export function useFocusNotObscured(
+  options: UseFocusNotObscuredOptions = {}
+): UseFocusNotObscuredReturn {
   const { enabled = true, autoScroll = true, onObscured } = options;
   const cleanupRef = useRef<(() => void) | null>(null);
 
-  const check = useCallback(
-    (element: HTMLElement): FocusVisibilityResult => {
-      return checkFocusNotObscured(element);
-    },
-    []
-  );
+  const check = useCallback((element: HTMLElement): FocusVisibilityResult => {
+    return checkFocusNotObscured(element);
+  }, []);
 
   const ensure = useCallback(
     (element: HTMLElement): void => {

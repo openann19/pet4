@@ -34,7 +34,15 @@ export function buildLLMPrompt(strings: TemplateStringsArray, ...values: unknown
       // fall through to generic stringification
     }
 
-    return acc + current + String(value);
+    return (
+      acc +
+      current +
+      (typeof value === 'object' && value !== null
+        ? JSON.stringify(value)
+        : typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : 'Unsupported value type')
+    );
   }, '');
 }
 
@@ -43,6 +51,6 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
     return false;
   }
 
-  const prototype = Object.getPrototypeOf(value);
+  const prototype = Object.getPrototypeOf(value) as object | null;
   return prototype === Object.prototype || prototype === null;
 }

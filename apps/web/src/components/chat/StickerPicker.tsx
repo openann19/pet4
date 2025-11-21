@@ -28,7 +28,6 @@ import {
 } from '@/lib/sticker-library';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {
@@ -74,7 +73,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
       sticker.id,
       ...(recentStickerIds ?? []).filter((id) => id !== sticker.id),
     ].slice(0, 24);
-    setRecentStickerIds(updatedRecent);
+    void setRecentStickerIds(updatedRecent);
 
     onSelectSticker(sticker);
   };

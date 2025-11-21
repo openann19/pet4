@@ -99,7 +99,7 @@ export function PremiumModal({
         className={cn('p-0 overflow-hidden', variants[variant], SIZE_CLASSES[size], className)}
       >
         <MotionView style={contentStyle} className="contents">
-          {(title || description) && (
+          {(title ?? description) && (
             <DialogHeader className="px-6 pt-6 pb-4">
               {title && <DialogTitle>{title}</DialogTitle>}
               {description && <DialogDescription>{description}</DialogDescription>}

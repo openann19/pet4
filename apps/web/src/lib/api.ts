@@ -51,12 +51,14 @@ export class APIClient {
       });
 
       if (!response.ok) {
-        const error: APIError = await response.json().catch(() => ({
-          code: 'UNKNOWN_ERROR',
-          message: 'An unexpected error occurred',
-          correlationId,
-          timestamp: new Date().toISOString(),
-        }));
+        const error: APIError = (await response.json().catch(
+          (): APIError => ({
+            code: 'UNKNOWN_ERROR',
+            message: 'An unexpected error occurred',
+            correlationId,
+            timestamp: new Date().toISOString(),
+          })
+        )) as APIError;
         throw new APIRequestError(error);
       }
 

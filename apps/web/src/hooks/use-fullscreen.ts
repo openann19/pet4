@@ -52,7 +52,7 @@ export function useFullscreen() {
       ) {
         await (element as { msRequestFullscreen: () => Promise<void> }).msRequestFullscreen();
       }
-    } catch (error) {
+    } catch {
       // Fullscreen not supported or blocked
     }
   }, []);
@@ -80,7 +80,7 @@ export function useFullscreen() {
       ) {
         await (document as { msExitFullscreen: () => Promise<void> }).msExitFullscreen();
       }
-    } catch (error) {
+    } catch {
       // Fullscreen exit failed
     }
   }, []);

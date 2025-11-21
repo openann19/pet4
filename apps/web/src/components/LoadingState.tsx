@@ -4,7 +4,12 @@ import { MotionView } from '@petspark/motion';
 
 export default function LoadingState() {
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-4">
+    <div
+      className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-4"
+      role="status"
+      aria-live="polite"
+      aria-label="Loading content"
+    >
       <LoadingSpinner />
       <LoadingText />
       <LoadingDots />
@@ -22,7 +27,7 @@ function LoadingSpinner() {
     >
       {/* Outer glow ring */}
       <MotionView
-        className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/30"
+        className="absolute inset-0 rounded-full bg-linear-to-br from-primary/30 via-accent/20 to-secondary/30"
         initial={{ scale: 1, opacity: 0.4, rotate: 0 }}
         animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4], rotate: 360 }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -30,7 +35,7 @@ function LoadingSpinner() {
 
       {/* Middle glow ring */}
       <MotionView
-        className="absolute inset-2 rounded-full bg-gradient-to-tr from-accent/30 to-primary/30"
+        className="absolute inset-2 rounded-full bg-linear-to-tr from-accent/30 to-primary/30"
         initial={{ scale: 1, opacity: 0.3, rotate: 0 }}
         animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3], rotate: -360 }}
         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -38,7 +43,7 @@ function LoadingSpinner() {
 
       {/* Center icon container */}
       <MotionView
-        className="absolute inset-4 flex items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-sm"
+        className="absolute inset-4 flex items-center justify-center rounded-full border border-primary/20 bg-linear-to-br from-primary/10 to-accent/10 backdrop-blur-sm"
         initial={{ rotate: 0 }}
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
@@ -86,7 +91,7 @@ function LoadingText() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
     >
-      <div className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-xl font-bold text-transparent">
+      <div className="bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-xl font-bold text-transparent">
         Loading your experience...
       </div>
       <p className="text-sm text-muted-foreground">Preparing amazing connections</p>
@@ -113,7 +118,7 @@ function LoadingDots() {
       {delays.map((delay) => (
         <MotionView
           key={delay}
-          className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-primary to-accent"
+          className="h-2.5 w-2.5 rounded-full bg-linear-to-r from-primary to-accent"
           initial={{ scale: 1, opacity: 0.4 }}
           animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
           transition={{ ...baseTransition, delay }}

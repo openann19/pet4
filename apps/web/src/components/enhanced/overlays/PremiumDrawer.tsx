@@ -102,7 +102,7 @@ export function PremiumDrawer({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side={side} className={cn(SIZE_CLASSES[size], className)}>
         <MotionView style={contentStyle} className="contents">
-          {(title || description) && (
+          {(title ?? description) && (
             <SheetHeader>
               {title && <SheetTitle>{title}</SheetTitle>}
               {description && <SheetDescription>{description}</SheetDescription>}

@@ -8,6 +8,7 @@ const PetPhotoAnalyzer = lazy(() =>
   import('@/components/PetPhotoAnalyzer').then((module) => ({ default: module.default }))
 );
 
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 interface PhotoStepProps {
   name: string;
   photo: string;
@@ -19,6 +20,7 @@ interface PhotoStepProps {
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
 }
+/* eslint-enable @typescript-eslint/consistent-type-imports */
 
 export function PhotoStep({
   name,
@@ -63,4 +65,3 @@ export function PhotoStep({
     </MotionView>
   );
 }
-

@@ -24,7 +24,6 @@ import {
   Share,
   Tag,
 } from '@phosphor-icons/react';
-import { isTruthy } from '@petspark/shared';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -60,8 +59,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
 
   useEffect(() => {
     if (open && postId) {
-      loadPost();
-      loadComments();
+      void loadPost();
+      void loadComments();
     } else {
       setPost(null);
       setComments([]);
@@ -197,7 +196,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
     haptics.impact('light');
 
     try {
-      if (isTruthy(navigator.share)) {
+      if (navigator.share) {
         await navigator.share({
           title: `Post by ${String(post.authorName ?? '')}`,
           ...(post.text ? { text: post.text } : {}),
@@ -207,7 +206,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         await navigator.clipboard.writeText(window.location.href);
         toast.success('Link copied to clipboard');
       }
-    } catch (error) {
+    } catch {
       // User cancelled share
     }
   };
@@ -341,11 +340,11 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                             }}
                             className="relative aspect-square rounded-lg overflow-hidden bg-muted"
                           >
-                              <ProgressiveImage
-                                src={url}
-                                alt={`Post media ${String(index + 1)}`}
-                                className="w-full h-full object-cover"
-                                aria-label={`Post media ${index + 1}`}
+                            <ProgressiveImage
+                              src={url}
+                              alt={`Post media ${String(index + 1)}`}
+                              className="w-full h-full object-cover"
+                              aria-label={`Post media ${index + 1}`}
                             />
                           </button>
                         );
@@ -354,7 +353,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                   )}
 
                   {/* Tags and Location */}
-                  {((post.tags && post.tags.length > 0) || post.location) && (
+                  {((post.tags && post.tags.length > 0) ?? post.location) && (
                     <div className="flex flex-wrap gap-2">
                       {post.tags?.map((tag) => (
                         <Badge key={tag} variant="secondary" className="text-xs">
@@ -374,7 +373,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                   {/* Actions */}
                   <div className="flex items-center gap-4 py-4 border-t border-b">
                     <button
-                      onClick={handleLike}
+                      onClick={() => void handleLike()}
                       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
                       <Heart
@@ -391,14 +390,14 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                       <ChatCircle size={24} />
                       <span className="text-sm font-medium">{comments.length}</span>
                     </button>
-                    <button onClick={handleSave} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+                    <button onClick={() => void handleSave()} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <BookmarkSimple
                         size={24}
                         weight={isSaved ? 'fill' : 'regular'}
                         className={isSaved ? 'text-primary' : ''}
                       />
                     </button>
-                    <button onClick={handleShare} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+                    <button onClick={() => void handleShare()} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <Share size={24} />
                     </button>
                   </div>
@@ -500,12 +499,12 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                     className="resize-none"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                        handleSubmitComment();
+                        void handleSubmitComment();
                       }
                     }}
                   />
                   <Button
-                    onClick={handleSubmitComment}
+                    onClick={() => void handleSubmitComment()}
                     disabled={!commentText.trim() || submittingComment}
                     className="self-end"
                   >

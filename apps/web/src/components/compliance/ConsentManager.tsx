@@ -1,6 +1,6 @@
 /**
  * Consent Manager Component
- * 
+ *
  * Handles GDPR/CCPA consent management for cookies and data processing
  */
 
@@ -9,7 +9,6 @@ import { createLogger } from '@/lib/logger'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { isTruthy } from '@petspark/shared'
 
 const logger = createLogger('ConsentManager')
 
@@ -72,7 +71,7 @@ export function ConsentManager({ onConsentChange, showOnlyIfNeeded = true }: Con
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
     const euTimezones = ['Europe/', 'Africa/Casablanca', 'Africa/Cairo']
     const isEU = euTimezones.some(tz => timezone.startsWith(tz))
-    
+
     // Check for California (simplified - use proper geolocation in production)
     const isCalifornia = timezone === 'America/Los_Angeles'
 
@@ -231,4 +230,3 @@ export function useConsentPreferences(): ConsentPreferences {
 
   return preferences
 }
-

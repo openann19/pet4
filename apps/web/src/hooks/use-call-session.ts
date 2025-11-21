@@ -8,12 +8,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { CallClient } from '@/lib/calls/call-client';
-import type {
-  CallSession,
-  CallParticipant,
-  VideoQuality,
-  CallStatus,
-} from '@/lib/calls/call-types';
+import type { CallSession, CallParticipant, VideoQuality } from '@/lib/calls/call-types';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('useCallSession');
@@ -58,9 +53,7 @@ export interface UseCallSessionResult {
   setVideoQuality: (quality: VideoQuality) => Promise<void>;
 }
 
-export function useCallSession(
-  options: UseCallSessionOptions
-): UseCallSessionResult {
+export function useCallSession(options: UseCallSessionOptions): UseCallSessionResult {
   const {
     localUserId,
     localDisplayName,
@@ -128,10 +121,10 @@ export function useCallSession(
         const stream = await client.requestMediaStream(quality);
         setLocalStream(stream);
 
-        const pc = client.createPeerConnection();
+        const _pc = client.createPeerConnection();
         client.addLocalStream(stream);
 
-        const offer = await client.createOffer();
+        const _offer = await client.createOffer();
 
         const remoteParticipant: CallParticipant = {
           id: remoteUserId,
@@ -166,7 +159,14 @@ export function useCallSession(
   );
 
   const acceptCall = useCallback<UseCallSessionResult['acceptCall']>(
-    async ({ callId, remoteUserId, remoteDisplayName, remoteAvatarUrl, offer, quality = '720p' }) => {
+    async ({
+      callId,
+      remoteUserId,
+      remoteDisplayName,
+      remoteAvatarUrl,
+      offer,
+      quality = '720p',
+    }) => {
       try {
         const client = clientRef.current;
         if (!client) {
@@ -177,7 +177,7 @@ export function useCallSession(
         const stream = await client.requestMediaStream(quality);
         setLocalStream(stream);
 
-        const pc = client.createPeerConnection();
+        const _pc = client.createPeerConnection();
         client.addLocalStream(stream);
 
         await client.handleOffer(offer);
@@ -401,4 +401,3 @@ export function useCallSession(
     setVideoQuality,
   };
 }
-

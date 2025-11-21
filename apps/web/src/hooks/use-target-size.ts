@@ -16,7 +16,7 @@ import {
 } from '@/core/a11y/target-size';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('use-target-size');
+const _logger = createLogger('use-target-size');
 
 /**
  * Options for target size hook
@@ -40,7 +40,12 @@ export interface UseTargetSizeReturn {
  * Hook to ensure touch targets meet WCAG 2.2 AAA requirements
  */
 export function useTargetSize(options: UseTargetSizeOptions = {}): UseTargetSizeReturn {
-  const { enabled = true, autoFix = false, config = DEFAULT_TARGET_SIZE_CONFIG, onInvalid } = options;
+  const {
+    enabled = true,
+    autoFix = false,
+    config = DEFAULT_TARGET_SIZE_CONFIG,
+    onInvalid,
+  } = options;
   const elementRef = useRef<HTMLElement | null>(null);
 
   const validate = useCallback(
@@ -90,7 +95,7 @@ export function useTargetSize(options: UseTargetSizeOptions = {}): UseTargetSize
  * Hook to validate target size for a ref
  */
 export function useTargetSizeRef(options: UseTargetSizeOptions = {}) {
-  const { validate, ensure } = useTargetSize(options);
+  const { validate: _validate, ensure } = useTargetSize(options);
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {

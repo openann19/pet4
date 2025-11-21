@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle, useTransform } from '@petspark/motion';
+import { MotionView, useTransform } from '@petspark/motion';
 /**
  * Template Panel Component
  *

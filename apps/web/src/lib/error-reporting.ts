@@ -1,4 +1,3 @@
-
 /**
  * Error Reporting (Sentry/Crashlytics)
  *
@@ -22,7 +21,7 @@ export function initErrorReporting(config: ErrorReportingConfig = {}): void {
   if (errorReportingInitialized) return;
   if (!config.enabled && !import.meta.env.PROD) return;
 
-  const dsn = config.dsn ?? import.meta.env.VITE_SENTRY_DSN;
+  const dsn = config.dsn ?? (import.meta.env.VITE_SENTRY_DSN as string);
   if (!dsn) {
     // No DSN configured, skip initialization
     return;

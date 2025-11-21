@@ -1,5 +1,5 @@
 import type { Location } from './types';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface DeepLinkParams {
   type: 'match' | 'chat' | 'place' | 'lost-found';

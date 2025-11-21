@@ -142,7 +142,9 @@ export class PerformanceMonitor {
 
     const measureMemory = (): void => {
       if ('memory' in performance) {
-        const memory = (performance as { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+        const memory = (
+          performance as { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }
+        ).memory;
         if (memory) {
           const used = memory.usedJSHeapSize;
           const total = memory.jsHeapSizeLimit;
@@ -219,7 +221,8 @@ export class PerformanceMonitor {
       const endTime = performance.now();
       const endMemory = this.getCurrentMemoryUsage();
       const duration = endTime - startTime;
-      const memoryUsage = endMemory !== null && startMemory !== null ? endMemory - startMemory : undefined;
+      const memoryUsage =
+        endMemory !== null && startMemory !== null ? endMemory - startMemory : undefined;
 
       this.recordMetrics({
         operation,
@@ -252,11 +255,7 @@ export class PerformanceMonitor {
   /**
    * Measure synchronous operation duration
    */
-  measureOperationSync<T>(
-    operation: string,
-    fn: () => T,
-    metadata?: Record<string, unknown>
-  ): T {
+  measureOperationSync<T>(operation: string, fn: () => T, metadata?: Record<string, unknown>): T {
     const startTime = performance.now();
     const startMemory = this.getCurrentMemoryUsage();
 
@@ -265,7 +264,8 @@ export class PerformanceMonitor {
       const endTime = performance.now();
       const endMemory = this.getCurrentMemoryUsage();
       const duration = endTime - startTime;
-      const memoryUsage = endMemory !== null && startMemory !== null ? endMemory - startMemory : undefined;
+      const memoryUsage =
+        endMemory !== null && startMemory !== null ? endMemory - startMemory : undefined;
 
       this.recordMetrics({
         operation,
@@ -436,8 +436,6 @@ export class PerformanceMonitor {
 let monitorInstance: PerformanceMonitor | null = null;
 
 export function getPerformanceMonitor(): PerformanceMonitor {
-  if (!monitorInstance) {
-    monitorInstance = new PerformanceMonitor();
-  }
+  monitorInstance ??= new PerformanceMonitor();
   return monitorInstance;
 }

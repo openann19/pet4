@@ -46,21 +46,21 @@ export function NotificationCenter() {
   };
 
   const markAsRead = (id: string) => {
-    setNotifications((current) =>
+    void setNotifications((current) =>
       (current ?? []).map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   };
 
   const markAllAsRead = () => {
-    setNotifications((current) => (current ?? []).map((n) => ({ ...n, read: true })));
+    void setNotifications((current) => (current ?? []).map((n) => ({ ...n, read: true })));
   };
 
   const deleteNotification = (id: string) => {
-    setNotifications((current) => (current ?? []).filter((n) => n.id !== id));
+    void setNotifications((current) => (current ?? []).filter((n) => n.id !== id));
   };
 
   const clearAll = () => {
-    setNotifications([]);
+    void setNotifications([]);
   };
 
   return (

@@ -1,19 +1,10 @@
 import { useSharedValue, withTiming } from '@petspark/motion';
-import type { SharedValue } from '@petspark/motion';
-import {
-  useChatHeaderAnimations,
-  useTypingIndicatorAnimations,
-} from './useChatAnimations';
 import type { CSSProperties } from 'react';
 
 /**
  * Hook for managing chat header button hover animations
  */
-export function useChatHeaderButtonAnimations(typingUsersCount: number) {
-  const { headerStyle } = useChatHeaderAnimations();
-  const { typingContainerStyle, typingTextStyle, typingDotsStyle } =
-    useTypingIndicatorAnimations(typingUsersCount);
-
+export function useChatHeaderButtonAnimations(_typingUsersCount: number) {
   const videoButtonScale = useSharedValue<number>(1);
   const videoButtonTranslateY = useSharedValue<number>(0);
   const voiceButtonScale = useSharedValue<number>(1);
@@ -60,4 +51,3 @@ export function useChatHeaderButtonAnimations(typingUsersCount: number) {
     voiceButtonHover,
   };
 }
-

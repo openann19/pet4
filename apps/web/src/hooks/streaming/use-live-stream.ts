@@ -139,7 +139,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
   // WebRTC and Quality hooks
   const webrtc = useWebRTC({
-    onRemoteStream: (stream) => {
+    onRemoteStream: (_stream) => {
       // Handle remote streams (for peer viewing)
     },
     onDataChannel: (channel) => {
@@ -186,8 +186,8 @@ export function useLiveStream(config: LiveStreamConfig) {
         if (mediaConfig.screenShare) {
           // Screen sharing
           stream = await navigator.mediaDevices.getDisplayMedia({
-            video: mediaConfig.video || true,
-            audio: mediaConfig.audio || false,
+            video: mediaConfig.video ?? true,
+            audio: mediaConfig.audio ?? false,
           });
         } else {
           // Camera/microphone
@@ -201,7 +201,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
           stream = await navigator.mediaDevices.getUserMedia({
             video: mediaConfig.video ? videoConstraints : false,
-            audio: mediaConfig.audio || false,
+            audio: mediaConfig.audio ?? false,
           });
         }
 
@@ -230,7 +230,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
         // Start health monitoring
         healthCheckIntervalRef.current = window.setInterval(() => {
-          checkStreamHealth();
+          void checkStreamHealth();
         }, STREAM_HEALTH_CHECK_INTERVAL);
 
         // Start recording if enabled
@@ -297,34 +297,31 @@ export function useLiveStream(config: LiveStreamConfig) {
   // Recording
   // ============================================================================
 
-  const startRecording = useCallback(
-    (stream: MediaStream, options: RecordingOptions = {}) => {
-      const {
-        mimeType = 'video/webm;codecs=vp9',
-        videoBitsPerSecond = 2500000,
-        audioBitsPerSecond = 128000,
-      } = options;
+  const startRecording = useCallback((stream: MediaStream, options: RecordingOptions = {}) => {
+    const {
+      mimeType = 'video/webm;codecs=vp9',
+      videoBitsPerSecond = 2500000,
+      audioBitsPerSecond = 128000,
+    } = options;
 
-      const recorder = new MediaRecorder(stream, {
-        mimeType,
-        videoBitsPerSecond,
-        audioBitsPerSecond,
-      });
+    const recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond,
+      audioBitsPerSecond,
+    });
 
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          recordedChunksRef.current.push(event.data);
-        }
-      };
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        recordedChunksRef.current.push(event.data);
+      }
+    };
 
-      recorder.start(1000); // Collect data every second
+    recorder.start(1000); // Collect data every second
 
-      mediaRecorderRef.current = recorder;
+    mediaRecorderRef.current = recorder;
 
-      setState((prev) => ({ ...prev, isRecording: true }));
-    },
-    []
-  );
+    setState((prev) => ({ ...prev, isRecording: true }));
+  }, []);
 
   const stopRecording = useCallback((): Blob | null => {
     const recorder = mediaRecorderRef.current;
@@ -479,7 +476,9 @@ export function useLiveStream(config: LiveStreamConfig) {
   const adjustStreamQuality = useCallback(
     (level: string) => {
       // Adjust encoding parameters based on quality level
-      const preset = quality.getQualityPreset(level as 'low' | 'medium' | 'high' | 'ultra' | 'auto');
+      const preset = quality.getQualityPreset(
+        level as 'low' | 'medium' | 'high' | 'ultra' | 'auto'
+      );
       if (!preset || !localStreamRef.current) return;
 
       const videoTrack = localStreamRef.current.getVideoTracks()[0];
@@ -509,7 +508,7 @@ export function useLiveStream(config: LiveStreamConfig) {
   // Signaling (Placeholder)
   // ============================================================================
 
-  const broadcastIceCandidate = useCallback((candidate: RTCIceCandidate) => {
+  const broadcastIceCandidate = useCallback((_candidate: RTCIceCandidate) => {
     // In production, send to signaling server
     // For now, placeholder for WebSocket/HTTP signaling
   }, []);

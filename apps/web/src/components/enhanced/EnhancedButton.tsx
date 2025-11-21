@@ -29,7 +29,7 @@ export interface EnhancedButtonProps extends ComponentProps<'button'> {
 export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>(
   (
     {
-      ripple = true,
+      ripple: _ripple = true,
       hapticFeedback = true,
       successAnimation = false,
       onClick,
@@ -131,8 +131,8 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
           <MotionView style={bounceAnimation.animatedStyle} className="relative">
             <div className="relative overflow-hidden">
               <Button
-                ref={ref || buttonRef}
-                onClick={handleClick}
+                ref={ref ?? buttonRef}
+                onClick={(e) => { void handleClick(e); }}
                 className={cn(
                   'relative overflow-hidden transition-all duration-300',
                   'hover:shadow-lg hover:-translate-y-0.5',

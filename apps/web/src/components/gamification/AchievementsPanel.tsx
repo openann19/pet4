@@ -10,7 +10,7 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Trophy, Lock, CheckCircle2 } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Achievement, AchievementProgress } from '@petspark/core';
+import type { Achievement } from '@petspark/core';
 import { gamificationClient } from '@petspark/core';
 
 interface AchievementsPanelProps {
@@ -80,11 +80,10 @@ function AchievementCard({ achievement, unlocked }: AchievementCardProps) {
 
   return (
     <MotionView
-      className={`p-4 rounded-xl border transition-all ${
-        unlocked
+      className={`p-4 rounded-xl border transition-all ${unlocked
           ? 'bg-linear-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30'
           : 'bg-muted/50 border-border opacity-60'
-      }`}
+        }`}
       whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 300 }}
     >
@@ -124,4 +123,3 @@ function AchievementCard({ achievement, unlocked }: AchievementCardProps) {
     </MotionView>
   );
 }
-

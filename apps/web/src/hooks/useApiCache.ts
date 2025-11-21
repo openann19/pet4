@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { queryCache, generateCacheKey } from '../lib/cache/query-cache';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 interface UseApiCacheOptions<T> {
   enabled?: boolean;
@@ -104,7 +104,9 @@ export function useApiCache<T>(
       void fetchData(false);
     }, refetchInterval);
 
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, [refetchInterval, enabled, key, fetchData]);
 
   const refetch = useCallback(async () => {

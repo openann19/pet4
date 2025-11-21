@@ -46,7 +46,7 @@ function resolveSentry(): Promise<SentryInstance | null> {
     return sentryInitPromise;
   }
 
-  const dsn = import.meta.env.VITE_SENTRY_DSN;
+  const dsn = (import.meta.env.VITE_SENTRY_DSN as string | undefined) ?? undefined;
   if (!dsn) {
     sentryInitPromise = Promise.resolve(null);
     return sentryInitPromise;
@@ -55,7 +55,7 @@ function resolveSentry(): Promise<SentryInstance | null> {
   const sentryImport = import('@sentry/browser') as Promise<unknown>;
 
   sentryInitPromise = sentryImport
-    .then((module) => {
+    .then((module): SentryInstance | null => {
       // Type guard for Sentry module
       function isSentryInstance(m: unknown): m is SentryInstance {
         return (
@@ -67,9 +67,7 @@ function resolveSentry(): Promise<SentryInstance | null> {
       }
 
       if (isSentryInstance(module)) {
-        if (typeof module.init === 'function') {
-          module.init({ dsn, tracesSampleRate: 0.1 });
-        }
+        module.init({ dsn, tracesSampleRate: 0.1 } as { dsn: string; tracesSampleRate: number });
         return module;
       }
       return null;

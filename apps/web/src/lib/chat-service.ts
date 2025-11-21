@@ -264,9 +264,7 @@ export async function deleteMessage(
     }
   } else {
     // Delete for me only
-    if (!cachedMessage.deletedFor) {
-      cachedMessage.deletedFor = [];
-    }
+    cachedMessage.deletedFor ??= [];
     cachedMessage.deletedFor.push(userId);
     messageCache.set(messageId, cachedMessage);
   }

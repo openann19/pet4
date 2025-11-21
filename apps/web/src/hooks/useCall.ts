@@ -313,7 +313,7 @@ export function useCall(
   };
 
   const addToHistory = (item: CallHistoryItem) => {
-    setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
+    void setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
   };
 
   return {

@@ -251,7 +251,13 @@ export class OfflineDataLayer {
             resolve();
           };
           request.onerror = () => {
-            reject(request.error);
+            reject(
+              request.error
+                ? new Error(
+                    request.error instanceof Error ? request.error.message : String(request.error)
+                  )
+                : new Error('IndexedDB put request failed')
+            );
           };
         });
       } catch (error) {
@@ -308,7 +314,13 @@ export class OfflineDataLayer {
             resolve();
           };
           request.onerror = () => {
-            reject(request.error);
+            reject(
+              request.error
+                ? new Error(
+                    request.error instanceof Error ? request.error.message : String(request.error)
+                  )
+                : new Error('IndexedDB optimistic update failed')
+            );
           };
         });
       } catch (error) {
@@ -351,7 +363,13 @@ export class OfflineDataLayer {
             resolve();
           };
           request.onerror = () => {
-            reject(request.error);
+            reject(
+              request.error
+                ? new Error(
+                    request.error instanceof Error ? request.error.message : String(request.error)
+                  )
+                : new Error('IndexedDB committed put request failed')
+            );
           };
         });
       } catch (error) {
@@ -397,7 +415,13 @@ export class OfflineDataLayer {
             resolve();
           };
           request.onerror = () => {
-            reject(request.error);
+            reject(
+              request.error
+                ? new Error(
+                    request.error instanceof Error ? request.error.message : String(request.error)
+                  )
+                : new Error('IndexedDB rollback put request failed')
+            );
           };
         });
       } catch (error) {
@@ -461,7 +485,11 @@ export class OfflineDataLayer {
             resolve();
           };
           request.onerror = () => {
-            reject(request.error);
+            reject(
+              request.error
+                ? new Error(String(request.error))
+                : new Error('IndexedDB clear request failed')
+            );
           };
         });
       } catch (error) {

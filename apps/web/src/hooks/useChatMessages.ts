@@ -27,7 +27,7 @@ interface UseChatMessagesReturn {
     metadata?: ChatMessage['metadata']
   ) => ChatMessage | null;
   addReaction: (messageId: string, reaction: ReactionType) => Promise<void>;
-  markAsRead: (messageId: string) => Promise<void>;
+  markAsRead: () => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   setMessages: (updater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   isLoading: boolean;
@@ -159,7 +159,7 @@ export function useChatMessages({
     ]
   );
 
-  const addReaction = useCallback(
+  const handleAddReaction = useCallback(
     (messageId: string, emoji: ReactionType) => {
       queryClient.setQueryData(
         queryKeys.chat.messages(roomId),
@@ -236,7 +236,7 @@ export function useChatMessages({
     [currentUserId, queryClient, roomId]
   );
 
-  const markAsRead = useCallback(() => {
+  const handleMarkAsRead = useCallback(() => {
     queryClient.setQueryData(
       queryKeys.chat.messages(roomId),
       (old: { pages: ChatMessage[][] } | undefined) => {
@@ -275,7 +275,7 @@ export function useChatMessages({
           await chatApi.deleteMessage(messageId, false);
         } catch (error) {
           // If API call fails, revert optimistic update
-          queryClient.invalidateQueries({
+          void queryClient.invalidateQueries({
             queryKey: queryKeys.chat.messages(roomId),
           });
           throw error;
@@ -308,11 +308,13 @@ export function useChatMessages({
     messages,
     messageGroups,
     sendMessage,
-    addReaction: async (messageId: string, emoji: ReactionType) => {
-      addReaction(messageId, emoji);
+    addReaction: (messageId: string, emoji: ReactionType) => {
+      handleAddReaction(messageId, emoji);
+      return Promise.resolve();
     },
-    markAsRead: async () => {
-      markAsRead();
+    markAsRead: () => {
+      handleMarkAsRead();
+      return Promise.resolve();
     },
     deleteMessage,
     setMessages,

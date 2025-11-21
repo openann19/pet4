@@ -5,8 +5,6 @@
  * Provides controlled environment with mock data and testing APIs.
  */
 
-/* eslint-disable max-lines-per-function */
-
 import React, { useState, useEffect, useCallback } from 'react';
 import MessageBubble from '@/components/chat/MessageBubble';
 import TypingIndicator from '@/components/chat/TypingIndicator';

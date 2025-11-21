@@ -26,7 +26,7 @@ export interface ReactionPickerProps {
 export function ReactionPicker({
   onSelect,
   trigger,
-  className,
+  className: _className,
 }: ReactionPickerProps): React.JSX.Element {
   const handleSelect = useCallback(
     (emoji: string) => {
@@ -92,4 +92,3 @@ function EmojiButton({ emoji, onSelect }: EmojiButtonProps): React.JSX.Element {
     </MotionView>
   );
 }
-

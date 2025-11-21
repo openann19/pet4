@@ -9,7 +9,7 @@ import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { InputRef } from '@/components/ui/input';
-import type { MotionValue, SharedValue } from '@petspark/motion';
+import type { MotionValue } from '@petspark/motion';
 
 interface ChatWindowContentProps {
   room: ChatRoom;

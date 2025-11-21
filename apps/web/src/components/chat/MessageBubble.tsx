@@ -83,7 +83,6 @@ const REACTIONS: { type: ReactionType; icon: typeof Heart; label: string }[] = [
   { type: '⭐', icon: Star, label: 'Star' },
 ];
 
-/* eslint-disable max-lines-per-function -- Complex component handling multiple media types, reactions, animations, and UI states */
 function MessageBubble({
   message,
   isOwn,

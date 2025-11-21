@@ -1,9 +1,9 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 /**
  * Query Cache - In-memory cache for API responses with TTL support
  * Provides efficient caching with automatic expiration and size management
  */
+
+import { isTruthy } from '@petspark/shared';
 
 interface CacheEntry<T> {
   data: T;

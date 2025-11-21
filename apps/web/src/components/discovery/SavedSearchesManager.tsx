@@ -427,7 +427,7 @@ export default function SavedSearchesManager({
                     />
                   </div>
                   <MotionView style={saveButtonBounce.animatedStyle}>
-                    <Button onClick={handleSaveCurrentSearch}>
+                    <Button onClick={() => void handleSaveCurrentSearch()}>
                       <FloppyDisk size={16} className="mr-2" />
                       Save
                     </Button>

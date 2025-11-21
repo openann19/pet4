@@ -241,9 +241,7 @@ export function batchSync<T>(
       return;
     }
 
-    if (timeoutId === null) {
-      timeoutId = window.setTimeout(flush, maxWait);
-    }
+    timeoutId ??= window.setTimeout(flush, maxWait);
   };
 }
 
@@ -272,9 +270,7 @@ export function createRAFScheduler() {
     schedule: (callback: () => void) => {
       callbacks.push(callback);
 
-      if (rafId === null) {
-        rafId = requestAnimationFrame(flush);
-      }
+      rafId ??= requestAnimationFrame(flush);
     },
     cancel: () => {
       if (rafId !== null) {

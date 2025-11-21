@@ -136,11 +136,11 @@ export function IconButton({
 
         haptics.impact('light');
 
-        animate(activeScale, 0.9, {
+        void animate(activeScale, 0.9, {
           duration: 0.1,
           ease: 'easeOut',
         }).then(() => {
-          animate(activeScale, 1, {
+          void animate(activeScale, 1, {
             duration: 0.2,
             ease: 'easeIn',
           });

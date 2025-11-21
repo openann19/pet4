@@ -106,44 +106,41 @@ export function ConfettiBurst({
       }
 
       // Full animation sequence
-      const maxDelay = Math.max(...particles.map(part => part.delay));
-      const totalDuration = maxDelay + dur + Math.max(140, dur * 0.25);
-
       // Start animations
       p.o.value = withDelay(p.delay, withTiming(1, { duration: 80 }));
       p.x.value = withDelay(
         p.delay,
         withTiming(p.vx, { duration: dur, easing: Easing.out(Easing.cubic) })
       );
-      
+
       // Y animation sequence: initial upward, then fall, then fade
       const initialDuration = dur * 0.35;
       const fallDuration = dur * 0.65;
       const fadeDuration = Math.max(140, dur * 0.25);
-      
+
       p.y.value = withDelay(
         p.delay,
         withTiming(p.vy, { duration: initialDuration, easing: Easing.out(Easing.quad) })
       );
-      
+
       // Schedule fall animation after initial upward motion
       setTimeout(() => {
         p.y.value = withTiming(
           160,
           { duration: fallDuration, easing: Easing.in(Easing.cubic) }
         );
-        
+
         // Schedule fade out after fall completes
         setTimeout(() => {
           p.o.value = withTiming(0, { duration: fadeDuration });
-          
+
           // Complete after fade out
           setTimeout(() => {
             checkComplete();
           }, fadeDuration);
         }, fallDuration);
       }, p.delay + initialDuration);
-      
+
       // Rotation animation (continuous, doesn't affect completion)
       p.r.value = withDelay(
         p.delay,
