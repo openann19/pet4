@@ -66,7 +66,7 @@ export function useScrollFabMagnetic(
 
   const reducedMotion = useReducedMotionSV();
   const { hz, scaleDuration } = useDeviceRefreshRate();
-  const { animation, visual } = useUIConfig();
+  const { animation, visual: _visual } = useUIConfig();
   const scale = useSharedValue(isVisible ? 1 : 0);
   const translateY = useSharedValue(0);
   const badgeScale = useSharedValue(1);
@@ -85,13 +85,14 @@ export function useScrollFabMagnetic(
         });
       } else {
         // Use UI config spring physics or fallback to adaptive config
-        const springConfig = animation.enableReanimated && animation.springPhysics
-          ? {
-              stiffness: animation.springPhysics.stiffness,
-              damping: animation.springPhysics.damping,
-              mass: animation.springPhysics.mass,
-            }
-          : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+        const springConfig =
+          animation.enableReanimated && animation.springPhysics
+            ? {
+                stiffness: animation.springPhysics.stiffness,
+                damping: animation.springPhysics.damping,
+                mass: animation.springPhysics.mass,
+              }
+            : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
         scale.value = withSpring(1, springConfig);
       }
     } else if (enabled && !isVisible) {
@@ -134,29 +135,27 @@ export function useScrollFabMagnetic(
   useEffect(() => {
     if (enabled && badgeCount > (previousBadgeCount ?? 0)) {
       // Use UI config spring physics or fallback to adaptive config
-      const springConfig = animation.enableReanimated && animation.springPhysics
-        ? {
-            stiffness: animation.springPhysics.stiffness,
-            damping: animation.springPhysics.damping,
-            mass: animation.springPhysics.mass,
-          }
-        : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
-      badgeScale.value = withSequence(
-        withSpring(1.3, springConfig),
-        withSpring(1, springConfig)
-      );
+      const springConfig =
+        animation.enableReanimated && animation.springPhysics
+          ? {
+              stiffness: animation.springPhysics.stiffness,
+              damping: animation.springPhysics.damping,
+              mass: animation.springPhysics.mass,
+            }
+          : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+      badgeScale.value = withSequence(withSpring(1.3, springConfig), withSpring(1, springConfig));
     }
   }, [enabled, badgeCount, previousBadgeCount, hz, animation, badgeScale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }, { translateY: translateY.value }],
+      transform: `scale(${scale.value}) translateY(${translateY.value}px)`,
     };
   }) as AnimatedStyle;
 
   const badgeAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: badgeScale.value }],
+      transform: `scale(${badgeScale.value})`,
     };
   }) as AnimatedStyle;
 

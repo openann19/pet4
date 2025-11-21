@@ -13,7 +13,7 @@ import { getTypographyClasses } from '@/lib/typography';
 
 interface AdvancedTabProps {
     draft: DiscoveryPreferences;
-    onDraftChange(next: DiscoveryPreferences): void;
+    onDraftChange(this: void, next: DiscoveryPreferences): void;
 }
 
 export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTabProps) {

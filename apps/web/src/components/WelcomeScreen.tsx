@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Heart, CheckCircle, Translate } from '@phosphor-icons/react'
+import { Heart, CheckCircle, Translate, Sun, MoonStars } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
@@ -28,7 +28,7 @@ const track = (name: string, props?: Record<string, string | number | boolean>) 
 }
 
 export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnline = true, deepLinkMessage }: WelcomeScreenProps) {
-  const { t, language, toggleLanguage: _toggleLanguage } = useApp()
+  const { t, language, toggleLanguage: _toggleLanguage, theme, toggleTheme: _toggleTheme } = useApp()
   const [isLoading, setIsLoading] = useState(true)
   const primaryBtnRef = useRef<HTMLButtonElement | null>(null)
 
@@ -73,6 +73,15 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     const from = language || 'en'
     const to = language === 'en' ? 'bg' : 'en'
     track('welcome_language_changed', { from, to })
+    void _toggleLanguage()
+  }
+
+  const handleThemeToggle = () => {
+    haptics.trigger('selection')
+    const from = theme || 'light'
+    const to = theme === 'dark' ? 'light' : 'dark'
+    track('welcome_theme_changed', { from, to })
+    void _toggleTheme()
   }
 
   const handleLegalClick = (type: 'terms' | 'privacy') => {
@@ -81,7 +90,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
 
   // Animation variants using Framer Motion
   const shouldReduceMotion = useReducedMotion()
-  
+
   const loadingVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3 } }
@@ -93,23 +102,23 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
   }
 
   const logoVariants: Variants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.9, 
+    hidden: {
+      opacity: 0,
+      scale: 0.9,
       y: 20,
       boxShadow: '0 10px 40px rgba(0,0,0,0.15)'
     },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
+    visible: {
+      opacity: 1,
+      scale: 1,
       y: 0,
-      transition: shouldReduceMotion 
+      transition: shouldReduceMotion
         ? { duration: 0 }
-        : { 
-            opacity: { duration: 0.5 },
-            scale: { type: 'spring', damping: 20, stiffness: 300 },
-            y: { type: 'spring', damping: 20, stiffness: 300 }
-          }
+        : {
+          opacity: { duration: 0.5 },
+          scale: { type: 'spring', damping: 20, stiffness: 300 },
+          y: { type: 'spring', damping: 20, stiffness: 300 }
+        }
     },
     pulsing: {
       boxShadow: [
@@ -127,91 +136,91 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
 
   const titleVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.2,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.2 }
-          }
+          delay: 0.2,
+          opacity: { duration: 0.5 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.2 }
+        }
     }
   }
 
   const proofItemsVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.3,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.3 }
-          }
+          delay: 0.3,
+          opacity: { duration: 0.4 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.3 }
+        }
     }
   }
 
   const deepLinkVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.6,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
-          }
+          delay: 0.6,
+          opacity: { duration: 0.4 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
+        }
     }
   }
 
   const offlineVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.6,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
-          }
+          delay: 0.6,
+          opacity: { duration: 0.4 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
+        }
     }
   }
 
   const buttonsVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.7,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.7 }
-          }
+          delay: 0.7,
+          opacity: { duration: 0.5 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.7 }
+        }
     }
   }
 
   const legalVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: shouldReduceMotion
         ? { duration: 0 }
         : {
-            delay: 0.9,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.9 }
-          }
+          delay: 0.9,
+          opacity: { duration: 0.5 },
+          y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.9 }
+        }
     }
   }
 
@@ -234,15 +243,15 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
 
   if (isTruthy(isLoading)) {
     return (
-      <div 
+      <div
         className={cn(
           'fixed inset-0 bg-background flex items-center justify-center',
           getSpacingClassesFromConfig({ padding: 'xl' })
         )}
-        role="status" 
+        role="status"
         aria-live="polite"
         aria-label="Loading application"
-      >                                           
+      >
         <motion.div
           variants={loadingVariants}
           initial="hidden"
@@ -261,40 +270,17 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     pressed: language === 'bg',
   });
 
+  const themeButtonAria = getAriaButtonAttributes({
+    label: theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode',
+    pressed: theme === 'dark',
+  });
+
   return (
-    <main 
+    <main
       className="fixed inset-0 bg-background overflow-auto"
       aria-label="Welcome screen"
     >
       <div className="min-h-screen flex flex-col">
-        <nav 
-          className={cn(
-            'absolute z-10',
-            getSpacingClassesFromConfig({ marginY: 'xl', marginX: 'xl' })
-          )}
-          aria-label="Language selection"
-        >
-          <motion.div
-            variants={languageButtonVariants}
-            initial="hidden"
-            animate="visible"
-            className="top-6 right-6"
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLanguageToggle}
-              className={cn(
-                'rounded-full gap-2'
-              )}
-              {...languageButtonAria}
-            >
-              <Translate size={20} weight="bold" aria-hidden="true" />
-              <span>{language === 'en' ? 'БГ' : 'EN'}</span>
-            </Button>
-          </motion.div>
-        </nav>
-
         <div className={cn(
           'flex-1 flex items-center justify-center',
           getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: '2xl' })
@@ -348,7 +334,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               role="list"
               aria-label="Key features"
             >
-              {[t.welcome.proof1, t.welcome.proof2, t.welcome.proof3].map((text, idx) => (                                                                      
+              {[t.welcome.proof1, t.welcome.proof2, t.welcome.proof3].map((text, idx) => (
                 <div
                   key={idx}
                   className={cn(
@@ -357,7 +343,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   )}
                   role="listitem"
                 >
-                  <CheckCircle size={20} weight="fill" className="text-primary shrink-0" aria-hidden="true" />                                                         
+                  <CheckCircle size={20} weight="fill" className="text-primary shrink-0" aria-hidden="true" />
                   <span className={cn(
                     getTypographyClasses('caption'),
                     'text-foreground/80'
@@ -421,12 +407,13 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
             >
               <Button
                 ref={primaryBtnRef}
-                variant="default"
+                variant="primary"
                 size="lg"
                 onClick={handleGetStarted}
                 disabled={!isOnline}
                 className="w-full rounded-xl"
                 onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
+                tabIndex={1}
                 aria-label="Get started with PawfectMatch"
               >
                 {t.welcome.getStarted}
@@ -472,7 +459,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               <p className={getTypographyClasses('caption')}>
                 {t.welcome.legal}{' '}
                 <a
-                  href="https://github.com/site/terms"
+                  href="https://pawfectmatch.app/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => { handleLegalClick('terms'); }}
@@ -483,7 +470,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 </a>
                 {' '}{t.welcome.and}{' '}
                 <a
-                  href="https://github.com/site/privacy"
+                  href="https://pawfectmatch.app/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => { handleLegalClick('privacy'); }}
@@ -497,6 +484,61 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
             </motion.div>
           </div>
         </div>
+
+        <nav
+          className={cn(
+            'absolute z-10',
+            getSpacingClassesFromConfig({ marginY: 'xl', marginX: 'xl' })
+          )}
+          aria-label="Language and theme controls"
+        >
+          <motion.div
+            variants={languageButtonVariants}
+            initial="hidden"
+            animate="visible"
+            className="top-6 right-6 flex items-center gap-3"
+          >
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.05, y: -1 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.96, y: 0 }}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLanguageToggle}
+                className="rounded-full gap-2 bg-background/80 backdrop-blur border-border/60 shadow-sm"
+                tabIndex={2}
+                {...languageButtonAria}
+              >
+                <Translate size={20} weight="bold" aria-hidden="true" />
+                <span>{language === 'en' ? 'БГ' : 'EN'}</span>
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.05, y: -1 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.96, y: 0 }}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleThemeToggle}
+                className={cn(
+                  'rounded-full gap-2 shadow-sm',
+                  theme === 'dark'
+                    ? 'bg-slate-900 text-amber-300 shadow-amber-500/40'
+                    : 'bg-white/80 text-slate-900 hover:bg-slate-100'
+                )}
+                {...themeButtonAria}
+              >
+                {theme === 'dark' ? (
+                  <MoonStars size={18} weight="fill" aria-hidden="true" />
+                ) : (
+                  <Sun size={18} weight="fill" aria-hidden="true" />
+                )}
+              </Button>
+            </motion.div>
+          </motion.div>
+        </nav>
       </div>
     </main>
   )

@@ -39,16 +39,16 @@ export function LiveStreamManagement() {
           category: apiStream.category as LiveStream['category'],
           status,
           allowChat: apiStream.allowChat,
-          maxDuration: apiStream.maxDuration || 60,
-          startedAt: apiStream.startedAt || apiStream.createdAt,
+          maxDuration: apiStream.maxDuration ?? 60,
+          startedAt: apiStream.startedAt ?? apiStream.createdAt,
           endedAt: apiStream.endedAt,
           viewerCount: apiStream.viewerCount,
           peakViewerCount: apiStream.peakViewerCount,
           totalViews: apiStream.viewerCount,
-          likesCount: apiStream.reactionsCount || 0,
+          likesCount: apiStream.reactionsCount ?? 0,
           roomToken: apiStream.roomId,
           recordingUrl: apiStream.vodUrl,
-          thumbnailUrl: apiStream.posterUrl || apiStream.thumbnail,
+          thumbnailUrl: apiStream.posterUrl ?? apiStream.thumbnail,
           tags: [],
         } as LiveStream;
       });
@@ -346,13 +346,15 @@ export function LiveStreamManagement() {
                     </p>
                   </div>
 
-                  {(selectedStream.status === 'live' || selectedStream.status === 'connecting') && (
-                    <div className="border-t pt-4">
-                      <Button
-                        onClick={() => handleEndStream(selectedStream.id)}
-                        variant="destructive"
-                        className="w-full"
-                      >
+                {(selectedStream.status === 'live' || selectedStream.status === 'connecting') && (
+                  <div className="border-t pt-4">
+                    <Button
+                      onClick={() => {
+                        void handleEndStream(selectedStream.id);
+                      }}
+                      variant="destructive"
+                      className="w-full"
+                    >
                         <X size={18} className="mr-2" />
                         Force End Stream
                       </Button>

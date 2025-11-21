@@ -1,6 +1,6 @@
 'use client';
 
-import type { useAnimatedStyle} from '@petspark/motion';
+import type { useAnimatedStyle } from '@petspark/motion';
 import { useSharedValue } from '@petspark/motion';
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
@@ -218,22 +218,17 @@ export function useParticleExplosionDelete(
       // Note: This is not reactive - use ParticleView component for reactive animations
       return {
         position: 'absolute' as const,
-        left: particle.x.value,
-        top: particle.y.value,
+        left: 0,
+        top: 0,
         width: particle.size,
         height: particle.size,
         backgroundColor: particle.color,
         borderRadius: particle.size / 2,
         opacity: particle.opacity.value,
-        transform: [
-          { translateX: particle.x.value },
-          { translateY: particle.y.value },
-          { scale: particle.scale.value },
-          { rotate: `${particle.rotation.value}deg` },
-        ],
+        transform: `translateX(${particle.x.value}px) translateY(${particle.y.value}px) scale(${particle.scale.value}) rotate(${particle.rotation.value}deg)`,
         pointerEvents: 'none' as const,
         zIndex: 9999,
-      } as ReturnType<typeof useAnimatedStyle>;
+      } as React.CSSProperties;
     },
     []
   );

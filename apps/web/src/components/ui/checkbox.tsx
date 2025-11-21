@@ -16,24 +16,24 @@ export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputE
   // Visual variants
   readonly variant?: 'default' | 'destructive' | 'success'
   readonly size?: 'sm' | 'md' | 'lg'
-  
+
   // States
   readonly checked?: boolean
   readonly indeterminate?: boolean
   readonly error?: boolean
   readonly disabled?: boolean
-  
+
   // Content
   readonly label?: string
   readonly description?: string
   readonly errorMessage?: string
-  
+
   // Advanced features
   readonly trackingId?: string
   readonly disableAnimation?: boolean
   readonly customIcon?: React.ReactNode
   readonly customIndeterminateIcon?: React.ReactNode
-  
+
   // Callbacks
   readonly onCheckedChange?: (checked: boolean) => void
 }
@@ -142,66 +142,66 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
     const checkboxId = id ?? `checkbox-${Math.random().toString(36).substr(2, 9)}`
     const descriptionId = `${checkboxId}-description`
     const errorId = `${checkboxId}-error`
-    
+
     // Determine current state
     const isChecked = indeterminate ? false : checked
     const dataState = indeterminate ? 'indeterminate' : isChecked ? 'checked' : 'unchecked'
-    
+
     // Handle change
     const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
       const newChecked = event.target.checked
-      
+
       // Call original onChange
       onChange?.(event)
-      
+
       // Call onCheckedChange
       onCheckedChange?.(newChecked)
-      
+
       // Analytics tracking
       if (trackingId) {
-        logger.info('Checkbox toggled', { 
-          trackingId, 
-          checked: newChecked, 
+        logger.info('Checkbox toggled', {
+          trackingId,
+          checked: newChecked,
           indeterminate,
           variant,
           size
         })
       }
     }, [onChange, onCheckedChange, trackingId, indeterminate, variant, size])
-    
+
     // Checkbox classes
     const checkboxClasses = useMemo(() => cn(
       // Base styles
       'peer shrink-0 rounded-sm border border-input shadow transition-colors',
       'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-1',
       'disabled:cursor-not-allowed disabled:opacity-50',
-      
+
       // Size styles
       checkboxSizes[size].checkbox,
-      
+
       // Variant styles
       error ? checkboxVariants.destructive.base : checkboxVariants[variant].base,
       error ? checkboxVariants.destructive.focus : checkboxVariants[variant].focus,
-      
+
       // State styles
       'data-[state=checked]:border-transparent',
       'data-[state=indeterminate]:border-transparent',
-      
+
       className
     ), [variant, size, error, className])
-    
+
     // Label classes
     const labelClasses = cn(
       'font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer',
       checkboxSizes[size].text,
       error && 'text-destructive'
     )
-    
+
     // Icon to display
-    const displayIcon = indeterminate 
+    const displayIcon = indeterminate
       ? (customIndeterminateIcon ?? <IndeterminateIcon className={checkboxSizes[size].icon} />)
       : (customIcon ?? <CheckIcon className={checkboxSizes[size].icon} />)
-    
+
     // Accessibility props
     const accessibilityProps = {
       'aria-describedby': cn(
@@ -211,7 +211,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
       'aria-invalid': error,
       'aria-checked': indeterminate ? ('mixed' as const) : isChecked
     }
-    
+
     return (
       <div className="space-y-2">
         <div className="flex items-start space-x-2">
@@ -230,7 +230,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
               {...accessibilityProps}
               {...props}
             />
-            
+
             {/* Visual checkbox */}
             <label
               htmlFor={checkboxId}
@@ -250,7 +250,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
               )}
             </label>
           </div>
-          
+
           {/* Label and description */}
           {(label || description) && (
             <div className="flex-1 space-y-1">
@@ -262,7 +262,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
                   {label}
                 </label>
               )}
-              
+
               {description && (
                 <p
                   id={descriptionId}
@@ -278,7 +278,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
             </div>
           )}
         </div>
-        
+
         {/* Error message */}
         {error && errorMessage && (
           <p id={errorId} className="text-sm text-destructive">
@@ -314,19 +314,19 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
 }) => {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
   const currentValue = value !== undefined ? value : internalValue
-  
+
   const handleValueChange = useCallback((itemValue: string, checked: boolean) => {
     const newValue = checked
       ? [...currentValue, itemValue]
       : currentValue.filter(v => v !== itemValue)
-    
+
     if (value === undefined) {
       setInternalValue(newValue)
     }
-    
+
     onValueChange?.(newValue)
   }, [currentValue, value, onValueChange])
-  
+
   return (
     <div
       className={cn(
@@ -340,8 +340,8 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
         if (React.isValidElement(child) && child.type === Checkbox) {
           const itemValue = child.props.value || String(index)
           const isChecked = currentValue.includes(itemValue)
-          
-          return React.cloneElement(child, {
+
+          return React.cloneElement(child as React.ReactElement<CheckboxProps>, {
             checked: isChecked,
             disabled: disabled || child.props.disabled,
             onCheckedChange: (checked: boolean) => {
@@ -350,7 +350,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
             }
           })
         }
-        
+
         return child
       })}
     </div>

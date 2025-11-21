@@ -14,7 +14,7 @@ import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Story, StoryHighlight } from '@/lib/stories-types';
+import type { Story, StoryHighlight } from '@petspark/shared';
 import type { Pet } from '@/lib/types';
 import { createStoryHighlight } from '@/lib/stories-utils';
 import { filterActiveStories } from '@/lib/stories-utils';
@@ -99,12 +99,12 @@ export default function CreateHighlightDialog({
         (current ?? []).map((h) =>
           h.id === existingHighlight.id
             ? {
-                ...h,
-                title,
-                coverImage: coverImageUrl,
-                stories: selectedStoryObjects,
-                updatedAt: new Date().toISOString(),
-              }
+              ...h,
+              title,
+              coverImage: coverImageUrl,
+              stories: selectedStoryObjects,
+              updatedAt: new Date().toISOString(),
+            }
             : h
         )
       );
@@ -181,11 +181,10 @@ export default function CreateHighlightDialog({
                       >
                         <button
                           onClick={() => { handleToggleStory(story.id); }}
-                          className={`aspect-[9/16] rounded-2xl overflow-hidden relative group w-full border-2 transition-all ${
-                            String(isSelected
-                                                            ? 'border-primary shadow-lg'
-                                                            : 'border-transparent hover:border-border' ?? '')
-                          }`}
+                          className={`aspect-[9/16] rounded-2xl overflow-hidden relative group w-full border-2 transition-all ${String(isSelected
+                            ? 'border-primary shadow-lg'
+                            : 'border-transparent hover:border-border')
+                            }`}
                         >
                           <img
                             src={story.thumbnailUrl ?? story.mediaUrl}

@@ -14,6 +14,7 @@ import { createLogger } from '@/lib/logger';
 import { ArrowLeft, User } from '@phosphor-icons/react';
 import { motion, MotionView } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -68,7 +69,7 @@ function PostItemView({
         role="button"
         tabIndex={0}
         className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded"
-        aria-label={`View post: ${post.title || post.content?.substring(0, 50) || 'Untitled post'}`}
+        aria-label={`View post: ${post.text?.substring(0, 50) ?? 'Untitled post'}`}
       >
         <PostCard
           post={post}
@@ -99,7 +100,7 @@ function UserPostsViewContent({
   const [hasMore, setHasMore] = useState(true);
   const [cursor, setCursor] = useState<string | undefined>();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
-  const [authorName, setAuthorName] = useState(userName || 'User');
+  const [authorName, setAuthorName] = useState(userName ?? 'User');
   const [authorAvatar, setAuthorAvatar] = useState(userAvatar);
   const observerTarget = useRef<HTMLDivElement>(null);
   const loadingRef = useRef(false);
@@ -250,7 +251,7 @@ function UserPostsViewContent({
                     role="button"
                     tabIndex={0}
                     className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                    aria-label={`View post by ${post.author?.name || 'user'}`}
+                    aria-label={`View post by ${post.authorName ?? 'user'}`}
                   >
                     <ErrorBoundary
                       fallback={

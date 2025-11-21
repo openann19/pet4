@@ -255,11 +255,10 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                         transition={{ delay: index * 0.05 }}
                       >
                         <Card
-                          className={`p-4 mb-3 cursor-pointer transition-all hover:shadow-lg ${
-                            String(selectedPlace?.id === place.id
-                                                                  ? 'ring-2 ring-primary bg-primary/5'
-                                                                  : 'hover:bg-accent/5' ?? '')
-                          }`}
+                          className={`p-4 mb-3 cursor-pointer transition-all hover:shadow-lg ${String(selectedPlace?.id === place.id
+                            ? 'ring-2 ring-primary bg-primary/5'
+                            : 'hover:bg-accent/5')
+                            }`}
                           onClick={() => { handleSelectPlace(place); }}
                         >
                           <div className="flex items-start gap-3">

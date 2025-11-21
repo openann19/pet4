@@ -166,7 +166,7 @@ export default function AdoptionManagement(): JSX.Element {
   const handleHideProfile = useCallback(
     (profileId: string): void => {
       try {
-        setHiddenProfiles((prev) => {
+        void setHiddenProfiles((prev) => {
           const current = prev ?? [];
           if (current.includes(profileId)) {
             return current;
@@ -187,7 +187,7 @@ export default function AdoptionManagement(): JSX.Element {
   const handleUnhideProfile = useCallback(
     (profileId: string): void => {
       try {
-        setHiddenProfiles((prev) => (prev ?? []).filter((id) => id !== profileId));
+        void setHiddenProfiles((prev) => (prev ?? []).filter((id) => id !== profileId));
         void toast.success('Adoption profile restored');
         void logger.info('Profile unhidden', { profileId });
       } catch (error) {

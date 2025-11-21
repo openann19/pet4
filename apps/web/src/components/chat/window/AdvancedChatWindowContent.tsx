@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { flags } from '@petspark/config';
 import { Button } from '@/components/ui/button';
 import { PaperPlaneRight } from '@phosphor-icons/react';
-import type { ChatRoom } from '@/lib/chat-types';
+import type { ChatRoom, ChatMessage, TypingUser } from '@/lib/chat-types';
 import { ChatHeader } from './ChatHeader';
 import { MessageList } from './MessageList';
 import { VirtualMessageList } from './VirtualMessageList';
@@ -10,7 +10,6 @@ import { ChatInputBar } from './ChatInputBar';
 import { Overlays } from './Overlays';
 import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
-import type { ChatMessage } from '@/lib/chat-types';
 import type { InputRef } from '@/components/ui/input';
 import type { AnimatedStyle } from '@petspark/motion';
 
@@ -19,7 +18,7 @@ interface AdvancedChatWindowContentProps {
   currentUserId: string;
   currentUserName: string;
   messages: ChatMessage[] | undefined;
-  typingUsers: { userName?: string | null }[];
+  typingUsers: TypingUser[];
   inputValue: string;
   inputRef: React.RefObject<InputRef>;
   showTemplates: boolean;
@@ -31,24 +30,6 @@ interface AdvancedChatWindowContentProps {
   burstSeed: number;
   confettiSeed: number;
   scrollRef: React.RefObject<HTMLDivElement>;
-  headerAnimations: {
-    headerStyle: React.CSSProperties;
-    typingContainerStyle: React.CSSProperties;
-    typingTextStyle: React.CSSProperties;
-    typingDotsStyle: React.CSSProperties;
-    videoButtonHover: {
-      scale: unknown;
-      translateY: unknown;
-      handleEnter: () => void;
-      handleLeave: () => void;
-    };
-    voiceButtonHover: {
-      scale: unknown;
-      translateY: unknown;
-      handleEnter: () => void;
-      handleLeave: () => void;
-    };
-  };
   inputAnimations: {
     templatesStyle: AnimatedStyle;
     templateButtonHover: {
@@ -91,6 +72,9 @@ interface AdvancedChatWindowContentProps {
   setShowTemplates: (show: boolean) => void;
   setShowStickers: (show: boolean) => void;
   scrollToBottom: () => void;
+  awayMode: boolean;
+  onToggleAwayMode: () => void;
+  onBlockUser: () => void;
 }
 
 export function AdvancedChatWindowContent({
@@ -110,7 +94,6 @@ export function AdvancedChatWindowContent({
   burstSeed,
   confettiSeed,
   scrollRef,
-  headerAnimations,
   inputAnimations,
   onBack,
   onSendMessage,
@@ -124,6 +107,9 @@ export function AdvancedChatWindowContent({
   setShowTemplates,
   setShowStickers,
   scrollToBottom,
+  awayMode,
+  onToggleAwayMode,
+  onBlockUser,
 }: AdvancedChatWindowContentProps): JSX.Element {
   const useVirtualization = flags().chat.virtualization;
 
@@ -139,19 +125,12 @@ export function AdvancedChatWindowContent({
         <ChatHeader
           room={room}
           typingUsers={typingUsers}
-          headerStyle={headerAnimations.headerStyle}
-          typingContainerStyle={headerAnimations.typingContainerStyle}
-          typingTextStyle={headerAnimations.typingTextStyle}
-          typingDotsStyle={headerAnimations.typingDotsStyle}
-          videoButtonHover={headerAnimations.videoButtonHover}
-          voiceButtonHover={headerAnimations.voiceButtonHover}
           onBack={onBack}
-          onVideoCall={(): void => {
-            toast.info('Video call feature coming soon');
-          }}
-          onVoiceCall={(): void => {
-            toast.info('Voice call feature coming soon');
-          }}
+          onVideoCall={() => toast.info('Video call feature coming soon')}
+          onVoiceCall={() => toast.info('Voice call feature coming soon')}
+          awayMode={awayMode}
+          onToggleAwayMode={onToggleAwayMode}
+          onBlockUser={onBlockUser}
         />
       </ChatErrorBoundary>
 
@@ -192,7 +171,7 @@ export function AdvancedChatWindowContent({
       {scrollFabVisible && (
         <div className="fixed bottom-24 right-6 z-40">
           <Button
-            style={scrollFabStyleValue}
+            style={scrollFabStyleValue as React.CSSProperties}
             size="sm"
             className="rounded-full shadow-lg bg-primary hover:bg-primary/90 w-10 h-10 p-0"
             onClick={scrollToBottom}
@@ -232,4 +211,3 @@ export function AdvancedChatWindowContent({
     </div>
   );
 }
-

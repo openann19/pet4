@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { usePreciseSharing } from './use-precise-sharing';
 import { useStorage } from '@/hooks/use-storage';
 import { toast } from 'sonner';
@@ -12,11 +12,26 @@ vi.mock('@/contexts/AppContext');
 vi.mock('@/lib/haptics');
 
 describe('usePreciseSharing', () => {
-  const mockSetPreciseSharingEnabled = vi.fn();
-  const mockSetPreciseSharingUntil = vi.fn();
+  const storageMock = useStorage as unknown as vi.Mock;
+  let preciseSharingEnabledValue: boolean;
+  let preciseSharingUntilValue: number | null;
+  const mockSetPreciseSharingEnabled = vi.fn((next: boolean | ((current: boolean) => boolean)) => {
+    const resolved = typeof next === 'function' ? next(preciseSharingEnabledValue) : next;
+    preciseSharingEnabledValue = resolved;
+    return Promise.resolve();
+  });
+  const mockSetPreciseSharingUntil = vi.fn(
+    (next: number | null | ((current: number | null) => number | null)) => {
+      const resolved = typeof next === 'function' ? next(preciseSharingUntilValue) : next;
+      preciseSharingUntilValue = resolved ?? null;
+      return Promise.resolve();
+    }
+  );
 
   beforeEach(() => {
     vi.clearAllMocks();
+    preciseSharingEnabledValue = false;
+    preciseSharingUntilValue = null;
     (useApp as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       t: {
         map: {
@@ -26,12 +41,12 @@ describe('usePreciseSharing', () => {
         },
       },
     });
-    (useStorage as unknown as ReturnType<typeof vi.fn>).mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'map-precise-sharing') {
-        return [false, mockSetPreciseSharingEnabled];
+        return [preciseSharingEnabledValue, mockSetPreciseSharingEnabled];
       }
       if (key === 'map-precise-until') {
-        return [null, mockSetPreciseSharingUntil];
+        return [preciseSharingUntilValue, mockSetPreciseSharingUntil];
       }
       return [defaultValue, vi.fn()];
     });
@@ -67,27 +82,18 @@ describe('usePreciseSharing', () => {
   });
 
   it('should expire precise sharing when time limit reached', async () => {
-    const futureTime = Date.now() + 1000;
-    (useStorage as unknown as ReturnType<typeof vi.fn>).mockImplementation((key: string) => {
-      if (key === 'map-precise-sharing') {
-        return [true, mockSetPreciseSharingEnabled];
-      }
-      if (key === 'map-precise-until') {
-        return [futureTime, mockSetPreciseSharingUntil];
-      }
-      return [null, vi.fn()];
-    });
-
     vi.useFakeTimers();
+    preciseSharingEnabledValue = true;
+    preciseSharingUntilValue = Date.now() - 1000;
+
     const { result } = renderHook(() => usePreciseSharing());
 
-    vi.advanceTimersByTime(2000);
+    await act(async () => {});
 
-    await waitFor(() => {
-      expect(mockSetPreciseSharingEnabled).toHaveBeenCalledWith(false);
-    });
+    expect(mockSetPreciseSharingEnabled).toHaveBeenCalledWith(false);
+    expect(mockSetPreciseSharingUntil).toHaveBeenCalledWith(null);
+    expect(toast.info).toHaveBeenCalled();
 
     vi.useRealTimers();
   });
 });
-

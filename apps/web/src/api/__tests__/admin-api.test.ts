@@ -13,12 +13,71 @@ let server: ReturnType<typeof createServer>;
 
 async function readJson<T>(req: IncomingMessage): Promise<T> {
   const chunks: Buffer[] = [];
+
   for await (const chunk of req) {
-    const bufferChunk: Buffer = typeof chunk === 'string' ? Buffer.from(chunk) : (chunk as Buffer);
-    chunks.push(bufferChunk);
+    if (typeof chunk === 'string') {
+      chunks.push(Buffer.from(chunk, 'utf8'));
+      continue;
+    }
+
+    if (Buffer.isBuffer(chunk)) {
+      chunks.push(chunk);
+      continue;
+    }
+
+    if (chunk instanceof Uint8Array) {
+      chunks.push(Buffer.from(chunk));
+      continue;
+    }
+
+    throw new TypeError(`Unsupported chunk type: ${typeof chunk}`);
   }
+
   const body = Buffer.concat(chunks).toString('utf8');
-  return body ? (JSON.parse(body) as T) : ({} as T);
+  return body.length > 0 ? (JSON.parse(body) as T) : ({} as T);
+}
+
+async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+  if (!req.url || !req.method) {
+    res.statusCode = 400;
+    res.end();
+    return;
+  }
+
+  const url = new URL(req.url, 'http://localhost:8080');
+
+  if (req.method === 'GET' && url.pathname === '/admin/analytics') {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ data: mockSystemStats }));
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/admin/settings/audit') {
+    const payload = await readJson<Omit<AuditLogEntry, 'id' | 'timestamp'>>(req);
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 201;
+    res.end(
+      JSON.stringify({ data: { ...payload, id: 'audit-1', timestamp: new Date().toISOString() } })
+    );
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/admin/settings/audit') {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ data: [mockAuditLog] }));
+    return;
+  }
+
+  if (req.method === 'POST' && url.pathname === '/admin/settings/moderate') {
+    const payload = await readJson<{ taskId: string; action: string; reason?: string }>(req);
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200;
+    res.end(JSON.stringify({ data: { success: true, taskId: payload.taskId } }));
+    return;
+  }
+
+  res.statusCode = 404;
+  res.end();
 }
 
 const mockSystemStats: SystemStats = {
@@ -45,48 +104,11 @@ const mockAuditLog: AuditLogEntry = {
 
 beforeAll(async () => {
   server = createServer((req: IncomingMessage, res: ServerResponse) => {
-    void (async () => {
-      if (!req.url || !req.method) {
-        res.statusCode = 400;
-        res.end();
-        return;
-      }
-
-      const url = new URL(req.url, 'http://localhost:8080');
-
-      if (req.method === 'GET' && url.pathname === '/admin/analytics') {
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ data: mockSystemStats }));
-        return;
-      }
-
-      if (req.method === 'POST' && url.pathname === '/admin/settings/audit') {
-        const payload = await readJson<Omit<AuditLogEntry, 'id' | 'timestamp'>>(req);
-        res.setHeader('Content-Type', 'application/json');
-        res.statusCode = 201;
-        res.end(
-          JSON.stringify({ data: { ...payload, id: 'audit-1', timestamp: new Date().toISOString() } })
-        );
-        return;
-      }
-
-      if (req.method === 'GET' && url.pathname === '/admin/settings/audit') {
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ data: [mockAuditLog] }));
-        return;
-      }
-
-      if (req.method === 'POST' && url.pathname === '/admin/settings/moderate') {
-        const payload = await readJson<{ taskId: string; action: string; reason?: string }>(req);
-        res.setHeader('Content-Type', 'application/json');
-        res.statusCode = 200;
-        res.end(JSON.stringify({ data: { success: true, taskId: payload.taskId } }));
-        return;
-      }
-
-      res.statusCode = 404;
+    handleRequest(req, res).catch((error) => {
+      console.error('Unhandled admin API test request error', error);
+      res.statusCode = 500;
       res.end();
-    })();
+    });
   });
 
   await new Promise<void>((resolve) => {
@@ -112,16 +134,14 @@ describe('AdminAPI.getSystemStats', () => {
   it('should return system statistics', async () => {
     const stats = await adminApi.getSystemStats();
 
-    expect(stats).toMatchObject({
-      totalUsers: expect.any(Number) as number,
-      activeUsers: expect.any(Number) as number,
-      totalPets: expect.any(Number) as number,
-      totalMatches: expect.any(Number) as number,
-      totalMessages: expect.any(Number) as number,
-      pendingReports: expect.any(Number) as number,
-      pendingVerifications: expect.any(Number) as number,
-      resolvedReports: expect.any(Number) as number,
-    });
+    expect(typeof stats.totalUsers).toBe('number');
+    expect(typeof stats.activeUsers).toBe('number');
+    expect(typeof stats.totalPets).toBe('number');
+    expect(typeof stats.totalMatches).toBe('number');
+    expect(typeof stats.totalMessages).toBe('number');
+    expect(typeof stats.pendingReports).toBe('number');
+    expect(typeof stats.pendingVerifications).toBe('number');
+    expect(typeof stats.resolvedReports).toBe('number');
   });
 
   it('should return default stats on error', async () => {
@@ -130,7 +150,7 @@ describe('AdminAPI.getSystemStats', () => {
 
     const stats = await adminApi.getSystemStats();
 
-    expect(stats).toMatchObject({
+    expect(stats).toEqual({
       totalUsers: 0,
       activeUsers: 0,
       totalPets: 0,
@@ -182,14 +202,13 @@ describe('AdminAPI.getAuditLogs', () => {
 
     expect(Array.isArray(logs)).toBe(true);
     if (logs.length > 0) {
-      expect(logs[0]).toMatchObject({
-        id: expect.any(String) as string,
-        adminId: expect.any(String) as string,
-        action: expect.any(String) as string,
-        targetType: expect.any(String) as string,
-        targetId: expect.any(String) as string,
-        timestamp: expect.any(String) as string,
-      });
+      const [first] = logs;
+      expect(typeof first.id).toBe('string');
+      expect(typeof first.adminId).toBe('string');
+      expect(typeof first.action).toBe('string');
+      expect(typeof first.targetType).toBe('string');
+      expect(typeof first.targetId).toBe('string');
+      expect(typeof first.timestamp).toBe('string');
     }
   });
 

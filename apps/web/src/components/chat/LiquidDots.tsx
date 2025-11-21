@@ -6,23 +6,18 @@
  * - Premium glow + slight blur (web-only)
  */
 
-import React, { useMemo } from 'react'
-import { motion } from '@petspark/motion'
-import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
-import { createSeededRNG } from '@/effects/chat/core/seeded-rng'
-
-interface DotConfig {
-  readonly phase: number
-  readonly amplitude: number
-}
+import React from 'react';
+import { MotionView } from '@petspark/motion';
+import { cn } from '@/lib/utils';
+import { useTypingIndicatorMotion } from '@/effects/chat/typing';
 
 export interface LiquidDotsProps {
-  readonly enabled?: boolean
-  readonly dotSize?: number
-  readonly dotColor?: string
-  readonly className?: string
-  readonly dots?: number
-  readonly seed?: number | string
+  readonly enabled?: boolean;
+  readonly dotSize?: number;
+  readonly dotColor?: string;
+  readonly className?: string;
+  readonly dots?: number;
+  readonly seed?: number | string;
 }
 
 export function LiquidDots({
@@ -31,65 +26,40 @@ export function LiquidDots({
   dotColor = 'hsl(var(--muted-foreground))',
   className,
   dots = 3,
-  seed = 'liquid-dots'
+  seed: _seed = 'liquid-dots',
 }: LiquidDotsProps) {
-  const reduced = useReducedMotion()
-  const duration = getReducedMotionDuration(1200, reduced) / 1000 // Convert to seconds
+  const typingMotion = useTypingIndicatorMotion({
+    isTyping: enabled,
+    dotCount: dots,
+    reducedMode: 'static-dots',
+  });
 
-  const dotConfigs = useMemo<DotConfig[]>(() => {
-    const rng = createSeededRNG(seed)
-    return Array.from({ length: dots }, () => ({
-      phase: rng.range(0, Math.PI * 2),
-      amplitude: rng.range(3, 7)
-    }))
-  }, [dots, seed])
-
-  const dotStyle: React.CSSProperties = {
-    width: dotSize,
-    height: dotSize,
-    borderRadius: dotSize / 2,
-    backgroundColor: dotColor,
-    filter: 'blur(0.4px)',
-    boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
+  if (!typingMotion.isVisible) {
+    return null;
   }
 
   return (
-    <div
+    <MotionView
       role="status"
       aria-live="polite"
-      className={`flex items-center gap-1 ${className ?? ''}`}
-      style={{ flexDirection: 'row' }}
+      style={typingMotion.animatedStyle}
+      className={cn('flex items-center gap-1', className)}
     >
-      {dotConfigs.map((dot, index) => {
-        const yKeyframes = reduced ? [0] : [
-          -dot.amplitude,
-          dot.amplitude,
-          -dot.amplitude
-        ]
-
-        const opacityKeyframes = reduced ? [1] : [
-          0.6,
-          1,
-          0.6
-        ]
-
-        return (
-          <motion.div
-            key={`${dot.phase}-${index}`}
-            style={dotStyle}
-            animate={{
-              y: yKeyframes,
-              opacity: opacityKeyframes,
-            }}
-            transition={{
-              duration,
-              ease: 'easeInOut',
-              repeat: enabled ? Infinity : 0,
-              delay: (dot.phase + index * 0.2) * duration / (2 * Math.PI),
-            }}
-          />
-        );
-      })}
-    </div>
+      {typingMotion.dots.map((dot) => (
+        <MotionView
+          key={dot.id}
+          style={{
+            ...dot.animatedStyle,
+            width: dotSize,
+            height: dotSize,
+            borderRadius: dotSize / 2,
+            backgroundColor: dotColor,
+            filter: 'blur(0.4px)',
+            boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
+          }}
+          className="rounded-full"
+        />
+      ))}
+    </MotionView>
   );
 }

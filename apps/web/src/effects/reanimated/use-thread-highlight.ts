@@ -31,6 +31,8 @@ export interface UseThreadHighlightReturn {
   dismiss: () => void;
 }
 
+export type UseThreadHighlightWebReturn = UseThreadHighlightReturn;
+
 const DEFAULT_IS_THREAD_MESSAGE = false;
 const DEFAULT_HIGHLIGHT_DURATION = 2000;
 const DEFAULT_PREVIEW_DELAY = 300;
@@ -108,7 +110,7 @@ export function useThreadHighlight(
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: `scale(${scale.value})`,
     };
   });
 
@@ -122,12 +124,18 @@ export function useThreadHighlight(
   const previewStyle = useAnimatedStyle(() => {
     return {
       opacity: previewOpacity.value,
-      transform: [{ translateY: previewTranslateY.value }],
+      transform: `translateY(${previewTranslateY.value}px)`,
     };
   });
 
   return {
-    ...baseResult,
+    scale,
+    highlightOpacity,
+    previewOpacity,
+    previewTranslateY,
+    animatedStyle,
+    highlightStyle,
+    previewStyle,
     trigger,
     dismiss,
   };

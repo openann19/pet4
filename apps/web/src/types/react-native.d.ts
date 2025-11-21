@@ -7,29 +7,71 @@
 declare module 'react-native' {
   import type { ComponentType, ReactNode } from 'react';
 
-  export type ViewProps = {
+  export interface ViewProps extends Record<string, unknown> {
     style?: unknown;
     children?: ReactNode;
-  } & Record<string, unknown>;
+  }
 
-  export type TextProps = {
+  export interface TextProps extends Record<string, unknown> {
     style?: unknown;
     children?: ReactNode;
-  } & Record<string, unknown>;
+  }
 
-  export type ImageProps = {
+  export interface ImageProps extends Record<string, unknown> {
     source: { uri: string } | number;
     style?: unknown;
     resizeMode?: 'contain' | 'cover' | 'stretch' | 'center';
-  } & Record<string, unknown>;
+  }
+
+  export interface GestureResponderEvent {
+    readonly nativeEvent?: Record<string, unknown>;
+    readonly bubbles?: boolean;
+  }
+
+  export interface PressableProps extends ViewProps {
+    onPress?: (event: GestureResponderEvent) => void;
+    disabled?: boolean;
+    android_ripple?: unknown;
+  }
+
+  export interface TouchableOpacityProps extends ViewProps {
+    onPress?: (event: GestureResponderEvent) => void;
+    activeOpacity?: number;
+    disabled?: boolean;
+  }
+
+  export interface TextInputProps extends TextProps {
+    onChangeText?: (text: string) => void;
+    value?: string;
+    placeholder?: string;
+    secureTextEntry?: boolean;
+    multiline?: boolean;
+  }
+
+  export interface ScrollViewProps extends ViewProps {
+    contentContainerStyle?: unknown;
+    horizontal?: boolean;
+    showsVerticalScrollIndicator?: boolean;
+    showsHorizontalScrollIndicator?: boolean;
+  }
 
   export interface StyleSheet {
+    hairlineWidth: number;
+    absoluteFill: ViewStyle;
+    absoluteFillObject: ViewStyle;
     create<T extends Record<string, unknown>>(styles: T): T;
   }
 
   export const View: ComponentType<ViewProps>;
   export const Text: ComponentType<TextProps>;
   export const Image: ComponentType<ImageProps>;
+  export const Pressable: ComponentType<PressableProps>;
+  export const TouchableOpacity: ComponentType<TouchableOpacityProps>;
+  export const TextInput: ComponentType<TextInputProps>;
+  export const ScrollView: ComponentType<ScrollViewProps>;
+  export const ActivityIndicator: ComponentType<{ size?: number | 'small' | 'large'; color?: string }>;
+  export const KeyboardAvoidingView: ComponentType<ViewProps & { behavior?: 'height' | 'position' | 'padding' }>;
+  export const Modal: ComponentType<ViewProps & { visible?: boolean; transparent?: boolean; animationType?: 'none' | 'slide' | 'fade'; onRequestClose?: () => void }>;
   export const StyleSheet: StyleSheet;
   export const Platform: {
     OS: 'web' | 'ios' | 'android';
@@ -63,4 +105,9 @@ declare module 'react-native' {
   export type TextStyle = Record<string, unknown>;
 
   export type ImageStyle = Record<string, unknown>;
+
+  export const Linking: {
+    openURL(url: string): Promise<void>;
+    canOpenURL(url: string): Promise<boolean>;
+  };
 }

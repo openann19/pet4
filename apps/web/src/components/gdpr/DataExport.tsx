@@ -104,7 +104,6 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
 
       const exportData = await gdprApi.exportUserData({
         userId,
-        format: exportFormat,
       });
 
       // Convert and create download based on format
@@ -119,13 +118,13 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           fileExtension = 'json';
           break;
         case 'csv':
-          const csvData = convertToCSV(exportData as Record<string, unknown>);
+          const csvData = convertToCSV(exportData as unknown as Record<string, unknown>);
           blob = new Blob([csvData], { type: 'text/csv' });
           mimeType = 'text/csv';
           fileExtension = 'csv';
           break;
         case 'xml':
-          const xmlData = convertToXML(exportData as Record<string, unknown>, 'userData');
+          const xmlData = convertToXML(exportData as unknown as Record<string, unknown>, 'userData');
           blob = new Blob([xmlData], { type: 'application/xml' });
           mimeType = 'application/xml';
           fileExtension = 'xml';

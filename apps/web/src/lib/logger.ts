@@ -1,5 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 /**
  * Logger utility for structured logging throughout the application
  * Provides different log levels and integration with analytics/monitoring
@@ -54,7 +52,9 @@ function resolveSentry(): Promise<SentryInstance | null> {
     return sentryInitPromise;
   }
 
-  sentryInitPromise = import('@sentry/browser')
+  const sentryImport = import('@sentry/browser') as Promise<unknown>;
+
+  sentryInitPromise = sentryImport
     .then((module) => {
       // Type guard for Sentry module
       function isSentryInstance(m: unknown): m is SentryInstance {
@@ -83,87 +83,41 @@ interface LoggerOptions {
   readonly enableSentry?: boolean;
 }
 
-type ImportMetaWithEnv = ImportMeta & {
-  env?: Record<string, string | undefined>
-}
-
-const parseLogLevel = (level?: string | null): LogLevel | undefined => {
-  if (!level) return undefined
-  const normalized = level.toString().trim().toUpperCase()
-  if (!normalized) return undefined
-  
-  // Use Object.values to safely access enum values
-  const logLevelEntries = Object.entries(LogLevel) as [string, LogLevel][]
-  const entry = logLevelEntries.find(([key]) => key === normalized)
-  return entry ? entry[1] : undefined
-}
-
-const resolveDefaultLevel = (): LogLevel => {
-  let envLevel: string | undefined
-
-  if (typeof import.meta !== 'undefined') {
-    const metaEnv = (import.meta as ImportMetaWithEnv).env
-    envLevel = metaEnv?.VITE_LOG_LEVEL ?? metaEnv?.LOG_LEVEL
-    const parsed = parseLogLevel(envLevel)
-    if (isDefined(parsed)) {
-      return parsed
-    }
-
-    const mode = metaEnv?.MODE
-    if (mode && mode !== 'production') {
-      return LogLevel.DEBUG
-    }
-    if (mode === 'production') {
-      return LogLevel.INFO
-    }
-  }
-
-  if (typeof process !== 'undefined' && isTruthy(process.env)) {
-    envLevel = process.env.LOG_LEVEL ?? process.env.VITE_LOG_LEVEL ?? undefined
-    const parsed = parseLogLevel(envLevel)
-    if (isDefined(parsed)) {
-      return parsed
-    }
-  }
-
-  return LogLevel.INFO
-}
-
-const globalHandlers = new Set<LogHandler>()
+const globalHandlers = new Set<LogHandler>();
 
 const consoleHandler: LogHandler = (entry) => {
-  const { level, message, context, data, error, timestamp } = entry
-  const prefixParts = [timestamp]
+  const { level, message, context, data, error, timestamp } = entry;
+  const prefixParts = [timestamp];
   if (context) {
-    prefixParts.push(context)
+    prefixParts.push(context);
   }
-  const prefix = prefixParts.length > 0 ? `[${prefixParts.join(' ')}]` : ''
-  const extras: unknown[] = []
-  if (data !== undefined) extras.push(data)
-  if (error) extras.push(error)
+  const prefix = prefixParts.length > 0 ? `[${prefixParts.join(' ')}]` : '';
+  const extras: unknown[] = [];
+  if (data !== undefined) extras.push(data);
+  if (error) extras.push(error);
 
   switch (level) {
     case LogLevel.DEBUG:
-      console.debug(prefix, message, ...extras)
-      break
+      console.debug(prefix, message, ...extras);
+      break;
     case LogLevel.INFO:
-      console.info(prefix, message, ...extras)
-      break
+      console.info(prefix, message, ...extras);
+      break;
     case LogLevel.WARN:
-      console.warn(prefix, message, ...extras)
-      break
+      console.warn(prefix, message, ...extras);
+      break;
     case LogLevel.ERROR:
-      console.error(prefix, message, ...extras)
-      break
+      console.error(prefix, message, ...extras);
+      break;
     default:
-      console.log(prefix, message, ...extras)
+      console.log(prefix, message, ...extras);
   }
-}
+};
 
-globalHandlers.add(consoleHandler)
+globalHandlers.add(consoleHandler);
 
 export function registerGlobalLogHandler(handler: LogHandler): void {
-  globalHandlers.add(handler)
+  globalHandlers.add(handler);
 }
 
 class Logger {

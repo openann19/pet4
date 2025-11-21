@@ -1,23 +1,12 @@
 'use client';
 
-import { MotionView } from "@petspark/motion";
-import { useEffect, useRef, useState, type Dispatch } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { haptics } from '@/lib/haptics';
-import { buildLLMPrompt } from '@/lib/llm-prompt';
-import { llmService } from '@/lib/llm-service';
-import { parseLLMError } from '@/lib/llm-utils';
-import { createLogger } from '@/lib/logger';
 import { realtime } from '@/lib/realtime';
 import type {
   ChatMessage,
   ChatRoom,
-  MessageReaction,
-  ReactionType,
-  SmartSuggestion,
-  MessageTemplate,
 } from '@/lib/chat-types';
-import { generateMessageId } from '@/lib/chat-utils';
 import { useTypingManager } from '@/hooks/use-typing-manager';
 import { useStorage } from '@/hooks/use-storage';
 import { useScrollFabMagnetic } from '@/effects/chat/ui/use-scroll-fab-magnetic';
@@ -34,153 +23,11 @@ import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
 import { useOutbox } from '@petspark/chat-core';
 import { flags } from '@petspark/config';
+import { useInteractiveAnimations } from '@/hooks/useInteractiveAnimations';
 import { useChatKeyboardShortcuts } from '@/hooks/chat/use-chat-keyboard-shortcuts';
+import { useMessageHandling } from '@/hooks/chat/use-message-handling';
 
-const logger = createLogger('AdvancedChatWindow');
-
-function useMessageHandling(
-  messages: ChatMessage[],
-  setMessages: Dispatch<SetStateAction<ChatMessage[]>>,
-  currentUserId: string,
-  currentUserName: string,
-  currentUserAvatar?: string,
-  enqueue: (id: string, payload: unknown) => void,
-  room: ChatRoom,
-  setInputValue: Dispatch<SetStateAction<string>>,
-  setShowStickers: Dispatch<SetStateAction<boolean>>,
-  setShowTemplates: Dispatch<SetStateAction<boolean>>,
-  typingSend: () => void,
-  setConfettiSeed: Dispatch<SetStateAction<number>>,
-  setBurstSeed: Dispatch<SetStateAction<number>>
-) {
-  const onSend = async (
-    content: string,
-    type: ChatMessage['type'] = 'text',
-    attachments?: ChatMessage['attachments'],
-    metadata?: ChatMessage['metadata']
-  ): Promise<void> => {
-    if (!content.trim() && type === 'text' && !attachments?.length) {
-      return;
-    }
-
-    haptics.trigger('light');
-
-    const msg: ChatMessage = {
-      id: generateMessageId(),
-      roomId: room.id,
-      senderId: currentUserId,
-      senderName: currentUserName,
-      ...(currentUserAvatar ? { senderAvatar: currentUserAvatar } : {}),
-      content: type === 'text' ? content.trim() : content,
-      type,
-      timestamp: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      status: 'sent',
-      reactions: [],
-      ...(attachments ? { attachments } : {}),
-      ...(metadata ? { metadata } : {}),
-    };
-
-    setMessages((cur) => [...(cur ?? []), msg]);
-    setInputValue('');
-    setShowStickers(false);
-    setShowTemplates(false);
-    typingSend();
-
-    enqueue(msg.id, {
-      messageId: msg.id,
-      roomId: room.id,
-      content: msg.content,
-      senderId: currentUserId,
-      type: msg.type,
-      timestamp: msg.timestamp,
-    });
-
-    toast.success('Message sent!', { duration: 1500, position: 'top-center' });
-
-    if (type === 'sticker' || type === 'pet-card') {
-      setConfettiSeed((s) => s + 1);
-    }
-  };
-
-  const onReaction = (messageId: string, emoji: string): void => {
-    haptics.trigger('selection');
-
-    setMessages((cur) =>
-      (cur ?? []).map((m) => {
-        if (m.id !== messageId) {
-          return m;
-        }
-
-        const reactions = Array.isArray(m.reactions) ? m.reactions : [];
-
-        const existing = reactions.find((r) => r.userId === currentUserId);
-
-        if (existing?.emoji === emoji) {
-          return { ...m, reactions: reactions.filter((r) => r.userId !== currentUserId) };
-        } else if (existing) {
-          return {
-            ...m,
-            reactions: reactions.map((r) =>
-              r.userId === currentUserId ? { ...r, emoji, timestamp: new Date().toISOString() } : r
-            ),
-          };
-        }
-
-        const newReaction = {
-          emoji: emoji as ReactionType,
-          userId: currentUserId,
-          userName: currentUserName,
-          timestamp: new Date().toISOString(),
-          ...(currentUserAvatar ? { userAvatar: currentUserAvatar } : {}),
-        } as MessageReaction;
-
-        return { ...m, reactions: [...reactions, newReaction] };
-      })
-    );
-
-    setBurstSeed((s) => s + 1);
-  };
-
-  const onTranslate = async (messageId: string): Promise<void> => {
-    const m = (messages ?? []).find((x) => x.id === messageId);
-    if (!m) {
-      return;
-    }
-
-    try {
-      const prompt = buildLLMPrompt`Translate to English, return text only: "${m.content}"`;
-      const translated = await llmService.llm(prompt, 'gpt-4o-mini');
-
-      setMessages((cur) =>
-        (cur ?? []).map((x) =>
-          x.id === messageId
-            ? {
-              ...x,
-              metadata: {
-                ...x.metadata,
-                translation: {
-                  originalLang: 'auto',
-                  targetLang: 'en',
-                  translatedText: translated,
-                },
-              },
-            }
-            : x
-        )
-      );
-
-      toast.success('Message translated!');
-    } catch (e) {
-      const info = parseLLMError(e);
-      const err = e instanceof Error ? e : new Error(String(e));
-      logger.error('Translation failed', err, { technicalMessage: info.technicalMessage });
-      toast.error('Translation failed', { description: info.userMessage, duration: 5000 });
-    }
-  };
-
-  return { onSend, onReaction, onTranslate };
-}
+import type { InputRef } from '@/components/ui/input';
 
 export interface AdvancedChatWindowProps {
   room: ChatRoom;
@@ -198,19 +45,26 @@ export default function AdvancedChatWindow({
   onBack,
 }: AdvancedChatWindowProps): JSX.Element {
   const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, []);
-  const [inputValue, setInputValue] = useState('');
-  const [showStickers, setShowStickers] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
   const [awayMode, setAwayMode] = useStorage<boolean>(`away-mode-${currentUserId}`, false);
   const [scrollFabVisible, setScrollFabVisible] = useState(false);
   const [previousBadgeCount, setPreviousBadgeCount] = useState(0);
-  const [burstSeed, setBurstSeed] = useState(0);
-  const [confettiSeed, setConfettiSeed] = useState(0);
   const [lastIncomingText, setLastIncomingText] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const {
+    templatesStyle,
+    templateButtonHover,
+    templateButtonTap,
+    stickerButtonHover,
+    stickerButtonTap,
+    emojiButtonHover,
+    emojiButtonTap,
+    sendButtonHover,
+    sendButtonTap,
+  } = useInteractiveAnimations();
 
   const { enqueue } = useOutbox({
     sendFn: async (payload: unknown) => {
@@ -240,6 +94,29 @@ export default function AdvancedChatWindow({
     realtimeClient: realtime,
   });
 
+  const {
+    onSend,
+    onReaction,
+    onTranslate,
+    inputValue,
+    setInputValue,
+    showStickers,
+    setShowStickers,
+    showTemplates,
+    setShowTemplates,
+    confettiSeed,
+    burstSeed,
+  } = useMessageHandling(
+    messages,
+    (value) => void setMessages(value),
+    currentUserId,
+    currentUserName,
+    enqueue,
+    room,
+    typingSend,
+    currentUserAvatar
+  );
+
   useEffect(() => {
     const lastMsg = messages?.[messages.length - 1];
     if (lastMsg && lastMsg.senderId !== currentUserId && lastMsg.content) {
@@ -256,7 +133,7 @@ export default function AdvancedChatWindow({
   useEffect(() => {
     const c = messages?.length ?? 0;
     if (c > previousBadgeCount) {
-      setPreviousBadgeCount(previousBadgeCount);
+      setPreviousBadgeCount(c);
     }
   }, [messages, previousBadgeCount]);
 
@@ -285,22 +162,6 @@ export default function AdvancedChatWindow({
       el.removeEventListener('scroll', onScroll);
     };
   }, [messages]);
-
-  const { onSend, onReaction, onTranslate } = useMessageHandling(
-    messages,
-    setMessages,
-    currentUserId,
-    currentUserName,
-    currentUserAvatar,
-    enqueue,
-    room,
-    setInputValue,
-    setShowStickers,
-    setShowTemplates,
-    typingSend,
-    setConfettiSeed,
-    setBurstSeed
-  );
 
   const scrollFab = useScrollFabMagnetic({
     enabled: true,
@@ -350,7 +211,7 @@ export default function AdvancedChatWindow({
           typingUsers={typingUsers}
           awayMode={awayMode}
           {...(onBack ? { onBack } : {})}
-          onToggleAwayMode={() => setAwayMode(!awayMode)}
+          onToggleAwayMode={() => void setAwayMode(!awayMode)}
           onBlockUser={() => {
             // TODO: Implement block user functionality
             toast.info('Block user functionality not yet implemented');
@@ -409,56 +270,40 @@ export default function AdvancedChatWindow({
       <ChatErrorBoundary>
         <ChatInputBar
           inputValue={inputValue}
-          setInputValue={(v) => {
-            setInputValue(v);
-            typingChange(v);
-          }}
           inputRef={inputRef}
-          showStickers={showStickers}
-          setShowStickers={setShowStickers}
           showTemplates={showTemplates}
           setShowTemplates={setShowTemplates}
-          isRecordingVoice={isRecordingVoice}
-          setIsRecordingVoice={setIsRecordingVoice}
-          onSend={onSend}
-          onSuggestion={(s: SmartSuggestion) => {
-            onSend(s.text, 'text');
+          showStickers={showStickers}
+          setShowStickers={setShowStickers}
+          isRecording={isRecordingVoice}
+          onStartRecording={() => setIsRecordingVoice(true)}
+          onVoiceCancel={() => setIsRecordingVoice(false)}
+          onVoiceRecorded={(blob, duration, waveform) => {
+            onSend('', 'voice', [], {
+              voiceNote: {
+                duration,
+                waveform,
+              },
+            });
+            setIsRecordingVoice(false);
           }}
-          onShareLocation={() => {
-            if ('geolocation' in navigator) {
-              navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                  onSend('Shared my location', 'location', undefined, {
-                    location: {
-                      lat: pos.coords.latitude,
-                      lng: pos.coords.longitude,
-                      latitude: pos.coords.latitude,
-                      longitude: pos.coords.longitude,
-                      address: 'Current Location',
-                    },
-                  });
-                  toast.success('Location shared!');
-                },
-                () => {
-                  toast.error('Unable to access location');
-                }
-              );
-            } else {
-              toast.error('Geolocation not supported');
-            }
+          onInputChange={typingChange}
+          onSendMessage={onSend}
+          onUseTemplate={(template) => {
+            setInputValue(template);
+            inputRef.current?.focus();
           }}
-          onTemplate={(t: MessageTemplate) => {
-            setInputValue(t.content || t.text || '');
-          }}
-          onQuickReaction={(emoji) => {
-            const lastMessage = messages?.[messages.length - 1];
-            if (lastMessage && lastMessage.senderId !== currentUserId) {
-              onReaction(lastMessage.id, emoji);
-            }
-          }}
+          templatesStyle={templatesStyle}
+          templateButtonHover={templateButtonHover}
+          templateButtonTap={templateButtonTap}
+          stickerButtonHover={stickerButtonHover}
+          stickerButtonTap={stickerButtonTap}
+          emojiButtonHover={emojiButtonHover}
+          emojiButtonTap={emojiButtonTap}
+          sendButtonHover={sendButtonHover}
+          sendButtonTap={sendButtonTap}
         />
       </ChatErrorBoundary>
     </div>
   );
 }
-

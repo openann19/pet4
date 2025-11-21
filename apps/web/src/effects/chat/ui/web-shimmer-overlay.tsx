@@ -1,55 +1,49 @@
 'use client';
 import { MotionView } from "@petspark/motion";
+import React from 'react';
+import { useShimmerSweep } from '@/effects/reanimated/use-shimmer-sweep';
+import { cn } from '@/lib/utils';
 
-import React from 'react'
-import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useShimmerSweep } from '@/effects/reanimated/use-shimmer-sweep'
-import { cn } from '@/lib/utils'
-import { useReducedMotion } from '../core/reduced-motion'
 
 export interface WebShimmerOverlayProps {
-  width: number
-  height?: number
-  streakWidth?: number
-  duration?: number
-  delay?: number
-  opacityRange?: [number, number]
-  paused?: boolean
-  easing?: (value: number) => number
-  className?: string
-  children?: React.ReactNode
+  width: number;
+  height?: number;
+  streakWidth?: number;
+  duration?: number;
+  delay?: number;
+  opacityRange?: [number, number];
+  paused?: boolean;
+  easing?: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
-const DEFAULT_HEIGHT = 24
-const DEFAULT_STREAK = 0.35
+const DEFAULT_HEIGHT = 24;
+const DEFAULT_STREAK = 0.35;
 
 export function WebShimmerOverlay({
   width,
   height = DEFAULT_HEIGHT,
   streakWidth = DEFAULT_STREAK,
   duration,
-  delay,
   opacityRange,
-  paused,
   easing,
   className,
   children,
 }: WebShimmerOverlayProps): React.ReactElement | null {
   if (width <= 0) {
-    return null
+    return null;
   }
 
-  const reducedMotion = useReducedMotion()
   const shimmer = useShimmerSweep({
     width,
     duration,
-    delay,
-    opacityRange,
-    paused: paused ?? reducedMotion,
+    minOpacity: opacityRange?.[0],
+    maxOpacity: opacityRange?.[1],
     easing,
-  })
+  });
 
-  const streakWidthPx = Math.max(width * streakWidth, 1)
+  const streakWidthPx = Math.max(width * streakWidth, 1);
 
   return (
     <MotionView
@@ -57,7 +51,8 @@ export function WebShimmerOverlay({
     >
       <MotionView
         style={{
-          ...(shimmer.animatedStyle as AnimatedStyle),
+          x: shimmer.x,
+          opacity: shimmer.opacity,
           width: streakWidthPx,
           height,
         }}
@@ -69,4 +64,4 @@ export function WebShimmerOverlay({
   );
 }
 
-export default WebShimmerOverlay
+export default WebShimmerOverlay;

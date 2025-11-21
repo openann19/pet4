@@ -77,7 +77,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   const closeButtonHoverStyle = useAnimatedStyle(() => {
     const scale = closeButtonHover.scale.get();
     const translateY = closeButtonHover.translateY.get();
-    const transforms: { [key: string]: number | string | MotionValue<number> }[] = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     transforms.push({ translateY });
     return {
@@ -87,7 +87,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
 
   const _closeButtonTapStyle = useAnimatedStyle(() => {
     const scale = closeButtonTap.scale.get();
-    const transforms: { [key: string]: number | string | MotionValue<number> }[] = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     return {
       transform: transforms,
@@ -114,7 +114,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   const _dialogStyle = useAnimatedStyle(() => {
     const scale = dialogScale.value;
     const translateY = dialogY.value;
-    const transforms: { [key: string]: number | string | MotionValue<number> }[] = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     transforms.push({ translateY });
     return {

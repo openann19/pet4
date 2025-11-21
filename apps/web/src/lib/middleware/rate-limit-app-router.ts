@@ -7,9 +7,9 @@
 
 import type { NextRequest } from '@/types/next-server';
 import { NextResponse } from '@/types/next-server';
-import type { TokenBucket} from '../rate-limit/token-bucket';
+import type { TokenBucket } from '../rate-limit/token-bucket';
 import { createTokenBucket } from '../rate-limit/token-bucket';
-import type { QuotaService} from '../rate-limit/quota-service';
+import type { QuotaService } from '../rate-limit/quota-service';
 import { createQuotaService } from '../rate-limit/quota-service';
 
 export interface RateLimitConfig {
@@ -245,7 +245,7 @@ export const rateLimitConfigs = {
 /**
  * Get identifier from request (user ID, IP, or anonymous)
  */
-export async function getRequestIdentifier(request: NextRequest): Promise<string> {
+export function getRequestIdentifier(request: NextRequest): string {
   // Try to get user ID from header
   const userId = request.headers.get('x-user-id');
   if (userId) {
@@ -253,7 +253,8 @@ export async function getRequestIdentifier(request: NextRequest): Promise<string
   }
 
   // Try to get IP address
-  const ip = request.ip ?? request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip');
+  const ip =
+    request.ip ?? request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip');
   if (ip) {
     return ip.split(',')[0]?.trim() ?? 'anonymous';
   }

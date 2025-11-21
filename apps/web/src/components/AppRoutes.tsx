@@ -6,7 +6,7 @@ import type { AppRoutesProps } from './AppRoutes.types';
 
 const WelcomeScreen = lazy(() => import('@/components/WelcomeScreen'));
 const AuthScreen = lazy(() => import('@/components/AuthScreen'));
-const MainAppLayout = lazy(() => import('@/components/layout/MainAppLayout').then(module => ({ default: module.MainAppLayout })));
+const MainAppLayout = lazy(() => import('@/components/layout/MainAppLayout'));
 
 export function AppRoutesContent({
   appState,

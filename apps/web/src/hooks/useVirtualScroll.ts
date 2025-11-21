@@ -122,7 +122,7 @@ export function useInfiniteScroll(
   const containerRef = useRef<HTMLDivElement>(null);
   const isLoadingRef = useRef(false);
 
-  const handleScroll = useCallback(async () => {
+  const handleScroll = useCallback(() => {
     if (disabled || isLoadingRef.current) return;
 
     const container = containerRef.current;
@@ -132,12 +132,9 @@ export function useInfiniteScroll(
 
     if (bottomDistance < threshold) {
       isLoadingRef.current = true;
-
-      try {
-        await callback();
-      } finally {
+      void Promise.resolve(callback()).finally(() => {
         isLoadingRef.current = false;
-      }
+      });
     }
   }, [callback, threshold, disabled]);
 

@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { CallOfferSignal, CallSession, CallStatus, CallSignal } from '@petspark/core';
+import type { CallSession as LocalCallSession, CallStatus as LocalCallStatus, Call, CallParticipant } from '@/lib/call-types';
 import { useWebRtcCall } from '@/hooks/calls/useWebRtcCall';
 import { useAuth } from '@/contexts/AuthContext';
 import { IncomingCallBanner } from '@/components/calls/IncomingCallBanner';
@@ -18,6 +19,68 @@ import { CallOverlay } from '@/components/calls/CallOverlay';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CallContext');
+
+// Adapter functions to convert core types to local types
+function adaptCallSession(coreSession: CallSession | null): LocalCallSession | null {
+  if (!coreSession) return null;
+
+  // Create a basic Call object from the core session
+  const call: Call = {
+    id: coreSession.id,
+    roomId: coreSession.id, // Use session id as room id
+    type: 'video', // Default to video, could be enhanced later
+    initiatorId: coreSession.direction === 'outgoing' ? coreSession.localParticipant.id : (coreSession.remoteParticipant?.id ?? ''),
+    recipientId: coreSession.direction === 'incoming' ? coreSession.localParticipant.id : (coreSession.remoteParticipant?.id ?? ''),
+    status: adaptCallStatus(coreSession.status),
+    startTime: coreSession.startedAt,
+    endTime: coreSession.endedAt,
+    duration: coreSession.endedAt ? new Date(coreSession.endedAt).getTime() - new Date(coreSession.startedAt).getTime() : 0,
+    quality: 'good', // Default quality
+    videoQuality: '720p', // Default video quality
+  };
+
+  // Adapt participants
+  const localParticipant: CallParticipant = {
+    id: coreSession.localParticipant.id,
+    name: coreSession.localParticipant.displayName,
+    avatar: coreSession.localParticipant.avatarUrl ?? undefined,
+    isMuted: coreSession.localParticipant.microphone === 'muted',
+    isVideoEnabled: coreSession.localParticipant.camera === 'enabled',
+  };
+
+  const remoteParticipant: CallParticipant = coreSession.remoteParticipant ? {
+    id: coreSession.remoteParticipant.id,
+    name: coreSession.remoteParticipant.displayName,
+    avatar: coreSession.remoteParticipant.avatarUrl ?? undefined,
+    isMuted: coreSession.remoteParticipant.microphone === 'muted',
+    isVideoEnabled: coreSession.remoteParticipant.camera === 'enabled',
+  } : {
+    id: 'unknown',
+    name: 'Unknown',
+    isMuted: false,
+    isVideoEnabled: false,
+  };
+
+  return {
+    call,
+    localParticipant,
+    remoteParticipant,
+    isMinimized: false, // Default to not minimized
+    videoQuality: '720p', // Default video quality
+  };
+}
+
+function adaptCallStatus(coreStatus: CallStatus): LocalCallStatus {
+  switch (coreStatus) {
+    case 'idle': return 'idle';
+    case 'ringing': return 'ringing';
+    case 'connecting': return 'connecting';
+    case 'in-call': return 'active';
+    case 'ended': return 'ended';
+    case 'failed': return 'failed';
+    default: return 'idle';
+  }
+}
 
 export interface CallProviderProps {
   readonly signalingUrl: string;
@@ -84,7 +147,7 @@ function IncomingBannerWrapper({
   onReject: (reason?: string) => void;
 }): React.JSX.Element {
   const callerName =
-    session?.direction === 'incoming' ? session.remoteParticipant.displayName : 'Incoming call';
+    session?.direction === 'incoming' ? (session.remoteParticipant?.displayName ?? 'Incoming call') : 'Incoming call';
   return (
     <IncomingCallBanner
       open={
@@ -132,10 +195,10 @@ function OverlayWrapper({
   return (
     <CallOverlay
       open={overlayOpen && !!session && status !== 'idle'}
-      session={session}
+      session={adaptCallSession(session)}
       localStream={localStream}
       remoteStream={remoteStream}
-      status={status}
+      status={adaptCallStatus(status)}
       isMuted={isMuted}
       isCameraOff={isCameraOff}
       isScreenSharing={isScreenSharing}
@@ -172,7 +235,7 @@ export function CallProvider({
     toggleCamera,
     toggleScreenShare,
   } = useWebRtcCall({
-    signaling: { url: signalingUrl, token: signalingToken, userId: user?.id ?? '' },
+    signaling: { baseUrl: signalingUrl, token: signalingToken },
     localUserId: user?.id ?? '',
     localDisplayName: user?.displayName ?? user?.email ?? 'Unknown User',
     localAvatarUrl: user?.avatarUrl ?? null,

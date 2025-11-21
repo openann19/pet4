@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import React from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { TrendUp, Heart, Users, Clock, Star, Lightning } from '@phosphor-icons/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,43 +25,44 @@ export function DetailedPetAnalytics({
   compatibilityScore,
   matchReasons,
 }: DetailedPetAnalyticsProps) {
-    const _uiConfig = useUIConfig();
-    const stats = [
-        {
-          icon: Heart,
-          label: 'Overall Rating',
-          value: trustProfile?.overallRating?.toFixed(1) ?? 'N/A',
-          max: '5.0',
-          color: 'text-primary',
-          bgColor: 'bg-primary/10',
-          borderColor: 'border-primary/20',
-        },
-        {
-          icon: Users,
-          label: 'Playdates',
-          value: trustProfile?.playdateCount ?? 0,
-          suffix: ' completed',
-          color: 'text-secondary',
-          bgColor: 'bg-secondary/10',
-          borderColor: 'border-secondary/20',
-        },
-        {
-          icon: Lightning,
-          label: 'Response Rate',
-          value: `${Math.round((trustProfile?.responseRate ?? 0) * 100)}%`,
-          color: 'text-accent',
-          bgColor: 'bg-accent/10',
-          borderColor: 'border-accent/20',
-        },
-        {
-          icon: Clock,
-          label: 'Avg Response',
-          value: trustProfile?.responseTime ?? 'N/A',
-          color: 'text-lavender',
-          bgColor: 'bg-lavender/10',
-          borderColor: 'border-lavender/20',
-        },
-      ];
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const _uiConfig = useUIConfig();
+  const stats = [
+    {
+      icon: Heart,
+      label: 'Overall Rating',
+      value: trustProfile?.overallRating?.toFixed(1) ?? 'N/A',
+      max: '5.0',
+      color: 'text-primary',
+      bgColor: 'bg-primary/10',
+      borderColor: 'border-primary/20',
+    },
+    {
+      icon: Users,
+      label: 'Playdates',
+      value: trustProfile?.playdateCount ?? 0,
+      suffix: ' completed',
+      color: 'text-secondary',
+      bgColor: 'bg-secondary/10',
+      borderColor: 'border-secondary/20',
+    },
+    {
+      icon: Lightning,
+      label: 'Response Rate',
+      value: `${Math.round((trustProfile?.responseRate ?? 0) * 100)}%`,
+      color: 'text-accent',
+      bgColor: 'bg-accent/10',
+      borderColor: 'border-accent/20',
+    },
+    {
+      icon: Clock,
+      label: 'Avg Response',
+      value: trustProfile?.responseTime ?? 'N/A',
+      color: 'text-lavender',
+      bgColor: 'bg-lavender/10',
+      borderColor: 'border-lavender/20',
+    },
+  ];
 
   const personalityTraits = pet.personality ?? [];
   const interests = pet.interests ?? [];
@@ -172,7 +173,7 @@ export function DetailedPetAnalytics({
               {[5, 4, 3, 2, 1].map((rating) => {
                 const count =
                   trustProfile.ratingBreakdown?.[
-                    rating as keyof typeof trustProfile.ratingBreakdown
+                  rating as keyof typeof trustProfile.ratingBreakdown
                   ] ?? 0;
                 const percentage =
                   trustProfile.totalReviews > 0 ? (count / trustProfile.totalReviews) * 100 : 0;
@@ -251,10 +252,8 @@ function AnimatedCard({ children, prefersReducedMotion = false }: { children: Re
       translateY.value = 0;
       return;
     }
-    const opacityTransition = withTiming(1, { duration: 400 });
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
-    const translateYTransition = withTiming(0, { duration: 400 });
-    animate(translateY, translateYTransition.target, translateYTransition.transition);
+    opacity.value = withTiming(1, { duration: 400 });
+    translateY.value = withTiming(0, { duration: 400 });
   }, [opacity, translateY, prefersReducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -272,10 +271,8 @@ function AnimatedListItem({ index, children }: { index: number; children: React.
   useEffect(() => {
     const delay = index * 100;
     setTimeout(() => {
-      const opacityTransition = withTiming(1, { duration: 300 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
-      const translateXTransition = withTiming(0, { duration: 300 });
-      animate(translateX, translateXTransition.target, translateXTransition.transition);
+      opacity.value = withTiming(1, { duration: 300 });
+      translateX.value = withTiming(0, { duration: 300 });
     }, delay);
   }, [index, opacity, translateX]);
 
@@ -299,10 +296,8 @@ function AnimatedStatCard({ index, children, prefersReducedMotion = false }: { i
     }
     const delay = index * 50;
     setTimeout(() => {
-      const opacityTransition = withTiming(1, { duration: 300 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
-      const scaleTransition = withTiming(1, { duration: 300 });
-      animate(scale, scaleTransition.target, scaleTransition.transition);
+      opacity.value = withTiming(1, { duration: 300 });
+      scale.value = withTiming(1, { duration: 300 });
     }, delay);
   }, [index, opacity, scale, prefersReducedMotion]);
 
@@ -326,10 +321,8 @@ function AnimatedBadge({ index, children, prefersReducedMotion = false }: { inde
     }
     const delay = index * 50;
     setTimeout(() => {
-      const opacityTransition = withTiming(1, { duration: 300 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
-      const scaleTransition = withTiming(1, { duration: 300 });
-      animate(scale, scaleTransition.target, scaleTransition.transition);
+      opacity.value = withTiming(1, { duration: 300 });
+      scale.value = withTiming(1, { duration: 300 });
     }, delay);
   }, [index, opacity, scale, prefersReducedMotion]);
 

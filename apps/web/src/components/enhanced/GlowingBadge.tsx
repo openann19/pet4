@@ -53,8 +53,8 @@ export function GlowingBadge({
   className,
   'aria-label': ariaLabel,
 }: GlowingBadgeProps): JSX.Element {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(0.8);
+  const _uiConfig = useUIConfig();
+  const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
   const pulseOpacity = useSharedValue(0.5);
 
@@ -67,10 +67,8 @@ export function GlowingBadge({
 
   useEffect(() => {
     try {
-      const scaleTransition = withTiming(1, { duration: 300 });
-      animate(scale, scaleTransition.target, scaleTransition.transition);
-      const opacityTransition = withTiming(1, { duration: 300 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
+      scale.value = withTiming(1, { duration: 300 });
+      opacity.value = withTiming(1, { duration: 300 });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to initialize badge animation', err, { variant });
@@ -84,15 +82,13 @@ export function GlowingBadge({
           withTiming(1, { duration: 1000 }),
           withTiming(0.5, { duration: 1000 })
         );
-        const repeatTransition = withRepeat(sequence, -1, true);
-        animate(pulseOpacity, repeatTransition.target, repeatTransition.transition);
+        pulseOpacity.value = withRepeat(sequence, -1, true);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to initialize pulse animation', err, { variant });
       }
     } else {
-      const opacityTransition = withTiming(1, { duration: 200 });
-      animate(pulseOpacity, opacityTransition.target, opacityTransition.transition);
+      pulseOpacity.value = withTiming(1, { duration: 200 });
     }
   }, [pulse, pulseOpacity, variant]);
 

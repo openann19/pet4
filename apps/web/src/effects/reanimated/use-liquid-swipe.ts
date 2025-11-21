@@ -79,11 +79,7 @@ export function useLiquidSwipe(options: UseLiquidSwipeOptions = {}) {
   }, [isDragging, threshold, damping, stiffness, velocity, onSwipeLeft, onSwipeRight]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { scale: scale.value },
-      { rotate: `${String(rotate.value ?? '')}deg` },
-    ],
+    transform: `translateX(${translateX.value}px) scale(${scale.value}) rotate(${rotate.value}deg)`,
   }));
 
   return {

@@ -8,3 +8,4 @@
  */
 
 export * from './use-status-ticks';
+export * from './use-message-status-motion';

@@ -4,6 +4,7 @@
  */
 
 import { MotionView } from '@petspark/motion'
+import type { MotionStyle, MotionValue } from '@petspark/motion'
 import { NavButton } from '@/components/navigation/NavButton'
 import {
   Sparkle,
@@ -21,16 +22,16 @@ interface AppNavigationProps {
   setCurrentView: (view: View) => void
   animations: {
     navBarAnimation: {
-      navStyle: unknown
-      shimmerStyle: unknown
+      navStyle: MotionStyle
+      shimmerStyle: MotionStyle
     }
     lostFoundAnimation: {
-      scale: unknown
-      translateY: unknown
-      iconScale: unknown
-      iconRotation: unknown
-      indicatorOpacity: unknown
-      indicatorWidth: unknown
+      scale: MotionValue<number>
+      translateY: MotionValue<number>
+      iconScale: MotionValue<number>
+      iconRotation: MotionValue<number>
+      indicatorOpacity: MotionValue<number>
+      indicatorWidth: MotionValue<number>
       handleHover: () => void
       handleLeave: () => void
       handlePress: () => void
@@ -123,13 +124,12 @@ export function AppNavigation({
           />
 
           <MotionView
-            className={`${String(NAV_BUTTON_BASE_CLASSES ?? '')} relative cursor-pointer ${
-              String(
-                currentView === 'lost-found'
-                  ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-              )
-            }`}
+            className={`${String(NAV_BUTTON_BASE_CLASSES ?? '')} relative cursor-pointer ${String(
+              currentView === 'lost-found'
+                ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+            )
+              }`}
             style={{
               scale: animations.lostFoundAnimation.scale,
               y: animations.lostFoundAnimation.translateY,
@@ -180,4 +180,3 @@ export function AppNavigation({
     </MotionView>
   )
 }
-

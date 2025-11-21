@@ -1,7 +1,13 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import { useMotionValue, animate, type MotionValue, type Variants as FramerVariants } from '@petspark/motion';
+import {
+  useMotionValue,
+  animate,
+  type MotionValue,
+  type Variants as FramerVariants,
+  type MotionStyle,
+} from '@petspark/motion';
 import {
   springConfigs,
   timingConfigs,
@@ -38,7 +44,6 @@ export interface UseMotionVariantsOptions {
   variants?: Variants;
   initial?: string | VariantDefinition;
   animate?: string | VariantDefinition;
-  exit?: string | VariantDefinition;
   transition?: VariantDefinition['transition'];
   enabled?: boolean;
 }
@@ -53,6 +58,7 @@ export interface UseMotionVariantsReturn {
   rotateY: MotionValue<number>;
   backgroundColor: MotionValue<string>;
   color: MotionValue<string>;
+  animatedStyle: MotionStyle;
   variants: FramerVariants;
   setVariant: (variant: string) => void;
   setCustomVariant: (variant: VariantDefinition) => void;
@@ -70,13 +76,14 @@ function getVariantValue(
   return key;
 }
 
-function applyTransition(
-  value: MotionValue<number | string>,
-  target: number | string,
+function applyTransition<T extends string | number>(
+  value: MotionValue<T>,
+  target: T | undefined,
   transition?: VariantDefinition['transition']
 ): void {
+  if (target === undefined) return;
   const delay = transition?.delay ?? 0;
-  const duration = transition?.duration ?? timingConfigs.smooth.duration;
+  const duration = transition?.duration;
 
   if (transition?.type === 'spring') {
     const springConfig = {
@@ -96,7 +103,7 @@ function applyTransition(
   } else {
     const timingConfig = {
       type: 'tween' as const,
-      duration: duration / 1000,
+      duration: (duration ?? timingConfigs.smooth.duration ?? 500) / 1000,
       ease: 'easeInOut' as const,
     };
     if (delay > 0) {
@@ -115,14 +122,12 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     variants = {},
     initial,
     animate,
-    exit,
     transition: defaultTransition,
     enabled = true,
   } = options;
 
   const initialVariant = getVariantValue(variants, initial, { opacity: 1, scale: 1 });
   const animateVariant = getVariantValue(variants, animate, { opacity: 1, scale: 1 });
-  const exitVariant = getVariantValue(variants, exit, { opacity: 0, scale: 0.95 });
 
   const opacity = useMotionValue(initialVariant.opacity ?? animateVariant.opacity ?? 1);
   const scale = useMotionValue(initialVariant.scale ?? animateVariant.scale ?? 1);
@@ -147,6 +152,18 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     initialVariant.backgroundColor ?? animateVariant.backgroundColor ?? 'transparent'
   );
   const color = useMotionValue(initialVariant.color ?? animateVariant.color ?? 'inherit');
+
+  const animatedStyle: MotionStyle = {
+    opacity,
+    scale,
+    x: translateX,
+    y: translateY,
+    rotate,
+    rotateX,
+    rotateY,
+    backgroundColor,
+    color,
+  };
 
   const applyVariant = useCallback(
     (variant: VariantDefinition) => {
@@ -224,13 +241,13 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
   );
 
   // Convert variants to Framer Motion format
-  const framerVariants: FramerVariants = {}
-  
+  const framerVariants: FramerVariants = {};
+
   for (const [key, variant] of Object.entries(variants)) {
-    const transition = variant.transition ?? defaultTransition
-    const delay = transition?.delay ?? 0
-    const duration = transition?.duration ?? timingConfigs.smooth.duration
-    
+    const transition = variant.transition ?? defaultTransition;
+    const delay = transition?.delay ?? 0;
+    const duration = transition?.duration;
+
     framerVariants[key] = {
       opacity: variant.opacity,
       scale: variant.scale,
@@ -241,21 +258,22 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
       rotateY: variant.rotateY,
       backgroundColor: variant.backgroundColor,
       color: variant.color,
-      transition: transition?.type === 'spring' 
-        ? {
-            type: 'spring',
-            stiffness: transition.stiffness ?? springConfigs.smooth.stiffness ?? 400,
-            damping: transition.damping ?? springConfigs.smooth.damping ?? 25,
-            mass: transition.mass ?? 1,
-            delay: delay / 1000,
-          }
-        : {
-            type: 'tween',
-            duration: duration / 1000,
-            ease: 'easeInOut',
-            delay: delay / 1000,
-          },
-    }
+      transition:
+        transition?.type === 'spring'
+          ? {
+              type: 'spring',
+              stiffness: transition.stiffness ?? springConfigs.smooth.stiffness ?? 400,
+              damping: transition.damping ?? springConfigs.smooth.damping ?? 25,
+              mass: transition.mass ?? 1,
+              delay: delay / 1000,
+            }
+          : {
+              type: 'tween',
+              duration: (duration ?? timingConfigs.smooth.duration ?? 500) / 1000,
+              ease: 'easeInOut',
+              delay: delay / 1000,
+            },
+    };
   }
 
   return {
@@ -268,6 +286,7 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     rotateY,
     backgroundColor,
     color,
+    animatedStyle,
     variants: framerVariants,
     setVariant,
     setCustomVariant,

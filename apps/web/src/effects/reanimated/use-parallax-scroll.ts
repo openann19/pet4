@@ -29,19 +29,21 @@ export function useParallaxScroll(options: UseParallaxScrollOptions = {}) {
     if (!enabled) return;
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => { window.removeEventListener('scroll', handleScroll); };
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [enabled, handleScroll]);
 
   const animatedStyle = useAnimatedStyle(() => {
     if (direction === 'vertical') {
       const translateY = -scrollY.value * speed;
       return {
-        transform: [{ translateY }],
+        transform: `translateY(${translateY}px)`,
       };
     } else {
       const translateX = -scrollX.value * speed;
       return {
-        transform: [{ translateX }],
+        transform: `translateX(${translateX}px)`,
       };
     }
   });
@@ -62,7 +64,9 @@ export function useParallaxLayers(layerCount = 3) {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => { window.removeEventListener('scroll', handleScroll); };
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [handleScroll]);
 
   const createLayerStyle = useCallback(
@@ -74,7 +78,7 @@ export function useParallaxLayers(layerCount = 3) {
         const scale = interpolate(scrollY.value, [0, 500], [1, 1 + depth * 0.1]);
 
         return {
-          transform: [{ translateY }, { scale }],
+          transform: `translateY(${translateY}px) scale(${scale})`,
         };
       });
     },

@@ -98,9 +98,8 @@ function ApplicationCard({
   return (
     <MotionView key={application._id} style={staggeredAnimation.itemStyle as unknown as MotionStyle}>
       <Card
-        className={`overflow-hidden transition-all duration-300 ${
-          application.status === 'pending' ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' : ''
-        }`}
+        className={`overflow-hidden transition-all duration-300 ${application.status === 'pending' ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' : ''
+          }`}
       >
         <CardHeader className="pb-3">
           <div className="flex items-start gap-4">
@@ -254,7 +253,7 @@ function ApplicationCard({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => { onToggleExpanded(application._id); }}
+            onClick={() => onToggleExpanded(application._id)}
             className="gap-2"
           >
             {isExpanded ? (
@@ -275,7 +274,7 @@ function ApplicationCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => { onReviewClick(application, 'reject'); }}
+                onClick={() => onReviewClick(application, 'reject')}
                 className="gap-2 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
               >
                 <XCircle size={16} weight="fill" />
@@ -283,7 +282,7 @@ function ApplicationCard({
               </Button>
               <Button
                 size="sm"
-                onClick={() => { onReviewClick(application, 'approve'); }}
+                onClick={() => onReviewClick(application, 'approve')}
                 className="gap-2 bg-green-600 hover:bg-green-700"
               >
                 <CheckCircle size={16} weight="fill" />
@@ -633,12 +632,12 @@ export default function AdoptionApplicationReview() {
                 <Input
                   placeholder="Search by applicant name, email, or pet name..."
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); }}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
-            <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as typeof activeTab); }}>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
               <TabsList>
                 <TabsTrigger value="all">
                   All{' '}
@@ -766,7 +765,7 @@ export default function AdoptionApplicationReview() {
                       : 'Explain why this application is being rejected...'
                   }
                   value={reviewNotes}
-                  onChange={(e) => { setReviewNotes(e.target.value); }}
+                  onChange={(e) => setReviewNotes(e.target.value)}
                   rows={4}
                 />
                 <p className="text-xs text-muted-foreground">
@@ -790,9 +789,7 @@ export default function AdoptionApplicationReview() {
               Cancel
             </Button>
             <Button
-              onClick={() => {
-                void handleSubmitReview();
-              }}
+              onClick={() => void handleSubmitReview()}
               disabled={isSubmitting}
               className={
                 reviewAction === 'approve'
@@ -809,6 +806,6 @@ export default function AdoptionApplicationReview() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 }

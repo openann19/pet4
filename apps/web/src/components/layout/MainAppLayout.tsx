@@ -10,7 +10,7 @@ import { AmbientAuroraBackground, ScrollProgressBar, PageChangeFlash } from '@/e
 import SeedDataInitializer from '@/components/SeedDataInitializer'
 import { BillingIssueBanner } from '@/components/payments/BillingIssueBanner'
 import QuickActionsMenu from '@/components/QuickActionsMenu'
-import { BottomNavBar } from '@/components/navigation/BottomNavBar'
+import BottomNavBar from '@/components/navigation/BottomNavBar'
 import { Toaster } from '@/components/ui/sonner'
 import { AppHeader } from './AppHeader'
 import { AppNavigation } from './AppNavigation'
@@ -18,17 +18,155 @@ import { AppMainContent } from './AppMainContent'
 import { AppModals } from './AppModals'
 import type { Playdate } from '@/lib/playdate-types'
 import type { View } from '@/lib/routes'
+import type { UseNavigationReturn } from '@/hooks/use-navigation'
+import type { MotionStyle, MotionValue } from '@petspark/motion'
+
+interface MainAppLayoutAnimations {
+  headerAnimation: {
+    headerStyle: MotionStyle
+    shimmerStyle: MotionStyle
+  }
+  logoButtonHover: {
+    scale: MotionValue<number>
+    translateY: MotionValue<number>
+    handleEnter: () => void
+    handleLeave: () => void
+  }
+  logoAnimation: {
+    style: MotionStyle
+  }
+  logoGlow: {
+    style: MotionStyle
+  }
+  headerButtonsContainer: {
+    opacity: MotionValue<number>
+    x: MotionValue<number>
+  }
+  headerButton1: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  headerButton2: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  headerButton3: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  headerButton4: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  headerButton5: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  headerButton6: {
+    buttonStyle: MotionStyle
+    handleEnter: () => void
+    handleLeave: () => void
+    handleTap: () => void
+  }
+  languageIconRotation: {
+    style: MotionStyle
+  }
+  loadingTransition: {
+    style: MotionStyle
+  }
+  pageTransition: {
+    style: MotionStyle
+  }
+  generateProfilesModal: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  generateProfilesContent: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  statsModal: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  statsContent: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  mapModal: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  mapContent: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  adminModal: {
+    opacity: MotionValue<number>
+    scale: MotionValue<number>
+    y: MotionValue<number>
+  }
+  adminContent: {
+    style: MotionStyle
+  }
+  themeContent: {
+    style: MotionStyle
+  }
+  closeButtonBounce: {
+    scale: MotionValue<number>
+  }
+  navBarAnimation: {
+    navStyle: MotionStyle
+    shimmerStyle: MotionStyle
+  }
+  lostFoundAnimation: {
+    scale: MotionValue<number>
+    translateY: MotionValue<number>
+    iconScale: MotionValue<number>
+    iconRotation: MotionValue<number>
+    indicatorOpacity: MotionValue<number>
+    indicatorWidth: MotionValue<number>
+    handleHover: () => void
+    handleLeave: () => void
+    handlePress: () => void
+  }
+}
 
 interface MainAppLayoutProps {
   currentView: View
   setCurrentView: (view: View) => void
-  navigation: {
-    navigateToView: (view: View) => void
-    navigate?: (config: any) => void
-    routes?: any
+  navigation: UseNavigationReturn
+  animations: MainAppLayoutAnimations
+  t: {
+    app: {
+      title: string
+    }
+    nav: {
+      discover: string
+      matches: string
+      chat: string
+      community?: string
+      adoption?: string
+      'lost-found'?: string
+      profile: string
+    }
   }
-  animations: any
-  t: any
   theme: string
   toggleTheme: () => void
   language: string
@@ -50,7 +188,7 @@ interface MainAppLayoutProps {
   NAV_BUTTON_BASE_CLASSES: string
 }
 
-export function MainAppLayout({
+export default function MainAppLayout({
   currentView,
   setCurrentView,
   navigation,
@@ -164,4 +302,3 @@ export function MainAppLayout({
     </div>
   )
 }
-

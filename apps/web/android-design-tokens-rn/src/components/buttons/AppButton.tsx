@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  ActivityIndicator,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
+import { TouchableOpacity, Text, View, ActivityIndicator, StyleSheet } from 'react-native';
+import type {
+  GestureResponderEvent,
   TouchableOpacityProps,
-  type GestureResponderEvent,
+  TextStyle,
+  ViewStyle,
 } from 'react-native';
-import { useHaptics } from '@/hooks/use-haptics';
+import { useHaptics } from '../../hooks/use-haptics';
 
 /**
  * Button Size Enum

@@ -2,74 +2,156 @@
  * Send "Warp" Effect Hook
  *
  * Creates a premium send animation with:
- * - Cubic bezier slide out (220ms)
- * - CSS glow trail with bloom effect (140ms decay)
+ * - Composer spawn state (opacity 0, translateY motionTheme distance, scale press)
+ * - Deterministic lift-and-slide intro that respects reduced/off motion
+ * - Optional glow/bloom trail tied to motion preferences
  * - Haptic feedback (Selection at send, Light when status flips to "sent")
  *
  * Location: apps/web/src/effects/chat/bubbles/use-send-warp.ts
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
-  Easing,
-  useAnimatedStyle,
   useSharedValue,
   withTiming,
+  withSpring,
+  withSequence,
+  Easing,
+  type MotionStyle,
   type SharedValue,
 } from '@petspark/motion';
-import { isTruthy } from '@petspark/shared';
+import { motionTheme } from '@/config/motionTheme';
+import type { PresenceMotion } from '@/effects/reanimated/types';
+import {
+  useMotionPreferences,
+  type MotionHookOptions,
+} from '@/effects/reanimated/useMotionPreferences';
 import { triggerHaptic } from '../core/haptic-manager';
-import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
-import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
 
-/**
- * Cubic bezier easing: (0.17, 0.84, 0.44, 1)
- * Custom easing for send warp slide
- */
-const SEND_WARP_EASING = Easing.bezier(0.17, 0.84, 0.44, 1);
-
-/**
- * Send warp effect options
- */
-export interface UseSendWarpOptions {
+export interface UseSendWarpOptions extends MotionHookOptions {
   enabled?: boolean;
+  spawnOffsetY?: number;
+  spawnScale?: number;
+  travelX?: number;
   onComplete?: () => void;
   onStatusChange?: (status: 'sending' | 'sent') => void;
+  enableGlow?: boolean;
 }
 
-/**
- * Send warp effect return type
- */
-export interface UseSendWarpReturn {
+export interface UseSendWarpReturn extends PresenceMotion<MotionStyle> {
   translateX: SharedValue<number>;
-  opacity: SharedValue<number>;
+  translateY: SharedValue<number>;
+  scale: SharedValue<number>;
+  opacityValue: SharedValue<number>;
   glowOpacity: SharedValue<number>;
+  glowScale: SharedValue<number>;
   bloomIntensity: SharedValue<number>;
-  animatedStyle: AnimatedStyle;
   trigger: () => void;
   triggerStatusChange: (status: 'sent') => void;
 }
 
 const DEFAULT_ENABLED = true;
-const SLIDE_DURATION = 220; // ms
-const GLOW_DECAY_DURATION = 140; // ms
+const DEFAULT_TRAVEL_X = 76;
 
 export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn {
-  const { enabled = DEFAULT_ENABLED, onComplete, onStatusChange } = options;
+  const {
+    enabled = DEFAULT_ENABLED,
+    spawnOffsetY = motionTheme.distance.listStaggerY ?? 12,
+    spawnScale = motionTheme.scale.press,
+    travelX = DEFAULT_TRAVEL_X,
+    onComplete,
+    onStatusChange,
+    enableGlow = true,
+    preferences: overridePreferences,
+    respectPreferences = true,
+  } = options;
 
-  const reducedMotion = useReducedMotionSV();
-  const { scaleDuration } = useDeviceRefreshRate();
   const { visual, animation, feedback } = useUIConfig();
+  const preferences = overridePreferences ?? useMotionPreferences();
+  const isOff = respectPreferences && preferences.isOff;
+  const isReduced = respectPreferences && preferences.isReduced && !preferences.isOff;
+
   const translateX = useSharedValue(0);
-  const opacity = useSharedValue(1);
+  const translateY = useSharedValue(spawnOffsetY);
+  const scale = useSharedValue(spawnScale);
+  const opacityValue = useSharedValue(isOff ? 1 : 0);
   const glowOpacity = useSharedValue(0);
+  const glowScale = useSharedValue(1);
   const bloomIntensity = useSharedValue(0);
+
+  const animatedStyle = useMemo<MotionStyle>(() => {
+    return {
+      opacity: opacityValue,
+      x: translateX,
+      y: translateY,
+      scale,
+    } satisfies MotionStyle;
+  }, [opacityValue, scale, translateX, translateY]);
 
   const effectIdRef = useRef<string | null>(null);
   const hasTriggeredRef = useRef(false);
+
+  const resetValues = useCallback(() => {
+    translateX.value = 0;
+    translateY.value = isOff ? 0 : spawnOffsetY;
+    scale.value = isOff ? 1 : spawnScale;
+    opacityValue.value = isOff ? 1 : 0;
+    glowOpacity.value = 0;
+    glowScale.value = 1;
+    bloomIntensity.value = 0;
+  }, [
+    bloomIntensity,
+    glowOpacity,
+    glowScale,
+    isOff,
+    opacityValue,
+    scale,
+    spawnOffsetY,
+    spawnScale,
+    translateX,
+    translateY,
+  ]);
+
+  useEffect(() => {
+    resetValues();
+    hasTriggeredRef.current = false;
+  }, [enabled, resetValues]);
+
+  const runGlowTrail = useCallback(() => {
+    if (!enableGlow || !visual.enableGlow || isReduced) {
+      return;
+    }
+
+    const glowDurationMs = motionTheme.durations.fast;
+    const bloomDurationMs = motionTheme.durations.normal;
+
+    glowOpacity.value = withSequence(
+      withTiming(1, { duration: glowDurationMs, easing: Easing.out(Easing.ease) }),
+      withTiming(0, { duration: glowDurationMs, easing: Easing.in(Easing.ease) })
+    );
+
+    glowScale.value = withSequence(
+      withTiming(1.05, { duration: glowDurationMs, easing: Easing.out(Easing.ease) }),
+      withTiming(1, { duration: glowDurationMs, easing: Easing.in(Easing.ease) })
+    );
+
+    if (animation.showParticles) {
+      bloomIntensity.value = withSequence(
+        withTiming(0.9, { duration: bloomDurationMs, easing: Easing.out(Easing.cubic) }),
+        withTiming(0, { duration: bloomDurationMs, easing: Easing.in(Easing.cubic) })
+      );
+    }
+  }, [
+    animation.showParticles,
+    enableGlow,
+    glowOpacity,
+    glowScale,
+    isReduced,
+    visual.enableGlow,
+    bloomIntensity,
+  ]);
 
   const trigger = useCallback(() => {
     if (!enabled || hasTriggeredRef.current) {
@@ -78,102 +160,96 @@ export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn
 
     hasTriggeredRef.current = true;
 
-    // Check reduced motion
-    const isReducedMotion = reducedMotion.value;
-    // Use adaptive duration scaling based on device refresh rate
-    const baseSlideDuration = scaleDuration(SLIDE_DURATION);
-    const slideDuration = getReducedMotionDuration(baseSlideDuration, isReducedMotion);
-
-    // Log effect start
     const effectId = logEffectStart('send-warp', {
-      reducedMotion: isReducedMotion,
+      reducedMotion: isReduced,
+      level: preferences.level,
     });
     effectIdRef.current = effectId;
 
-    // Trigger haptic: Selection at send (only if haptics enabled)
     if (feedback.haptics) {
       triggerHaptic('selection');
     }
 
-    // Slide out animation
-    translateX.value = withTiming(
-      100, // slide right
-      {
-        duration: slideDuration,
-        easing: isReducedMotion ? Easing.linear : SEND_WARP_EASING,
+    if (isOff) {
+      opacityValue.value = 1;
+      translateY.value = 0;
+      scale.value = 1;
+      onComplete?.();
+      if (effectId) {
+        logEffectEnd(effectId, { durationMs: 0, success: true });
       }
-    );
+      return;
+    }
 
-    // Fade out
-    opacity.value = withTiming(0, {
-      duration: slideDuration,
-      easing: isReducedMotion ? Easing.linear : SEND_WARP_EASING,
+    const spring = isReduced ? motionTheme.spring.settled : motionTheme.spring.bouncy;
+    const liftDurationMs = isReduced ? motionTheme.durations.fast : motionTheme.durations.normal;
+    const travelDurationMs = isReduced
+      ? motionTheme.durations.fast
+      : (motionTheme.durations.slow ?? motionTheme.durations.normal);
+    const travelDistance = isReduced ? travelX * 0.5 : travelX;
+
+    opacityValue.value = withTiming(1, {
+      duration: liftDurationMs,
+      easing: Easing.out(Easing.cubic),
     });
 
-    // Glow trail animation (only if not reduced motion and glow enabled)
-    if (!isReducedMotion && visual.enableGlow) {
-      // Use adaptive duration scaling for glow animations
-      const glowFadeInDuration = scaleDuration(50);
-      const glowDecayDuration = scaleDuration(GLOW_DECAY_DURATION);
-      const bloomPulseDuration = scaleDuration(60);
-      const bloomDecayDuration = scaleDuration(160);
+    translateY.value = withTiming(0, {
+      duration: liftDurationMs,
+      easing: Easing.out(Easing.cubic),
+    });
 
-      glowOpacity.value = withTiming(
-        1,
-        {
-          duration: glowFadeInDuration,
-          easing: Easing.out(Easing.ease),
-        },
-        () => {
-          // Fade out after peak
-          glowOpacity.value = withTiming(0, {
-            duration: glowDecayDuration,
-            easing: Easing.in(Easing.ease),
-          });
-        }
-      );
+    scale.value = withSpring(1, {
+      damping: spring.damping,
+      stiffness: spring.stiffness,
+    });
 
-      // Bloom animation - quick pulse then decay (only if particles enabled)
-      if (animation.showParticles) {
-        bloomIntensity.value = withTiming(
-          0.9,
-          {
-            duration: bloomPulseDuration,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            // Decay
-            bloomIntensity.value = withTiming(0, {
-              duration: bloomDecayDuration,
-              easing: Easing.in(Easing.ease),
-            });
-          }
-        );
-      }
-    }
+    translateX.value = withSequence(
+      withTiming(travelDistance, {
+        duration: travelDurationMs,
+        easing: Easing.out(Easing.cubic),
+      }),
+      withTiming(0, {
+        duration: motionTheme.durations.fast,
+        easing: Easing.inOut(Easing.ease),
+      })
+    );
 
-    // Call onComplete after animation
-    if (isTruthy(onComplete)) {
+    runGlowTrail();
+
+    const totalDuration = Math.max(liftDurationMs, travelDurationMs);
+
+    if (onComplete) {
       setTimeout(() => {
         onComplete();
-      }, slideDuration);
+      }, totalDuration);
     }
 
-    // Log effect end
     setTimeout(() => {
-      if (isTruthy(effectIdRef.current)) {
+      if (effectIdRef.current) {
         logEffectEnd(effectIdRef.current, {
-          durationMs: slideDuration,
+          durationMs: totalDuration,
           success: true,
         });
         effectIdRef.current = null;
       }
-    }, slideDuration);
-  }, [enabled, reducedMotion, scaleDuration, visual, animation, feedback, translateX, opacity, glowOpacity, bloomIntensity, onComplete]);
+    }, totalDuration);
+  }, [
+    enabled,
+    feedback.haptics,
+    isOff,
+    isReduced,
+    onComplete,
+    preferences.level,
+    runGlowTrail,
+    scale,
+    translateX,
+    translateY,
+    travelX,
+    opacityValue,
+  ]);
 
   const triggerStatusChange = useCallback(
     (status: 'sent') => {
-      // Trigger haptic: Light when status flips to "sent" (only if haptics enabled)
       if (feedback.haptics) {
         triggerHaptic('light');
       }
@@ -182,27 +258,22 @@ export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn
     [feedback.haptics, onStatusChange]
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-      opacity: opacity.value,
-    };
-  }) as AnimatedStyle;
-
-  // Reset hasTriggeredRef when component unmounts or enabled changes
-  useEffect(() => {
-    if (!enabled) {
-      hasTriggeredRef.current = false;
-    }
-  }, [enabled]);
-
   return {
-    translateX,
-    opacity,
-    glowOpacity,
-    bloomIntensity,
+    kind: 'presence',
+    isVisible: !isOff,
     animatedStyle,
+    translateX,
+    translateY,
+    scale,
+    opacityValue,
+    glowOpacity,
+    glowScale,
+    bloomIntensity,
     trigger,
     triggerStatusChange,
   };
+}
+
+export function useMessageSendMotion(options: UseSendWarpOptions = {}): UseSendWarpReturn {
+  return useSendWarp(options);
 }

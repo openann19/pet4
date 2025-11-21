@@ -95,7 +95,7 @@ export function useBubbleTilt(options: UseBubbleTiltOptions = {}): UseBubbleTilt
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled) {
       return {
-        transform: [{ perspective }, { rotateX: '0deg' }, { rotateY: '0deg' }],
+        transform: `perspective(${perspective}px) rotateX(0deg) rotateY(0deg)`,
       };
     }
 
@@ -104,11 +104,7 @@ export function useBubbleTilt(options: UseBubbleTiltOptions = {}): UseBubbleTilt
     const shadowOpacity = interpolate(shadowDepth.value, [0, 1], [0.2, 0.4], Extrapolation.CLAMP);
 
     return {
-      transform: [
-        { perspective },
-        { rotateX: `${rotateX.value}deg` },
-        { rotateY: `${rotateY.value}deg` },
-      ],
+      transform: `perspective(${perspective}px) rotateX(${rotateX.value}deg) rotateY(${rotateY.value}deg)`,
       boxShadow: `0 ${shadowDepth.value * 4}px ${shadowBlur}px ${shadowSpread}px rgba(0, 0, 0, ${shadowOpacity})`,
     };
   });

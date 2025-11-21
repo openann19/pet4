@@ -1,6 +1,6 @@
 'use client';;
 import React, { useCallback, useRef, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -66,10 +66,8 @@ export function PremiumTabs({
         indicatorPosition.value = newPosition;
         indicatorWidth.value = newWidth;
       } else {
-        const positionTransition = withSpring(newPosition, springConfigs.smooth);
-        animate(indicatorPosition, positionTransition.target, positionTransition.transition);
-        const widthTransition = withSpring(newWidth, springConfigs.smooth);
-        animate(indicatorWidth, widthTransition.target, widthTransition.transition);
+        indicatorPosition.value = withSpring(newPosition, springConfigs.smooth);
+        indicatorWidth.value = withSpring(newWidth, springConfigs.smooth);
       }
     }
   }, [tabs, activeTab, indicatorPosition, indicatorWidth, prefersReducedMotion]);
@@ -84,7 +82,7 @@ export function PremiumTabs({
   }, [updateIndicator]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: indicatorPosition.get() }],
+    transform: `translateX(${indicatorPosition.get()}px)`,
     width: indicatorWidth.get(),
   }));
 
@@ -150,26 +148,26 @@ export function PremiumTabs({
                   'disabled:pointer-events-none disabled:opacity-50',
                   sizes[size],
                   variant === 'default' &&
-                    cn(
-                      'rounded-md',
-                      isActive
-                        ? 'bg-(--background) text-(--text-primary) shadow-sm'
-                        : 'text-(--text-muted) hover:text-(--text-primary)'
-                    ),
+                  cn(
+                    'rounded-md',
+                    isActive
+                      ? 'bg-(--background) text-(--text-primary) shadow-sm'
+                      : 'text-(--text-muted) hover:text-(--text-primary)'
+                  ),
                   variant === 'pills' &&
-                    cn(
-                      'rounded-full px-4',
-                      isActive
-                        ? 'bg-(--primary) text-(--primary-foreground)'
-                        : 'bg-(--surface) text-(--text-muted) hover:bg-(--surface)/80'
-                    ),
+                  cn(
+                    'rounded-full px-4',
+                    isActive
+                      ? 'bg-(--primary) text-(--primary-foreground)'
+                      : 'bg-(--surface) text-(--text-muted) hover:bg-(--surface)/80'
+                  ),
                   variant === 'underline' &&
-                    cn(
-                      'border-b-2 border-transparent',
-                      isActive
-                        ? 'border-(--primary) text-(--primary)'
-                        : 'text-(--text-muted) hover:text-(--text-primary) hover:border-(--text-muted)/50'
-                    )
+                  cn(
+                    'border-b-2 border-transparent',
+                    isActive
+                      ? 'border-(--primary) text-(--primary)'
+                      : 'text-(--text-muted) hover:text-(--text-primary) hover:border-(--text-muted)/50'
+                  )
                 )}
               >
                 {tab.icon && <span>{tab.icon}</span>}

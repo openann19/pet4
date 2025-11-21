@@ -2,6 +2,22 @@ import { config } from './config';
 import { generateCorrelationId } from './utils';
 import type { APIError } from './contracts';
 
+class APIRequestError extends Error {
+  code: string;
+  correlationId: string;
+  timestamp: string;
+  details?: unknown;
+
+  constructor({ code, message, correlationId, timestamp, details }: APIError) {
+    super(message);
+    this.name = 'APIRequestError';
+    this.code = code;
+    this.correlationId = correlationId;
+    this.timestamp = timestamp;
+    this.details = details;
+  }
+}
+
 export class APIClient {
   private baseURL: string;
   private accessToken: string | null = null;
@@ -41,26 +57,28 @@ export class APIClient {
           correlationId,
           timestamp: new Date().toISOString(),
         }));
-        throw error;
+        throw new APIRequestError(error);
       }
 
       if (response.status === 204) {
         return undefined as T;
       }
 
-      return await response.json();
+      const data = (await response.json()) as unknown as T;
+      return data;
     } catch (error) {
-      if ((error as APIError).code) {
+      if (error instanceof APIRequestError) {
         throw error;
       }
 
-      throw {
+      const fallback: APIError = {
         code: 'NETWORK_ERROR',
         message: 'Network request failed',
         details: error,
         correlationId,
         timestamp: new Date().toISOString(),
-      } as APIError;
+      };
+      throw new APIRequestError(fallback);
     }
   }
 

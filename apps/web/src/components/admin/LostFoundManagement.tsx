@@ -205,16 +205,16 @@ export function LostFoundManagement() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Breed</p>
-                      <p className="font-medium">{selectedAlert.petSummary.breed || 'Mixed'}</p>
+                      <p className="font-medium">{selectedAlert.petSummary.breed ?? 'Mixed'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Color</p>
-                      <p className="font-medium">{selectedAlert.petSummary.color || 'Unknown'}</p>
+                      <p className="font-medium">{selectedAlert.petSummary.color ?? 'Unknown'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Size</p>
                       <p className="font-medium capitalize">
-                        {selectedAlert.petSummary.size || 'Unknown'}
+                        {selectedAlert.petSummary.size ?? 'Unknown'}
                       </p>
                     </div>
                   </div>
@@ -304,15 +304,17 @@ export function LostFoundManagement() {
                       <p className="text-sm text-muted-foreground">Notifications Sent</p>
                       <p className="font-medium">{selectedAlert.notificationsSent}</p>
                     </div>
-                  </div>
+                </div>
 
-                  <div className="border-t pt-4">
-                    <Button
-                      onClick={() => handleArchiveAlert(selectedAlert.id)}
-                      variant="outline"
-                      disabled={selectedAlert.status === 'archived'}
-                      className="w-full"
-                    >
+                <div className="border-t pt-4">
+                  <Button
+                    onClick={() => {
+                      void handleArchiveAlert(selectedAlert.id);
+                    }}
+                    variant="outline"
+                    disabled={selectedAlert.status === 'archived'}
+                    className="w-full"
+                  >
                       <XCircle size={18} className="mr-2" />
                       Archive Alert
                     </Button>

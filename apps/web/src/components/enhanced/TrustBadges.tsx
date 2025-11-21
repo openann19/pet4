@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
+import { useSharedValue, withTiming, useAnimatedStyle } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -85,21 +85,20 @@ interface BadgeAnimatedProps {
 }
 
 function BadgeAnimated({ index, animated, sizeConfig, config, Icon }: BadgeAnimatedProps) {
-    const _uiConfig = useUIConfig();
-    const staggered = useStaggeredItem({ index, staggerDelay: 50 });
+  const _uiConfig = useUIConfig();
+  const staggered = useStaggeredItem({ index, staggerDelay: 50 });
   const scale = useSharedValue(animated ? 0.8 : 1);
 
   useEffect(() => {
     if (animated) {
-      const scaleTransition = withTiming(1, { duration: 300 });
-      animate(scale, scaleTransition.target, scaleTransition.transition);
+      scale.value = withTiming(1, { duration: 300 });
     }
   }, [animated, scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: staggered.opacity.get(),
-      transform: [{ translateY: staggered.y.get() }, { scale: scale.get() }],
+      transform: `translateY(${staggered.y.get()}px) scale(${scale.get()})`,
     };
   });
 
@@ -167,8 +166,7 @@ export function TrustScore({ score, size = 'md', showLabel = false }: TrustScore
 
   useEffect(() => {
     const targetDash = (score / 100) * circumference;
-    const dashTransition = withTiming(targetDash, { duration: 1000 });
-    animate(strokeDasharray, dashTransition.target, dashTransition.transition);
+    strokeDasharray.value = withTiming(targetDash, { duration: 1000 });
   }, [score, circumference, strokeDasharray]);
 
   const getScoreColor = (scoreValue: number) => {

@@ -16,6 +16,9 @@ import type { Playdate } from '@/lib/playdate-types';
 import type { Location } from '@/lib/maps/types';
 import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils';
 import { format } from 'date-fns';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('PlaydateMap');
 
 interface PlaydateMapProps {
   playdates: Playdate[];
@@ -179,11 +182,10 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                           transition={{ delay: index * 0.1 }}
                         >
                           <Card
-                            className={`p-3 cursor-pointer hover:shadow-lg transition-all ${
-                              String(selectedPlaydate?.id === playdate.id
-                                                                      ? 'ring-2 ring-primary bg-primary/5'
-                                                                      : 'hover:bg-accent/5' ?? '')
-                            }`}
+                            className={`p-3 cursor-pointer hover:shadow-lg transition-all ${String(selectedPlaydate?.id === playdate.id
+                              ? 'ring-2 ring-primary bg-primary/5'
+                              : 'hover:bg-accent/5')
+                              }`}
                             onClick={() => { handleSelectPlaydate(playdate); }}
                           >
                             <div className="flex items-start gap-2 mb-2">
@@ -251,11 +253,10 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card
-                    className={`p-4 cursor-pointer hover:shadow-lg transition-all ${
-                      String(selectedPlaydate?.id === playdate.id
-                                                      ? 'ring-2 ring-primary bg-primary/5'
-                                                      : 'hover:bg-accent/5' ?? '')
-                    }`}
+                    className={`p-4 cursor-pointer hover:shadow-lg transition-all ${String(selectedPlaydate?.id === playdate.id
+                      ? 'ring-2 ring-primary bg-primary/5'
+                      : 'hover:bg-accent/5')
+                      }`}
                     onClick={() => { handleSelectPlaydate(playdate); }}
                   >
                     <div className="flex items-start gap-3">

@@ -356,12 +356,8 @@ class AccessibilityManager {
   }
 
   destroy(): void {
-    if (this.liveRegion && this.liveRegion.parentNode) {
-      this.liveRegion.parentNode.removeChild(this.liveRegion);
-    }
-    if (this.assertiveRegion && this.assertiveRegion.parentNode) {
-      this.assertiveRegion.parentNode.removeChild(this.assertiveRegion);
-    }
+    this.liveRegion?.parentNode?.removeChild(this.liveRegion);
+    this.assertiveRegion?.parentNode?.removeChild(this.assertiveRegion);
     this.focusHistory = [];
   }
 }

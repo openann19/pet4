@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { motion } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { filterActiveStories } from '@petspark/shared';
@@ -26,9 +26,10 @@ function StoryRingComponent({
   const hasActiveStories = activeStories.length > 0;
 
   return (
-    <MotionView
-      as="button"
+    <motion.button
       onClick={onClick}
+      role="button"
+      tabIndex={0}
       className="flex flex-col items-center gap-2 shrink-0"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
@@ -64,7 +65,7 @@ function StoryRingComponent({
       <span className="text-xs font-medium truncate w-16 text-center">
         {isOwn ? 'Your Story' : petName}
       </span>
-    </MotionView>
+    </motion.button>
   );
 }
 

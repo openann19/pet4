@@ -60,7 +60,7 @@ function QuickActionItem({ icon, label, onClick, color, index }: QuickActionItem
   const animatedStyle = useAnimatedStyle(() => {
     const translateX = itemX.value + hoverX.value;
     const scale = itemScale.value * hoverScale.value;
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ translateX });
     transforms.push({ scale });
     return {

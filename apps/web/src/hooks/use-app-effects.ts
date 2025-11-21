@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { errorTracking } from '@/lib/error-tracking';
 import { isAgeVerified } from '@/components/compliance';
-import type { User } from '@/lib/user-types';
+import type { User as AuthUser } from '@/lib/contracts';
 
-export function useAppEffects(user: User | null) {
+export function useAppEffects(user: Pick<AuthUser, 'id'> | null) {
   const [ageVerified, setAgeVerified] = useState(isAgeVerified());
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -15,8 +15,12 @@ export function useAppEffects(user: User | null) {
   }, [user]);
 
   useEffect(() => {
-    const handleOnline = () => { setIsOnline(true); };
-    const handleOffline = () => { setIsOnline(false); };
+    const handleOnline = () => {
+      setIsOnline(true);
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -30,21 +34,21 @@ export function useAppEffects(user: User | null) {
   useEffect(() => {
     // Initialize performance monitoring in production
     if (import.meta.env.NODE_ENV === 'production') {
-      void Promise.all([
-        import('@/lib/monitoring/performance'),
-        import('@/lib/logger')
-      ]).then(([{ initPerformanceMonitoring }, { createLogger }]) => {
-        const logger = createLogger('PerformanceMonitoring');
-        initPerformanceMonitoring((metric) => {
-          // Log performance metrics (could send to analytics service)
-          if (metric.rating === 'poor') {
-            logger.warn(`Poor ${String(metric.name ?? '')}: ${String(metric.value ?? '')}ms`, { metric });
-          }
-        });
-      });
+      void Promise.all([import('@/lib/monitoring/performance'), import('@/lib/logger')]).then(
+        ([{ initPerformanceMonitoring }, { createLogger }]) => {
+          const logger = createLogger('PerformanceMonitoring');
+          initPerformanceMonitoring((metric) => {
+            // Log performance metrics (could send to analytics service)
+            if (metric.rating === 'poor') {
+              logger.warn(`Poor ${String(metric.name ?? '')}: ${String(metric.value ?? '')}ms`, {
+                metric,
+              });
+            }
+          });
+        }
+      );
     }
   }, []);
 
   return { ageVerified, setAgeVerified, isOnline };
 }
-

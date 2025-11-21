@@ -125,6 +125,35 @@ export function SplitButton({
     setIsOpen(false);
   }, []);
 
+  const mapVariant = (v: SplitButtonProps['variant']): 'default' | 'secondary' | 'outline' | 'ghost' | 'gradient' => {
+    switch (v) {
+      case 'primary':
+        return 'default';
+      case 'secondary':
+        return 'secondary';
+      case 'accent':
+        return 'gradient';
+      case 'ghost':
+        return 'ghost';
+      case 'gradient':
+        return 'gradient';
+      default:
+        return 'default';
+    }
+  };
+
+  const mapSize = (s: SplitButtonProps['size']): 'sm' | 'default' | 'lg' => {
+    switch (s) {
+      case 'sm':
+        return 'sm';
+      case 'lg':
+        return 'lg';
+      case 'md':
+      default:
+        return 'default';
+    }
+  };
+
   return (
     <div
       className={cn('inline-flex items-stretch rounded-xl overflow-hidden', className)}
@@ -139,8 +168,8 @@ export function SplitButton({
         style={{ scale: hoverLift.scale, y: hoverLift.translateY }}
       >
         <PremiumButton
-          variant={variant}
-          size={size}
+          variant={mapVariant(variant)}
+          size={mapSize(size)}
           onClick={handleMainClick}
           disabled={disabled || mainAction.loading === true}
           loading={mainAction.loading === true}

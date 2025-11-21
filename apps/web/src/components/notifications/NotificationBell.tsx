@@ -97,7 +97,7 @@ function BellIconView({ hasNewNotification, unreadCount }: BellIconViewProps) {
 
   const iconStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotate.value}deg` }, { scale: scale.value }],
+      transform: [{ rotate: `${rotate.value}deg`, scale: scale.value }],
       opacity: opacity.value,
     };
   }) as AnimatedStyle;

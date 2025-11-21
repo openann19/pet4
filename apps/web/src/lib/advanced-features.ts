@@ -26,16 +26,6 @@ interface WakeLockSentinel extends EventTarget {
   type: 'screen';
 }
 
-interface NavigatorWithBattery {
-  getBattery?(): Promise<BatteryManager>;
-  connection?: NetworkInformation;
-  wakeLock?: WakeLockManager;
-}
-
-interface WindowWithNavigator {
-  navigator: Navigator & NavigatorWithBattery;
-}
-
 export function useIntersectionObserver(
   callback: () => void,
   options: IntersectionObserverInit = {}
@@ -438,7 +428,12 @@ export function useWakeLock() {
   useEffect(() => {
     return () => {
       if (wakeLockRef.current) {
-        wakeLockRef.current.release();
+        void wakeLockRef.current.release().catch((err) => {
+          logger.error(
+            'Wake Lock release failed',
+            err instanceof Error ? err : new Error(String(err))
+          );
+        });
       }
     };
   }, []);

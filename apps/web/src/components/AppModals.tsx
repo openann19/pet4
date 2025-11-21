@@ -47,6 +47,18 @@ export function AppModals({
   onCloseAdminConsole,
   onCloseThemeSettings,
 }: AppModalsProps) {
+  const adminContentStyle = {
+    opacity: animations.adminContent.opacity,
+    scale: animations.adminContent.scale,
+    y: animations.adminContent.y,
+  };
+
+  const themeContentStyle = {
+    opacity: animations.themeContent.opacity,
+    scale: animations.themeContent.scale,
+    y: animations.themeContent.y,
+  };
+
   return (
     <>
       {showGenerateProfiles && (
@@ -131,7 +143,7 @@ export function AppModals({
           className="fixed inset-0 z-50 bg-background"
         >
           <MotionView
-            style={animations.adminContent.style}
+            style={adminContentStyle}
             className="h-full w-full"
           >
             <Suspense fallback={<LoadingState />}>
@@ -145,7 +157,7 @@ export function AppModals({
         <Dialog open={showThemeSettings} onOpenChange={onCloseThemeSettings}>
           <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
             <DialogTitle className="sr-only">Ultra Theme Settings</DialogTitle>
-            <MotionView style={animations.themeContent.style}>
+            <MotionView style={themeContentStyle}>
               <Suspense fallback={<LoadingState />}>
                 <UltraThemeSettings />
               </Suspense>
@@ -156,4 +168,3 @@ export function AppModals({
     </>
   );
 }
-

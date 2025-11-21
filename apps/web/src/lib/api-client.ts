@@ -1,13 +1,13 @@
-import { ENV } from '@/config/env'
+import { ENV } from '@/config/env';
 
-const BASE_URL = ENV.VITE_API_URL?.replace(/\/$/, '') ?? ''
+const BASE_URL = ENV.VITE_API_URL?.replace(/\/$/, '') ?? '';
 
 function buildUrl(path: string): string {
   if (/^https?:/u.test(path)) {
-    return path
+    return path;
   }
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  return `${BASE_URL}${normalizedPath}`
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${BASE_URL}${normalizedPath}`;
 }
 
 export interface PaginatedResponse {
@@ -98,100 +98,129 @@ const _DEFAULT_RETRY_CONFIG: RetryConfig = {
 };
 
 export interface ApiResponse<T> {
-	data: T;
-	status: number;
-	headers?: Record<string, string>;
+  data: T;
+  status: number;
+  headers?: Record<string, string>;
 }
 
 export interface RequestOptions {
-	headers?: Record<string, string>;
-	// Optional: allow credentials for same-origin cookies
-	credentials?: RequestCredentials;
+  headers?: Record<string, string>;
+  // Optional: allow credentials for same-origin cookies
+  credentials?: RequestCredentials;
 }
 
 async function handleJsonResponse<T>(response: Response): Promise<ApiResponse<T>> {
-	const contentType = response.headers.get('content-type') ?? '';
-	let parsed: unknown = null;
-	if (contentType.includes('application/json')) {
-		parsed = await response.json();
-	}
-	if (!response.ok) {
-		const message = typeof parsed === 'object' && parsed !== null && 'message' in (parsed as Record<string, unknown>)
-			? String((parsed as Record<string, unknown>).message)
-			: `Request failed with status ${response.status}`;
-		throw new Error(message);
-	}
-	return {
-		data: parsed as T,
-		status: response.status,
-		headers: Object.fromEntries(response.headers.entries()),
-	};
+  const contentType = response.headers.get('content-type') ?? '';
+  let parsed: unknown = null;
+  if (contentType.includes('application/json')) {
+    parsed = await response.json();
+  }
+  if (!response.ok) {
+    const message =
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'message' in (parsed as Record<string, unknown>)
+        ? String((parsed as Record<string, unknown>).message)
+        : `Request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+  return {
+    data: parsed as T,
+    status: response.status,
+    headers: Object.fromEntries(response.headers.entries()),
+  };
 }
 
 export class APIClient {
-	static async get<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(buildUrl(url), {
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				...options.headers,
-			},
-			credentials: options.credentials ?? 'same-origin',
-		});
-		return handleJsonResponse<T>(response);
-	}
+  static async get<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const response = await fetch(buildUrl(url), {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        ...options.headers,
+      },
+      credentials: options.credentials ?? 'same-origin',
+    });
+    return handleJsonResponse<T>(response);
+  }
 
-	static async post<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(buildUrl(url), {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				...options.headers,
-			},
-			body: JSON.stringify(body),
-			credentials: options.credentials ?? 'same-origin',
-		});
-		return handleJsonResponse<T>(response);
-	}
+  static async post<T>(
+    url: string,
+    body: unknown,
+    options: RequestOptions = {}
+  ): Promise<ApiResponse<T>> {
+    const response = await fetch(buildUrl(url), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      body: JSON.stringify(body),
+      credentials: options.credentials ?? 'same-origin',
+    });
+    return handleJsonResponse<T>(response);
+  }
 
-	static async patch<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(buildUrl(url), {
-			method: 'PATCH',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				...options.headers,
-			},
-			body: JSON.stringify(body),
-			credentials: options.credentials ?? 'same-origin',
-		});
-		return handleJsonResponse<T>(response);
-	}
+  static async patch<T>(
+    url: string,
+    body: unknown,
+    options: RequestOptions = {}
+  ): Promise<ApiResponse<T>> {
+    const response = await fetch(buildUrl(url), {
+      method: 'PATCH',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      body: JSON.stringify(body),
+      credentials: options.credentials ?? 'same-origin',
+    });
+    return handleJsonResponse<T>(response);
+  }
 
-	static async put<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(buildUrl(url), {
-			method: 'PUT',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-				...options.headers,
-			},
-			body: JSON.stringify(body),
-			credentials: options.credentials ?? 'same-origin',
-		});
-		return handleJsonResponse<T>(response);
-	}
+  static async put<T>(
+    url: string,
+    body: unknown,
+    options: RequestOptions = {}
+  ): Promise<ApiResponse<T>> {
+    const response = await fetch(buildUrl(url), {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      body: JSON.stringify(body),
+      credentials: options.credentials ?? 'same-origin',
+    });
+    return handleJsonResponse<T>(response);
+  }
 
-	static async delete<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(buildUrl(url), {
-			method: 'DELETE',
-			headers: {
-				'Accept': 'application/json',
-				...options.headers,
-			},
-			credentials: options.credentials ?? 'same-origin',
-		});
-		return handleJsonResponse<T>(response);
-	}
+  static async delete<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
+    const response = await fetch(buildUrl(url), {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        ...options.headers,
+      },
+      credentials: options.credentials ?? 'same-origin',
+    });
+    return handleJsonResponse<T>(response);
+  }
+
+  // Token management methods
+  private static accessToken: string | null = null;
+  private static refreshToken: string | null = null;
+
+  static setTokens(accessToken: string, refreshToken?: string): void {
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken ?? null;
+  }
+
+  static logout(): void {
+    this.accessToken = null;
+    this.refreshToken = null;
+  }
 }

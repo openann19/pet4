@@ -1,8 +1,7 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, type AnimatedStyle } from '@petspark/motion';
 import { useEffect, useRef } from 'react';
-import type { AnimatedStyle } from './animated-view';
 
 export interface UseExpandCollapseOptions {
   isExpanded: boolean;
@@ -40,13 +39,13 @@ export function useExpandCollapse(options: UseExpandCollapseOptions): UseExpandC
       maxHeight: height.value === 1 ? maxHeightRef.current : 0,
       opacity: height.value,
     };
-  }) as AnimatedStyle;
+  });
 
   const opacityStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     heightStyle,

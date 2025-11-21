@@ -99,6 +99,20 @@ export class CallSignalingClient {
     }
   }
 
+  /**
+   * Internal helper for tests to inspect selected internals without
+   * exposing them as part of the public API surface.
+   */
+  getDebugInternalsForTests(): {
+    handlers: Set<CallSignalHandler>
+    buildUrl: () => string
+  } {
+    return {
+      handlers: this.handlers,
+      buildUrl: () => this.buildUrl(),
+    }
+  }
+
   private buildUrl(): string {
     const { url, token, userId } = this.config
     const u = new URL(url)

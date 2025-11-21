@@ -33,7 +33,7 @@ export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
 
     return {
       opacity,
-      transform: [{ perspective }, { rotateY: `${rotateY.value}deg` }],
+      transform: `perspective(${perspective}px) rotateY(${rotateY.value}deg)`,
       backfaceVisibility: 'hidden',
     };
   });
@@ -43,7 +43,7 @@ export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
 
     return {
       opacity,
-      transform: [{ perspective }, { rotateY: `${rotateY.value + 180}deg` }],
+      transform: `perspective(${perspective}px) rotateY(${rotateY.value + 180}deg)`,
       backfaceVisibility: 'hidden',
     };
   });

@@ -16,13 +16,13 @@ export interface AppConfig {
 const ENV_CONFIGS: Record<Environment, AppConfig> = {
   dev: {
     ENV: 'dev',
-    API_BASE_URL: 'http://localhost:3000/api',
+    API_BASE_URL: 'http://localhost:3001/api',
     WS_URL: 'ws://localhost:3000',
-    CDN_URL: 'http://localhost:3000/cdn',
+    CDN_URL: 'http://localhost:3001/cdn',
     MEDIA_UPLOAD_PROVIDER: 's3',
     AUTH_ISSUER: 'pawfectmatch-dev',
     SENTRY_DSN: '',
-    FEATURE_FLAGS_ENDPOINT: 'http://localhost:3000/api/features',
+    FEATURE_FLAGS_ENDPOINT: 'http://localhost:3001/api/features',
     BUILD_VERSION: '1.0.0-dev',
     COMMIT_SHA: 'local',
   },

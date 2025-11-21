@@ -39,13 +39,7 @@ export type {
 // Filters
 export { useFilters } from './use-filters';
 export { FILTER_PRESETS, getPresetsByCategory, getPresetById } from './filter-presets';
-export type {
-  FilterOptions,
-  FilterPreset,
-  FilterCategory,
-  FilterParams,
-  LUT,
-} from './use-filters';
+export type { FilterOptions, FilterPreset, FilterCategory, FilterParams, LUT } from './use-filters';
 
 // Video timeline
 export { useVideoTimeline } from './use-video-timeline';
@@ -91,8 +85,9 @@ export type {
 
 // Main editor orchestrator
 export { useMediaEditor } from './use-media-editor';
-export type {
-  MediaEditorOptions,
-  EditorState,
-  EditorPreset,
-} from './use-media-editor';
+export type { MediaEditorOptions, EditorState, EditorPreset } from './use-media-editor';
+
+// Extracted Hooks
+export { useMediaLoader } from './use-media-loader';
+export { useEditingOperations } from './use-editing-operations';
+export { usePresets } from './use-presets';

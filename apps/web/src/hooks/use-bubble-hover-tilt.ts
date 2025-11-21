@@ -80,11 +80,7 @@ export function useBubbleHoverTilt(
     const shadowRadius = interpolate(glowOpacity.value, [0, 1], [0, 24], Extrapolation.CLAMP);
 
     return {
-      transform: [
-        { rotateX: `${tiltY.value}deg` },
-        { rotateY: `${-tiltX.value}deg` },
-        { translateZ: `${lift.value}px` },
-      ],
+      transform: `rotateX(${tiltY.value}deg) rotateY(${-tiltX.value}deg) translateZ(${lift.value}px)`,
       boxShadow: `0 ${Math.abs(lift.value)}px ${shadowRadius}px rgba(59, 130, 246, ${glowOpacity.value * 0.4})`,
     };
   });

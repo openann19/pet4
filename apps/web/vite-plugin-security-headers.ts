@@ -15,11 +15,15 @@ export function securityHeadersPlugin(): Plugin {
         res.setHeader('X-XSS-Protection', '1; mode=block');
         res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
         res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
-        
+
         // HSTS - only in production (check via env var)
-        const isProduction = process.env.VITE_ENVIRONMENT === 'production' || process.env.NODE_ENV === 'production';
+        const isProduction =
+          process.env.VITE_ENVIRONMENT === 'production' || process.env.NODE_ENV === 'production';
         if (isProduction) {
-          res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+          res.setHeader(
+            'Strict-Transport-Security',
+            'max-age=31536000; includeSubDomains; preload'
+          );
         }
 
         // Content Security Policy
@@ -29,11 +33,11 @@ export function securityHeadersPlugin(): Plugin {
           'wss://api.pawfectmatch.com',
           'https://api.stripe.com',
           'https://api.mapbox.com',
-        ]
+        ];
 
         // Permit local API only during development previews
         if (!isProduction) {
-          connectSources.push('http://localhost:3000')
+          connectSources.push('http://localhost:3000', 'http://localhost:3001');
         }
 
         const csp = [
@@ -48,7 +52,7 @@ export function securityHeadersPlugin(): Plugin {
           "frame-ancestors 'none'",
           "base-uri 'self'",
           "form-action 'self'",
-          "upgrade-insecure-requests"
+          'upgrade-insecure-requests',
         ].join('; ');
 
         res.setHeader('Content-Security-Policy', csp);
@@ -58,4 +62,3 @@ export function securityHeadersPlugin(): Plugin {
     },
   };
 }
-

@@ -81,7 +81,9 @@ export function TranslationButton({
       type="button"
       size="sm"
       variant="ghost"
-      onClick={handleTranslate}
+      onClick={() => {
+        void handleTranslate();
+      }}
       disabled={isTranslating}
       className={cn('rounded-full', className)}
       aria-label={translatedText ? 'Toggle translation' : 'Translate message'}
@@ -91,4 +93,3 @@ export function TranslationButton({
     </Button>
   );
 }
-

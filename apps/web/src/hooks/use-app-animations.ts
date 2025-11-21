@@ -19,7 +19,7 @@ import {
   useStaggeredContainer,
 } from '@/effects/reanimated';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
-import type { View } from '@/hooks/use-app-navigation';
+import type { View } from '@/lib/routes';
 
 interface UseAppAnimationsOptions {
   currentView: View;
@@ -61,7 +61,15 @@ export interface UseAppAnimationsReturn {
 }
 
 export function useAppAnimations(options: UseAppAnimationsOptions): UseAppAnimationsReturn {
-  const { currentView, language, showGenerateProfiles, showStats, showMap, showAdminConsole, showThemeSettings } = options;
+  const {
+    currentView,
+    language,
+    showGenerateProfiles,
+    showStats,
+    showMap,
+    showAdminConsole,
+    showThemeSettings,
+  } = options;
 
   const lostFoundAnimation = useNavButtonAnimation({
     isActive: currentView === 'lost-found',

@@ -3,7 +3,7 @@
  * Simple wave animation using Framer Motion for web platform.
  */
 
-import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
+import { useMotionValue, animate, type MotionValue, type MotionStyle } from '@petspark/motion';
 import { useEffect } from 'react';
 
 export interface UseWaveAnimationOptions {
@@ -18,6 +18,7 @@ export interface UseWaveAnimationReturn {
   x: MotionValue<number>;
   y: MotionValue<number>;
   progress: MotionValue<number>;
+  animatedStyle: MotionStyle;
 }
 
 export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWaveAnimationReturn {
@@ -33,6 +34,11 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
+  const animatedStyle: MotionStyle = {
+    x,
+    y,
+  };
+
   useEffect(() => {
     if (!enabled) return;
 
@@ -43,7 +49,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
       onUpdate: (latest) => {
         const phase = latest * Math.PI * 2 * frequency;
         const wave = Math.sin(phase) * amplitude;
-        
+
         if (direction === 'horizontal') {
           x.set(wave);
           y.set(0);
@@ -61,6 +67,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
     x,
     y,
     progress,
+    animatedStyle,
   };
 }
 

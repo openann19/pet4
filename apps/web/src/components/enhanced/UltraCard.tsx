@@ -39,13 +39,13 @@ export function UltraCard({
   className,
   ...props
 }: UltraCardProps) {
-    const _uiConfig = useUIConfig();
-    const reveal = useUltraCardReveal({
-        index,
-        enabled: enableReveal,
-        delay: 0,
-        rotationIntensity: 12,
-      });
+  const _uiConfig = useUIConfig();
+  const reveal = useUltraCardReveal({
+    index,
+    enabled: enableReveal,
+    delay: 0,
+    rotationIntensity: 12,
+  });
 
   const magnetic = useMagneticHover({
     strength: 0.2,
@@ -98,24 +98,24 @@ export function UltraCard({
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
           className="relative"
         >
-          <MotionView
-            style={enableHoverLift ? hoverLift.animatedStyle : enableTilt ? tilt.animatedStyle : undefined}
-          >
-            <div
-              className={cn(
-                'bg-card border border-border rounded-xl shadow-lg transition-shadow duration-300',
-                'hover:shadow-2xl',
-                className
-              )}
-              {...props}
-            >
-              {enableGlow && (
-                <MotionView style={glow.animatedStyle}>
-                  <div className="absolute inset-0 rounded-xl pointer-events-none" />
-                </MotionView>
-              )}
-              <div className="relative z-10">{children}</div>
-            </div>
+          <MotionView style={enableTilt ? tilt.animatedStyle : undefined}>
+            <MotionView style={enableHoverLift ? hoverLift.animatedStyle : undefined}>
+              <div
+                className={cn(
+                  'bg-card border border-border rounded-xl shadow-lg transition-shadow duration-300',
+                  'hover:shadow-2xl',
+                  className
+                )}
+                {...props}
+              >
+                {enableGlow && (
+                  <MotionView style={glow.animatedStyle}>
+                    <div className="absolute inset-0 rounded-xl pointer-events-none" />
+                  </MotionView>
+                )}
+                <div className="relative z-10">{children}</div>
+              </div>
+            </MotionView>
           </MotionView>
         </div>
       </MotionView>

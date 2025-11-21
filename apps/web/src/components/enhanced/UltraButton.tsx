@@ -86,7 +86,6 @@ export function UltraButton({
   const prefersReducedMotion = usePrefersReducedMotion();
   const magnetic = useMagneticEffect({
     strength: 0.4,
-    maxDistance: 40,
     enabled: enableMagnetic && !prefersReducedMotion,
   });
 
@@ -146,7 +145,7 @@ export function UltraButton({
         >
           <Button
             variant={variant}
-            size={size}
+            size={size === 'default' ? 'md' : size}
             className={cn('relative overflow-hidden', className)}
             onClick={handleClick}
             {...props}

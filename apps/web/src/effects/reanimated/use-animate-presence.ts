@@ -7,11 +7,15 @@ import {
   withTiming,
   withSpring,
   type SharedValue,
+  type Variants,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import { motionTheme } from '@/config/motionTheme';
+import type { PresenceMotion } from './types';
+import { useMotionPreferences, type MotionHookOptions } from './useMotionPreferences';
 
-export interface UseAnimatePresenceOptions {
+export interface UseAnimatePresenceOptions extends MotionHookOptions {
   isVisible: boolean;
   initial?: boolean;
   exitDuration?: number;
@@ -22,155 +26,171 @@ export interface UseAnimatePresenceOptions {
   enabled?: boolean;
 }
 
-export interface UseAnimatePresenceReturn {
+export interface UseAnimatePresenceReturn extends PresenceMotion<AnimatedStyle> {
   opacity: SharedValue<number>;
   scale: SharedValue<number>;
   translateX: SharedValue<number>;
   translateY: SharedValue<number>;
-  animatedStyle: AnimatedStyle;
   shouldRender: boolean;
+  variants: Variants;
 }
 
 export function useAnimatePresence(options: UseAnimatePresenceOptions): UseAnimatePresenceReturn {
   const {
     isVisible,
     initial = false,
-    exitDuration = timingConfigs.fast.duration ?? 150,
-    enterDuration = timingConfigs.smooth.duration ?? 300,
+    exitDuration,
+    enterDuration,
     exitTransition = 'fade',
     enterTransition = 'fade',
     onExitComplete,
     enabled = true,
+    preferences: overridePreferences,
+    respectPreferences = true,
   } = options;
 
+  const preferences = overridePreferences ?? useMotionPreferences();
+  const isOff = respectPreferences && preferences.isOff;
+  const isReduced = respectPreferences && preferences.isReduced && !preferences.isOff;
+
+  const baseEnterDurationMs = enterDuration ?? motionTheme.durations.normal;
+  const baseExitDurationMs = exitDuration ?? motionTheme.durations.fast;
+
+  const effectiveEnterDurationMs = isReduced ? motionTheme.durations.fast : baseEnterDurationMs;
+  const effectiveExitDurationMs = isReduced ? motionTheme.durations.fast : baseExitDurationMs;
+
+  const slideDistanceBase = motionTheme.distance.listStaggerY;
+  const slideDistance = isReduced ? slideDistanceBase * 0.5 : slideDistanceBase;
+
+  const initialScale = motionTheme.scale.presenceInitial;
+  const exitScale = motionTheme.scale.presenceExit;
+
   const opacity = useSharedValue(initial && isVisible ? 1 : 0);
-  const scale = useSharedValue(initial && isVisible ? 1 : 0.95);
+  const scale = useSharedValue(initial && isVisible ? 1 : initialScale);
   const translateX = useSharedValue(0);
-  const translateY = useSharedValue(initial && isVisible ? 0 : -20);
+  const translateY = useSharedValue(initial && isVisible ? 0 : -slideDistance);
+
   const [shouldRender, setShouldRender] = useState(initial && isVisible);
   const exitTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    if (!enabled) {
+    if (exitTimeoutRef.current) {
+      clearTimeout(exitTimeoutRef.current);
+      exitTimeoutRef.current = undefined;
+    }
+
+    if (!enabled || isOff) {
       setShouldRender(isVisible);
+      opacity.value = isVisible ? 1 : 0;
+      scale.value = 1;
+      translateX.value = 0;
+      translateY.value = 0;
+
+      if (!isVisible) {
+        onExitComplete?.();
+      }
+
       return;
     }
 
     if (isVisible) {
       setShouldRender(true);
 
-      const enterConfig = {
-        duration: enterDuration,
+      const enterTiming = {
+        duration: effectiveEnterDurationMs,
         easing: timingConfigs.smooth.easing,
       };
 
-      switch (enterTransition) {
-        case 'fade':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.smooth);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          break;
-        case 'scale':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.bouncy);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          break;
-        case 'slideUp':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.smooth);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          translateX.value = withSpring(0, springConfigs.smooth);
-          break;
-        case 'slideDown':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.smooth);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          translateX.value = withSpring(0, springConfigs.smooth);
-          break;
-        case 'slideLeft':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.smooth);
-          translateX.value = withSpring(0, springConfigs.smooth);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          break;
-        case 'slideRight':
-          opacity.value = withTiming(1, enterConfig);
-          scale.value = withSpring(1, springConfigs.smooth);
-          translateX.value = withSpring(0, springConfigs.smooth);
-          translateY.value = withSpring(0, springConfigs.smooth);
-          break;
-      }
+      const enterScaleSpring =
+        enterTransition === 'scale' && !isReduced ? springConfigs.bouncy : springConfigs.smooth;
+
+      opacity.value = withTiming(1, enterTiming);
+      scale.value = withSpring(1, enterScaleSpring);
+      translateX.value = withSpring(0, springConfigs.smooth);
+      translateY.value = withSpring(0, springConfigs.smooth);
     } else {
-      const exitConfig = {
-        duration: exitDuration,
+      const exitTiming = {
+        duration: effectiveExitDurationMs,
         easing: timingConfigs.fast.easing,
       };
 
+      opacity.value = withTiming(0, exitTiming);
+
+      let scaleTarget = isReduced ? 1 : initialScale;
+      let translateXTarget = 0;
+      let translateYTarget = 0;
+
       switch (exitTransition) {
-        case 'fade':
-          opacity.value = withTiming(0, exitConfig);
-          scale.value = withTiming(0.95, exitConfig);
-          break;
         case 'scale':
-          opacity.value = withTiming(0, exitConfig);
-          scale.value = withTiming(0.8, exitConfig);
+          scaleTarget = isReduced ? initialScale : exitScale;
           break;
         case 'slideUp':
-          opacity.value = withTiming(0, exitConfig);
-          translateY.value = withTiming(-20, exitConfig);
+          translateYTarget = -slideDistance;
+          scaleTarget = 1;
           break;
         case 'slideDown':
-          opacity.value = withTiming(0, exitConfig);
-          translateY.value = withTiming(20, exitConfig);
+          translateYTarget = slideDistance;
+          scaleTarget = 1;
           break;
         case 'slideLeft':
-          opacity.value = withTiming(0, exitConfig);
-          translateX.value = withTiming(-20, exitConfig);
+          translateXTarget = -slideDistance;
+          scaleTarget = 1;
           break;
         case 'slideRight':
-          opacity.value = withTiming(0, exitConfig);
-          translateX.value = withTiming(20, exitConfig);
+          translateXTarget = slideDistance;
+          scaleTarget = 1;
+          break;
+        case 'fade':
+        default:
           break;
       }
 
-      if (exitTimeoutRef.current) {
-        clearTimeout(exitTimeoutRef.current);
-      }
+      scale.value = withTiming(scaleTarget, exitTiming);
+      translateX.value = withTiming(translateXTarget, exitTiming);
+      translateY.value = withTiming(translateYTarget, exitTiming);
 
       exitTimeoutRef.current = setTimeout(() => {
         setShouldRender(false);
         onExitComplete?.();
-      }, exitDuration);
+      }, effectiveExitDurationMs);
     }
 
     return () => {
       if (exitTimeoutRef.current) {
         clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = undefined;
       }
     };
   }, [
-    isVisible,
     enabled,
-    exitDuration,
-    enterDuration,
-    exitTransition,
     enterTransition,
+    exitTransition,
+    effectiveEnterDurationMs,
+    effectiveExitDurationMs,
+    exitScale,
+    initialScale,
+    isOff,
+    isReduced,
+    isVisible,
     onExitComplete,
     opacity,
     scale,
+    slideDistance,
     translateX,
     translateY,
   ]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Record<string, number | string>[] = [];
+    const transforms: Record<string, number>[] = [];
 
     if (translateX.value !== 0) {
       transforms.push({ translateX: translateX.value });
     }
+
     if (translateY.value !== 0) {
       transforms.push({ translateY: translateY.value });
     }
+
     if (scale.value !== 1) {
       transforms.push({ scale: scale.value });
     }
@@ -181,12 +201,46 @@ export function useAnimatePresence(options: UseAnimatePresenceOptions): UseAnima
     };
   });
 
+  const variants: Variants = {
+    hidden: {
+      opacity: 0,
+      scale: isReduced ? 1 : initialScale,
+      x: 0,
+      y: -slideDistance,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        opacity: {
+          duration: effectiveEnterDurationMs / 1000,
+          ease: 'easeInOut',
+        },
+        scale: {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        },
+        y: {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        },
+      },
+    },
+  };
+
   return {
+    kind: 'presence',
+    isVisible,
+    animatedStyle,
     opacity,
     scale,
     translateX,
     translateY,
-    animatedStyle,
     shouldRender,
+    variants,
   };
 }

@@ -5,6 +5,7 @@ import { MotionView } from "@petspark/motion";
  */
 
 import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   use3DFlipCard,
   useBreathingAnimation,
@@ -18,6 +19,7 @@ import {
   useWaveAnimation,
 } from '@/effects/reanimated';
 import { useState } from 'react';
+import type { MouseEvent } from 'react';
 
 export function UltraAnimationShowcase() {
   const [showDemo, setShowDemo] = useState(true);
@@ -128,6 +130,15 @@ export function UltraAnimationShowcase() {
                 <div />
               </MotionView>
             ))}
+            {confetti.particles.map((particle) => (
+              <AnimatedView
+                key={particle.id}
+                style={confetti.createParticleStyle(particle)}
+                className="absolute rounded-sm pointer-events-none"
+              >
+                <div />
+              </AnimatedView>
+            ))}
           </div>
         </section>
 
@@ -193,11 +204,11 @@ export function UltraAnimationShowcase() {
         {/* Glow Border Section */}
         <section className="space-y-6">
           <h2 className="text-3xl font-bold text-white">Animated Glow</h2>
-          <MotionView style={glowBorder.animatedStyle}>
+          <AnimatedView style={glowBorder.animatedStyle}>
             <div className="bg-linear-to-r from-purple-900 to-indigo-900 px-12 py-8 rounded-2xl inline-block">
               <p className="text-2xl font-bold text-white">Pulsating Glow</p>
             </div>
-          </MotionView>
+          </AnimatedView>
         </section>
 
         {/* Breathing Animation Section */}
@@ -213,30 +224,30 @@ export function UltraAnimationShowcase() {
         {/* Wave Animation Section */}
         <section className="space-y-6">
           <h2 className="text-3xl font-bold text-white">Wave Motion</h2>
-          <MotionView style={wave.animatedStyle}>
+          <AnimatedView style={wave.animatedStyle}>
             <div className="bg-linear-to-r from-blue-400 to-cyan-500 px-12 py-8 rounded-2xl shadow-2xl inline-block">
               <p className="text-2xl font-bold text-white">Flowing Wave</p>
             </div>
-          </MotionView>
+          </AnimatedView>
         </section>
 
         {/* Confetti Section */}
         <section className="space-y-6">
           <h2 className="text-3xl font-bold text-white">Confetti Celebration</h2>
           <Button
-            onClick={(e) => confetti.burst(e.clientX, e.clientY)}
+            onClick={(e: MouseEvent<HTMLButtonElement>) => confetti.burst(e.clientX, e.clientY)}
             className="px-8 py-6 text-xl bg-linear-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700"
           >
             🎉 Celebrate!
           </Button>
           {confetti.particles.map((particle) => (
-            <MotionView
+            <AnimatedView
               key={particle.id}
               style={confetti.createParticleStyle(particle)}
               className="absolute rounded-sm pointer-events-none"
             >
               <div />
-            </MotionView>
+            </AnimatedView>
           ))}
         </section>
 

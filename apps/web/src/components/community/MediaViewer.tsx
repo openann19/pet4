@@ -75,7 +75,12 @@ function SlideTransition({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }, { scale: scale.value }],
+      transform: [
+        {
+          translateX: translateX.value,
+          scale: scale.value,
+        },
+      ],
       opacity: opacity.value,
     };
   }) as AnimatedStyle;
@@ -411,20 +416,24 @@ export function MediaViewer({
 
   const isVideo = currentMedia.type === 'video';
 
-  const dragOpacity = useAnimatedStyle(() => {
-    if (isVideo) return { opacity: 1 };
+  const mediaContainerStyle = useAnimatedStyle(() => {
+    if (isVideo) {
+      return {
+        transform: [{ translateX: dragX.value }],
+        opacity: 1,
+      };
+    }
+
     const opacityValue = interpolate(
       dragX.value,
       [-200, 0, 200],
       [0.5, 1, 0.5],
       Extrapolation.CLAMP
     );
-    return { opacity: opacityValue };
-  }) as AnimatedStyle;
 
-  const mediaContainerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: dragX.value }],
+      opacity: opacityValue,
     };
   }) as AnimatedStyle;
 
@@ -627,7 +636,7 @@ export function MediaViewer({
             <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
               <SlideTransition direction={direction} isVisible={true}>
                 <MotionView
-                  style={[mediaContainerStyle, dragOpacity]}
+                  style={mediaContainerStyle}
                   className="absolute inset-0 flex items-center justify-center"
                 >
                   {isVideo ? (
@@ -721,7 +730,7 @@ export function MediaViewer({
                     >
                       <img
                         src={currentMedia.url}
-                          alt={`Post media ${String(currentIndex + 1)}`}
+                        alt={`Post media ${String(currentIndex + 1)}`}
                         className="max-w-full max-h-full object-contain select-none"
                         draggable={false}
                       />
@@ -780,10 +789,9 @@ export function MediaViewer({
                       }
                       haptics.selection();
                     }}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      index === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'
-                    }`}
-                      aria-label={`View ${String(media[index]?.type === 'video' ? 'video' : 'photo')} ${String(index + 1)}`}
+                    className={`h-2 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'
+                      }`}
+                    aria-label={`View ${String(media[index]?.type === 'video' ? 'video' : 'photo')} ${String(index + 1)}`}
                   />
                 ))}
               </div>

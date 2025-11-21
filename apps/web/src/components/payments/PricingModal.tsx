@@ -14,6 +14,7 @@ import { PRODUCT_CATALOG } from '@/lib/payments-catalog';
 import { PaymentsService } from '@/lib/payments-service';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { spark } from '@/lib/spark';
 
 interface PricingModalProps {
   open: boolean;

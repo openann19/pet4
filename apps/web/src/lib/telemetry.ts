@@ -129,7 +129,7 @@ class TelemetryService {
     return criticalEvents.includes(eventName);
   }
 
-  private trackPageView(): void {
+  public trackPageView(): void {
     this.track('performance.page_load', {
       url: window.location.href,
       referrer: document.referrer,

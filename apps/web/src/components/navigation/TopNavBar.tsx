@@ -57,6 +57,7 @@ export default function TopNavBar({
   const blurIntensity = useMotionValue(20);
   const glowOpacity = useMotionValue(0.3);
   const shimmerX = useMotionValue(-100);
+  const smoothDurationMs = timingConfigs.smooth.duration ?? 300;
 
   useEffect(() => {
     if (isScrolled) {
@@ -66,11 +67,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 30, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: smoothDurationMs / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.5, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: smoothDurationMs / 1000,
         ease: 'easeInOut',
       });
     } else {
@@ -80,11 +81,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 20, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: smoothDurationMs / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.3, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: smoothDurationMs / 1000,
         ease: 'easeInOut',
       });
     }
@@ -206,7 +207,7 @@ export default function TopNavBar({
       </div>
 
       {/* Content */}
-      <nav 
+      <nav
         className={cn(
           'relative z-10 max-w-7xl mx-auto',
           getSpacingClassesFromConfig({ paddingX: 'lg' })
@@ -217,7 +218,7 @@ export default function TopNavBar({
           'flex items-center justify-between',
           getSpacingClassesFromConfig({ gap: 'md' })
         )}
-        style={{ height: '4rem' }}
+          style={{ height: '4rem' }}
         >
           {/* Logo */}
           <Link
@@ -317,7 +318,7 @@ export default function TopNavBar({
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div 
+          <div
             id="mobile-menu"
             className={cn(
               'md:hidden border-t border-border/50',
@@ -439,7 +440,7 @@ function NavButton({
         className="relative"
       >
         {badge !== undefined && badge > 0 && (
-          <span 
+          <span
             className={cn(
               'absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-destructive flex items-center justify-center text-destructive-foreground',
               getTypographyClasses('badge'),

@@ -163,7 +163,6 @@ function MessageBubbleItem({
       key={message.id}
       message={message}
       isCurrentUser={isCurrentUser}
-      currentUserId={currentUserId}
       voiceMessages={voiceMessages}
       playingVoice={playingVoice}
       showReactions={showReactions}
@@ -561,4 +560,3 @@ export function ChatMessageList(props: ChatMessageListProps) {
     />
   );
 }
-

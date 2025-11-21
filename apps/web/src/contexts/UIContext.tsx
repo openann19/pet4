@@ -16,12 +16,12 @@ export interface UIProviderProps {
   config?: Partial<AbsoluteMaxUIModeConfig>;
 }
 
-export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {                                                                          
+export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {
   const mergedConfig: AbsoluteMaxUIModeConfig = config
     ? deepMerge(ABSOLUTE_MAX_UI_MODE, config)
     : ABSOLUTE_MAX_UI_MODE;
 
-  return <UIContext.Provider value={{ config: mergedConfig }}>{children}</UIContext.Provider>;                                                                  
+  return <UIContext.Provider value={{ config: mergedConfig }}>{children}</UIContext.Provider>;
 }
 
 export function useUIContext(): UIContextType {
@@ -42,9 +42,10 @@ function deepMerge(
   const result = { ...target };
 
   for (const key in source) {
-    if (source[key] !== undefined) {
-      const sourceValue = source[key];
-      const targetValue = target[key as keyof AbsoluteMaxUIModeConfig];
+    const typedKey = key as keyof AbsoluteMaxUIModeConfig;
+    if (source[typedKey] !== undefined) {
+      const sourceValue = source[typedKey];
+      const targetValue = target[typedKey];
 
       if (
         sourceValue !== null &&
@@ -54,10 +55,8 @@ function deepMerge(
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
-        (result as Record<string, unknown>)[key] = deepMerge(
-          targetValue as AbsoluteMaxUIModeConfig,
-          sourceValue as Partial<AbsoluteMaxUIModeConfig>
-        );
+        // For nested objects, do a shallow merge since they have different types
+        (result as Record<string, unknown>)[key] = { ...targetValue, ...sourceValue };
       } else if (sourceValue !== undefined) {
         (result as Record<string, unknown>)[key] = sourceValue;
       }

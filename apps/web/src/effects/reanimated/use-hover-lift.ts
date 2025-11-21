@@ -1,96 +1,113 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
+import {
+  useMotionValue,
+  type MotionValue,
+  type Variants,
+  type MotionStyle,
+} from '@petspark/motion';
 import { useCallback } from 'react';
+import { motionTheme } from '@/config/motionTheme';
+import type { InteractionMotion } from './types';
+import { useMotionPreferences, type MotionHookOptions } from './useMotionPreferences';
 
-export interface UseHoverLiftOptions {
+export interface UseHoverLiftOptions extends MotionHookOptions {
   scale?: number;
   translateY?: number;
   damping?: number;
   stiffness?: number;
 }
 
-export interface UseHoverLiftReturn {
+export interface UseHoverLiftReturn extends InteractionMotion<MotionStyle> {
   scale: MotionValue<number>;
   translateY: MotionValue<number>;
   variants: Variants;
   handleEnter: () => void;
   handleLeave: () => void;
-  animatedStyle: { scale: MotionValue<number>; transform: { translateY: MotionValue<number> }[] };
 }
-
-const DEFAULT_SCALE = 1.05;
-const DEFAULT_TRANSLATE_Y = -8;
-const DEFAULT_DAMPING = 25;
-const DEFAULT_STIFFNESS = 400;
 
 export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftReturn {
   const {
-    scale: scaleValue = DEFAULT_SCALE,
-    translateY: translateYValue = DEFAULT_TRANSLATE_Y,
-    damping = DEFAULT_DAMPING,
-    stiffness = DEFAULT_STIFFNESS,
+    scale: customScale,
+    translateY: customTranslateY,
+    damping: customDamping,
+    stiffness: customStiffness,
+    preferences: overridePreferences,
+    respectPreferences = true,
   } = options;
+
+  const preferences = overridePreferences ?? useMotionPreferences();
+
+  const isOff = respectPreferences && preferences.isOff;
+  const isReduced = respectPreferences && preferences.isReduced && !preferences.isOff;
+
+  const baseScale = customScale ?? motionTheme.scale.hover;
+  const baseTranslateY = customTranslateY ?? -motionTheme.distance.hoverLift;
+  const baseSpring = motionTheme.spring.responsive;
+
+  const scaleValue = isReduced ? 1 + (baseScale - 1) * 0.5 : baseScale;
+  const translateYValue = isReduced ? baseTranslateY * 0.5 : baseTranslateY;
+
+  const damping = customDamping ?? (isReduced ? motionTheme.spring.settled.damping : baseSpring.damping);
+  const stiffness =
+    customStiffness ?? (isReduced ? motionTheme.spring.settled.stiffness : baseSpring.stiffness);
 
   const scale = useMotionValue(1);
   const translateY = useMotionValue(0);
 
-  const variants: Variants = {
-    rest: {
-      scale: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        damping,
-        stiffness,
-      },
-    },
-    hover: {
-      scale: scaleValue,
-      y: translateYValue,
-      transition: {
-        type: 'spring',
-        damping,
-        stiffness,
-      },
+  const animatedStyle: MotionStyle = {
+    scale,
+    y: translateY,
+  };
+
+  const restVariant = {
+    scale: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      damping,
+      stiffness,
     },
   };
 
+  const hoverVariant = isOff
+    ? restVariant
+    : {
+        scale: scaleValue,
+        y: translateYValue,
+        transition: {
+          type: 'spring' as const,
+          damping,
+          stiffness,
+        },
+      };
+
+  const variants: Variants = {
+    rest: restVariant,
+    hover: hoverVariant,
+  };
+
   const handleEnter = useCallback(() => {
-    animate(scale, scaleValue, {
-      type: 'spring',
-      damping,
-      stiffness,
-    });
-    animate(translateY, translateYValue, {
-      type: 'spring',
-      damping,
-      stiffness,
-    });
-  }, [scale, translateY, scaleValue, translateYValue, damping, stiffness]);
+    if (isOff) return;
+    scale.set(scaleValue);
+    translateY.set(translateYValue);
+  }, [isOff, scale, translateY, scaleValue, translateYValue]);
 
   const handleLeave = useCallback(() => {
-    animate(scale, 1, {
-      type: 'spring',
-      damping,
-      stiffness,
-    });
-    animate(translateY, 0, {
-      type: 'spring',
-      damping,
-      stiffness,
-    });
-  }, [scale, translateY, damping, stiffness]);
+    if (isOff) return;
+    scale.set(1);
+    translateY.set(0);
+  }, [isOff, scale, translateY]);
 
   return {
+    kind: 'interaction',
+    animatedStyle,
     scale,
     translateY,
     variants,
     handleEnter,
     handleLeave,
-    animatedStyle: {
-      scale,
-      transform: [{ translateY }],
-    },
+    onHoverIn: handleEnter,
+    onHoverOut: handleLeave,
   };
 }

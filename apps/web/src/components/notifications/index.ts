@@ -4,7 +4,7 @@ export type { AppNotification } from './NotificationCenter';
 
 export { PremiumNotificationCenter } from './PremiumNotificationCenter';
 export { PremiumNotificationBell } from './PremiumNotificationBell';
-export type { PremiumNotification } from './PremiumNotificationCenter';
+export type { PremiumNotification } from './types';
 
 export { NotificationTabs } from './NotificationTabs';
 export type { NotificationTabsProps } from './NotificationTabs';

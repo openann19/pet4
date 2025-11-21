@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect } from 'react';
-import type { ButtonHTMLAttributes } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, type Variants } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
@@ -13,13 +12,17 @@ import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 const logger = createLogger('ToggleButton');
 
-export interface ToggleButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+export interface ToggleButtonProps {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   'aria-label': string;
+  className?: string;
+  children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
+  style?: React.CSSProperties;
 }
 
 export function ToggleButton({
@@ -32,6 +35,7 @@ export function ToggleButton({
   onClick,
   disabled = false,
   'aria-label': ariaLabel,
+  style: _style,
   ...props
 }: ToggleButtonProps): React.JSX.Element {
   const _uiConfig = useUIConfig();
@@ -39,16 +43,8 @@ export function ToggleButton({
   const opacity = useMotionValue(checked ? 1 : 0.7);
 
   useEffect(() => {
-    animate(scale, checked ? 1 : 0.95, {
-      type: 'spring',
-      damping: checked ? springConfigs.bouncy.damping : springConfigs.smooth.damping,
-      stiffness: checked ? springConfigs.bouncy.stiffness : springConfigs.smooth.stiffness,
-    });
-    animate(opacity, checked ? 1 : 0.7, {
-      type: 'spring',
-      damping: springConfigs.smooth.damping,
-      stiffness: springConfigs.smooth.stiffness,
-    });
+    scale.set(checked ? 1 : 0.95);
+    opacity.set(checked ? 1 : 0.7);
   }, [checked, scale, opacity]);
 
   const variants: Variants = {

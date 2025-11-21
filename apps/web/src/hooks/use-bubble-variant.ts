@@ -121,11 +121,7 @@ export function useBubbleVariant(options: UseBubbleVariantOptions): UseBubbleVar
 
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value },
-        { rotateZ: `${rotateZ}deg` },
-      ],
+      transform: `translateY(${translateY.value}px) scale(${scale.value}) rotateZ(${rotateZ}deg)`,
     };
   });
 

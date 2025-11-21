@@ -4,10 +4,9 @@ import {
   withSpring,
   useAnimatedStyle,
   withTiming,
-  animate,
   MotionView,
 } from '@petspark/motion';
-import { Presence, MotionView } from '@petspark/motion';
+import { Presence } from '@petspark/motion';
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -82,12 +81,9 @@ export function SmartToast({
       onDismiss(id);
       return;
     }
-    const opacityTransition = withTiming(0, { duration: 200 });
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
-    const translateXTransition = withTiming(300, { duration: 200 });
-    animate(translateX, translateXTransition.target, translateXTransition.transition);
-    const scaleTransition = withTiming(0.9, { duration: 200 });
-    animate(scale, scaleTransition.target, scaleTransition.transition);
+    opacity.value = withTiming(0, { duration: 200 });
+    translateX.value = withTiming(300, { duration: 200 });
+    scale.value = withTiming(0.9, { duration: 200 });
     setTimeout(() => onDismiss(id), 200);
   }, [id, onDismiss, opacity, translateX, scale, prefersReducedMotion]);
 
@@ -98,12 +94,9 @@ export function SmartToast({
       scale.value = 1;
       return;
     }
-    const opacityTransition = withSpring(1, springConfigs.smooth);
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
-    const translateYTransition = withSpring(0, springConfigs.smooth);
-    animate(translateY, translateYTransition.target, translateYTransition.transition);
-    const scaleTransition = withSpring(1, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
+    opacity.value = withSpring(1, springConfigs.smooth);
+    translateY.value = withSpring(0, springConfigs.smooth);
+    scale.value = withSpring(1, springConfigs.smooth);
   }, [opacity, translateY, scale, prefersReducedMotion]);
 
   // Auto-dismiss after duration
@@ -120,14 +113,12 @@ export function SmartToast({
     return undefined;
   }, [duration, handleDismiss]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.get(),
-    transform: [
-      { translateY: translateY.get() },
-      { translateX: translateX.get() },
-      { scale: scale.get() },
-    ],
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.get(),
+      transform: `translateY(${translateY.get()}px) translateX(${translateX.get()}px) scale(${scale.get()})`,
+    };
+  });
 
   return (
     <MotionView

@@ -12,7 +12,7 @@ export interface NavigationError {
   fromPath: string;
   toPath: string;
   timestamp: string;
-  componentStack?: string;
+  componentStack?: string | null;
   metadata?: Record<string, unknown>;
 }
 

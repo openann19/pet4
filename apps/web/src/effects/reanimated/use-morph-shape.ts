@@ -41,7 +41,7 @@ export function useMorphShape(options: UseMorphShapeOptions = {}) {
       currentShape.value = shapeIndex;
       progress.value = withTiming(shapeIndex, {
         duration,
-        easing: Easing.bezier(0.4, 0, 0.2, 1),
+        easing: Easing.inOut(Easing.cubic),
       });
     },
     [shapes.length, duration]
@@ -102,7 +102,7 @@ export function useMorphShape(options: UseMorphShapeOptions = {}) {
       borderTopRightRadius: topRight,
       borderBottomRightRadius: bottomRight,
       borderBottomLeftRadius: bottomLeft,
-      transform: [{ scale }, { rotate: `${String(rotate ?? '')}deg` }],
+      transform: `scale(${scale}) rotate(${rotate}deg)`,
     };
   });
 

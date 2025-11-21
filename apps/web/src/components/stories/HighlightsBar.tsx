@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { motion } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { useStorage } from '@/hooks/use-storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,8 +44,7 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 pb-2 min-w-min">
           {onlyOwn && (
-            <MotionView
-              as="button"
+            <motion.button
               onClick={() => {
                 haptics.trigger('selection');
                 setShowCreateDialog(true);
@@ -66,12 +65,11 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
               <span className="text-xs font-medium text-muted-foreground max-w-20 truncate">
                 New
               </span>
-            </MotionView>
+            </motion.button>
           )}
 
           {sortedHighlights.map((highlight, index) => (
-            <MotionView
-              as="button"
+            <motion.button
               key={highlight.id}
               onClick={() => {
                 haptics.trigger('light');
@@ -101,13 +99,13 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
                 </Avatar>
 
                 {highlight.isPinned && (
-                  <MotionView
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center shadow-lg border-2 border-background"
                   >
                     <span className="text-[10px]">📌</span>
-                  </MotionView>
+                  </motion.div>
                 )}
 
                 <div className="absolute bottom-0 right-0 w-5 h-5 bg-primary/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg text-[10px] font-bold text-white border border-background">
@@ -118,7 +116,7 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
               <span className="text-xs font-medium text-foreground max-w-20 truncate text-center leading-tight">
                 {highlight.title}
               </span>
-            </MotionView>
+            </motion.button>
           ))}
         </div>
       </div>

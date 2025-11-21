@@ -21,10 +21,7 @@ export interface UseMapPlacesReturn {
   generateDemoPlaces: (center: Location) => void;
 }
 
-export function useMapPlaces(
-  userLocation: Location | null,
-  radiusKm: number
-): UseMapPlacesReturn {
+export function useMapPlaces(userLocation: Location | null, radiusKm: number): UseMapPlacesReturn {
   const { t } = useApp();
   const { PLACE_CATEGORIES } = useMapConfig();
   const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
@@ -57,14 +54,16 @@ export function useMapPlaces(
 
       places.push({
         id: `place-${String(i ?? '')}`,
-        name: `${String(category.name ?? '')} ${String(i + 1 ?? '')}`,
+        name: `${String(category.name)} ${String(i + 1)}`,
         description: `Great ${String(category.name.toLowerCase() ?? '')} in your area`,
         category: category.id,
         location,
         address: `${String(Math.floor(Math.random() * 999) ?? '')} Main St, City`,
-        phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000 ?? '')}`,
+        phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000)}`,
         hours: '9:00 AM - 6:00 PM',
-        photos: [`https://images.unsplash.com/photo-${String(1560807700000 + i * 1000000 ?? '')}?w=400&q=80`],
+        photos: [
+          `https://images.unsplash.com/photo-${String(1560807700000 + i * 1000000)}?w=400&q=80`,
+        ],
         verified: Math.random() > 0.3,
         petFriendly: true,
         rating: 3.5 + Math.random() * 1.5,
@@ -131,4 +130,3 @@ export function useMapPlaces(
     generateDemoPlaces,
   };
 }
-

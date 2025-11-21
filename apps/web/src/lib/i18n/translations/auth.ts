@@ -1,5 +1,3 @@
-import type { Language } from '../types';
-
 export const authTranslations = {
   en: {
     auth: {

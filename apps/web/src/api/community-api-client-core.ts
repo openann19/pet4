@@ -104,10 +104,7 @@ export class CommunityApiImpl {
     return this.socialApi.unfollowUser(targetId);
   }
 
-  async isFollowing(
-    targetId: string,
-    type: 'user' | 'tag' | 'breed' = 'user'
-  ): Promise<boolean> {
+  async isFollowing(targetId: string, type: 'user' | 'tag' | 'breed' = 'user'): Promise<boolean> {
     return this.socialApi.isFollowing(targetId, type);
   }
 
@@ -115,7 +112,25 @@ export class CommunityApiImpl {
     return this.otherApi.getTrendingTags(period);
   }
 
-  async reportContent(postId: string, request: ReportContentRequest): Promise<Report> {
+  async reportContent(postId: string, request: ReportContentRequest): Promise<Report>;
+  async reportContent(
+    targetType: 'post' | 'comment' | 'user',
+    targetId: string,
+    request: ReportContentRequest
+  ): Promise<Report>;
+  async reportContent(
+    postIdOrTargetType: string,
+    targetIdOrRequest: string | ReportContentRequest,
+    maybeRequest?: ReportContentRequest
+  ): Promise<Report> {
+    if (typeof targetIdOrRequest === 'string' && maybeRequest) {
+      const postId = targetIdOrRequest;
+      const request = maybeRequest;
+      return this.otherApi.reportContent(postId, request);
+    }
+
+    const postId = postIdOrTargetType;
+    const request = targetIdOrRequest as ReportContentRequest;
     return this.otherApi.reportContent(postId, request);
   }
 

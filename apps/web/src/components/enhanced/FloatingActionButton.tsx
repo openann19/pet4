@@ -10,7 +10,6 @@ import {
   withSequence,
   withDelay,
   Easing,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
@@ -41,8 +40,8 @@ export function FloatingActionButton({
   expanded = false,
   label,
 }: FloatingActionButtonProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const reducedMotion = useReducedMotion();
+  const _uiConfig = useUIConfig();
+  const reducedMotion = useReducedMotion();
   const scale = useSharedValue(0);
   const rotate = useSharedValue(-180);
   const iconRotate = useSharedValue(0);
@@ -55,32 +54,24 @@ export function FloatingActionButton({
   // Entry animation
   useEffect(() => {
     if (reducedMotion) {
-      animate(scale, 1, { duration: 0.2 });
-      animate(rotate, 0, { duration: 0.2 });
+      scale.value = 1;
+      rotate.value = 0;
     } else {
-      const scaleTransition = withSpring(1, SPRING_CONFIG);
-      animate(scale, scaleTransition.target, scaleTransition.transition);
-      const rotateTransition = withSpring(0, SPRING_CONFIG);
-      animate(rotate, rotateTransition.target, rotateTransition.transition);
+      scale.value = withSpring(1, SPRING_CONFIG);
+      rotate.value = withSpring(0, SPRING_CONFIG);
     }
   }, [scale, rotate, reducedMotion]);
 
   // Expanded state
   useEffect(() => {
     if (expanded) {
-      const iconRotateTransition = withSpring(45, SPRING_CONFIG);
-      animate(iconRotate, iconRotateTransition.target, iconRotateTransition.transition);
-      const opacityTransition = withTiming(1, { duration: 200 });
-      animate(labelOpacity, opacityTransition.target, opacityTransition.transition);
-      const widthTransition = withTiming(1, { duration: 200 });
-      animate(labelWidth, widthTransition.target, widthTransition.transition);
+      iconRotate.value = withSpring(45, SPRING_CONFIG);
+      labelOpacity.value = withTiming(1, { duration: 200 });
+      labelWidth.value = withTiming(1, { duration: 200 });
     } else {
-      const iconRotateTransition = withSpring(0, SPRING_CONFIG);
-      animate(iconRotate, iconRotateTransition.target, iconRotateTransition.transition);
-      const opacityTransition = withTiming(0, { duration: 200 });
-      animate(labelOpacity, opacityTransition.target, opacityTransition.transition);
-      const widthTransition = withTiming(0, { duration: 200 });
-      animate(labelWidth, widthTransition.target, widthTransition.transition);
+      iconRotate.value = withSpring(0, SPRING_CONFIG);
+      labelOpacity.value = withTiming(0, { duration: 200 });
+      labelWidth.value = withTiming(0, { duration: 200 });
     }
   }, [expanded, iconRotate, labelOpacity, labelWidth]);
 
@@ -88,21 +79,19 @@ export function FloatingActionButton({
   useEffect(() => {
     if (reducedMotion) return;
 
-    const delayTransition = withDelay(3000, withTiming(100, { duration: 2000, easing: Easing.linear }));
-    const sequence = withSequence(
-      delayTransition,
-      withTiming(-100, { duration: 0 })
+    shimmerX.value = withRepeat(
+      withSequence(
+        withDelay(3000, withTiming(100, { duration: 2000, easing: Easing.linear })),
+        withTiming(-100, { duration: 0 })
+      ),
+      -1,
+      false
     );
-    const repeatTransition = withRepeat(sequence, -1, false);
-    animate(shimmerX, repeatTransition.target, repeatTransition.transition);
   }, [shimmerX, reducedMotion]);
 
   const buttonStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.get() * hoverScale.get() },
-        { rotate: `${rotate.get() + hoverRotate.get()}deg` },
-      ],
+      transform: `scale(${scale.get() * hoverScale.get()}) rotate(${rotate.get() + hoverRotate.get()}deg)`,
       width: expanded ? 'auto' : '56px',
       paddingLeft: expanded ? '20px' : '0',
       paddingRight: expanded ? '20px' : '0',
@@ -129,30 +118,24 @@ export function FloatingActionButton({
 
   const handleMouseEnter = useCallback(() => {
     if (reducedMotion) return;
-    const scaleTransition = withSpring(1.1, SPRING_CONFIG);
-    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
-    const rotateTransition = withSpring(5, SPRING_CONFIG);
-    animate(hoverRotate, rotateTransition.target, rotateTransition.transition);
+    hoverScale.value = withSpring(1.1, SPRING_CONFIG);
+    hoverRotate.value = withSpring(5, SPRING_CONFIG);
   }, [hoverScale, hoverRotate, reducedMotion]);
 
   const handleMouseLeave = useCallback(() => {
     if (reducedMotion) return;
-    const scaleTransition = withSpring(1, SPRING_CONFIG);
-    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
-    const rotateTransition = withSpring(0, SPRING_CONFIG);
-    animate(hoverRotate, rotateTransition.target, rotateTransition.transition);
+    hoverScale.value = withSpring(1, SPRING_CONFIG);
+    hoverRotate.value = withSpring(0, SPRING_CONFIG);
   }, [hoverScale, hoverRotate, reducedMotion]);
 
   const handleMouseDown = useCallback(() => {
     if (reducedMotion) return;
-    const scaleTransition = withSpring(0.95, SPRING_CONFIG);
-    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+    hoverScale.value = withSpring(0.95, SPRING_CONFIG);
   }, [hoverScale, reducedMotion]);
 
   const handleMouseUp = useCallback(() => {
     if (reducedMotion) return;
-    const scaleTransition = withSpring(1.1, SPRING_CONFIG);
-    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+    hoverScale.value = withSpring(1.1, SPRING_CONFIG);
   }, [hoverScale, reducedMotion]);
 
   const iconContainerStyle = useAnimatedStyle(() => {

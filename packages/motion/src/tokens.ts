@@ -1,4 +1,4 @@
-import { Easing } from 'react-native-reanimated'
+import { Easing } from './index'
 import type { PetSparkEasingFunction } from './index'
 
 /**
@@ -16,15 +16,7 @@ const createPolyEasing = (power: number): PetSparkEasingFunction => {
       return result as PetSparkEasingFunction
     }
   }
-  // Fallback for web - use bezier which returns EasingFunction directly
-  if (typeof Easing.bezier === 'function') {
-    const result = Easing.bezier(0.25, 0.1, 0.25, 1)
-    // Ensure we return an EasingFunction, not a factory
-    if (typeof result === 'function') {
-      return result as PetSparkEasingFunction
-    }
-  }
-  // Ultimate fallback - create a simple cubic easing
+  // Fallback for web - create a simple cubic easing
   return Easing.cubic
 }
 

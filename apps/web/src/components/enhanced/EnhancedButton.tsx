@@ -2,9 +2,7 @@
 
 import type { ComponentProps, MouseEvent } from 'react';
 import { forwardRef, useRef, useCallback } from 'react';
-import type { buttonVariants } from '@/components/ui/button';
 import { Button } from '@/components/ui/button';
-import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
 import { MotionView } from '@petspark/motion';
@@ -15,16 +13,13 @@ import {
   withTiming,
   withSequence,
   withSpring,
-  animate,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
 
 const logger = createLogger('EnhancedButton');
 
-export interface EnhancedButtonProps
-  extends ComponentProps<'button'>,
-    VariantProps<typeof buttonVariants> {
+export interface EnhancedButtonProps extends ComponentProps<'button'> {
   ripple?: boolean;
   hapticFeedback?: boolean;
   successAnimation?: boolean;
@@ -60,19 +55,19 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
 
     const successAnimatedStyle = useAnimatedStyle(() => {
       return {
-        transform: [{ scale: successScale.get() }],
+        transform: `scale(${successScale.get()})`,
       };
     });
 
     const errorAnimatedStyle = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: errorShake.get() }],
+        transform: `translateX(${errorShake.get()}px)`,
       };
     });
 
     useEffect(() => {
       // Reset success scale when component mounts
-      animate(successScale, 1, { type: 'tween', duration: 0 });
+      successScale.value = 1;
     }, [successScale]);
 
     const handleClick = useCallback(
@@ -91,11 +86,10 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
               await result;
 
               if (successAnimation) {
-                const sequence = withSequence(
+                successScale.value = withSequence(
                   withSpring(1.1, springConfigs.bouncy),
                   withSpring(1, springConfigs.smooth)
                 );
-                animate(successScale, sequence.target, sequence.transition);
                 if (hapticFeedback) {
                   haptic.medium();
                 }
@@ -105,14 +99,13 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
           }
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
-          const shakeSequence = withSequence(
+          errorShake.value = withSequence(
             withTiming(-5, { duration: 50 }),
             withTiming(5, { duration: 50 }),
             withTiming(-5, { duration: 50 }),
             withTiming(5, { duration: 50 }),
             withTiming(0, { duration: 50 })
           );
-          animate(errorShake, shakeSequence.target, shakeSequence.transition);
           if (hapticFeedback) {
             haptic.heavy();
           }

@@ -42,8 +42,10 @@ export function createTimingTransition(config: TimingConfig = timingConfigs.smoo
   return (value: number) => withTiming(value, config as WithTimingConfig);
 }
 
-export function createDelayedTransition(delay: number, transition: (value: number) => number) {
-  return (value: number) => withDelay(delay, transition(value));
+export function createDelayedTransition(delay: number, transition: (value: number) => unknown) {
+  return (value: number) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    withDelay(delay, { target: value, transition: transition(value) } as any);
 }
 
 export const fadeIn = {

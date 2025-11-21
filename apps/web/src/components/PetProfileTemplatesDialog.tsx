@@ -70,7 +70,7 @@ export default function PetProfileTemplatesDialog({
   const sparkleStyle = useAnimatedStyle(() => {
     const rotate = sparkleRotate.value;
     const scale = sparkleScale.value;
-    const transforms: { [key: string]: number | string | MotionValue<number> }[] = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ rotate: `${rotate}deg` });
     transforms.push({ scale });
     return { transform: transforms };

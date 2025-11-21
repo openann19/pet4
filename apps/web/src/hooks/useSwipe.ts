@@ -36,7 +36,7 @@ export function useSwipe({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: x.value }, { rotate: `${rotate.value}deg` }],
+      transform: `translateX(${x.value}px) rotate(${rotate.value}deg)`,
       opacity: opacity.value,
     };
   });

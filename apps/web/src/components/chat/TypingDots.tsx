@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { motion } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import { useUIConfig } from "@/hooks/use-ui-config";
+import { useTypingIndicatorMotion } from '@/effects/chat/typing';
 
 export interface TypingDotsProps {
   dotSize?: number;
@@ -21,53 +21,36 @@ export function TypingDots({
   dotSize = DEFAULT_DOT_SIZE,
   dotColor = DEFAULT_DOT_COLOR,
   gap = DEFAULT_GAP,
-  animationDuration = DEFAULT_ANIMATION_DURATION,
+  animationDuration: _animationDuration = DEFAULT_ANIMATION_DURATION,
   className,
-}: TypingDotsProps): React.JSX.Element {
-  const _uiConfig = useUIConfig();
+}: TypingDotsProps): React.JSX.Element | null {
+  const typingMotion = useTypingIndicatorMotion({
+    isTyping: true,
+    dotCount: 3,
+    reducedMode: 'static-dots',
+  });
 
-  const dotStyle: React.CSSProperties = {
-    width: dotSize,
-    height: dotSize,
-    backgroundColor: dotColor,
-    borderRadius: dotSize / 2,
-  };
-
-  const animationConfig = {
-    scale: [1, 1.4, 1],
-    opacity: [0.5, 1, 0.5],
-    transition: {
-      duration: animationDuration / 1000,
-      ease: 'easeInOut',
-      repeat: Infinity,
-    },
-  };
+  if (!typingMotion.isVisible) {
+    return null;
+  }
 
   return (
-    <div className={cn('flex items-center', className)} style={{ gap }}>
-      <motion.div
-        style={dotStyle}
-        animate={animationConfig}
-        className="rounded-full"
-      />
-      <motion.div
-        style={dotStyle}
-        animate={animationConfig}
-        transition={{
-          ...animationConfig.transition,
-          delay: 0.15,
-        }}
-        className="rounded-full"
-      />
-      <motion.div
-        style={dotStyle}
-        animate={animationConfig}
-        transition={{
-          ...animationConfig.transition,
-          delay: 0.3,
-        }}
-        className="rounded-full"
-      />
-    </div>
+    <MotionView style={typingMotion.animatedStyle} className={cn('flex items-center', className)}>
+      <div className="flex items-center" style={{ gap }}>
+        {typingMotion.dots.map((dot) => (
+          <MotionView
+            key={dot.id}
+            style={{
+              ...dot.animatedStyle,
+              width: dotSize,
+              height: dotSize,
+              backgroundColor: dotColor,
+              borderRadius: dotSize / 2,
+            }}
+            className="rounded-full"
+          />
+        ))}
+      </div>
+    </MotionView>
   );
 }

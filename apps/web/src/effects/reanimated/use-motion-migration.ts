@@ -75,16 +75,18 @@ export function useMotionDiv({
   }, [enabled, animate, transition, scale, opacity, x, y, rotate]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Record<string, number | string>[] = [];
-
-    if (x.value !== 0) transforms.push({ translateX: x.value });
-    if (y.value !== 0) transforms.push({ translateY: y.value });
-    if (scale.value !== 1) transforms.push({ scale: scale.value });
-    if (rotate.value !== 0) transforms.push({ rotate: `${rotate.value}deg` });
+    const transform = [
+      x.value !== 0 ? `translateX(${x.value}px)` : '',
+      y.value !== 0 ? `translateY(${y.value}px)` : '',
+      scale.value !== 1 ? `scale(${scale.value})` : '',
+      rotate.value !== 0 ? `rotate(${rotate.value}deg)` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return {
       opacity: opacity.value,
-      transform: transforms.length > 0 ? transforms : undefined,
+      transform,
     };
   }) as AnimatedStyle;
 
@@ -122,7 +124,7 @@ export function useInteractiveMotion({
     const hoverY = hasHover ? -8 : 0;
 
     return {
-      transform: [{ scale: hoverScale * tapScale }, { translateY: hoverY }],
+      transform: `scale(${hoverScale * tapScale}) translateY(${hoverY}px)`,
     };
   }) as AnimatedStyle;
 
@@ -198,15 +200,17 @@ export function useRepeatingAnimation({
   }, [enabled, animate, duration, repeat, scale, rotate, x, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Record<string, number | string>[] = [];
-
-    if (x.value !== 0) transforms.push({ translateX: x.value });
-    if (scale.value !== 1) transforms.push({ scale: scale.value });
-    if (rotate.value !== 0) transforms.push({ rotate: `${rotate.value}deg` });
+    const transform = [
+      x.value !== 0 ? `translateX(${x.value}px)` : '',
+      scale.value !== 1 ? `scale(${scale.value})` : '',
+      rotate.value !== 0 ? `rotate(${rotate.value}deg)` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return {
       opacity: opacity.value,
-      transform: transforms.length > 0 ? transforms : undefined,
+      transform,
     };
   }) as AnimatedStyle;
 

@@ -31,6 +31,6 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
       callback(...args);
     }, delay);
 
-    setTimeoutId(newTimeoutId);
+    setTimeoutId(newTimeoutId as any);
   };
 }

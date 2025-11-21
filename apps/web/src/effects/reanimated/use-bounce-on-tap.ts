@@ -1,6 +1,12 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
+import {
+  useMotionValue,
+  animate,
+  type MotionValue,
+  type Variants,
+  type MotionStyle,
+} from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import { useCallback } from 'react';
 
@@ -17,6 +23,7 @@ export interface UseBounceOnTapReturn {
   scale: MotionValue<number>;
   variants: Variants;
   handlePress: () => void;
+  animatedStyle: MotionStyle;
 }
 
 const DEFAULT_SCALE = 0.95;
@@ -33,6 +40,10 @@ export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOn
   } = options;
 
   const scale = useMotionValue(1);
+
+  const animatedStyle: MotionStyle = {
+    scale,
+  };
 
   const variants: Variants = {
     rest: {
@@ -58,7 +69,7 @@ export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOn
       haptics.impact('light');
     }
 
-    animate(scale, scaleValue, {
+    void animate(scale, scaleValue, {
       type: 'spring',
       damping,
       stiffness,
@@ -77,5 +88,6 @@ export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOn
     scale,
     variants,
     handlePress,
+    animatedStyle,
   };
 }

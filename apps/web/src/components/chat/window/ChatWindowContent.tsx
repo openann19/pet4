@@ -9,7 +9,7 @@ import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { InputRef } from '@/components/ui/input';
-import type { SharedValue } from '@petspark/motion';
+import type { MotionValue, SharedValue } from '@petspark/motion';
 
 interface ChatWindowContentProps {
   room: ChatRoom;
@@ -27,8 +27,8 @@ interface ChatWindowContentProps {
   typingContainerStyle: AnimatedStyle;
   typingTextStyle: AnimatedStyle;
   typingDotsStyle: AnimatedStyle;
-  videoButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
-  voiceButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
+  videoButtonHover: { scale: MotionValue<number>; translateY: MotionValue<number>; handleEnter: () => void; handleLeave: () => void };
+  voiceButtonHover: { scale: MotionValue<number>; translateY: MotionValue<number>; handleEnter: () => void; handleLeave: () => void };
   messageBubbleHover: { handleEnter: () => void; handleLeave: () => void };
   messageBubbleHoverStyle: AnimatedStyle;
   voiceButtonHoverStyle: AnimatedStyle;
@@ -68,6 +68,9 @@ interface ChatWindowContentProps {
   toggleMute: () => void;
   toggleVideo: () => void;
   onBack?: () => void;
+  awayMode: boolean;
+  onToggleAwayMode: () => void;
+  onBlockUser: () => void;
 }
 
 function useChatHeaderStyles({
@@ -116,41 +119,32 @@ function ChatCallNotificationsWrapper(props: {
 function ChatHeaderWrapper({
   room,
   typingUsers,
-  headerStyleValue,
-  typingContainerStyleValue,
-  typingTextStyleValue,
-  typingDotsStyleValue,
-  videoButtonHover,
-  voiceButtonHover,
   onBack,
   handleVideoCall,
   handleVoiceCall,
+  awayMode,
+  onToggleAwayMode,
+  onBlockUser,
 }: {
   room: ChatRoom;
   typingUsers: { userId: string; userName?: string }[];
-  headerStyleValue: React.CSSProperties;
-  typingContainerStyleValue: React.CSSProperties;
-  typingTextStyleValue: React.CSSProperties;
-  typingDotsStyleValue: React.CSSProperties;
-  videoButtonHover: { scale: unknown; translateY: unknown; handleEnter: () => void; handleLeave: () => void };
-  voiceButtonHover: { scale: unknown; translateY: unknown; handleEnter: () => void; handleLeave: () => void };
   onBack?: () => void;
   handleVideoCall: () => void;
   handleVoiceCall: () => void;
+  awayMode: boolean;
+  onToggleAwayMode: () => void;
+  onBlockUser: () => void;
 }): React.JSX.Element {
   return (
     <ChatHeader
       room={room}
       typingUsers={typingUsers}
-      headerStyle={headerStyleValue}
-      typingContainerStyle={typingContainerStyleValue}
-      typingTextStyle={typingTextStyleValue}
-      typingDotsStyle={typingDotsStyleValue}
-      videoButtonHover={videoButtonHover as { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void }}
-      voiceButtonHover={voiceButtonHover as { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void }}
+      awayMode={awayMode}
       onBack={onBack}
       onVideoCall={handleVideoCall}
       onVoiceCall={handleVoiceCall}
+      onToggleAwayMode={onToggleAwayMode}
+      onBlockUser={onBlockUser}
     />
   );
 }
@@ -319,15 +313,12 @@ function ChatMainContent(
       <ChatHeaderWrapper
         room={props.room}
         typingUsers={props.typingUsers}
-        headerStyleValue={props.headerStyleValue}
-        typingContainerStyleValue={props.typingContainerStyleValue}
-        typingTextStyleValue={props.typingTextStyleValue}
-        typingDotsStyleValue={props.typingDotsStyleValue}
-        videoButtonHover={props.videoButtonHover}
-        voiceButtonHover={props.voiceButtonHover}
         onBack={props.onBack}
         handleVideoCall={props.handleVideoCall}
         handleVoiceCall={props.handleVoiceCall}
+        awayMode={props.awayMode}
+        onToggleAwayMode={props.onToggleAwayMode}
+        onBlockUser={props.onBlockUser}
       />
       <ChatMessageListSectionWrapper
         useVirtualizedList={props.useVirtualizedList}
@@ -395,4 +386,3 @@ export function ChatWindowContent(props: ChatWindowContentProps) {
     </>
   );
 }
-

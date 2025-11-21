@@ -5,6 +5,7 @@
 
 import { Suspense } from 'react'
 import { MotionView } from '@petspark/motion'
+import type { MotionStyle, MotionValue } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import {
   Heart,
@@ -21,63 +22,63 @@ import { haptics } from '@/lib/haptics'
 interface AppHeaderProps {
   animations: {
     headerAnimation: {
-      headerStyle: unknown
-      shimmerStyle: unknown
+      headerStyle: MotionStyle
+      shimmerStyle: MotionStyle
     }
     logoButtonHover: {
-      scale: unknown
-      translateY: unknown
+      scale: MotionValue<number>
+      translateY: MotionValue<number>
       handleEnter: () => void
       handleLeave: () => void
     }
     logoAnimation: {
-      style: unknown
+      style: MotionStyle
     }
     logoGlow: {
-      style: unknown
+      style: MotionStyle
     }
     headerButtonsContainer: {
-      opacity: unknown
-      x: unknown
+      opacity: MotionValue<number>
+      x: MotionValue<number>
     }
     headerButton1: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     headerButton2: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     headerButton3: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     headerButton4: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     headerButton5: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     headerButton6: {
-      buttonStyle: unknown
+      buttonStyle: MotionStyle
       handleEnter: () => void
       handleLeave: () => void
       handleTap: () => void
     }
     languageIconRotation: {
-      style: unknown
+      style: MotionStyle
     }
   }
   t: {
@@ -257,7 +258,7 @@ function HeaderButton({
   children,
 }: {
   animation: {
-    buttonStyle: unknown
+    buttonStyle: MotionStyle
     handleEnter: () => void
     handleLeave: () => void
     handleTap: () => void

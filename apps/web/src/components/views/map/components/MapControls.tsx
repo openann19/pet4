@@ -28,7 +28,6 @@ export function MapControls({
   onRequestLocation,
 }: MapControlsProps): React.JSX.Element {
   const { t } = useApp();
-  const { PLACE_CATEGORIES } = useMapConfig();
 
   return (
     <MotionView
@@ -79,4 +78,3 @@ export function MapControls({
     </MotionView>
   );
 }
-

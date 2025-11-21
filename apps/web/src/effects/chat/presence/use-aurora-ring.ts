@@ -119,10 +119,7 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
     isActiveRef.current = true;
 
     const isReducedMotion = reducedMotion.value;
-    const pulseDuration = getReducedMotionDuration(
-      scaleDuration(PULSE_DURATION),
-      isReducedMotion
-    );
+    const pulseDuration = getReducedMotionDuration(scaleDuration(PULSE_DURATION), isReducedMotion);
     const rotationDuration = getReducedMotionDuration(
       scaleDuration(ROTATION_DURATION),
       isReducedMotion
@@ -202,7 +199,20 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
     }
 
     logger.info('Aurora ring started', { status, size, reducedMotion: isReducedMotion });
-  }, [enabled, status, size, reducedMotion, scaleDuration, visual, theme, animation, ringOpacity, ringScale, ringRotation, glowIntensity]);
+  }, [
+    enabled,
+    status,
+    size,
+    reducedMotion,
+    scaleDuration,
+    visual,
+    theme,
+    animation,
+    ringOpacity,
+    ringScale,
+    ringRotation,
+    glowIntensity,
+  ]);
 
   useEffect(() => {
     startAnimation();
@@ -211,7 +221,9 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
       // Log effect end on cleanup
       if (effectIdRef.current) {
         logEffectEnd(effectIdRef.current, {
-          durationMs: Date.now() - (effectIdRef.current ? parseInt(effectIdRef.current.split('-')[1] ?? '0') : 0),
+          durationMs:
+            Date.now() -
+            (effectIdRef.current ? parseInt(effectIdRef.current.split('-')[1] ?? '0') : 0),
           success: true,
         });
         effectIdRef.current = null;
@@ -224,13 +236,12 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
     const colors = STATUS_COLORS[status] ?? STATUS_COLORS.online;
     const blurRadius = Math.round((size / 4) * glowIntensity.value);
     const glowRadius = Math.round((size / 2) * glowIntensity.value);
+    const scale = ringScale.value ?? 1;
+    const rotate = ringRotation.value ?? 0;
 
     return {
       opacity: ringOpacity.value,
-      transform: [
-        { scale: ringScale.value },
-        { rotate: `${ringRotation.value}deg` },
-      ],
+      transform: `scale(${scale}) rotate(${rotate}deg)`,
       boxShadow: `
         0 0 ${blurRadius}px ${colors.primary}80,
         0 0 ${glowRadius}px ${colors.secondary}40,

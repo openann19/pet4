@@ -37,14 +37,14 @@ export function useStories({
 
   const addStory = useCallback(
     (story: Story) => {
-      setAllStories((prev) => [...(prev ?? []), story]);
+      void setAllStories((prev) => [...(prev ?? []), story]);
     },
     [setAllStories]
   );
 
   const updateStory = useCallback(
     (storyId: string, updates: Partial<Story>) => {
-      setAllStories((prev) =>
+      void setAllStories((prev) =>
         (prev ?? []).map((story) => (story.id === storyId ? { ...story, ...updates } : story))
       );
     },
@@ -53,7 +53,7 @@ export function useStories({
 
   const deleteStory = useCallback(
     (storyId: string) => {
-      setAllStories((prev) => (prev ?? []).filter((story) => story.id !== storyId));
+      void setAllStories((prev) => (prev ?? []).filter((story) => story.id !== storyId));
     },
     [setAllStories]
   );

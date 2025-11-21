@@ -42,7 +42,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadApplications();
+    void loadApplications();
   }, []);
 
   const loadApplications = async () => {

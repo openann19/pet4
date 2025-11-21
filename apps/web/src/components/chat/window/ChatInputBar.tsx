@@ -4,11 +4,14 @@
  */
 
 import { MotionView } from '@petspark/motion'
+import type { AnimatedStyle } from '@petspark/motion'
+import type { KeyboardEvent, RefObject } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import type { InputRef } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { VoiceRecorder } from '@/components/chat/VoiceRecorder'
+import VoiceRecorder from '@/components/chat/VoiceRecorder'
 import {
   ChatCentered,
   Microphone,
@@ -19,12 +22,11 @@ import {
 } from '@phosphor-icons/react'
 import { MESSAGE_TEMPLATES, REACTION_EMOJIS } from '@/lib/chat-types'
 import { CHAT_STICKERS } from '@/lib/chat-utils'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { useAnimatedStyle } from '@petspark/motion'
 
-interface ChatInputBarProps {
+export interface ChatInputBarProps {
   inputValue: string
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: RefObject<InputRef>
   showTemplates: boolean
   showStickers: boolean
   isRecording: boolean
@@ -86,7 +88,7 @@ export function ChatInputBar({
   emojiButtonTap,
   emojiButtonHover,
   sendButtonHover,
-  sendButtonTap,
+  sendButtonTap: _sendButtonTap,
   onInputChange,
   onSendMessage,
   onUseTemplate,
@@ -122,7 +124,10 @@ export function ChatInputBar({
               {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
                 <MotionView
                   key={template.id}
-                  style={[templateButtonHover.animatedStyle, templateButtonTap.animatedStyle]}
+                  style={{
+                    ...(templateButtonHover.animatedStyle),
+                    ...(templateButtonTap.animatedStyle),
+                  }}
                   onClick={() => onUseTemplate(template.text)}
                   onMouseEnter={templateButtonHover.handleEnter}
                   onMouseLeave={templateButtonHover.handleLeave}
@@ -182,9 +187,12 @@ export function ChatInputBar({
                     {CHAT_STICKERS.map((sticker) => (
                       <MotionView
                         key={sticker.id}
-                        style={[stickerButtonTap.animatedStyle, stickerButtonHover.animatedStyle]}
+                        style={{
+                          ...(stickerButtonTap.animatedStyle),
+                          ...(stickerButtonHover.animatedStyle),
+                        }}
                         onClick={() => onSendMessage(sticker.emoji, 'sticker')}
-                        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault()
                             onSendMessage(sticker.emoji, 'sticker')
@@ -208,11 +216,14 @@ export function ChatInputBar({
                     {REACTION_EMOJIS.map((emoji) => (
                       <MotionView
                         key={emoji}
-                        style={[emojiButtonTap.animatedStyle, emojiButtonHover.animatedStyle]}
+                        style={{
+                          ...(emojiButtonTap.animatedStyle),
+                          ...(emojiButtonHover.animatedStyle),
+                        }}
                         onClick={() => {
                           onSendMessage(emoji, 'text')
                         }}
-                        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                        onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault()
                             onSendMessage(emoji, 'text')
@@ -242,7 +253,7 @@ export function ChatInputBar({
               onChange={(e) => {
                 onInputChange(e.target.value)
               }}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
                   onSendMessage(inputValue, 'text')

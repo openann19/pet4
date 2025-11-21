@@ -270,7 +270,7 @@ export const communityService = {
     description?: string
   ): Promise<Report> {
     try {
-      return await communityApi.reportContent(targetType, targetId, {
+      return await communityApi.reportContent(targetId, {
         reasons,
         ...(description !== undefined && { description }),
       });

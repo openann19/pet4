@@ -1,5 +1,3 @@
-import type { Language } from '../types';
-
 export const chatTranslations = {
   en: {
     chat: {

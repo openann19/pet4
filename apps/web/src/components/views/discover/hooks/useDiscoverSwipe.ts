@@ -17,6 +17,7 @@ const logger = createLogger('useDiscoverSwipe');
 
 export interface UseDiscoverSwipeOptions {
   currentPet: Pet | null;
+  swipingPetId: string;
   currentIndex: number;
   onSwipeComplete: () => void;
   onMatch: (match: Match) => void;
@@ -37,7 +38,13 @@ export interface UseDiscoverSwipeReturn {
 }
 
 export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverSwipeReturn {
-  const { currentPet, currentIndex: _currentIndex, onSwipeComplete, onMatch } = options;
+  const {
+    currentPet,
+    swipingPetId,
+    currentIndex: _currentIndex,
+    onSwipeComplete,
+    onMatch,
+  } = options;
 
   const [, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
   const [, setMatches] = useStorage<Match[]>('matches', []);
@@ -63,6 +70,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
         // Save to history
         const newSwipe: SwipeAction = {
           id: `swipe-${Date.now()}`,
+          petId: swipingPetId,
           targetPetId: currentPet.id,
           action,
           timestamp: new Date().toISOString(),
@@ -80,9 +88,14 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
           if (matchResult.isMatch) {
             const match: Match = {
               id: `match-${Date.now()}`,
-              petId: currentPet.id,
+              petId: swipingPetId,
+              matchedPetId: currentPet.id,
+              matchedPetName: currentPet.name,
+              matchedPetPhoto: currentPet.photo,
+              compatibilityScore: matchResult.compatibility || swipeResult.compatibility,
+              reasoning: [], // TODO: Add reasoning from matching algorithm
               matchedAt: new Date().toISOString(),
-              compatibility: matchResult.compatibility || swipeResult.compatibility,
+              status: 'active',
             };
 
             void setMatches((prev) => [...(prev ?? []), match]).catch((error) => {
@@ -102,7 +115,16 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
         toast.error('Failed to process swipe. Please try again.');
       }
     },
-    [currentPet, performSwipe, checkMatch, setSwipeHistory, setMatches, onMatch, onSwipeComplete]
+    [
+      currentPet,
+      swipingPetId,
+      performSwipe,
+      checkMatch,
+      setSwipeHistory,
+      setMatches,
+      onMatch,
+      onSwipeComplete,
+    ]
   );
 
   const {

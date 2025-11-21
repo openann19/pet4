@@ -72,8 +72,9 @@ export default function StoryTemplateSelector({
           <Presence mode="popLayout">
             {filteredTemplates.map((template, index) => (
               <MotionView
-                as="button"
                 key={template.id}
+                role="button"
+                tabIndex={0}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
@@ -83,7 +84,7 @@ export default function StoryTemplateSelector({
                 }}
                 onClick={() => { onSelectTemplate(template); }}
                 className={cn(
-                  'relative aspect-[9/16] rounded-xl overflow-hidden border-2 transition-all duration-200',
+                  'relative aspect-9/16 rounded-xl overflow-hidden border-2 transition-all duration-200',
                   selectedTemplate.id === template.id
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-border hover:border-primary/50'
@@ -117,13 +118,13 @@ export default function StoryTemplateSelector({
                 )}
 
                 {selectedTemplate.id === template.id && (
-                  <MotionView
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg"
                   >
                     <Check size={12} weight="bold" className="text-white" />
-                  </MotionView>
+                  </motion.div>
                 )}
 
                 {template.animationStyle && (

@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView, useAnimatedStyle, useTransform } from '@petspark/motion';
 /**
  * Template Panel Component
  *
@@ -11,7 +11,7 @@ import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import type { MessageTemplate } from '@/lib/chat-types';
 import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
 import { TemplateButton } from './TemplateButton';
-import { useUIConfig } from "@/hooks/use-ui-config";
+import { useUIConfig } from '@/hooks/use-ui-config';
 
 export interface TemplatePanelProps {
   onClose: () => void;
@@ -19,16 +19,18 @@ export interface TemplatePanelProps {
 }
 
 export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.Element {
-    const _uiConfig = useUIConfig();
-    const animation = useEntryAnimation({ initialY: 20, delay: 0 });
+  const _uiConfig = useUIConfig();
+  const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
-    const animatedStyle = useAnimatedStyle(() => ({
-      opacity: animation.opacity.get(),
-      transform: [
-        { translateY: animation.translateY.get() },
-        { scale: animation.scale.get() },
-      ],
-    }));
+  const transform = useTransform(
+    [animation.translateY, animation.scale],
+    ([y, s]: (number | string)[]) => `translateY(${y}px) scale(${s})`
+  );
+
+  const animatedStyle = {
+    opacity: animation.opacity,
+    transform,
+  };
 
   return (
     <MotionView

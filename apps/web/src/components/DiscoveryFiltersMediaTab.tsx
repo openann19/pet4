@@ -19,7 +19,7 @@ import {
 
 interface MediaTabProps {
     draft: DiscoveryPreferences;
-    onDraftChange(next: DiscoveryPreferences): void;
+    onDraftChange(this: void, next: DiscoveryPreferences): void;
 }
 
 export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps) {

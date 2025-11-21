@@ -3,7 +3,6 @@
 import { MotionView } from "@petspark/motion";
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@petspark/motion';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -24,18 +23,21 @@ export function SmartSkeleton({
   animate = true,
   count = 1,
 }: SmartSkeletonProps) {
-    const _uiConfig = useUIConfig();
-    const shimmer = useShimmer({
-        enabled: animate,
-        duration: 2000,
-      });
+  const _uiConfig = useUIConfig();
+  const shimmer = useShimmer({
+    enabled: animate,
+    duration: 2000,
+  });
 
   const baseClasses = cn('bg-muted relative overflow-hidden', className);
 
   const shimmerStyle = useMemo(() => {
-    if (!animate) return undefined;
-    return shimmer.animatedStyle as AnimatedStyle;
-  }, [animate, shimmer]);
+    if (!animate) return {};
+    return {
+      x: shimmer.translateX,
+      opacity: shimmer.opacity,
+    };
+  }, [animate, shimmer.translateX, shimmer.opacity]);
 
   const skeletonElement = () => {
     switch (variant) {

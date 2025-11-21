@@ -5,7 +5,6 @@ import {
   useAnimatedStyle,
   withSequence,
   withDelay,
-  animate,
 } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 
@@ -54,30 +53,27 @@ function ParticleAnimated({ particle }: { particle: Particle }) {
       withTiming(1, { duration: durationMs * 0.6 }),
       withTiming(0, { duration: durationMs * 0.2 })
     );
-    const opacityDelay = withDelay(delayMs, opacitySequence);
-    animate(opacity, opacityDelay.target, opacityDelay.transition);
+    opacity.value = withDelay(delayMs, opacitySequence);
 
     const scaleSequence = withSequence(
       withTiming(1, { duration: durationMs * 0.2 }),
       withTiming(1, { duration: durationMs * 0.6 }),
       withTiming(0, { duration: durationMs * 0.2 })
     );
-    const scaleDelay = withDelay(delayMs, scaleSequence);
-    animate(scale, scaleDelay.target, scaleDelay.transition);
+    scale.value = withDelay(delayMs, scaleSequence);
 
-    const translateXDelay = withDelay(delayMs, withTiming(particle.x, { duration: durationMs }));
-    animate(translateX, translateXDelay.target, translateXDelay.transition);
-
-    const translateYDelay = withDelay(delayMs, withTiming(particle.y, { duration: durationMs }));
-    animate(translateY, translateYDelay.target, translateYDelay.transition);
+    translateX.value = withDelay(delayMs, withTiming(particle.x, { duration: durationMs }));
+    translateY.value = withDelay(delayMs, withTiming(particle.y, { duration: durationMs }));
   }, [particle, opacity, scale, translateX, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.get(),
     transform: [
-      { translateX: translateX.get() },
-      { translateY: translateY.get() },
-      { scale: scale.get() },
+      {
+        translateX: translateX.get(),
+        translateY: translateY.get(),
+        scale: scale.get(),
+      },
     ],
   }));
 

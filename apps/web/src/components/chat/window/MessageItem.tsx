@@ -55,8 +55,8 @@ export function MessageItem({
   const stableReference = useMemo(() => {
     return getStableMessageReference(
       message.id,
-      message.timestamp || message.createdAt,
-      message.senderName || currentUserName || 'Unknown',
+      message.timestamp ?? message.createdAt,
+      message.senderName ?? currentUserName ?? 'Unknown',
       message.content,
       true // use relative timestamp
     );
@@ -89,11 +89,11 @@ export function MessageItem({
     const scale = entry.scale.get();
     const translateY = entry.translateY.get();
     const opacity = entry.opacity.get();
-    
+
     if (isCurrentUser) {
       const translateX = sendWarp.translateX.get();
       return {
-        opacity: opacity * sendWarp.opacity.get(),
+        opacity: opacity * sendWarp.opacityValue.get(),
         transform: [
           { translateX, scale, translateY },
         ],

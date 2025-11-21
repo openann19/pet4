@@ -5,6 +5,7 @@
 
 import { Suspense, lazy } from 'react'
 import { MotionView } from '@petspark/motion'
+import type { MotionStyle, MotionValue } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import LoadingState from '@/components/LoadingState'
@@ -29,48 +30,48 @@ interface AppModalsProps {
   setShowThemeSettings: (show: boolean) => void
   animations: {
     generateProfilesModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     generateProfilesContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     statsModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     statsContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     mapModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     mapContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     adminModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: MotionValue<number>
+      scale: MotionValue<number>
+      y: MotionValue<number>
     }
     adminContent: {
-      style: unknown
+      style: MotionStyle
     }
     themeContent: {
-      style: unknown
+      style: MotionStyle
     }
     closeButtonBounce: {
-      scale: unknown
+      scale: MotionValue<number>
     }
   }
   totalMatches: number
@@ -220,4 +221,3 @@ export function AppModals({
     </>
   )
 }
-

@@ -5,9 +5,8 @@ import type { CallSignal } from '../call-types'
 import { CallSignalingClient } from '../signaling-client'
 
 function drainHandlers(client: CallSignalingClient) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handlers = (client as any).handlers as Set<(signal: CallSignal) => void>
-  return handlers
+  const internals = client.getDebugInternalsForTests()
+  return internals.handlers
 }
 
 describe('CallSignalingClient', () => {
@@ -18,8 +17,7 @@ describe('CallSignalingClient', () => {
       token: 'token-123',
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const built = (client as any).buildUrl() as string
+    const built = client.getDebugInternalsForTests().buildUrl()
     expect(built).toContain('wss://example.com/calls')
     expect(built).toContain('userId=user-1')
     expect(built).toContain('token=token-123')

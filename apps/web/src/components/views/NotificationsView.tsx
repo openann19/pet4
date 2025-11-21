@@ -23,6 +23,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { MotionView, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -80,7 +81,7 @@ function _EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
         {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
       </h2>
       <p className="text-sm text-muted-foreground max-w-sm">
-        {filter === 'unread' 
+        {filter === 'unread'
           ? 'You\'re all caught up!'
           : 'When you get notifications, they\'ll appear here'}
       </p>
@@ -114,7 +115,7 @@ function _NotificationItemView({
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ translateX: `${String(translateX.value)}px` }]
-  })) as AnimatedStyle
+  }))
 
   const Icon = getNotificationIcon(notification.type)
   const message = getNotificationMessage(notification)
@@ -127,9 +128,9 @@ function _NotificationItemView({
       }}
       className={`
         flex gap-3 p-3 rounded-lg cursor-pointer transition-colors
-        ${String(notification.read 
-          ? 'hover:bg-muted/50' 
-          : 'bg-primary/5 hover:bg-primary/10 border border-primary/20')
+        ${String(notification.read
+        ? 'hover:bg-muted/50'
+        : 'bg-primary/5 hover:bg-primary/10 border border-primary/20')
         }
       `}
     >
@@ -269,9 +270,9 @@ export default function NotificationsView({
       case 'mention':
         return `${notification.actorName} mentioned you`;
       case 'moderation':
-        return notification.content || 'Your content was reviewed';
+        return notification.content ?? 'Your content was reviewed';
       default:
-        return notification.content || 'New notification';
+        return notification.content ?? 'New notification';
     }
   };
 
@@ -310,7 +311,7 @@ export default function NotificationsView({
               )}
             </div>
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={handleMarkAllAsRead} className="text-xs">
+              <Button variant="outline" size="sm" onClick={() => { void handleMarkAllAsRead(); }} className="text-xs">
                 <Check size={14} className="mr-1" />
                 Mark all read
               </Button>

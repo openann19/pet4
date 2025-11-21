@@ -1,6 +1,6 @@
 'use client';;
 import React, { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import type { MotionView as MotionViewType } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -56,7 +56,7 @@ export function PremiumAvatar({
   const glowOpacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.get() }],
+    transform: `scale(${scale.get()})`,
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
@@ -65,20 +65,16 @@ export function PremiumAvatar({
 
   const handleMouseEnter = useCallback(() => {
     if (prefersReducedMotion) return;
-    const scaleTransition = withSpring(1.05, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
+    scale.value = withSpring(1.05, springConfigs.smooth);
     if (variant === 'glow') {
-      const glowTransition = withSpring(1, springConfigs.smooth);
-      animate(glowOpacity, glowTransition.target, glowTransition.transition);
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
     }
   }, [scale, glowOpacity, variant, prefersReducedMotion]);
 
   const handleMouseLeave = useCallback(() => {
     if (prefersReducedMotion) return;
-    const scaleTransition = withSpring(1, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
-    const glowTransition = withSpring(0, springConfigs.smooth);
-    animate(glowOpacity, glowTransition.target, glowTransition.transition);
+    scale.value = withSpring(1, springConfigs.smooth);
+    glowOpacity.value = withSpring(0, springConfigs.smooth);
   }, [scale, glowOpacity, prefersReducedMotion]);
 
   const handleClick = useCallback(() => {
@@ -90,11 +86,9 @@ export function PremiumAvatar({
 
   const handleLongPress = useCallback(() => {
     if (variant === 'glow') {
-      const glowTransition1 = withSpring(1, springConfigs.smooth);
-      animate(glowOpacity, glowTransition1.target, glowTransition1.transition);
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
       setTimeout(() => {
-        const glowTransition2 = withSpring(0, springConfigs.smooth);
-        animate(glowOpacity, glowTransition2.target, glowTransition2.transition);
+        glowOpacity.value = withSpring(0, springConfigs.smooth);
       }, 500);
     }
     haptics.impact('medium');

@@ -42,7 +42,7 @@ export const removeDefaultOutline = 'outline-none focus:outline-none';
  */
 export function getFocusRingClasses(surface: 'default' | 'dark' | 'input' | 'link' = 'default'): string {
   const key = surface === 'default' ? 'standard' : surface;
-  return `${focusRingClasses[key as keyof typeof focusRingClasses]} ${removeDefaultOutline}`;
+  return `${focusRingClasses[key]} ${removeDefaultOutline}`;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import type { MergedSpec } from '@petspark/spec-core'
 
 export interface SpecComplianceStatus {
@@ -29,7 +29,7 @@ export function useSpecCompliance(mergedSpec?: MergedSpec): SpecComplianceStatus
 
     if (mergedSpec.configuration.env) {
       for (const key of Object.keys(mergedSpec.configuration.env)) {
-        const value = process.env[key] ?? import.meta.env[key]
+        const value = (process.env[key] ?? import.meta.env[key]) as string | undefined
         if (!value) {
           missingSecrets.push(key)
         }
@@ -55,6 +55,5 @@ export function useSpecCompliance(mergedSpec?: MergedSpec): SpecComplianceStatus
 
   return status
 }
-
 
 

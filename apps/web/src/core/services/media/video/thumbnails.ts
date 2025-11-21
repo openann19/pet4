@@ -89,13 +89,29 @@ async function generateNativeThumbnails(uri: string, count: number): Promise<str
     const FileSystemModule = await import('expo-file-system');
     const FileSystem = FileSystemModule.default ?? FileSystemModule;
 
-    const cacheDir = FileSystem.cacheDirectory;
+    // Type assertion for expo-file-system API
+    const fileSystem = FileSystem as {
+      cacheDirectory?: string;
+      makeDirectoryAsync?: (path: string, options?: { intermediates?: boolean }) => Promise<void>;
+      getInfoAsync?: (path: string) => Promise<{ exists: boolean; [key: string]: unknown }>;
+    };
+
+    // Type guard to ensure FileSystem has the required methods
+    if (
+      !fileSystem ||
+      typeof fileSystem.makeDirectoryAsync !== 'function' ||
+      typeof fileSystem.getInfoAsync !== 'function'
+    ) {
+      return [];
+    }
+
+    const cacheDir = fileSystem.cacheDirectory;
     if (!cacheDir) {
       return [];
     }
 
     const outDir = `${cacheDir}thumbs_${Date.now()}/`;
-    await FileSystem.makeDirectoryAsync(outDir, { intermediates: true });
+    await fileSystem.makeDirectoryAsync(outDir, { intermediates: true });
 
     const thumbnails: string[] = [];
     const stepSec = 1.0;
@@ -107,7 +123,7 @@ async function generateNativeThumbnails(uri: string, count: number): Promise<str
 
       try {
         await FFmpegKit.execute(args);
-        const info = await FileSystem.getInfoAsync(outputPath);
+        const info = await fileSystem.getInfoAsync(outputPath);
         if (info.exists) {
           thumbnails.push(outputPath);
         }

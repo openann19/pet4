@@ -45,7 +45,7 @@ export function useHoverAnimation(options: UseHoverAnimationOptions = {}): UseHo
   const handleMouseDown = useCallback(() => {
     if (!enabled) return;
     isPressed.value = 1;
-    scale.value = withTiming(0.98, { duration: duration / 2 });
+    scale.value = withTiming(0.98, { duration: (duration ?? 0) / 2 });
   }, [enabled, duration, isPressed, scale]);
 
   const handleMouseUp = useCallback(() => {
@@ -57,7 +57,7 @@ export function useHoverAnimation(options: UseHoverAnimationOptions = {}): UseHo
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: `scale(${scale.value})`,
     };
   });
 

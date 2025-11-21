@@ -58,9 +58,11 @@ export function useMessageManagement(
       if (!content.trim() && type === 'text' && !attachments?.length) return;
 
       haptics.trigger('light');
-      sendPing().catch(() => {
+      try {
+        await sendPing();
+      } catch {
         // Silently handle audio errors
-      });
+      }
 
       const newMessage: ChatMessage = {
         id: generateMessageId(),

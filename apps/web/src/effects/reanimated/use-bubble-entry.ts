@@ -93,11 +93,7 @@ export function useBubbleEntry(options: UseBubbleEntryOptions = {}): UseBubbleEn
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { translateX: translateX.value },
-        { scale: scale.value },
-      ],
+      transform: `translateY(${translateY.value}px) translateX(${translateX.value}px) scale(${scale.value})`,
     };
   });
 

@@ -222,13 +222,14 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
     }
 
     // Emoji lift animation - use UI config spring physics or adaptive config
-    const springConfig = animation.enableReanimated && animation.springPhysics
-      ? {
-          stiffness: animation.springPhysics.stiffness,
-          damping: animation.springPhysics.damping,
-          mass: animation.springPhysics.mass,
-        }
-      : adaptiveAnimationConfigs.bouncy(hz as 60 | 120);
+    const springConfig =
+      animation.enableReanimated && animation.springPhysics
+        ? {
+            stiffness: animation.springPhysics.stiffness,
+            damping: animation.springPhysics.damping,
+            mass: animation.springPhysics.mass,
+          }
+        : adaptiveAnimationConfigs.bouncy(hz as 60 | 120);
     emojiScale.value = withSpring(1.2, springConfig);
     emojiTranslateY.value = withSpring(-15, springConfig);
 
@@ -255,7 +256,22 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
         success: true,
       });
     }, burstDuration);
-  }, [enabled, reducedMotion, hz, scaleDuration, visual, feedback, animation, particles, emojiScale, emojiTranslateY, shadowRadius, onComplete, particleCount, deviceCapability]);
+  }, [
+    enabled,
+    reducedMotion,
+    hz,
+    scaleDuration,
+    visual,
+    feedback,
+    animation,
+    particles,
+    emojiScale,
+    emojiTranslateY,
+    shadowRadius,
+    onComplete,
+    particleCount,
+    deviceCapability,
+  ]);
 
   const triggerLongPress = useCallback(() => {
     // Haptic: Success on long-press menu confirm (only if haptics enabled)
@@ -266,8 +282,10 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
   }, [feedback.haptics, onLongPressConfirm]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const scale = emojiScale.value ?? 1;
+    const translateY = emojiTranslateY.value ?? 0;
     return {
-      transform: [{ scale: emojiScale.value }, { translateY: emojiTranslateY.value }],
+      transform: `scale(${scale}) translateY(${translateY}px)`,
       boxShadow: `0 ${shadowRadius.value}px ${shadowRadius.value * 2}px rgba(0, 0, 0, 0.3)`,
     };
   }) as AnimatedStyle;

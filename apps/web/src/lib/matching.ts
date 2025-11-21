@@ -141,8 +141,24 @@ Return as JSON with a "reasons" array of 2-3 strings:
 
   try {
     const result = await llmService.llm(prompt, 'gpt-4o-mini', true);
-    const data = JSON.parse(result);
-    return data.reasons ?? generateFallbackReasoning(userPet, otherPet, factors);
+    const parsed: unknown = JSON.parse(result);
+
+    if (parsed && typeof parsed === 'object' && 'reasons' in parsed) {
+      const rawReasons = (parsed as { reasons?: unknown }).reasons;
+
+      if (Array.isArray(rawReasons)) {
+        const reasons = rawReasons
+          .map((value) => (typeof value === 'string' ? value : String(value)))
+          .map((value) => value.trim())
+          .filter((value) => value.length > 0);
+
+        if (reasons.length > 0) {
+          return reasons;
+        }
+      }
+    }
+
+    return generateFallbackReasoning(userPet, otherPet, factors);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.warn('AI reasoning unavailable, using fallback logic', { error: err });

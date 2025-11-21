@@ -192,7 +192,7 @@ export function useDeleteBubbleAnimation(
     if (translateXValue !== 0) transforms.push({ translateX: translateXValue });
     
     const rotationValue = rotation.get();
-    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue as number}deg` });
+    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue}deg` });
 
     return {
       opacity: opacity.get(),

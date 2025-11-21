@@ -6,6 +6,18 @@ import { hashPassword, verifyPassword } from './password-utils';
 import { log } from './logger';
 import type { User, UserRole, AuthTokens } from './contracts';
 
+class AuthError extends Error {
+  code: string;
+  timestamp: string;
+
+  constructor(code: string, message: string) {
+    super(message);
+    this.name = 'AuthError';
+    this.code = code;
+    this.timestamp = new Date().toISOString();
+  }
+}
+
 interface LoginCredentials {
   email: string;
   password: string;
@@ -30,11 +42,7 @@ export class AuthService {
     const user = existingUsers.find((u) => u.email === credentials.email && u.status === 'active');
 
     if (!user) {
-      throw {
-        code: 'AUTH_001',
-        message: 'Invalid credentials',
-        timestamp: new Date().toISOString(),
-      };
+      throw new AuthError('AUTH_001', 'Invalid credentials');
     }
 
     // Verify password if password hash exists
@@ -46,11 +54,7 @@ export class AuthService {
       );
 
       if (!isValid) {
-        throw {
-          code: 'AUTH_001',
-          message: 'Invalid credentials',
-          timestamp: new Date().toISOString(),
-        };
+        throw new AuthError('AUTH_001', 'Invalid credentials');
       }
     } else {
       // Legacy users without password hashes - allow login for migration
@@ -71,11 +75,7 @@ export class AuthService {
     const existingUsers = (await storage.get<User[]>('all-users')) ?? [];
 
     if (existingUsers.some((u) => u.email === credentials.email)) {
-      throw {
-        code: 'AUTH_008',
-        message: 'Email already exists',
-        timestamp: new Date().toISOString(),
-      };
+      throw new AuthError('AUTH_008', 'Email already exists');
     }
 
     // Hash the password
@@ -121,11 +121,7 @@ export class AuthService {
    */
   async changePassword(oldPassword: string, newPassword: string): Promise<void> {
     if (!this.currentUser) {
-      throw {
-        code: 'AUTH_007',
-        message: 'Not authenticated',
-        timestamp: new Date().toISOString(),
-      };
+      throw new AuthError('AUTH_007', 'Not authenticated');
     }
 
     // Verify old password
@@ -137,22 +133,18 @@ export class AuthService {
       );
 
       if (!isValid) {
-        throw {
-          code: 'AUTH_001',
-          message: 'Invalid current password',
-          timestamp: new Date().toISOString(),
-        };
+        throw new AuthError('AUTH_001', 'Invalid current password');
       }
 
       // Hash new password
-      const { hash, salt } = await hashPassword(newPassword)
+      const { hash, salt } = await hashPassword(newPassword);
 
       // Update user password
       await this.updateUser({
         passwordHash: hash,
-        passwordSalt: salt
-      })
-      return
+        passwordSalt: salt,
+      });
+      return;
     }
 
     // Hash new password

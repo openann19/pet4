@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTypingManager } from '@/hooks/use-typing-manager';
 import { useCall } from '@/hooks/useCall';
 import { useChatMessages } from '@/hooks/useChatMessages';
@@ -34,6 +34,18 @@ export function useChatWindow({
   currentUserName,
   currentUserAvatar,
 }: UseChatWindowProps) {
+  const [awayMode, setAwayMode] = useState(false);
+
+  const onToggleAwayMode = useCallback(() => {
+    setAwayMode(prev => !prev);
+    // In a real app, this would likely trigger an API call or other side effects
+  }, []);
+
+  const onBlockUser = useCallback(() => {
+    // In a real app, this would trigger an API call to block the user
+    console.warn(`User block action initiated for room ${room.id}`);
+  }, [room.id]);
+
   const useVirtualizedList = useFeatureFlag('chat.virtualization');
   const {
     messages,
@@ -213,6 +225,9 @@ export function useChatWindow({
     lastMessageSender,
     typingUser,
     multipleTypingUsers,
+    awayMode,
+    onToggleAwayMode,
+    onBlockUser,
   };
 }
 

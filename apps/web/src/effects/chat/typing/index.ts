@@ -6,5 +6,4 @@
  *
  * Location: apps/web/src/effects/chat/typing/index.ts
  */
-
-export * from './use-liquid-dots';
+export * from './use-typing-indicator-motion';

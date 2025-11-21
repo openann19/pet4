@@ -6,6 +6,7 @@ import { PaymentsService } from '@/lib/payments-service';
 import type { BillingIssue } from '@/lib/payments-types';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
+import { spark } from '@/lib/spark';
 
 export function BillingIssueBanner() {
   const [issue, setIssue] = useState<BillingIssue | null>(null);

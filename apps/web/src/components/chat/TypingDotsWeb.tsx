@@ -1,13 +1,8 @@
-'use client';;
-import { useEffect } from 'react';
-import {
-  useMotionValue,
-  useAnimatedStyle,
-  animate,
-  MotionView,
-} from '@petspark/motion';
+'use client';
+import React from 'react';
+import { MotionView } from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import { useUIConfig } from "@/hooks/use-ui-config";
+import { useTypingIndicatorMotion } from '@/effects/chat/typing';
 
 export interface TypingDotsWebProps {
   dotSize?: number;
@@ -26,67 +21,35 @@ export function TypingDotsWeb({
   dotSize = DEFAULT_DOT_SIZE,
   dotColor = DEFAULT_DOT_COLOR,
   gap = DEFAULT_GAP,
-  animationDuration = DEFAULT_ANIMATION_DURATION,
+  animationDuration: _animationDuration = DEFAULT_ANIMATION_DURATION,
   className,
-}: TypingDotsWebProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    return (
-        <div className={cn('flex items-center', className)} style={{ gap }}>
-          {[0, 1, 2].map((index) => (
-            <TypingDot
-              key={index}
-              dotSize={dotSize}
-              dotColor={dotColor}
-              animationDuration={animationDuration}
-              delay={index * 200}
-            />
-          ))}
-        </div>
-      );
-}
+}: TypingDotsWebProps): React.JSX.Element | null {
+  const typingMotion = useTypingIndicatorMotion({
+    isTyping: true,
+    dotCount: 3,
+    reducedMode: 'static-dots',
+  });
 
-function TypingDot({
-  dotSize,
-  dotColor,
-  animationDuration,
-  delay,
-}: {
-  dotSize: number;
-  dotColor: string;
-  animationDuration: number;
-  delay: number;
-}) {
-  const scale = useMotionValue(1);
-  const opacity = useMotionValue(0.5);
-
-  useEffect(() => {
-    setTimeout(() => {
-      animate(scale, 1.4, {
-        duration: animationDuration,
-        repeat: Infinity,
-        repeatType: 'reverse',
-        ease: 'easeInOut',
-      });
-      animate(opacity, 1, {
-        duration: animationDuration,
-        repeat: Infinity,
-        repeatType: 'reverse',
-        ease: 'easeInOut',
-      });
-    }, delay);
-  }, [delay, animationDuration, scale, opacity]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.get() }],
-    opacity: opacity.get(),
-    width: dotSize,
-    height: dotSize,
-    backgroundColor: dotColor,
-  }));
+  if (!typingMotion.isVisible) {
+    return null;
+  }
 
   return (
-    <MotionView style={animatedStyle} className="rounded-full">
-      <div />
+    <MotionView style={typingMotion.animatedStyle} className={cn('flex items-center', className)}>
+      <div className="flex items-center" style={{ gap }}>
+        {typingMotion.dots.map((dot) => (
+          <MotionView
+            key={dot.id}
+            style={{
+              ...dot.animatedStyle,
+              width: dotSize,
+              height: dotSize,
+              backgroundColor: dotColor,
+            }}
+            className="rounded-full"
+          />
+        ))}
+      </div>
     </MotionView>
   );
 }

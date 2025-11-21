@@ -31,8 +31,8 @@ import {
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
 import * as Reanimated from '@petspark/motion';
-import { interpolate, Extrapolation, MotionView } from '@petspark/motion';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { interpolate, Extrapolation, MotionView, type MotionStyle } from '@petspark/motion';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SaveToHighlightDialog from './SaveToHighlightDialog';
 import { ProgressiveImage } from '@/components/enhanced/ProgressiveImage';
@@ -161,25 +161,23 @@ export default function StoryViewer({
     swipeThreshold: 50,
   });
 
-  const swipeOpacityStyle = Reanimated.useAnimatedStyle(() => {
-    const opacity = interpolate(
-      swipeProgress.value,
-      [-1, 0, 1],
-      [0.5, 1, 0.5],
-      Extrapolation.CLAMP
-    );
-    return { opacity };
+  const mediaContainerOpacity = Reanimated.useMotionValue(1);
+  const mediaContainerStyle = Reanimated.useAnimatedStyle(() => {
+    const opacity = gestureState.isSwiping ? 0.5 : 1;
+    const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale;
+    return {
+      opacity,
+      scale,
+    };
   });
 
-  const swipeScaleStyle = Reanimated.useAnimatedStyle(() => {
-    const scale = interpolate(
-      swipeProgress.value,
-      [-1, 0, 1],
-      [0.95, 1, 0.95],
-      Extrapolation.CLAMP
-    );
-    return { transform: [{ scale }] };
-  });
+  const swipeOpacityStyle: MotionStyle = {
+    opacity: Reanimated.useMotionValue(1),
+  };
+
+  const swipeScaleStyle: MotionStyle = {
+    scale: Reanimated.useMotionValue(1),
+  };
 
   const startProgress = useCallback(() => {
     if (progressIntervalRef.current) {
@@ -346,7 +344,9 @@ export default function StoryViewer({
             // Share cancelled
           });
       } else {
-        navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
+        void navigator.clipboard.writeText(
+          `${window.location.origin}/stories/${currentStory.id}`
+        );
         toast.success('Link copied to clipboard');
       }
     }
@@ -390,20 +390,50 @@ export default function StoryViewer({
     transition: transitionConfig,
   });
 
-  const mediaContainerStyle = Reanimated.useAnimatedStyle(() => {
-    const opacity = gestureState.isSwiping ? 0.5 : 1;
-    const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale;
-    return {
-      opacity,
-      transform: [{ scale }],
-    };
-  });
+  const viewerEntryStyle = useMemo(
+    () => ({
+      opacity: viewerEntry.opacity,
+    }),
+    [viewerEntry.opacity]
+  );
+
+  const captionStyle = useMemo(
+    () => ({
+      opacity: captionAnimation.opacity,
+      y: captionAnimation.translateY,
+    }),
+    [captionAnimation.opacity, captionAnimation.translateY]
+  );
+
+  const reactionsStyle = useMemo(
+    () => ({
+      opacity: reactionsAnimation.opacity,
+      y: reactionsAnimation.translateY,
+    }),
+    [reactionsAnimation.opacity, reactionsAnimation.translateY]
+  );
+
+  const analyticsStyle = useMemo(
+    () => ({
+      opacity: analyticsAnimation.opacity,
+      y: analyticsAnimation.translateY,
+    }),
+    [analyticsAnimation.opacity, analyticsAnimation.translateY]
+  );
+
+  const imageEntryStyle = useMemo(
+    () => ({
+      opacity: imageEntry.opacity,
+      scale: imageEntry.scale,
+    }),
+    [imageEntry.opacity, imageEntry.scale]
+  );
 
   if (!currentStory) return null;
 
   return (
     <MotionView
-      style={viewerEntry.animatedStyle}
+      style={viewerEntryStyle}
       className="fixed inset-0 z-100 bg-black"
       role="dialog"
       aria-modal="true"
@@ -425,7 +455,7 @@ export default function StoryViewer({
                 aria-valuenow={idx === currentIndex ? progress : idx < currentIndex ? 100 : 0}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                  aria-label={`Story ${String(idx + 1)} of ${String(stories.length)}`}
+                aria-label={`Story ${String(idx + 1)} of ${String(stories.length)}`}
               >
                 <MotionView
                   className="h-full bg-white"
@@ -543,16 +573,19 @@ export default function StoryViewer({
         <MotionView
           ref={mediaContainerRef}
           className="relative w-full h-full max-w-2xl mx-auto touch-none"
-          style={[mediaContainerStyle, swipeOpacityStyle, swipeScaleStyle]}
+          style={{
+            ...mediaContainerStyle,
+            ...swipeOpacityStyle,
+            ...swipeScaleStyle,
+          }}
         >
           {currentStory.type === 'photo' && (
-            <MotionView key={currentStory.id} style={imageEntry.animatedStyle}>
+            <MotionView key={currentStory.id} style={imageEntryStyle}>
               <ProgressiveImage
                 src={currentStory.mediaUrl}
                 alt={currentStory.caption ?? 'Story'}
                 className="w-full h-full object-contain select-none"
                 aria-label={currentStory.caption ?? 'Story image'}
-                draggable={false}
               />
             </MotionView>
           )}
@@ -574,7 +607,7 @@ export default function StoryViewer({
             <div className="absolute bottom-24 left-0 right-0 px-4">
               <MotionView
                 className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
-                style={captionAnimation.animatedStyle}
+                style={captionStyle}
               >
                 <p className="text-white text-center">{currentStory.caption}</p>
               </MotionView>
@@ -589,7 +622,7 @@ export default function StoryViewer({
               {showReactions && (
                 <MotionView
                   key="reactions"
-                  style={reactionsAnimation.animatedStyle}
+                  style={reactionsStyle}
                   className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
                   role="dialog"
                   aria-label="React to story"
@@ -598,9 +631,13 @@ export default function StoryViewer({
                     {STORY_REACTION_EMOJIS.map((emoji) => (
                       <MotionView
                         key={emoji}
-                        as="button"
+                        role="button"
+                        tabIndex={0}
                         className="text-4xl focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2"
-                        style={[reactionButtonHover.animatedStyle, reactionButtonTap.animatedStyle]}
+                        style={{
+                          ...reactionButtonHover.animatedStyle,
+                          ...reactionButtonTap.animatedStyle,
+                        }}
                         onMouseEnter={reactionButtonHover.handleEnter}
                         onMouseLeave={reactionButtonHover.handleLeave}
                         onClick={() => {
@@ -608,6 +645,13 @@ export default function StoryViewer({
                           handleReaction(emoji);
                         }}
                         aria-label={`React with ${String(emoji ?? '')}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            reactionButtonTap.handlePress();
+                            handleReaction(emoji);
+                          }
+                        }}
                       >
                         {emoji}
                       </MotionView>
@@ -661,7 +705,7 @@ export default function StoryViewer({
           <div className="absolute bottom-4 left-4 right-4 z-20">
             <MotionView
               className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
-              style={analyticsAnimation.animatedStyle}
+              style={analyticsStyle}
               role="region"
               aria-label="Story analytics"
             >

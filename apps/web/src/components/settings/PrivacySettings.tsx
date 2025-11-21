@@ -208,21 +208,30 @@ export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Ele
                             <CardDescription>Read our privacy policy and terms of service to understand how we handle your data.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2">
-                            <Button variant="outline" asChild className="w-full">
-                                <a href="/privacy" target="_blank" rel="noopener noreferrer">
-                                    View Privacy Policy
-                                </a>
-                            </Button>
-                            <Button variant="outline" asChild className="w-full">
-                                <a href="/terms" target="_blank" rel="noopener noreferrer">
-                                    View Terms of Service
-                                </a>
-                            </Button>
-                            <Button variant="outline" asChild className="w-full">
-                                <a href="/cookie-policy" target="_blank" rel="noopener noreferrer">
-                                    View Cookie Policy
-                                </a>
-                            </Button>
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
+                            >
+                                View Privacy Policy
+                            </a>
+                            <a
+                                href="/terms"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
+                            >
+                                View Terms of Service
+                            </a>
+                            <a
+                                href="/cookie-policy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
+                            >
+                                View Cookie Policy
+                            </a>
                         </CardContent>
                     </Card>
                 </div>

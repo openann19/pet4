@@ -111,12 +111,12 @@ export function DiscoverCardStackPage({
 
   const cardStyle = useAnimatedStyle(() => ({
     opacity: cardOpacity.value,
-    transform: [{ scale: cardScale.value }, { translateY: cardY.value }],
+    transform: `scale(${cardScale.value}) translateY(${cardY.value}px)`,
   }));
 
   const nextCardStyle = useAnimatedStyle(() => ({
     opacity: nextCardOpacity.value,
-    transform: [{ scale: nextCardScale.value }],
+    transform: `scale(${nextCardScale.value})`,
   }));
 
   if (!currentPet) {
@@ -284,4 +284,3 @@ export function DiscoverCardStackPage({
     </main>
   );
 }
-

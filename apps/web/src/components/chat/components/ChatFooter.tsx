@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView, useTransform } from '@petspark/motion';
 /**
  * Chat Footer Component
  *
@@ -21,9 +21,12 @@ import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { CHAT_STICKERS } from '@/lib/chat-utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
+
+import type { InputRef } from '@/components/ui/input';
+
 export interface ChatFooterProps {
   inputValue: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<InputRef>;
   showTemplates: boolean;
   showStickers: boolean;
   isRecordingVoice: boolean;
@@ -64,16 +67,18 @@ export function ChatFooter({
   setShowTemplates,
   setShowStickers,
 }: ChatFooterProps): JSX.Element {
-    const _uiConfig = useUIConfig();
+  const _uiConfig = useUIConfig();
   const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: animation.opacity.get(),
-    transform: [
-      { translateY: animation.translateY.get() },
-      { scale: animation.scale.get() },
-    ],
-  }));
+  const transform = useTransform(
+    [animation.translateY, animation.scale],
+    ([y, s]: (number | string)[]) => `translateY(${y}px) scale(${s})`
+  );
+
+  const animatedStyle = {
+    opacity: animation.opacity,
+    transform,
+  };
 
   return (
     <MotionView

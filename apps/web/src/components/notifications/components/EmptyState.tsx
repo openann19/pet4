@@ -63,7 +63,7 @@ export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
   })) as AnimatedStyle;
 
   const bellStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${bellRotate.value}deg` }, { scale: bellScale.value }],
+    transform: [{ rotate: `${bellRotate.value}deg`, scale: bellScale.value }],
   })) as AnimatedStyle;
 
   return (

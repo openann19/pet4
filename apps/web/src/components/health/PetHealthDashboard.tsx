@@ -4,7 +4,7 @@ import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petsp
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
@@ -129,18 +129,16 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
   return (
     <MotionView
       style={staggeredAnimation.itemStyle}
-      className={`flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow ${
-        String(reminder.completed ? 'opacity-50' : '' ?? '')
-      }`}
+      className={`flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow ${reminder.completed ? 'opacity-50' : ''
+        }`}
     >
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-          reminder.completed
+        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${reminder.completed
             ? 'bg-green-100 dark:bg-green-900/20'
             : isOverdue
               ? 'bg-red-100 dark:bg-red-900/20'
               : 'bg-yellow-100 dark:bg-yellow-900/20'
-        }`}
+          }`}
       >
         {reminder.completed ? (
           <CheckCircle size={20} className="text-green-600" weight="fill" />
@@ -156,7 +154,7 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
           {format(new Date(reminder.dueDate), 'MMM dd, yyyy')}
           {!reminder.completed &&
             (isOverdue
-              ? ` • ${String(Math.abs(daysUntil) ?? '')} days overdue`
+              ? ` • ${String(Math.abs(daysUntil))} days overdue`
               : daysUntil === 0
                 ? ' • Due today'
                 : ` • ${daysUntil} days away`)}

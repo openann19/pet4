@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, type Variants } from '@petspark/motion';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { cn } from '@/lib/utils';
 import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
@@ -40,8 +40,8 @@ export function ProgressiveImage({
   onLoad,
   onError,
 }: ProgressiveImageProps) {
-    const _uiConfig = useUIConfig();
-    const [isLoaded, setIsLoaded] = useState(false);
+  const _uiConfig = useUIConfig();
+  const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(placeholderSrc ?? src);
   const [error, setError] = useState(false);
   const [bestFormat, setBestFormat] = useState<'webp' | 'avif' | 'original'>('original');
@@ -71,6 +71,7 @@ export function ProgressiveImage({
       };
     } else {
       setBestFormat(format);
+      return undefined;
     }
   }, [format]);
 
@@ -162,14 +163,8 @@ export function ProgressiveImage({
 
   useEffect(() => {
     if (isLoaded) {
-      animate(placeholderOpacity, 0, {
-        duration: 0.3,
-        ease: 'easeInOut',
-      });
-      animate(imageOpacity, 1, {
-        duration: 0.3,
-        ease: 'easeInOut',
-      });
+      placeholderOpacity.set(0);
+      imageOpacity.set(1);
     }
   }, [isLoaded, placeholderOpacity, imageOpacity]);
 

@@ -85,14 +85,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
         }
       }, longPressDelay);
     }
-  }, [
-    onLongPress,
-    longPressDelay,
-    hapticFeedback,
-    scale,
-    glowOpacity,
-    glowScale,
-  ]);
+  }, [onLongPress, longPressDelay, hapticFeedback, scale, glowOpacity, glowScale]);
 
   const handlePressOut = useCallback(() => {
     isPressedRef.current = false;
@@ -141,7 +134,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: `scale(${scale.value})`,
     };
   });
 
@@ -151,7 +144,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
 
     return {
       opacity: glowOpacity.value,
-      transform: [{ scale: glowScale.value }],
+      transform: `scale(${glowScale.value})`,
       boxShadow: `0 0 ${shadowRadius}px rgba(59, 130, 246, ${shadowOpacity})`,
     };
   });
@@ -159,7 +152,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
   const reactionMenuStyle = useAnimatedStyle(() => {
     return {
       opacity: reactionMenuOpacity.value,
-      transform: [{ scale: reactionMenuScale.value }, { translateY: reactionMenuTranslateY.value }],
+      transform: `scale(${reactionMenuScale.value}) translateY(${reactionMenuTranslateY.value}px)`,
     };
   });
 

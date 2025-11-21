@@ -43,8 +43,7 @@ export function VerificationLevelSelector({
           const isSelected = selectedLevel === level;
 
           return (
-            <MotionView
-              as="button"
+            <motion.button
               key={level}
               onClick={() => { onSelectLevel(level); }}
               whileHover={{ scale: 1.02, y: -2 }}
@@ -102,7 +101,7 @@ export function VerificationLevelSelector({
                   {requirements.benefits.length} benefits
                 </div>
               </div>
-            </MotionView>
+            </motion.button>
           );
         })}
       </div>

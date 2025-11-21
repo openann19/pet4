@@ -5,7 +5,6 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { kycApi } from '@/api/kyc-api';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('useKYCStatus');
@@ -21,6 +20,17 @@ export interface KYCVerification {
   updatedAt?: string;
 }
 
+interface KYCResponse {
+  data?: {
+    status: string;
+    verificationId: string | null;
+    documents: { type: string; url: string }[];
+    notes: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+  };
+}
+
 export function useKYCStatus(userId: string) {
   const [status, setStatus] = useState<KYCStatus>('not_started');
   const [verification, setVerification] = useState<KYCVerification | null>(null);
@@ -31,7 +41,7 @@ export function useKYCStatus(userId: string) {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch from backend API directly to get full verification data
       const response = await fetch(`/api/kyc/status?userId=${userId}`, {
         headers: {
@@ -43,7 +53,7 @@ export function useKYCStatus(userId: string) {
         throw new Error('Failed to fetch KYC status');
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as KYCResponse;
       const verificationData = data.data;
 
       if (verificationData) {
@@ -51,7 +61,7 @@ export function useKYCStatus(userId: string) {
         setVerification({
           status: verificationData.status as KYCStatus,
           verificationId: verificationData.verificationId,
-          documents: verificationData.documents || [],
+          documents: verificationData.documents ?? [],
           notes: verificationData.notes,
           createdAt: verificationData.createdAt,
           updatedAt: verificationData.updatedAt,
@@ -85,4 +95,3 @@ export function useKYCStatus(userId: string) {
     refetch: fetchStatus,
   };
 }
-

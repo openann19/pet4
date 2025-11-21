@@ -70,12 +70,7 @@ export function useSpringCarousel(options: UseSpringCarouselOptions) {
         const rotateY = interpolate(translateX.value, inputRange, [20, 0, -20]);
 
         return {
-          transform: [
-            { translateX: itemIndex * slideWidth },
-            { scale },
-            { perspective: 1000 },
-            { rotateY: `${String(rotateY ?? '')}deg` },
-          ],
+          transform: `translateX(${itemIndex * slideWidth}px) scale(${scale}) perspective(1000px) rotateY(${rotateY}deg)`,
           opacity,
         };
       });

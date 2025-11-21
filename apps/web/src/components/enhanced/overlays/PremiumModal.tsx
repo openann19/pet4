@@ -5,7 +5,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
@@ -58,26 +57,22 @@ export function PremiumModal({
   closeOnOverlayClick = true,
   className,
 }: PremiumModalProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(0.95);
+  const _uiConfig = useUIConfig();
+  const scale = useSharedValue(0.95);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (open) {
-      const scaleTransition = withSpring(1, springConfigs.smooth);
-      animate(scale, scaleTransition.target, scaleTransition.transition);
-      const opacityTransition = withTiming(1, { duration: 200 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
+      scale.value = withSpring(1, springConfigs.smooth);
+      opacity.value = withTiming(1, { duration: 200 });
     } else {
-      const scaleTransition = withSpring(0.95, springConfigs.smooth);
-      animate(scale, scaleTransition.target, scaleTransition.transition);
-      const opacityTransition = withTiming(0, { duration: 150 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
+      scale.value = withSpring(0.95, springConfigs.smooth);
+      opacity.value = withTiming(0, { duration: 150 });
     }
   }, [open, scale, opacity]);
 
   const contentStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.get() }],
+    transform: `scale(${scale.get()})`,
     opacity: opacity.get(),
   }));
 

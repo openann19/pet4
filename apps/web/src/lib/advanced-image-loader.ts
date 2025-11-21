@@ -150,7 +150,7 @@ export function useProgressiveImage(src: string, placeholderSrc?: string) {
         setIsLoading(false);
       })
       .catch((err) => {
-        setError(err);
+        setError(err instanceof Error ? err : new Error(String(err)));
         setIsLoading(false);
       });
   }, [src]);

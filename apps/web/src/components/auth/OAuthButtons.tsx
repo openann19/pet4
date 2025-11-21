@@ -5,12 +5,104 @@
  */
 
 // Using inline SVGs for Google and Apple logos
-import { Button } from '@/components/ui/button';
-import { useApp } from '@/contexts/AppContext';
 import { analytics } from '@/lib/analytics';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
-import { isTruthy } from '@petspark/shared';
+
+const logger = createLogger('OAuthButtons');
+
+interface GoogleAuthorizeResponse {
+  url?: string;
+}
+
+interface AppleAuthorizationPayload {
+  code?: string;
+  id_token?: string;
+}
+
+function getAuthorizeUrl(data: unknown): string | null {
+  if (typeof data !== 'object' || data === null) {
+    return null;
+  }
+
+  const typed = data as GoogleAuthorizeResponse;
+  return typeof typed.url === 'string' ? typed.url : null;
+}
+
+function hasAppleAuthorization(value: unknown): value is AppleAuthorizationPayload {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const payload = value as AppleAuthorizationPayload;
+  return typeof payload.code === 'string' || typeof payload.id_token === 'string';
+}
+
+function isAppleAuth(value: unknown): value is AppleIDAuth {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<AppleIDAuth>;
+  return typeof candidate.init === 'function' && typeof candidate.signIn === 'function';
+}
+
+function getAppleAuth(): AppleIDAuth | null {
+  if (typeof window !== 'undefined') {
+    const authCandidate = window.AppleID?.auth;
+    if (isAppleAuth(authCandidate)) {
+      return authCandidate;
+    }
+  }
+  return null;
+}
+
+async function parseOAuthResponse(response: Response, provider: 'google' | 'apple'): Promise<unknown> {
+  const rawBody = await response.text();
+
+  if (!rawBody) {
+    logger.warn(`${provider} OAuth response body empty`);
+    return null;
+  }
+
+  try {
+    return JSON.parse(rawBody) as unknown;
+  } catch (parseError) {
+    const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+    logger.error(`${provider} OAuth response JSON parse failed`, { error: errorMessage });
+    return null;
+  }
+}
+
+function isAppleCredential(value: unknown): value is AppleIDCredential {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const credential = value as Partial<AppleIDCredential>;
+
+  const { authorization, user } = credential;
+
+  if (authorization !== undefined) {
+    if (typeof authorization !== 'object' || authorization === null) {
+      return false;
+    }
+
+    const auth = authorization as Record<string, unknown>;
+    if (auth.code !== undefined && typeof auth.code !== 'string') {
+      return false;
+    }
+    if (auth.id_token !== undefined && typeof auth.id_token !== 'string') {
+      return false;
+    }
+  }
+
+  if (user !== undefined && (typeof user !== 'object' || user === null)) {
+    return false;
+  }
+
+  return true;
+}
 
 // Google Logo SVG component
 const GoogleLogo = ({ size = 20 }: { size?: number }) => (
@@ -51,8 +143,6 @@ export default function OAuthButtons({
   onAppleSignIn,
   disabled = false,
 }: OAuthButtonsProps) {
-  const { t } = useApp();
-
   const handleGoogleSignIn = async () => {
     if (disabled) return;
 
@@ -60,28 +150,24 @@ export default function OAuthButtons({
     analytics.track('oauth_clicked', { provider: 'google' });
 
     try {
-      // Redirect to Google OAuth
       const response = await fetch('/api/v1/auth/oauth/google/authorize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.ok) {
-        const data = await response.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else if (onGoogleSignIn) {
-          onGoogleSignIn();
+        const data = await parseOAuthResponse(response, 'google');
+        const url = getAuthorizeUrl(data);
+        if (url) {
+          window.location.href = url;
+          return;
         }
-      } else if (onGoogleSignIn) {
-        onGoogleSignIn();
       }
+
+      onGoogleSignIn?.();
     } catch (error) {
-      const logger = createLogger('OAuthButtons');
       logger.error('Google OAuth error', error instanceof Error ? error : new Error(String(error)));
-      if (onGoogleSignIn) {
-        onGoogleSignIn();
-      }
+      onGoogleSignIn?.();
     }
   };
 
@@ -92,32 +178,64 @@ export default function OAuthButtons({
     analytics.track('oauth_clicked', { provider: 'apple' });
 
     try {
-      // Use Apple Sign In API if available
-      if (window.AppleID?.auth) {
-        await window.AppleID.auth.init({
-          clientId: import.meta.env.VITE_APPLE_CLIENT_ID,
+      const appleAuth = getAppleAuth();
+      if (appleAuth) {
+        const clientId = import.meta.env.VITE_APPLE_CLIENT_ID;
+        if (!clientId) {
+          logger.error('Missing Apple client ID');
+          onAppleSignIn?.();
+          return;
+        }
+
+        await appleAuth.init({
+          clientId,
           scope: 'name email',
           redirectURI: window.location.origin + '/api/v1/auth/oauth/apple/callback',
           usePopup: true,
         });
 
-        const response = await window.AppleID.auth.signIn();
-        if (response?.authorization) {
-          // Handle successful sign in
-          if (onAppleSignIn) {
-            onAppleSignIn();
-          }
+        const credentialRaw: unknown = await appleAuth.signIn();
+
+        if (!isAppleCredential(credentialRaw)) {
+          logger.warn('Apple sign-in returned unexpected payload', {
+            type: typeof credentialRaw,
+            hasAuthorization: Boolean(
+              typeof credentialRaw === 'object' &&
+              credentialRaw !== null &&
+              'authorization' in credentialRaw
+            ),
+          });
+          onAppleSignIn?.();
+          return;
         }
-      } else if (isTruthy(onAppleSignIn)) {
-        // Fallback to redirect
-        window.location.href = '/api/v1/auth/oauth/apple/authorize';
+
+        const authorization = credentialRaw.authorization;
+
+        if (hasAppleAuthorization(authorization)) {
+          onAppleSignIn?.();
+          return;
+        }
+        logger.warn('Apple sign-in missing authorization payload', {
+          hasAuthorization: typeof authorization === 'object' && authorization !== null,
+          hasCode:
+            typeof authorization === 'object' &&
+            authorization !== null &&
+            'code' in authorization &&
+            typeof (authorization as { code?: unknown }).code === 'string',
+          hasIdToken:
+            typeof authorization === 'object' &&
+            authorization !== null &&
+            'id_token' in authorization &&
+            typeof (authorization as { id_token?: unknown }).id_token === 'string',
+        });
+        onAppleSignIn?.();
+        return;
       }
+
+      window.location.href = '/api/v1/auth/oauth/apple/authorize';
     } catch (error) {
-      const logger = createLogger('OAuthButtons');
       logger.error('Apple OAuth error', error instanceof Error ? error : new Error(String(error)));
-      if (onAppleSignIn) {
-        onAppleSignIn();
-      }
+      onAppleSignIn?.();
     }
   };
 
@@ -125,7 +243,7 @@ export default function OAuthButtons({
     <div className="flex gap-3">
       <button
         type="button"
-        onClick={handleGoogleSignIn}
+        onClick={() => { void handleGoogleSignIn(); }}
         disabled={disabled}
         className="flex-1 h-12 flex items-center justify-center gap-2 bg-white border border-(--border-light) rounded-xl text-sm font-medium text-(--text-primary) hover:bg-(--muted) transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-(--color-focus-ring) focus:ring-offset-2"
         aria-label="Sign in with Google"
@@ -136,7 +254,7 @@ export default function OAuthButtons({
 
       <button
         type="button"
-        onClick={handleAppleSignIn}
+        onClick={() => { void handleAppleSignIn(); }}
         disabled={disabled}
         className="flex-1 h-12 flex items-center justify-center gap-2 bg-(--color-neutral-12) border border-(--color-neutral-12) rounded-xl text-sm font-medium text-white hover:bg-(--color-neutral-11) transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Sign in with Apple"

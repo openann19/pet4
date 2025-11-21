@@ -528,21 +528,20 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                   />
 
                   {/* Center Play/Pause control */}
-                  <MotionView
-                    as="button"
+                  <button
                     type="button"
                     onClick={toggleVideoPlayback}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
                     className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
                     aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
                   >
-                    {isVideoPlaying ? (
-                      <Pause size={32} weight="fill" className="text-white" />
-                    ) : (
-                      <Play size={32} weight="fill" className="text-white" />
-                    )}
-                  </MotionView>
+                    <MotionView whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+                      {isVideoPlaying ? (
+                        <Pause size={32} weight="fill" className="text-white" />
+                      ) : (
+                        <Play size={32} weight="fill" className="text-white" />
+                      )}
+                    </MotionView>
+                  </button>
 
                   {/* Remove video */}
                   <button
@@ -612,23 +611,27 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                           { value: 'portrait', label: 'Portrait', icon: '📱', desc: '3:4' },
                           { value: 'landscape', label: 'Landscape', icon: '🖼️', desc: '4:3' },
                         ].map(({ value, label, icon, desc }) => (
-                          <MotionView
-                            as="button"
+                          <button
                             key={value}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setCropSize(value as CropSize)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left ${cropSize === value
-                                ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
-                              }`}
-                            aria-pressed={cropSize === value}
                             type="button"
+                            onClick={() => setCropSize(value as CropSize)}
+                            className="text-left"
+                            aria-pressed={cropSize === value}
                           >
-                            <div className="text-xl mb-0.5">{icon}</div>
-                            <div className="text-xs font-medium">{label}</div>
-                            {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
-                          </MotionView>
+                            <MotionView
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className={`p-3 rounded-lg border-2 transition-all ${
+                                cropSize === value
+                                  ? 'border-primary bg-primary/10'
+                                  : 'border-border hover:border-primary/50'
+                              }`}
+                            >
+                              <div className="text-xl mb-0.5">{icon}</div>
+                              <div className="text-xs font-medium">{label}</div>
+                              {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
+                            </MotionView>
+                          </button>
                         ))}
                       </div>
                     </div>

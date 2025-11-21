@@ -73,13 +73,7 @@ export function useUltraCardReveal(options: UseUltraCardRevealOptions = {}) {
 
     return {
       opacity,
-      transform: [
-        { perspective },
-        { scale: scale.value },
-        { rotateX: `${String(rotateX.value ?? '')}deg` },
-        { rotateY: `${String(rotateY.value ?? '')}deg` },
-        { translateZ: translateZ.value },
-      ],
+      transform: `perspective(${perspective}px) scale(${scale.value}) rotateX(${rotateX.value}deg) rotateY(${rotateY.value}deg) translateZ(${translateZ.value}px)`,
     };
   });
 

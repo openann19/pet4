@@ -13,8 +13,6 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-  withSpring,
-  type AnimatedStyle,
   type MotionValue,
 } from '@petspark/motion';
 
@@ -26,7 +24,6 @@ export default function WelcomeModal(): JSX.Element | null {
   // Animated values
   const bgScale = useSharedValue(1);
   const bgRotate = useSharedValue(0);
-  const iconScale = useSharedValue(1);
   const iconPulse = useSharedValue(1);
   const iconGlowScale = useSharedValue(1);
   const iconGlowOpacity = useSharedValue(0.5);
@@ -37,26 +34,20 @@ export default function WelcomeModal(): JSX.Element | null {
   const bgAnimatedStyle = useAnimatedStyle(() => {
     const scale = bgScale.value;
     const rotate = bgRotate.value;
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     transforms.push({ rotate: `${rotate}deg` });
     return { transform: transforms };
   });
 
-  const iconAnimatedStyle = useAnimatedStyle(() => {
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
-    transforms.push({ scale: iconScale.value });
-    return { transform: transforms };
-  });
-
   const iconPulseStyle = useAnimatedStyle(() => {
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale: iconPulse.value });
     return { transform: transforms };
   });
 
   const iconGlowStyle = useAnimatedStyle(() => {
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale: iconGlowScale.value });
     return {
       transform: transforms,
@@ -65,7 +56,7 @@ export default function WelcomeModal(): JSX.Element | null {
   });
 
   const arrowStyle = useAnimatedStyle(() => {
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ translateX: arrowX.value });
     return { transform: transforms };
   });
@@ -82,7 +73,7 @@ export default function WelcomeModal(): JSX.Element | null {
   const logoStyle = useAnimatedStyle(() => {
     const scale = logoScale.value;
     const rotate = logoRotate.value;
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     transforms.push({ rotate: `${rotate}deg` });
     return { transform: transforms };
@@ -109,7 +100,6 @@ export default function WelcomeModal(): JSX.Element | null {
       -1,
       true
     );
-    iconScale.value = withSpring(1, { stiffness: 200, damping: 15 });
     iconPulse.value = withRepeat(
       withSequence(withTiming(1, { duration: 750 }), withTiming(1.2, { duration: 750 })),
       -1,
@@ -134,7 +124,7 @@ export default function WelcomeModal(): JSX.Element | null {
       -1,
       false
     );
-  }, [bgScale, bgRotate, iconScale, iconPulse, iconGlowScale, iconGlowOpacity, arrowX]);
+  }, [bgScale, bgRotate, iconPulse, iconGlowScale, iconGlowOpacity, arrowX]);
 
   const handleClose = useCallback((): void => {
     void setHasSeenWelcome(true);
@@ -174,10 +164,10 @@ export default function WelcomeModal(): JSX.Element | null {
         <DialogDescription className="sr-only">
           Discover perfect companions for your pet with AI-powered matching, secure messaging, and a vibrant community
         </DialogDescription>
-        <div className="relative bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 p-8 md:p-12 overflow-hidden animate-in fade-in duration-300">
+        <div className="relative bg-linear-to-br from-primary/10 via-accent/10 to-secondary/10 p-8 md:p-12 overflow-hidden animate-in fade-in duration-300">
           <MotionView
-            style={bgAnimatedStyle as React.CSSProperties}
-            className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20"
+            style={bgAnimatedStyle}
+            className="absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20"
           />
 
           <MotionView
@@ -197,15 +187,15 @@ export default function WelcomeModal(): JSX.Element | null {
           </MotionView>
 
           <MotionView
-            style={logoStyle as React.CSSProperties}
-            className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10"
+            style={logoStyle}
+            className="w-20 h-20 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10"
           >
-            <MotionView style={iconPulseStyle as React.CSSProperties}>
+            <MotionView style={iconPulseStyle}>
               <Heart size={40} className="text-white" weight="fill" />
             </MotionView>
             <MotionView
-              style={iconGlowStyle as React.CSSProperties}
-              className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent"
+              style={iconGlowStyle}
+              className="absolute inset-0 rounded-full bg-linear-to-br from-primary to-accent"
             />
           </MotionView>
 
@@ -225,7 +215,7 @@ export default function WelcomeModal(): JSX.Element | null {
                 style={{ animationDelay: `${500 + idx * 150}ms` }}
               >
                 <div
-                  className={`w-16 h-16 rounded-full bg-gradient-to-br ${feature.color} flex items-center justify-center mx-auto mb-3 shadow-lg transition-transform hover:rotate-12`}
+                  className={`w-16 h-16 rounded-full bg-linear-to-br ${feature.color} flex items-center justify-center mx-auto mb-3 shadow-lg transition-transform hover:rotate-12`}
                 >
                   <feature.icon size={32} className={feature.iconColor} weight="fill" />
                 </div>
@@ -245,10 +235,10 @@ export default function WelcomeModal(): JSX.Element | null {
               <Button
                 size="lg"
                 onClick={handleClose}
-                className="px-8 shadow-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                className="px-8 shadow-xl bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
                 {t.welcome.getStarted}
-                <MotionView style={arrowStyle as React.CSSProperties} className="ml-2">
+                <MotionView style={arrowStyle} className="ml-2">
                   →
                 </MotionView>
               </Button>

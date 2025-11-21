@@ -60,8 +60,8 @@ class RouteErrorBoundaryClass extends Component<
 
     override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
         const errorType = detectErrorType(error);
-        const fromPath: string = this.state.fromPath ?? this.props.location;
-        const toPath: string = this.state.toPath ?? this.props.location;
+        const fromPath = this.state.fromPath ?? this.props.location;
+        const toPath = this.state.toPath ?? this.props.location;
 
         const navigationError: NavigationError = {
             type: errorType,

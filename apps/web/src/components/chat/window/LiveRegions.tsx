@@ -143,9 +143,9 @@ export function LiveRegions({ children, className }: LiveRegionsProps): JSX.Elem
 
         const popover = activeElement.closest('[role="dialog"], [data-state="open"]');
         if (popover) {
-          const closeButton = popover.querySelector(
-            '[aria-label*="close" i], [aria-label*="Close" i], button[aria-label*="close" i]'
-          );
+          const selector =
+            '[aria-label*="close" i], [aria-label*="Close" i], button[aria-label*="close" i]';
+          const closeButton = popover.querySelector<HTMLElement>(selector);
           if (closeButton) {
             closeButton.click();
             e.preventDefault();

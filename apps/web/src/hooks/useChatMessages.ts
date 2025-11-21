@@ -308,8 +308,12 @@ export function useChatMessages({
     messages,
     messageGroups,
     sendMessage,
-    addReaction,
-    markAsRead,
+    addReaction: async (messageId: string, emoji: ReactionType) => {
+      addReaction(messageId, emoji);
+    },
+    markAsRead: async () => {
+      markAsRead();
+    },
     deleteMessage,
     setMessages,
     isLoading: queryResult.isLoading,

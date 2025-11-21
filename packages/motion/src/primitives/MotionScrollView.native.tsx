@@ -25,11 +25,11 @@ export function MotionScrollView(
 ): JSX.Element {
   const { style, animatedStyle, ...rest } = props
 
-  const styleFinal = animatedStyle 
+  const styleFinal = animatedStyle
     ? (Array.isArray(animatedStyle) ? [...(Array.isArray(style) ? style : [style]), ...animatedStyle] : [style, animatedStyle])
     : style
 
   // Note: Web performance hints are handled by Reanimated automatically
 
-  return <AnimatedScrollView {...rest} style={styleFinal as any} />
+  return <AnimatedScrollView {...rest} style={styleFinal as AnimatedStyle<ViewStyle> | AnimatedStyle<ViewStyle>[]} />
 }

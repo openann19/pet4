@@ -1,5 +1,6 @@
 import { VideoMetadataExtractor } from './video-metadata';
 import type { VideoMetadata } from './video-metadata';
+export type { VideoMetadata } from './video-metadata';
 import { formatFileSize, formatDuration } from './video-utils';
 import { calculateDimensions } from './video-dimensions';
 

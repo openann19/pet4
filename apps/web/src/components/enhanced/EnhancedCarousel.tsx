@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
+
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { isTruthy } from '@petspark/shared';
 // Unused import removed: Presence
@@ -102,10 +102,8 @@ export function EnhancedCarousel({
   const dragX = useSharedValue(0);
 
   useEffect(() => {
-    const translateXTransition = withSpring(0, springConfigs.smooth);
-    animate(translateX, translateXTransition.target, translateXTransition.transition);
-    const opacityTransition = withTiming(1, timingConfigs.fast);
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    translateX.value = withSpring(0, springConfigs.smooth);
+    opacity.value = withTiming(1, timingConfigs.fast);
     dragX.value = 0;
   }, [currentIndex, direction, translateX, opacity, dragX]);
 
@@ -137,12 +135,12 @@ export function EnhancedCarousel({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.get() + dragX.get() }],
+      transform: `translateX(${translateX.get() + dragX.get()}px)`,
       opacity: opacity.get(),
     };
   });
 
-  const styleValue = useAnimatedStyleValue(animatedStyle);
+  const styleValue = animatedStyle;
 
   if (itemCount === 0) {
     return null;
@@ -220,7 +218,7 @@ export function EnhancedCarousel({
                   ? 'w-8 bg-primary shadow-lg shadow-primary/50'
                   : 'w-2 bg-background/60 hover:bg-background/80 backdrop-blur-sm'
               )}
-              aria-label={`Go to slide ${String(index + 1 ?? '')}`}
+              aria-label={`Go to slide ${String(index + 1)}`}
             />
           ))}
         </div>

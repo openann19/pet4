@@ -2,7 +2,7 @@
  * AppealDialog tests
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppealDialog } from '@/components/community/AppealDialog';
 
@@ -49,6 +49,7 @@ describe('AppealDialog', () => {
   const mockOnAppealed = vi.fn();
 
   beforeEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -66,7 +67,7 @@ describe('AppealDialog', () => {
       />
     );
 
-    expect(screen.getByText(/appeal/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /appeal moderation decision/i })).toBeInTheDocument();
   });
 
   it('should not render when closed', () => {
@@ -83,8 +84,7 @@ describe('AppealDialog', () => {
   });
 
   it('should require appeal text', async () => {
-    const user = userEvent.setup();
-    const { toast } = await import('sonner');
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AppealDialog
@@ -95,17 +95,15 @@ describe('AppealDialog', () => {
       />
     );
 
-    const submitButton = screen.getByRole('button', { name: /submit appeal/i });
-    await user.click(submitButton);
+    const submitButton = screen.getByRole('button', { name: /submit appeal/i }) as HTMLButtonElement;
+    expect(submitButton.disabled).toBe(true);
 
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Please provide a reason for your appeal');
-    });
+    await user.click(submitButton);
+    expect(mockOnAppealed).not.toHaveBeenCalled();
   });
 
   it('should require minimum 50 characters', async () => {
-    const user = userEvent.setup();
-    const { toast } = await import('sonner');
+    const user = userEvent.setup({ delay: null });
 
     render(
       <AppealDialog
@@ -116,21 +114,19 @@ describe('AppealDialog', () => {
       />
     );
 
-    const textarea = screen.getByLabelText(/reason/i);
+    const textarea = screen.getByLabelText(/appeal explanation/i);
     await user.type(textarea, 'Short text');
 
-    const submitButton = screen.getByRole('button', { name: /submit appeal/i });
-    await user.click(submitButton);
+    const submitButton = screen.getByRole('button', { name: /submit appeal/i }) as HTMLButtonElement;
+    expect(submitButton.disabled).toBe(true);
 
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        'Please provide more details (at least 50 characters)'
-      );
-    });
+    await user.type(textarea, ' and adding more context to reach the length requirement.');
+
+    expect(submitButton.disabled).toBe(false);
   });
 
   it('should submit appeal successfully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityAPI } = await import('@/api/community-api');
     const { toast } = await import('sonner');
 
@@ -144,7 +140,7 @@ describe('AppealDialog', () => {
       />
     );
 
-    const textarea = screen.getByLabelText(/reason/i);
+    const textarea = screen.getByLabelText(/appeal explanation/i);
     await user.type(
       textarea,
       'This is a detailed appeal explanation that exceeds the minimum character requirement.'
@@ -168,7 +164,7 @@ describe('AppealDialog', () => {
   });
 
   it('should include reportId when provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityAPI } = await import('@/api/community-api');
 
     render(
@@ -181,7 +177,7 @@ describe('AppealDialog', () => {
       />
     );
 
-    const textarea = screen.getByLabelText(/reason/i);
+    const textarea = screen.getByLabelText(/appeal explanation/i);
     await user.type(
       textarea,
       'This is a detailed appeal explanation that exceeds the minimum character requirement.'
@@ -203,7 +199,7 @@ describe('AppealDialog', () => {
   });
 
   it('should close dialog on cancel', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <AppealDialog
         open={true}
@@ -213,7 +209,8 @@ describe('AppealDialog', () => {
       />
     );
 
-    const cancelButton = screen.getByRole('button', { name: /cancel/i });
+    const dialog = await screen.findByRole('dialog');
+    const cancelButton = within(dialog).getByRole('button', { name: /cancel/i });
     await user.click(cancelButton);
 
     expect(mockOnOpenChange).toHaveBeenCalledWith(false);

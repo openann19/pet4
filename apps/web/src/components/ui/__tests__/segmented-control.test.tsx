@@ -320,13 +320,13 @@ describe('SegmentedControl', () => {
         // ResizeObserver should be disconnected on unmount
         expect(disconnectFn).toHaveBeenCalled();
 
-        global.ResizeObserver = originalResizeObserver;
+        globalAny.ResizeObserver = originalResizeObserver;
     });
 
     it('should handle missing ResizeObserver gracefully', () => {
         const originalResizeObserver = global.ResizeObserver;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        delete (global as any).ResizeObserver;
+        const globalAny = global as unknown as Record<string, unknown>;
+        delete globalAny.ResizeObserver;
 
         expect(() => {
             const { unmount } = render(

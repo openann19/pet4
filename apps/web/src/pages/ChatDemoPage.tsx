@@ -1,6 +1,6 @@
 /**
  * Chat Demo Page for Visual Regression Testing
- * 
+ *
  * Dedicated test page for Playwright visual regression testing of premium chat components.
  * Provides controlled environment with mock data and testing APIs.
  */
@@ -9,7 +9,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import MessageBubble from '@/components/chat/MessageBubble';
-import { ChatInputBar } from '@/components/chat/window/ChatInputBar';
 import TypingIndicator from '@/components/chat/TypingIndicator';
 import { Button } from '@/components/ui/button';
 import type { Message, MessageStatus, ReactionType } from '@/lib/chat-types';
@@ -153,20 +152,23 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     window.__sendMessage = (content: string) => {
       const newMessage: Message = {
         id: `msg-${Date.now()}`,
-        content,
+        roomId: 'demo-room',
         senderId: currentUserId,
-        timestamp: Date.now(),
+        type: 'text',
+        content,
         status: 'sending',
+        timestamp: Date.now().toString(),
+        createdAt: new Date().toISOString(),
       };
       setMessages(prev => [...prev, newMessage]);
-      
+
       // Simulate status progression
       setTimeout(() => {
-        setMessages(prev => prev.map(msg => 
+        setMessages(prev => prev.map(msg =>
           msg.id === newMessage.id ? { ...msg, status: 'sent' as MessageStatus } : msg
         ));
       }, 500);
-      
+
       setTimeout(() => {
         setMessages(prev => prev.map(msg =>
           msg.id === newMessage.id ? { ...msg, status: 'delivered' as MessageStatus } : msg
@@ -209,7 +211,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     return message.senderId === currentUserId;
   }, [currentUserId]);
 
-  // Helper to determine message clustering 
+  // Helper to determine message clustering
   const getClusteringInfo = useCallback((messages: Message[], index: number) => {
     const current = messages[index];
     const previous = messages[index - 1];
@@ -227,10 +229,10 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const handleReact = useCallback((messageId: string, reaction: ReactionType) => {
     setMessages(prev => prev.map(msg => {
       if (msg.id !== messageId) return msg;
-      
+
       const reactions = toReactionMap(msg.reactions);
       const reactionUsers = reactions[reaction] ?? [];
-      
+
       if (reactionUsers.includes(currentUserId)) {
         // Remove reaction
         const newUsers = reactionUsers.filter(id => id !== currentUserId);
@@ -243,7 +245,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
         // Add reaction
         reactions[reaction] = [...reactionUsers, currentUserId];
       }
-      
+
       return {
         ...msg,
         reactions: toMessageReactions(reactions),
@@ -272,14 +274,17 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const handleSendMessage = useCallback((content: string) => {
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
-      content,
+      roomId: 'demo-room',
       senderId: currentUserId,
-      timestamp: Date.now(),
+      type: 'text',
+      content,
       status: 'sending',
+      timestamp: Date.now().toString(),
+      createdAt: new Date().toISOString(),
     };
-    
+
     setMessages(prev => [...prev, newMessage]);
-    
+
     // Simulate message progression
     setTimeout(() => {
       setMessages(prev => prev.map(msg =>
@@ -290,11 +295,11 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
 
   const renderEmptyState = () => (
     <div className="flex h-screen flex-col">
-      <div 
+      <div
         className="flex-1 flex items-center justify-center p-8"
         data-testid="chat-container"
       >
-        <div 
+        <div
           className="text-center space-y-4"
           data-testid="empty-chat-state"
         >
@@ -306,17 +311,35 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
             Start a conversation by sending your first message.
           </p>
           <div className="flex justify-start">
-            <TypingIndicator data-testid="typing-indicator" visible={isTyping} user={typingUser} />
+            <TypingIndicator data-testid="typing-indicator" users={isTyping ? [{ userId: 'demo-user', userName: typingUser, startedAt: new Date().toISOString() }] : []} />
           </div>
         </div>
       </div>
-      
+
       <div className="border-t bg-background p-4">
-        <ChatInputBar
-          data-testid="chat-input-bar"
-          onSubmit={handleSendMessage}
-          placeholder="Type your first message..."
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Type your first message..."
+            className="flex-1 px-3 py-2 border rounded-md"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                handleSendMessage(e.currentTarget.value.trim());
+                e.currentTarget.value = '';
+              }
+            }}
+            data-testid="chat-input-bar"
+          />
+          <Button onClick={() => {
+            const input = document.querySelector('input[placeholder="Type your first message..."]')!;
+            if ((input as HTMLInputElement).value.trim()) {
+              handleSendMessage((input as HTMLInputElement).value.trim());
+              (input as HTMLInputElement).value = '';
+            }
+          }}>
+            Send
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -325,16 +348,16 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     <div className="border-b bg-background p-4">
       <h1 className="text-lg font-semibold">Chat Demo - Visual Regression Testing</h1>
       <div className="flex gap-2 mt-2">
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           onClick={() => setIsTyping(!isTyping)}
         >
           {isTyping ? 'Hide' : 'Show'} Typing
         </Button>
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           onClick={() => setIsOnline(!isOnline)}
         >
           Go {isOnline ? 'Offline' : 'Online'}
@@ -344,14 +367,14 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   );
 
   const renderMessages = () => (
-    <div 
+    <div
       className="flex-1 overflow-y-auto p-4 space-y-2"
       data-testid="messages-container"
     >
       {messages.map((message, index) => {
         const { isClusterStart, isClusterEnd } = getClusteringInfo(messages, index);
         const isOwn = isOwnMessage(message);
-        
+
         return (
           <div
             key={message.id}
@@ -367,7 +390,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
               isOwn={isOwn}
               isClusterStart={isClusterStart}
               isClusterEnd={isClusterEnd}
-              index={index.toString()}
+              index={index}
               isNew={index === messages.length - 1}
               onReact={handleReact}
               onReply={handleReply}
@@ -378,14 +401,13 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
           </div>
         );
       })}
-      
+
       {/* Typing Indicator */}
       {isTyping && (
         <div className="flex justify-start">
-          <TypingIndicator 
+          <TypingIndicator
             data-testid="typing-indicator"
-            visible={isTyping}
-            user={typingUser ?? 'Someone'}
+            users={[{ userId: 'demo-user', userName: typingUser ?? 'Someone', startedAt: new Date().toISOString() }]}
           />
         </div>
       )}
@@ -394,12 +416,29 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
 
   const renderInput = () => (
     <div className="border-t bg-background p-4">
-      <ChatInputBar 
-        onSubmit={handleSendMessage}
-        placeholder="Type a message..."
-        data-testid="chat-input-bar"
-        inputProps={{ 'data-testid': 'message-input' }}
-      />
+      <div className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Type a message..."
+          className="flex-1 px-3 py-2 border rounded-md"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+              handleSendMessage(e.currentTarget.value.trim());
+              e.currentTarget.value = '';
+            }
+          }}
+          data-testid="chat-input-bar"
+        />
+        <Button onClick={() => {
+          const input = document.querySelector('input[placeholder="Type a message..."]')!;
+          if ((input as HTMLInputElement).value.trim()) {
+            handleSendMessage((input as HTMLInputElement).value.trim());
+            (input as HTMLInputElement).value = '';
+          }
+        }}>
+          Send
+        </Button>
+      </div>
     </div>
   );
 
@@ -411,7 +450,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     <div className="flex h-screen flex-col" data-testid="chat-container">
       {/* Connection Status */}
       {!isOnline && (
-        <div 
+        <div
           className="bg-destructive text-destructive-foreground px-4 py-2 text-center text-sm"
           data-testid="offline-indicator"
         >

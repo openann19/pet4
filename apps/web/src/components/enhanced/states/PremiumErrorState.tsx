@@ -1,6 +1,6 @@
 'use client';;
 import React, { useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -43,29 +43,24 @@ export function PremiumErrorState({
       opacity.value = 1;
       return;
     }
-    const scaleTransition = withSpring(1, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
-    const opacityTransition = withSpring(1, springConfigs.smooth);
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    scale.value = withSpring(1, springConfigs.smooth);
+    opacity.value = withSpring(1, springConfigs.smooth);
   }, [scale, opacity, prefersReducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.get() }, { translateX: shake.get() }],
+      transform: `scale(${scale.get()}) translateX(${shake.get()}px)`,
       opacity: opacity.get(),
     };
   });
 
   const handleRetry = useCallback(() => {
     if (!prefersReducedMotion) {
-      const shake1Transition = withSpring(10, springConfigs.bouncy);
-      animate(shake, shake1Transition.target, shake1Transition.transition);
+      shake.value = withSpring(10, springConfigs.bouncy);
       setTimeout(() => {
-        const shake2Transition = withSpring(-10, springConfigs.bouncy);
-        animate(shake, shake2Transition.target, shake2Transition.transition);
+        shake.value = withSpring(-10, springConfigs.bouncy);
         setTimeout(() => {
-          const shake3Transition = withSpring(0, springConfigs.smooth);
-          animate(shake, shake3Transition.target, shake3Transition.transition);
+          shake.value = withSpring(0, springConfigs.smooth);
         }, 100);
       }, 100);
     }
@@ -112,8 +107,8 @@ export function PremiumErrorState({
       {onRetry && (
         <PremiumButton
           onClick={handleRetry}
-          variant="primary"
-          size="md"
+          variant="default"
+          size="default"
           icon={<RefreshCw size={16} />}
         >
           {retryLabel}

@@ -45,16 +45,12 @@ export function useParallaxTilt(options: UseParallaxTiltOptions = {}): UseParall
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled) {
       return {
-        transform: [{ perspective }, { rotateX: '0deg' }, { rotateY: '0deg' }],
+        transform: `perspective(${perspective}px) rotateX(0deg) rotateY(0deg)`,
       };
     }
 
     return {
-      transform: [
-        { perspective },
-        { rotateX: `${rotateX.get()}deg` },
-        { rotateY: `${rotateY.get()}deg` },
-      ],
+      transform: `perspective(${perspective}px) rotateX(${rotateX.value}deg) rotateY(${rotateY.value}deg)`,
     };
   });
 

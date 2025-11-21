@@ -1,5 +1,6 @@
-'use client';;
-import { useEffect, useState, useCallback } from 'react';
+// A comment to force re-evaluation
+'use client';
+import { useEffect } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -13,33 +14,25 @@ import ChatWindow from '@/components/ChatWindowNew';
 import { ChatErrorBoundary } from '@/components/chat/window/ChatErrorBoundary';
 import { useApp } from '@/contexts/AppContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useStorage } from '@/hooks/use-storage';
-import { getRoomMessages } from '@/lib/chat-service';
-import type { ChatRoom } from '@/lib/chat-types';
-import { createChatRoom } from '@/lib/chat-utils';
-import { createLogger } from '@/lib/logger';
-import type { Match, Pet } from '@/lib/types';
+import { useChatRooms } from '@/hooks/chat/use-chat-rooms';
 import type { AnimatedStyle } from '@petspark/motion';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
-import { safeArrayAccess } from '@/lib/runtime-safety';
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { cn } from '@/lib/utils';
 
-const logger = createLogger('ChatView');
-
 export default function ChatView() {
   const { t } = useApp();
-  const [matches] = useStorage<Match[]>('matches', []);
-  const [allPets] = useStorage<Pet[]>('all-pets', []);
-  const [userPets] = useStorage<Pet[]>('user-pets', []);
-  const [chatRooms, setChatRooms] = useStorage<ChatRoom[]>('chat-rooms', []);
-  const [selectedRoom, setSelectedRoom] = useState<ChatRoom | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
-
-  const userPet = safeArrayAccess(userPets, 0);
+  const {
+    chatRooms,
+    isLoading,
+    userPet,
+    selectedRoom,
+    handleSelectRoom,
+    handleBack,
+  } = useChatRooms();
 
   const headerAnimation = usePageTransition({
     isVisible: !isLoading,
@@ -75,91 +68,6 @@ export default function ChatView() {
   const emptyChatIconRotation = useSharedValue(0);
 
   useEffect(() => {
-    if (userPets !== undefined && chatRooms !== undefined) {
-      setIsLoading(false);
-    }
-  }, [userPets, chatRooms]);
-
-  useEffect(() => {
-    if (!userPet || !Array.isArray(matches)) return;
-
-    const activeMatches = matches.filter((m) => m.status === 'active');
-    const existingRoomIds = new Set(
-      Array.isArray(chatRooms) ? chatRooms.map((r) => r.matchId) : []
-    );
-
-    const newRooms: ChatRoom[] = [];
-
-    activeMatches.forEach((match) => {
-      if (!existingRoomIds.has(match.id)) {
-        const matchedPet = Array.isArray(allPets)
-          ? allPets.find((p) => p.id === match.matchedPetId)
-          : undefined;
-        if (matchedPet && userPet) {
-          newRooms.push(
-            createChatRoom(
-              match.id,
-              match.petId,
-              match.matchedPetId,
-              userPet.name,
-              matchedPet.name,
-              userPet.photo,
-              matchedPet.photo
-            )
-          );
-        }
-      }
-    });
-
-    if (newRooms.length > 0) {
-      setChatRooms((current) => (Array.isArray(current) ? [...current, ...newRooms] : newRooms));
-    }
-  }, [matches, userPet, allPets, chatRooms, setChatRooms]);
-
-  useEffect(() => {
-    const updateRoomsWithLastMessages = async () => {
-      if (!Array.isArray(chatRooms)) return;
-
-      const updatedRooms = await Promise.all(
-        chatRooms.map(async (room) => {
-          try {
-            const result = await getRoomMessages(room.id);
-            const messages = result.messages;
-            if (Array.isArray(messages) && messages.length > 0) {
-              const lastMessage = messages[messages.length - 1];
-              const unreadCount = messages.filter(
-                (m) => m.status !== 'read' && m.senderId !== userPet?.id
-              ).length;
-
-              return {
-                ...room,
-                ...(lastMessage && { lastMessage }),
-                ...(unreadCount !== undefined && { unreadCount }),
-                updatedAt: lastMessage?.timestamp ?? room.updatedAt,
-              };
-            }
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('Error loading messages', err);
-          }
-          return room;
-        })
-      );
-
-      setChatRooms(() => {
-        const sorted = updatedRooms.sort((a, b) => {
-          const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-          const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-          return bTime - aTime;
-        });
-        return sorted;
-      });
-    };
-
-    void updateRoomsWithLastMessages();
-  }, [selectedRoom, chatRooms, userPet, setChatRooms]);
-
-  useEffect(() => {
     if (!selectedRoom && !isMobile) {
       emptyChatIconScale.value = withRepeat(
         withSequence(withTiming(1.1, timingConfigs.smooth), withTiming(1, timingConfigs.smooth)),
@@ -181,20 +89,9 @@ export default function ChatView() {
     }
   }, [selectedRoom, isMobile, emptyChatIconScale, emptyChatIconRotation]);
 
-  const handleSelectRoom = useCallback((room: ChatRoom) => {
-    setSelectedRoom(room);
-  }, []);
-
-  const handleBack = useCallback(() => {
-    setSelectedRoom(null);
-  }, []);
-
   const emptyChatIconStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: emptyChatIconScale.value },
-        { rotate: `${emptyChatIconRotation.value}deg` },
-      ],
+      transform: `scale(${emptyChatIconScale.value}) rotate(${emptyChatIconRotation.value}deg)`,
     };
   }) as AnimatedStyle;
 

@@ -57,10 +57,10 @@ export function usePageTransition(options: UsePageTransitionOptions): UsePageTra
 
   const style = useAnimatedStyle(() => {
     return {
-      opacity: opacity.get(),
-      transform: [{ translateY: translateY.get() }, { scale: scale.get() }],
+      opacity: opacity.value,
+      transform: `translateY(${translateY.value}px) scale(${scale.value})`,
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     opacity,

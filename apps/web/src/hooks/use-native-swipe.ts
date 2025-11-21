@@ -266,12 +266,7 @@ export function useNativeSwipe(options: UseNativeSwipeOptions): UseNativeSwipeRe
     scale.value = scaleValue;
 
     return {
-      transform: [
-        { translateX: translationX.value },
-        { translateY: translationY.value },
-        { rotate: `${rotationValue}deg` },
-        { scale: scaleValue },
-      ],
+      transform: `translateX(${translationX.value}px) translateY(${translationY.value}px) rotate(${rotationValue}deg) scale(${scaleValue})`,
       opacity: opacity.value,
     };
   }) as AnimatedStyle;

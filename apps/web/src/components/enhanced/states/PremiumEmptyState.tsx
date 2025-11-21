@@ -1,6 +1,6 @@
 'use client';;
 import React, { useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -40,15 +40,13 @@ export function PremiumEmptyState({
       opacity.value = 1;
       return;
     }
-    const scaleTransition = withSpring(1, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
-    const opacityTransition = withSpring(1, springConfigs.smooth);
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    scale.value = withSpring(1, springConfigs.smooth);
+    opacity.value = withSpring(1, springConfigs.smooth);
   }, [scale, opacity, prefersReducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.get() }],
+      transform: `scale(${scale.get()})`,
       opacity: opacity.get(),
     };
   });
@@ -83,7 +81,7 @@ export function PremiumEmptyState({
         </p>
       )}
       {action && (
-        <PremiumButton onClick={handleAction} variant="primary" size="md">
+        <PremiumButton onClick={handleAction} variant="default" size="default">
           {action.label}
         </PremiumButton>
       )}

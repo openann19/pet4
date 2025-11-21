@@ -25,7 +25,7 @@ export interface MapConfigAPI {
 export const mapAPI = {
   async getConfig(): Promise<MapConfigAPI> {
     const response = await fetch('/api/map/config');
-    return response.json();
+    return (await response.json()) as MapConfigAPI;
   },
 
   async updateConfig(config: Partial<MapConfigAPI>): Promise<MapConfigAPI> {
@@ -34,7 +34,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
     });
-    return response.json();
+    return (await response.json()) as MapConfigAPI;
   },
 
   async searchPlaces(query: string, location?: Location, radius?: number): Promise<SearchResult[]> {
@@ -46,7 +46,7 @@ export const mapAPI = {
     if (radius) params.append('radius', radius.toString());
 
     const response = await fetch(`/api/map/search?${params}`);
-    return response.json();
+    return (await response.json()) as SearchResult[];
   },
 
   async getPlaces(filters: {
@@ -65,12 +65,12 @@ export const mapAPI = {
     if (filters.verified !== undefined) params.append('verified', String(filters.verified));
 
     const response = await fetch(`/api/map/places?${params}`);
-    return response.json();
+    return (await response.json()) as Place[];
   },
 
   async getPlace(id: string): Promise<Place> {
     const response = await fetch(`/api/map/places/${id}`);
-    return response.json();
+    return (await response.json()) as Place;
   },
 
   async createPlace(place: Omit<Place, 'id' | 'moderationStatus'>): Promise<Place> {
@@ -79,7 +79,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(place),
     });
-    return response.json();
+    return (await response.json()) as Place;
   },
 
   async updatePlace(id: string, updates: Partial<Place>): Promise<Place> {
@@ -88,7 +88,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
     });
-    return response.json();
+    return (await response.json()) as Place;
   },
 
   async deletePlace(id: string): Promise<void> {
@@ -105,7 +105,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status, reason }),
     });
-    return response.json();
+    return (await response.json()) as Place;
   },
 
   async getLostPetAlerts(location?: Location, radius?: number): Promise<LostPetAlert[]> {
@@ -117,7 +117,7 @@ export const mapAPI = {
     if (radius) params.append('radius', radius.toString());
 
     const response = await fetch(`/api/map/lost-pets?${params}`);
-    return response.json();
+    return (await response.json()) as LostPetAlert[];
   },
 
   async createLostPetAlert(
@@ -128,7 +128,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(alert),
     });
-    return response.json();
+    return (await response.json()) as LostPetAlert;
   },
 
   async updateLostPetAlert(id: string, updates: Partial<LostPetAlert>): Promise<LostPetAlert> {
@@ -137,7 +137,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
     });
-    return response.json();
+    return (await response.json()) as LostPetAlert;
   },
 
   async reportSighting(
@@ -153,7 +153,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sighting),
     });
-    return response.json();
+    return (await response.json()) as LostPetAlert;
   },
 
   async suggestPlaydateLocations(
@@ -168,7 +168,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ participants, preferences }),
     });
-    return response.json();
+    return (await response.json()) as Place[];
   },
 
   async createPlaydateRequest(
@@ -179,13 +179,13 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request),
     });
-    return response.json();
+    return (await response.json()) as PlaydateRequest;
   },
 
   async geocode(address: string): Promise<Location> {
     const params = new URLSearchParams({ address });
     const response = await fetch(`/api/geocode?${params}`);
-    return response.json();
+    return (await response.json()) as Location;
   },
 
   async reverseGeocode(location: Location): Promise<string> {
@@ -194,19 +194,19 @@ export const mapAPI = {
       lng: location.lng.toString(),
     });
     const response = await fetch(`/api/geocode/reverse?${params}`);
-    const data = await response.json();
+    const data = (await response.json()) as { address: string };
     return data.address;
   },
 
-  async snapToGrid(location: Location, gridSize: number): Promise<Location> {
+  snapToGrid(location: Location, gridSize: number): Promise<Location> {
     const latGrid = Math.floor(location.lat / gridSize) * gridSize + gridSize / 2;
     const lngGrid = Math.floor(location.lng / gridSize) * gridSize + gridSize / 2;
-    return { lat: latGrid, lng: lngGrid };
+    return Promise.resolve({ lat: latGrid, lng: lngGrid });
   },
 
   async getCategories(): Promise<PlaceCategory[]> {
     const response = await fetch('/api/map/categories');
-    return response.json();
+    return (await response.json()) as PlaceCategory[];
   },
 
   async createCategory(category: Omit<PlaceCategory, 'id'>): Promise<PlaceCategory> {
@@ -215,7 +215,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(category),
     });
-    return response.json();
+    return (await response.json()) as PlaceCategory;
   },
 
   async updateCategory(id: string, updates: Partial<PlaceCategory>): Promise<PlaceCategory> {
@@ -224,7 +224,7 @@ export const mapAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
     });
-    return response.json();
+    return (await response.json()) as PlaceCategory;
   },
 
   async deleteCategory(id: string): Promise<void> {

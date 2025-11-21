@@ -56,6 +56,9 @@ export function PlaydateScheduler({
     }
 
     const [hours, minutes] = selectedTime.split(':').map(Number);
+    if (hours === undefined || minutes === undefined || isNaN(hours) || isNaN(minutes)) {
+      return;
+    }
     const scheduledAt = new Date(selectedDate);
     scheduledAt.setHours(hours, minutes, 0, 0);
 
@@ -239,4 +242,3 @@ export function PlaydateScheduler({
     </PremiumCard>
   );
 }
-

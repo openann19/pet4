@@ -182,13 +182,12 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
   ]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const x = translateX.value ?? 0;
+    const y = translateY.value ?? 0;
+    const r = rotation.value ?? 0;
+    const s = scale.value ?? 1;
     return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-        { rotate: `${String(rotation.value ?? '')}deg` },
-        { scale: scale.value },
-      ],
+      transform: `translateX(${x}px) translateY(${y}px) rotate(${r}deg) scale(${s})`,
     };
   }) as AnimatedStyle;
 

@@ -1,7 +1,7 @@
 import type { Location } from '@/lib/maps/types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { isTruthy } from '@petspark/shared';
 
@@ -49,13 +49,17 @@ function MapController({
   }, [map, center.lat, center.lng, zoom]);
 
   useMapEvents({
-    click: (e) => {
-      if (isTruthy(onMapClick)) {
-        onMapClick({
-          lat: e.latlng.lat,
-          lng: e.latlng.lng,
-        });
+    click: (event: unknown) => {
+      if (!isTruthy(onMapClick)) {
+        return;
       }
+
+      const e = event as L.LeafletMouseEvent;
+
+      onMapClick({
+        lat: e.latlng.lat,
+        lng: e.latlng.lng,
+      });
     },
   });
 
@@ -73,8 +77,6 @@ export default function InteractiveMap({
   interactive = true,
   clusterMarkers = true,
 }: InteractiveMapProps): React.JSX.Element {
-  const mapRef = useRef<L.Map | null>(null);
-
   const clusteredMarkers = useMemo(() => {
     if (!clusterMarkers || markers.length === 0) return markers;
 
@@ -155,7 +157,6 @@ export default function InteractiveMap({
         dragging={interactive}
         touchZoom={interactive}
         doubleClickZoom={interactive}
-        ref={mapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -166,7 +167,7 @@ export default function InteractiveMap({
           <Marker
             key={marker.id}
             position={[marker.location.lat, marker.location.lng]}
-            icon={marker.icon || DEFAULT_ICON}
+            icon={marker.icon ?? DEFAULT_ICON}
             eventHandlers={{
               click: () => {
                 if (isTruthy(onMarkerClick)) {
@@ -175,7 +176,7 @@ export default function InteractiveMap({
               },
             }}
           >
-            {marker.popup ? <Popup>{String(marker.popup)}</Popup> : null}
+            {marker.popup ? <Popup>{marker.popup}</Popup> : null}
           </Marker>
         ))}
       </MapContainer>

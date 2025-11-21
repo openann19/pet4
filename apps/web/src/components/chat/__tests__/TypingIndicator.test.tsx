@@ -1,7 +1,28 @@
+import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import TypingIndicator from '../TypingIndicator';
-import type { TypingUser } from '@/lib/chat-types';
+import type { TypingUser } from '../../../lib/chat-types';
+import type { UseTypingIndicatorMotionReturn } from '../../../effects/chat/typing/use-typing-indicator-motion';
+
+const mockUseTypingIndicatorMotion = vi.fn(
+  (options?: { isTyping?: boolean }): UseTypingIndicatorMotionReturn => ({
+    kind: 'presence',
+    isVisible: Boolean(options?.isTyping),
+    animatedStyle: {},
+    dots: [
+      { id: 'dot-1', animatedStyle: {} },
+      { id: 'dot-2', animatedStyle: {} },
+      { id: 'dot-3', animatedStyle: {} },
+    ],
+    displayMode: 'dots',
+    label: 'Typing…',
+  })
+);
+
+vi.mock('../../../effects/chat/typing', () => ({
+  useTypingIndicatorMotion: (options: unknown) => mockUseTypingIndicatorMotion(options as { isTyping?: boolean }),
+}));
 
 const mockUser1: TypingUser = {
   userId: 'user1',
@@ -24,6 +45,7 @@ const mockUser3: TypingUser = {
 describe('TypingIndicator', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUseTypingIndicatorMotion.mockClear();
   });
 
   describe('Rendering', () => {
@@ -63,9 +85,8 @@ describe('TypingIndicator', () => {
 
     it('should render typing dots', () => {
       render(<TypingIndicator users={[mockUser1]} />);
-      const dots = screen.getAllByRole('generic', { hidden: true });
-      const typingDots = dots.filter((dot) => dot.className.includes('bg-primary rounded-full'));
-      expect(typingDots.length).toBeGreaterThanOrEqual(3);
+      const dotsContainer = screen.getByText('Alice is typing').nextElementSibling;
+      expect(dotsContainer?.querySelectorAll('.rounded-full').length).toBeGreaterThanOrEqual(3);
     });
   });
 
@@ -90,8 +111,8 @@ describe('TypingIndicator', () => {
         userName: '',
         startedAt: new Date().toISOString(),
       };
-      const { container } = render(<TypingIndicator users={[userWithoutName]} />);
-      expect(container.textContent).toContain('Someone is typing');
+      render(<TypingIndicator users={[userWithoutName]} />);
+      expect(screen.getByText('Someone is typing')).toBeInTheDocument();
     });
 
     it('should handle user with undefined userName', () => {
@@ -120,9 +141,8 @@ describe('TypingIndicator', () => {
         { userId: 'user1', userName: '', startedAt: new Date().toISOString() },
         { userId: 'user2', userName: '', startedAt: new Date().toISOString() },
       ];
-      const { container } = render(<TypingIndicator users={usersWithoutNames} />);
-      expect(container.textContent).toContain('Someone');
-      expect(container.textContent).toContain('are typing');
+      render(<TypingIndicator users={usersWithoutNames} />);
+      expect(screen.getByText('Someone and Someone are typing')).toBeInTheDocument();
     });
   });
 

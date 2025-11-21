@@ -19,7 +19,7 @@ interface RawMessageReport {
   readonly reportedUserId: string;
   readonly reason: string;
   readonly description?: string;
-  readonly status: 'OPEN' | 'RESOLVED' | 'DISMISSED' | string;
+  readonly status: 'OPEN' | 'RESOLVED' | 'DISMISSED' | (string & {});
   readonly action?: string;
   readonly createdAt: string;
   readonly reviewedBy?: string;

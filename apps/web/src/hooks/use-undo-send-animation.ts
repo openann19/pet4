@@ -68,7 +68,7 @@ export function useUndoSendAnimation(
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }, { scale: scale.value }],
+      transform: `translateX(${translateX.value}px) scale(${scale.value})`,
       opacity: opacity.value,
     };
   });

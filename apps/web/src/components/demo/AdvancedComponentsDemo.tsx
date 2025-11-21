@@ -7,7 +7,8 @@ import * as React from 'react'
 
 const { useState } = React
 import { Button, LoadingButton, IconButton, ButtonGroup } from '../ui/button'
-import { Input, Textarea } from '../ui/Input'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label, Field } from '../ui/label'
 import { Checkbox, CheckboxGroup } from '../ui/checkbox'
 import { useTheme } from '@/hooks/use-theme'
@@ -44,7 +45,7 @@ export const AdvancedFormDemo: React.FC = () => {
     const [formType, setFormType] = useState<'signin' | 'signup'>('signin')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
 
@@ -150,7 +151,7 @@ export const AdvancedFormDemo: React.FC = () => {
             type="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             leftIcon={<TestIcon />}
             clearable
             onClear={() => setFormData(prev => ({ ...prev, email: '' }))}
@@ -168,7 +169,7 @@ export const AdvancedFormDemo: React.FC = () => {
             type="password"
             placeholder="Enter your password"
             value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, password: e.target.value }))}
             showCounter
             maxLength={100}
           />
@@ -181,7 +182,7 @@ export const AdvancedFormDemo: React.FC = () => {
               <Input
                 placeholder="Choose a username"
                 value={formData.username}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 leftAddon="@"
               />
             </Field>
@@ -191,7 +192,7 @@ export const AdvancedFormDemo: React.FC = () => {
                 <Input
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                 />
               </Field>
 
@@ -199,7 +200,7 @@ export const AdvancedFormDemo: React.FC = () => {
                 <Input
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                 />
               </Field>
             </div>

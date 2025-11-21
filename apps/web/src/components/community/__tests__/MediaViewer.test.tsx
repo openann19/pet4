@@ -121,8 +121,9 @@ describe('MediaViewer', () => {
   it('should render when open', () => {
     render(<MediaViewer open={true} onOpenChange={mockOnOpenChange} media={mockMedia} />);
 
-    // Media viewer should be rendered
-    expect(screen.getByRole('img') || screen.getByRole('video')).toBeTruthy();
+    // Media viewer should render some media element (image or video)
+    const mediaElement = document.querySelector('img, video');
+    expect(mediaElement).not.toBeNull();
   });
 
   it('should display image media', () => {
@@ -136,7 +137,7 @@ describe('MediaViewer', () => {
 
     render(<MediaViewer open={true} onOpenChange={mockOnOpenChange} media={imageMedia} />);
 
-    const img = screen.getByRole('img');
+    const img = document.querySelector('img');
     expect(img).toHaveAttribute('src', 'https://example.com/image.jpg');
   });
 
@@ -145,8 +146,9 @@ describe('MediaViewer', () => {
       <MediaViewer open={true} onOpenChange={mockOnOpenChange} media={mockMedia} initialIndex={1} />
     );
 
-    // Should show second media item
-    expect(screen.getByRole('video') || screen.getByRole('img')).toBeTruthy();
+    // Should show second media item (video in this case)
+    const mediaElement = document.querySelector('video, img');
+    expect(mediaElement).not.toBeNull();
   });
 
   it('should handle empty media array', () => {

@@ -104,7 +104,7 @@ export function useTypingPlaceholder(
   const animatedStyles = barScales.map((scale, index) => {
     return useAnimatedStyle(() => {
       return {
-        transform: [{ scaleY: scale.value }, { translateY: barTranslateYs[index]?.value ?? 0 }],
+        transform: `scaleY(${scale.value}) translateY(${barTranslateYs[index]?.value ?? 0}px)`,
         width: barWidth,
         height: barHeight,
       };

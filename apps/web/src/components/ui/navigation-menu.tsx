@@ -2,6 +2,11 @@ import type { ComponentProps } from 'react';
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { cva } from 'class-variance-authority';
 import { ChevronDown } from 'lucide-react';
+import {
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -38,16 +43,15 @@ interface NavigationMenuListProps
 function NavigationMenuList({
   className,
   activeIndex = 0,
-  showInkBar = true,
   ...props
 }: NavigationMenuListProps) {
   const listRef = useRef<HTMLUListElement | null>(null)
 
-  const handleListRef = useCallback((node: HTMLUListElement | null) => {
+  useCallback((node: HTMLUListElement | null) => {
     listRef.current = node
   }, [])
 
-  const clampedIndex = useMemo(() => {
+  useMemo(() => {
     if (!Number.isFinite(activeIndex)) {
       return 0
     }

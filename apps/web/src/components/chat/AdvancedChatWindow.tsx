@@ -50,8 +50,8 @@ export default function AdvancedChatWindow({
 
   // Input handling hook
   const inputHandling = useInputHandling({
-    onSendMessage: async (content, type) => {
-      await messageManagement.sendMessage(content, type);
+    onSendMessage: (content, type) => {
+      void messageManagement.sendMessage(content, type);
       if (type === 'sticker') {
         setConfettiSeed((s) => s + 1);
       }
@@ -69,7 +69,9 @@ export default function AdvancedChatWindow({
 
   // Media hook
   const media = useMedia({
-    onSendMessage: messageManagement.sendMessage,
+    onSendMessage: (content, type, attachments, metadata) => {
+      void messageManagement.sendMessage(content, type, attachments, metadata);
+    },
     messages: messageManagement.messages,
     updateMessage: messageManagement.updateMessage,
   });
@@ -149,8 +151,8 @@ export default function AdvancedChatWindow({
 
   // Handle message translation
   const handleTranslateMessage = useCallback(
-    async (messageId: string): Promise<void> => {
-      await media.handleTranslateMessage(messageId);
+    (messageId: string): void => {
+      void media.handleTranslateMessage(messageId);
     },
     [media]
   );
@@ -166,15 +168,15 @@ export default function AdvancedChatWindow({
 
   // Handle send with typing indicator
   const handleSendWithTyping = useCallback(
-    async (content: string, type?: 'text' | 'sticker'): Promise<void> => {
+    (content: string, type?: 'text' | 'sticker'): void => {
       if (!content.trim() && type === 'text') return;
-      await inputHandling.handleSuggestionSelect({
+      inputHandling.handleSuggestionSelect({
         id: `suggestion-${Date.now()}`,
         text: content,
         category: 'suggestion',
       });
       handleTypingMessageSend();
-      setTimeout(() => {
+      window.setTimeout(() => {
         setShowSmartSuggestions(true);
       }, 2000);
     },
@@ -184,7 +186,7 @@ export default function AdvancedChatWindow({
   const messageGroups = groupMessagesByDate(messageManagement.messages);
 
   // Register keyboard shortcuts for chat actions
-  const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
+  const [focusedMessageId] = useState<string | null>(null);
   const focusedMessage = focusedMessageId
     ? messageManagement.messages.find((m) => m.id === focusedMessageId)
     : null;
@@ -200,7 +202,7 @@ export default function AdvancedChatWindow({
     onReply: focusedMessage
       ? () => {
         inputHandling.inputRef.current?.focus();
-        inputHandling.handleInputChange(`@${focusedMessage.senderName || 'User'} `);
+        inputHandling.handleInputChange(`@${focusedMessage.senderName ?? 'User'} `);
       }
       : undefined,
     onDelete: focusedMessage
@@ -255,8 +257,12 @@ export default function AdvancedChatWindow({
         typingUsers={typingUsers}
         awayMode={awayMode}
         {...(onBack && { onBack })}
-        onToggleAwayMode={() => setAwayMode((prev) => !prev)}
-        onBlockUser={handleBlockUser}
+        onToggleAwayMode={() => {
+          void setAwayMode((prev) => !prev);
+        }}
+        onBlockUser={() => {
+          void handleBlockUser();
+        }}
       />
 
       <div ref={messageManagement.scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -267,16 +273,16 @@ export default function AdvancedChatWindow({
             {group.messages.map((message, msgIdx) => {
               const isCurrentUser = message.senderId === currentUserId;
 
-              return (
-                <MessageItem
-                  key={message.id}
-                  message={message}
+                  return (
+                    <MessageItem
+                      key={message.id}
+                      message={message}
                   isCurrentUser={isCurrentUser}
                   currentUserId={currentUserId}
-                  currentUserName={currentUserName}
-                  delay={msgIdx * 50}
-                  onReaction={handleReactionWithBurst}
-                  onTranslate={handleTranslateMessage}
+                      currentUserName={currentUserName}
+                      delay={msgIdx * 50}
+                      onReaction={handleReactionWithBurst}
+                      onTranslate={handleTranslateMessage}
                 />
               );
             })}
@@ -345,7 +351,9 @@ export default function AdvancedChatWindow({
         isRecordingVoice={media.isRecordingVoice}
         onInputChange={handleInputChangeWithTyping}
         onInputKeyDown={inputHandling.handleKeyDown}
-        onSend={() => handleSendWithTyping(inputHandling.inputValue, 'text')}
+        onSend={() => {
+          handleSendWithTyping(inputHandling.inputValue, 'text');
+        }}
         onStickerSelect={inputHandling.handleStickerSelect}
         onTemplateSelect={(template) => {
           if (

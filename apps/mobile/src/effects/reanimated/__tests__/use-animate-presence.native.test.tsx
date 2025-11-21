@@ -29,7 +29,7 @@ describe('useAnimatePresence (Mobile)', () => {
 
   it('should initialize with default values when visible', () => {
     const { result } = renderHook(() => useAnimatePresence({ isVisible: true }))
-    
+
     expect(result.current.opacity).toBeDefined()
     expect(result.current.scale).toBeDefined()
     expect(result.current.translateX).toBeDefined()
@@ -43,47 +43,47 @@ describe('useAnimatePresence (Mobile)', () => {
     useReducedMotionSV.mockReturnValue({ value: true })
 
     const { result } = renderHook(() => useAnimatePresence({ isVisible: true }))
-    
+
     expect(result.current.shouldRender).toBe(true)
     expect(result.current.opacity.value).toBe(1)
   })
 
   it('should handle fade transition', () => {
-    const { result } = renderHook(() => 
-      useAnimatePresence({ 
+    const { result } = renderHook(() =>
+      useAnimatePresence({
         isVisible: true,
         enterTransition: 'fade',
         exitTransition: 'fade'
       })
     )
-    
+
     expect(result.current.shouldRender).toBe(true)
   })
 
   it('should handle scale transition', () => {
-    const { result } = renderHook(() => 
-      useAnimatePresence({ 
+    const { result } = renderHook(() =>
+      useAnimatePresence({
         isVisible: true,
         enterTransition: 'scale',
         exitTransition: 'scale'
       })
     )
-    
+
     expect(result.current.shouldRender).toBe(true)
   })
 
   it('should handle slide transitions', () => {
-    const transitions = ['slideUp', 'slideDown', 'slideLeft', 'slideRight']
-    
-    transitions.forEach(transition => {
-      const { result } = renderHook(() => 
-        useAnimatePresence({ 
+    const transitions = ['slideUp', 'slideDown', 'slideLeft', 'slideRight'] as const
+
+    transitions.forEach((transition) => {
+      const { result } = renderHook(() =>
+        useAnimatePresence({
           isVisible: true,
-          enterTransition: transition as any,
-          exitTransition: transition as any
+          enterTransition: transition,
+          exitTransition: transition
         })
       )
-      
+
       expect(result.current.shouldRender).toBe(true)
     })
   })
@@ -94,7 +94,7 @@ describe('useAnimatePresence (Mobile)', () => {
     })
 
     const { rerender } = renderHook(
-      ({ isVisible }) => useAnimatePresence({ 
+      ({ isVisible }) => useAnimatePresence({
         isVisible,
         onExitComplete,
         exitDuration: 10
@@ -103,11 +103,10 @@ describe('useAnimatePresence (Mobile)', () => {
     )
 
     rerender({ isVisible: false })
-    
+
     // Wait for exit animation
     setTimeout(() => {
       expect(onExitComplete).toHaveBeenCalled()
     }, 20)
   })
 })
-

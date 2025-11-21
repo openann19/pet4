@@ -24,7 +24,7 @@ export interface MediaProps {
 export const LostAlertFavoriteButton = memo(function LostAlertFavoriteButton({ alert, isFavorited, onToggleFavorite }: Pick<MediaProps, 'alert' | 'isFavorited' | 'onToggleFavorite'>) {
     if (!onToggleFavorite) return null;
     return (
-        <Button size="icon" variant="ghost" aria-label={isFavorited ? 'Unfavorite alert' : 'Favorite alert'} className="h-8 w-8 bg-background/80 backdrop-blur-sm transition-transform hover:scale-105" onClick={(e) => { e.stopPropagation(); haptics.impact('light'); onToggleFavorite(alert.id); }}>
+        <Button size="icon" variant="ghost" aria-label={isFavorited ? 'Unfavorite alert' : 'Favorite alert'} className="h-8 w-8 bg-background/80 backdrop-blur-sm transition-transform hover:scale-105" onClick={(e: React.MouseEvent) => { e.stopPropagation(); haptics.impact('light'); onToggleFavorite(alert.id); }}>
             <Heart size={16} weight={isFavorited ? 'fill' : 'regular'} className={isFavorited ? 'text-red-500' : ''} />
         </Button>
     );
@@ -114,9 +114,9 @@ export interface ActionsProps { readonly alert: LostAlert; readonly onSelect: (a
 export const LostAlertActions = memo(function LostAlertActions({ alert, onSelect, onReportSighting }: ActionsProps) {
     return (
         <div className="flex gap-2 pt-2" aria-label="Card actions">
-            <Button variant="outline" className="flex-1" onClick={(e) => { e.stopPropagation(); haptics.selection(); onSelect(alert); }}>View Details</Button>
+            <Button variant="outline" className="flex-1" onClick={(e: React.MouseEvent) => { e.stopPropagation(); haptics.selection(); onSelect(alert); }}>View Details</Button>
             {onReportSighting && alert.status === 'active' && (
-                <Button variant="default" className="flex-1" onClick={(e) => { e.stopPropagation(); haptics.impact('medium'); onReportSighting(alert); }}>Report Sighting</Button>
+                <Button variant="default" className="flex-1" onClick={(e: React.MouseEvent) => { e.stopPropagation(); haptics.impact('medium'); onReportSighting(alert); }}>Report Sighting</Button>
             )}
         </div>
     );
@@ -138,7 +138,7 @@ export const LostAlertInteractiveWrapper = memo(function LostAlertInteractiveWra
     onReportSighting,
 }: WrapperProps) {
     return (
-        <MotionView layout initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.97 }} transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }} className="group will-change-transform" onClick={handleCardClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(); } }} aria-label={`Lost alert for ${alert.petSummary.name}`}>
+        <MotionView layout initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.97 }} transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }} className="group will-change-transform" onClick={handleCardClick} role="button" tabIndex={0} onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(); } }} aria-label={`Lost alert for ${alert.petSummary.name}`}>
             <Card className="overflow-hidden rounded-2xl border-border/50 bg-linear-to-b from-card to-card/95 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer">
                 <LostAlertMedia alert={alert} imageError={imageError} setImageError={setImageError} isFavorited={isFavorited} onToggleFavorite={onToggleFavorite} />
                 <div className="p-4 space-y-3">

@@ -61,7 +61,7 @@ export function NotificationGroupItem({
 
   const itemStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,
-    transform: [{ translateY: itemTranslateY.value }, { scale: groupHover.scale.value }],
+    transform: [{ translateY: itemTranslateY.value, scale: groupHover.scale.value }],
   })) as AnimatedStyle;
 
   const iconStyle = useAnimatedStyle(() => ({

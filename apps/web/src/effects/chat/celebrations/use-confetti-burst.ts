@@ -11,6 +11,7 @@
 
 import { useCallback, useRef } from 'react';
 import {
+  animate,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -95,9 +96,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
   // Create particles (limit based on device capability and UI config)
   // Respect device capability limits: 60-200 particles based on device performance
   // Disable particles entirely if animation.showParticles is false
-  const maxParticleCount = animation.showParticles
-    ? deviceCapability.maxParticles
-    : 0;
+  const maxParticleCount = animation.showParticles ? deviceCapability.maxParticles : 0;
   const actualParticleCount = Math.min(particleCount, maxParticleCount);
   const particlesRef = useRef<ConfettiParticle[]>([]);
 
@@ -176,52 +175,45 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
         });
 
         // Opacity fade - use adaptive duration
-        particle.opacity.value = withTiming(
-          1,
-          {
-            duration: scaleDuration(finalDuration * 0.1),
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            particle.opacity.value = withTiming(0, {
-              duration: scaleDuration(finalDuration * 0.9),
-              easing: Easing.in(Easing.ease),
-            });
-          }
-        );
+        const opacityFadeInDuration = scaleDuration(finalDuration * 0.1);
+        particle.opacity.value = withTiming(1, {
+          duration: opacityFadeInDuration,
+          easing: Easing.out(Easing.ease),
+        });
+        void animate(particle.opacity, 0, {
+          type: 'tween',
+          delay: opacityFadeInDuration / 1000,
+          duration: scaleDuration(finalDuration * 0.9) / 1000,
+          ease: 'easeIn',
+        });
 
         // Scale - use adaptive duration
-        particle.scale.value = withTiming(
-          1,
-          {
-            duration: scaleDuration(finalDuration * 0.2),
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            particle.scale.value = withTiming(0.5, {
-              duration: scaleDuration(finalDuration * 0.8),
-              easing: Easing.in(Easing.ease),
-            });
-          }
-        );
+        const scaleInDuration = scaleDuration(finalDuration * 0.2);
+        particle.scale.value = withTiming(1, {
+          duration: scaleInDuration,
+          easing: Easing.out(Easing.ease),
+        });
+        void animate(particle.scale, 0.5, {
+          type: 'tween',
+          delay: scaleInDuration / 1000,
+          duration: scaleDuration(finalDuration * 0.8) / 1000,
+          ease: 'easeIn',
+        });
       });
     } else {
       // Reduced motion: instant opacity change - use adaptive duration
       const reducedOpacityDuration = scaleDuration(120);
       particlesRef.current.forEach((particle) => {
-        particle.opacity.value = withTiming(
-          1,
-          {
-            duration: reducedOpacityDuration,
-            easing: Easing.linear,
-          },
-          () => {
-            particle.opacity.value = withTiming(0, {
-              duration: reducedOpacityDuration,
-              easing: Easing.linear,
-            });
-          }
-        );
+        particle.opacity.value = withTiming(1, {
+          duration: reducedOpacityDuration,
+          easing: Easing.linear,
+        });
+        void animate(particle.opacity, 0, {
+          type: 'tween',
+          delay: reducedOpacityDuration / 1000,
+          duration: reducedOpacityDuration / 1000,
+          ease: 'linear',
+        });
       });
     }
 
@@ -248,7 +240,18 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
         success: true,
       });
     }, finalDuration);
-  }, [enabled, customDuration, reducedMotion, scaleDuration, animation, feedback, containerOpacity, onComplete, actualParticleCount, deviceCapability]);
+  }, [
+    enabled,
+    customDuration,
+    reducedMotion,
+    scaleDuration,
+    animation,
+    feedback,
+    containerOpacity,
+    onComplete,
+    actualParticleCount,
+    deviceCapability,
+  ]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

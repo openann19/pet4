@@ -73,7 +73,7 @@ export function useCallCoreControls(args: CoreControlsArgs) {
           remoteDisplayName,
           remoteAvatarUrl
         );
-        setSession(sessionState);
+        setSession(() => sessionState);
         setStatus('ringing');
 
         const offerSignal: CallOfferSignal = {
@@ -112,7 +112,7 @@ export function useCallCoreControls(args: CoreControlsArgs) {
           'Incoming caller'
         );
         incomingSession.startedAt = incomingSession.startedAt ?? new Date().toISOString();
-        setSession(incomingSession);
+        setSession(() => incomingSession);
         setStatus('ringing');
       } catch (err) {
         resetSession((err as Error).message);

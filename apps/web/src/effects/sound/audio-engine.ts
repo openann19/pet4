@@ -214,7 +214,7 @@ class AudioEngineImpl {
       if (preset.type === 'oscillator') {
         const oscillator = context.createOscillator();
         oscillator.type = preset.waveform ?? 'sine';
-        oscillator.frequency.setValueAtTime(preset.frequency, context.currentTime);
+        oscillator.frequency.setValueAtTime(preset.frequency ?? 440, context.currentTime);
 
         // Apply frequency envelope
         if (preset.frequencyEnvelope) {

@@ -26,6 +26,7 @@ import {
 } from '@phosphor-icons/react';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -126,7 +127,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   }, [matchedPets.length, isLoading]);
 
   const emptyHeartStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: emptyHeartScale.value }, { rotate: `${emptyHeartRotate.value}deg` }],
+    transform: `scale(${emptyHeartScale.value}) rotate(${emptyHeartRotate.value}deg)`,
   })) as AnimatedStyle;
 
   const emptyPulseStyle = useAnimatedStyle(() => ({
@@ -149,7 +150,6 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           {emptyStatePresence.shouldRender && (
             <MotionView
-              style={emptyStatePresence.animatedStyle}
               style={emptyHeartStyle}
               className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
@@ -165,7 +165,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                           ),
                           -1,
                           true
-                        ),
+                        ) as any,
                       },
                     ],
                   })) as AnimatedStyle
@@ -194,123 +194,123 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     <PageTransitionWrapper key="matches-content" direction="up">
       <main aria-label="Matches view">
         <section aria-label="Matches">
-        <header className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className={cn(
-              getTypographyClasses('h1'),
-              'mb-2'
-            )}>{t.matches.title}</h1>
-            <p className="text-muted-foreground">
-              {matchedPets.length}{' '}
-              {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
-            </p>
-          </div>
-          {onNavigateToChat && matchedPets.length > 0 && (
-            <MotionView>
-              <Button
-                onClick={handleStartChat}
-                className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
-                size="lg"
-              >
-                <ChatCircle size={20} weight="fill" className="mr-2" />
-                {t.matches.startChat}
-              </Button>
-            </MotionView>
-          )}
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Match cards">
-          {matchedPets.map((pet) => (
-            <MatchCard
-              key={pet.id}
-              pet={pet}
-              onSelect={() => handlePetSelect(pet)}
-              onBreakdown={() => handlePetBreakdown(pet)}
-              onPlaydate={() => handlePetPlaydate(pet)}
-              onVideoCall={() => handlePetVideoCall(pet)}
-              onChat={onNavigateToChat}
-              t={t}
-            />
-          ))}
-        </div>
-
-        <MotionView>
-          {selectedPet && selectedMatch && (
-            <EnhancedPetDetailView
-              pet={selectedPet}
-              onClose={clearSelection}
-              {...(onNavigateToChat ? { onChat: onNavigateToChat } : {})}
-              compatibilityScore={selectedMatch.compatibilityScore}
-              matchReasons={matchReasoning}
-              showActions={false}
-            />
-          )}
-        </MotionView>
-
-        <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            {breakdownPet && userPet && (
-              <div>
-                <div className="mb-4">
-                  <h3 className="text-2xl font-bold">{breakdownPet.name}</h3>
-                  <p className="text-muted-foreground">
-                    {t.matches.compatibilityWith} {userPet.name}
-                  </p>
-                </div>
-                <Tabs defaultValue="analytics" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                    <TabsTrigger value="breakdown">Breakdown</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="analytics" className="mt-4">
-                    <DetailedPetAnalytics
-                      pet={breakdownPet}
-                      {...(breakdownPet.trustProfile
-                        ? { trustProfile: breakdownPet.trustProfile }
-                        : {})}
-                      compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
-                      matchReasons={breakdownPet.match.reasoning ?? []}
-                    />
-                  </TabsContent>
-                  <TabsContent value="breakdown" className="mt-4">
-                    <CompatibilityBreakdown
-                      factors={getCompatibilityFactors(userPet, breakdownPet)}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
+          <header className="mb-6 flex items-center justify-between flex-wrap gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className={cn(
+                getTypographyClasses('h1'),
+                'mb-2'
+              )}>{t.matches.title}</h1>
+              <p className="text-muted-foreground">
+                {matchedPets.length}{' '}
+                {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
+              </p>
+            </div>
+            {onNavigateToChat && matchedPets.length > 0 && (
+              <MotionView>
+                <Button
+                  onClick={handleStartChat}
+                  className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
+                  size="lg"
+                >
+                  <ChatCircle size={20} weight="fill" className="mr-2" />
+                  {t.matches.startChat}
+                </Button>
+              </MotionView>
             )}
-          </DialogContent>
-        </Dialog>
+          </header>
 
-        {playdatePet && userPet && (
-          <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
-            <PlaydateScheduler
-              match={playdatePet.match}
-              userPet={userPet}
-              onClose={() => setPlaydatePet(null)}
-              onStartVideoCall={() => {
-                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
-                setPlaydatePet(null);
-              }}
-              onStartVoiceCall={() => {
-                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
-                setPlaydatePet(null);
-              }}
-            />
-          </Suspense>
-        )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Match cards">
+            {matchedPets.map((pet) => (
+              <MatchCard
+                key={pet.id}
+                pet={pet}
+                onSelect={() => handlePetSelect(pet)}
+                onBreakdown={() => handlePetBreakdown(pet)}
+                onPlaydate={() => handlePetPlaydate(pet)}
+                onVideoCall={() => handlePetVideoCall(pet)}
+                onChat={onNavigateToChat}
+                t={t}
+              />
+            ))}
+          </div>
 
-        <MotionView>
-          {activeCall && (
-            <CallInterface
-              session={activeCall}
-              onEndCall={endCall}
-              onToggleMute={toggleMute}
-              onToggleVideo={toggleVideo}
-            />
+          <MotionView>
+            {selectedPet && selectedMatch && (
+              <EnhancedPetDetailView
+                pet={selectedPet}
+                onClose={clearSelection}
+                {...(onNavigateToChat ? { onChat: onNavigateToChat } : {})}
+                compatibilityScore={selectedMatch.compatibilityScore}
+                matchReasons={matchReasoning}
+                showActions={false}
+              />
+            )}
+          </MotionView>
+
+          <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              {breakdownPet && userPet && (
+                <div>
+                  <div className="mb-4">
+                    <h3 className="text-2xl font-bold">{breakdownPet.name}</h3>
+                    <p className="text-muted-foreground">
+                      {t.matches.compatibilityWith} {userPet.name}
+                    </p>
+                  </div>
+                  <Tabs defaultValue="analytics" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                      <TabsTrigger value="breakdown">Breakdown</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="analytics" className="mt-4">
+                      <DetailedPetAnalytics
+                        pet={breakdownPet}
+                        {...(breakdownPet.trustProfile
+                          ? { trustProfile: breakdownPet.trustProfile }
+                          : {})}
+                        compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
+                        matchReasons={breakdownPet.match.reasoning ?? []}
+                      />
+                    </TabsContent>
+                    <TabsContent value="breakdown" className="mt-4">
+                      <CompatibilityBreakdown
+                        factors={getCompatibilityFactors(userPet, breakdownPet)}
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+
+          {playdatePet && userPet && (
+            <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+              <PlaydateScheduler
+                match={playdatePet.match}
+                userPet={userPet}
+                onClose={() => setPlaydatePet(null)}
+                onStartVideoCall={() => {
+                  initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
+                  setPlaydatePet(null);
+                }}
+                onStartVoiceCall={() => {
+                  initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
+                  setPlaydatePet(null);
+                }}
+              />
+            </Suspense>
           )}
-        </MotionView>
+
+          <MotionView>
+            {activeCall && (
+              <CallInterface
+                session={activeCall}
+                onEndCall={endCall}
+                onToggleMute={toggleMute}
+                onToggleVideo={toggleVideo}
+              />
+            )}
+          </MotionView>
         </section>
       </main>
     </PageTransitionWrapper>
@@ -338,7 +338,7 @@ function MatchCard({
 }: MatchCardProps): React.ReactElement {
   return (
     <MotionView>
-      <div 
+      <div
         className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl cursor-pointer group relative border border-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         onClick={() => {
           haptics.trigger('selection');

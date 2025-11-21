@@ -230,7 +230,9 @@ export default function BackendDemo() {
           </CardHeader>
           <CardContent className="space-y-2">
             <Button
-              onClick={loadRecords}
+              onClick={() => {
+                void loadRecords();
+              }}
               variant="outline"
               size="sm"
               className="w-full"
@@ -240,7 +242,9 @@ export default function BackendDemo() {
               Refresh Data
             </Button>
             <Button
-              onClick={handleClearAll}
+              onClick={() => {
+                void handleClearAll();
+              }}
               variant="destructive"
               size="sm"
               className="w-full"
@@ -283,7 +287,9 @@ export default function BackendDemo() {
               />
             </div>
             <Button
-              onClick={handleCreate}
+              onClick={() => {
+                void handleCreate();
+              }}
               disabled={!isAuthenticated || !title.trim() || !content.trim()}
               className="w-full"
             >
@@ -334,7 +340,9 @@ export default function BackendDemo() {
                       </div>
                     </div>
                     <Button
-                      onClick={() => handleDelete(record.id)}
+                      onClick={() => {
+                        void handleDelete(record.id);
+                      }}
                       variant="ghost"
                       size="sm"
                       isIconOnly

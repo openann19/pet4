@@ -60,9 +60,9 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
   const requirements = VERIFICATION_REQUIREMENTS[selectedLevel];
   const completionPercentage = activeRequest
     ? VerificationService.calculateCompletionPercentage(
-        activeRequest,
-        requirements.requiredDocuments
-      )
+      activeRequest,
+      requirements.requiredDocuments
+    )
     : 0;
 
   const handleStartVerification = () => {
@@ -462,7 +462,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
                     <Button
                       onClick={() => handleSimulateReview(true)}
                       disabled={isSimulatingReview}
-                      variant="default"
+                      variant="primary"
                       className="flex-1"
                     >
                       <CheckCircle size={20} weight="bold" className="mr-2" />

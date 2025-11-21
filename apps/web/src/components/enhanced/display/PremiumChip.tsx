@@ -5,7 +5,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
@@ -37,22 +36,20 @@ export function PremiumChip({
   className,
   'aria-label': ariaLabel,
 }: PremiumChipProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(1);
+  const _uiConfig = useUIConfig();
+  const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.get() }],
+    transform: `scale(${scale.get()})`,
     opacity: opacity.get(),
   }));
 
   const handleClose = useCallback(() => {
     if (disabled || !onClose) return;
 
-    const scaleTransition = withSpring(0.8, springConfigs.smooth);
-    animate(scale, scaleTransition.target, scaleTransition.transition);
-    const opacityTransition = withTiming(0, { duration: 200 });
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    scale.value = withSpring(0.8, springConfigs.smooth);
+    opacity.value = withTiming(0, { duration: 200 });
     haptics.impact('light');
 
     setTimeout(() => {

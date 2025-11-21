@@ -64,7 +64,7 @@ function PostItem({ post, isHidden, onHide, onUnhide, onDelete }: PostItemProps)
   }
 
   return (
-    <MotionView style={animatedStyle as React.CSSProperties} className="relative">
+    <MotionView style={animatedStyle} className="relative">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {isHidden ? (
           <Button size="sm" variant="secondary" onClick={() => onUnhide(postId)}>

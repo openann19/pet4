@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { motion } from '@petspark/motion';
 import { Camera, Image as ImageIcon, X, Smiley, MapPin } from '@phosphor-icons/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -202,8 +202,7 @@ export default function CreateStoryDialog({
               {!mediaPreview ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <MotionView
-                      as="button"
+                    <motion.button
                       onClick={handleCameraCapture}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
@@ -216,10 +215,9 @@ export default function CreateStoryDialog({
                         <p className="font-semibold">Take Photo</p>
                         <p className="text-xs text-muted-foreground">Use your camera</p>
                       </div>
-                    </MotionView>
+                    </motion.button>
 
-                    <MotionView
-                      as="button"
+                    <motion.button
                       onClick={handleGallerySelect}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
@@ -232,7 +230,7 @@ export default function CreateStoryDialog({
                         <p className="font-semibold">Choose Media</p>
                         <p className="text-xs text-muted-foreground">From your gallery</p>
                       </div>
-                    </MotionView>
+                    </motion.button>
                   </div>
                 </div>
               ) : (

@@ -3,14 +3,9 @@
  * Momentum-based scrolling with decay physics
  */
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withDecay,
-  cancelAnimation,
-} from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withDecay, cancelAnimation } from '@petspark/motion';
 import { useCallback, useState, useRef } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseKineticScrollOptions {
   damping?: number;
@@ -28,7 +23,7 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   const lastTime = useRef(0);
 
   const handleDragStart = useCallback((event: React.MouseEvent | React.TouchEvent) => {
-    cancelAnimation(offset);
+    cancelAnimation();
     setIsDragging(true);
 
     const clientY = 'touches' in event ? (event.touches[0]?.clientY ?? 0) : event.clientY;
@@ -80,11 +75,11 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   }, [isDragging, damping, clamp, velocity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: offset.value }],
+    transform: `translateY(${offset.value}px)`,
   }));
 
   const reset = useCallback(() => {
-    cancelAnimation(offset);
+    cancelAnimation();
     offset.value = 0;
     velocity.value = 0;
   }, []);

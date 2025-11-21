@@ -57,22 +57,24 @@ export interface MockIDBDatabase {
 }
 
 export interface MockIDBRequest<T = unknown> extends EventTarget {
-  result: T | undefined;
+  result: T | null;
   error: DOMException | null;
   readyState: IDBRequestReadyState;
   onsuccess: ((this: IDBRequest<T>, ev: Event) => unknown) | null;
   onerror: ((this: IDBRequest<T>, ev: Event) => unknown) | null;
+  source: IDBObjectStore | IDBIndex | null;
+  transaction: IDBTransaction | null;
 }
 
-export function createMockIDBRequest<T = unknown>(result?: T): MockIDBRequest<T> {
+export function createMockIDBRequest<T = unknown>(result?: T | null): MockIDBRequest<T> {
   const request = {
-    result,
+    result: (result ?? null) as T | null,
     error: null,
     readyState: 'done' as IDBRequestReadyState,
     onsuccess: null,
     onerror: null,
-    source: null as any, // Mock source
-    transaction: null as any, // Mock transaction
+    source: null,
+    transaction: null,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(() => true),
@@ -81,7 +83,7 @@ export function createMockIDBRequest<T = unknown>(result?: T): MockIDBRequest<T>
   // Simulate success
   setTimeout(() => {
     if (request.onsuccess) {
-      request.onsuccess.call(request as any, new Event('success') as any);
+      request.onsuccess.call(request as IDBRequest<T>, new Event('success'));
     }
   }, 0);
 
@@ -99,10 +101,7 @@ export function createMockIDBDatabase(): MockIDBDatabase {
   });
 
   const objectStore = (name: string): MockIDBObjectStore => {
-    if (!stores[name]) {
-      stores[name] = {};
-    }
-    const store = stores[name];
+    const store: Record<string, unknown> = (stores[name] ??= {});
 
     return {
       add: vi.fn((value: unknown) => {

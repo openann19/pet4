@@ -130,7 +130,7 @@ export function PremiumNotificationCenter({
   }, [isOpen, notifications.unreadCount, bellRotate, bellScale]);
 
   const bellStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${bellRotate.value}deg` }, { scale: bellScale.value }],
+    transform: [{ rotate: `${bellRotate.value}deg`, scale: bellScale.value }],
   })) as AnimatedStyle;
 
   const settingsOpacity = useSharedValue(showSettings ? 1 : 0);
@@ -253,7 +253,7 @@ export function PremiumNotificationCenter({
             <ScrollArea className="h-full">
               <div className="px-6 py-4">
                 {filtersWithNotifications.view === 'grouped' &&
-                notifications.groupedNotifications.length > 0 ? (
+                  notifications.groupedNotifications.length > 0 ? (
                   <NotificationGroupList
                     groups={notifications.groupedNotifications}
                     filter={filtersWithNotifications.filter}

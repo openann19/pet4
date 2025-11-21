@@ -88,223 +88,188 @@ const RTC_CONFIGURATION: RTCConfiguration = {
   rtcpMuxPolicy: 'require',
 };
 
-// ============================================================================
-// Hook Implementation
-// ============================================================================
+async function getConnectionStats(pc: RTCPeerConnection): Promise<ConnectionStats> {
+  const stats = await pc.getStats();
+  let bitrate = 0;
+  let packetLoss = 0;
+  let jitter = 0;
+  let roundTripTime = 0;
 
-export function useWebRTC(config: WebRTCConfig) {
-  const {
-    iceServers = DEFAULT_ICE_SERVERS,
-    onRemoteStream,
-    onDataChannel,
-    onConnectionStateChange,
-    onIceCandidate,
-    onError,
-    enableDataChannel = false,
-    enableSimulcast = false,
-    maxReconnectAttempts = MAX_RECONNECT_ATTEMPTS,
-  } = config;
+  stats.forEach((report: unknown) => {
+    const r = report as {
+      type: string;
+      bytesReceived?: number;
+      packetsLost?: number;
+      jitter?: number;
+      state?: string;
+      currentRoundTripTime?: number;
+    };
 
-  // State
-  const [state, setState] = useState<WebRTCState>({
-    connectionState: 'new',
-    iceConnectionState: 'new',
-    iceGatheringState: 'new',
-    signalingState: 'stable',
-    hasRemoteStream: false,
-    hasLocalStream: false,
-    reconnectAttempts: 0,
-    stats: null,
+    if (r.type === 'inbound-rtp') {
+      bitrate = (r.bytesReceived ?? 0) * 8; // bits per second
+      packetLoss = r.packetsLost ?? 0;
+      jitter = r.jitter ?? 0;
+    }
+
+    if (r.type === 'candidate-pair' && r.state === 'succeeded') {
+      roundTripTime = r.currentRoundTripTime ?? 0;
+    }
   });
 
-  // Refs
-  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
-  const localStreamRef = useRef<MediaStream | null>(null);
-  const remoteStreamRef = useRef<MediaStream | null>(null);
-  const dataChannelRef = useRef<RTCDataChannel | null>(null);
-  const statsIntervalRef = useRef<number | null>(null);
-  const reconnectTimeoutRef = useRef<number | null>(null);
-  const iceCandidatesQueueRef = useRef<RTCIceCandidate[]>([]);
+  return {
+    bitrate,
+    packetLoss,
+    jitter,
+    roundTripTime: roundTripTime * 1000, // Convert to ms
+    timestamp: Date.now(),
+  };
+}
 
-  // ============================================================================
-  // Peer Connection Setup
-  // ============================================================================
+async function configureSimulcast(sender: RTCRtpSender, onError?: (error: Error) => void) {
+  const params = sender.getParameters();
+  if (!params.encodings) {
+    params.encodings = [];
+  }
 
-  const createPeerConnection = useCallback(() => {
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.close();
+  // Configure simulcast layers
+  params.encodings = [
+    { rid: 'h', maxBitrate: 900000 }, // High quality
+    { rid: 'm', maxBitrate: 300000, scaleResolutionDownBy: 2 }, // Medium
+    { rid: 'l', maxBitrate: 100000, scaleResolutionDownBy: 4 }, // Low
+  ];
+
+  try {
+    await sender.setParameters(params);
+  } catch (error) {
+    if (onError) {
+      onError(error as Error);
+    }
+  }
+}
+
+function attachDataChannelListeners(channel: RTCDataChannel, onError?: (error: Error) => void) {
+  channel.onopen = () => {
+    // Channel ready
+  };
+
+  channel.onclose = () => {
+    // Channel closed
+  };
+
+  channel.onerror = (event: Event) => {
+    if (onError) {
+      const errorEvent = event as RTCErrorEvent;
+      const message = errorEvent.error?.message ?? 'Unknown data channel error';
+      onError(new Error(`Data channel error: ${message}`));
+    }
+  };
+}
+
+function initializePeerConnection(
+  pc: RTCPeerConnection,
+  callbacks: {
+    onIceCandidate?: (candidate: RTCIceCandidate) => void;
+    onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+    onRemoteStream?: (stream: MediaStream) => void;
+    onDataChannel?: (channel: RTCDataChannel) => void;
+    onError?: (error: Error) => void;
+    setState: React.Dispatch<React.SetStateAction<WebRTCState>>;
+    handleConnectionFailure: () => void;
+  },
+  refs: {
+    remoteStreamRef: React.MutableRefObject<MediaStream | null>;
+    dataChannelRef: React.MutableRefObject<RTCDataChannel | null>;
+  }
+) {
+  const {
+    onIceCandidate,
+    onConnectionStateChange,
+    onRemoteStream,
+    onDataChannel,
+    onError,
+    setState,
+    handleConnectionFailure,
+  } = callbacks;
+  const { remoteStreamRef, dataChannelRef } = refs;
+
+  // ICE candidate handling
+  pc.onicecandidate = (event) => {
+    if (event.candidate && onIceCandidate) {
+      onIceCandidate(event.candidate);
+    }
+  };
+
+  // Connection state monitoring
+  pc.onconnectionstatechange = () => {
+    setState((prev) => ({
+      ...prev,
+      connectionState: pc.connectionState,
+    }));
+
+    if (onConnectionStateChange) {
+      onConnectionStateChange(pc.connectionState);
     }
 
-    const pc = new RTCPeerConnection({
-      ...RTC_CONFIGURATION,
-      iceServers: iceServers as RTCIceServer[],
-    });
-
-    // ICE candidate handling
-    pc.onicecandidate = (event) => {
-      if (event.candidate && onIceCandidate) {
-        onIceCandidate(event.candidate);
-      }
-    };
-
-    // Connection state monitoring
-    pc.onconnectionstatechange = () => {
-      setState((prev) => ({
-        ...prev,
-        connectionState: pc.connectionState,
-      }));
-
-      if (onConnectionStateChange) {
-        onConnectionStateChange(pc.connectionState);
-      }
-
-      // Handle reconnection
-      if (pc.connectionState === 'failed') {
-        handleConnectionFailure();
-      }
-    };
-
-    pc.oniceconnectionstatechange = () => {
-      setState((prev) => ({
-        ...prev,
-        iceConnectionState: pc.iceConnectionState,
-      }));
-    };
-
-    pc.onicegatheringstatechange = () => {
-      setState((prev) => ({
-        ...prev,
-        iceGatheringState: pc.iceGatheringState,
-      }));
-    };
-
-    pc.onsignalingstatechange = () => {
-      setState((prev) => ({
-        ...prev,
-        signalingState: pc.signalingState,
-      }));
-    };
-
-    // Remote stream handling
-    pc.ontrack = (event) => {
-      const [remoteStream] = event.streams;
-      if (remoteStream) {
-        remoteStreamRef.current = remoteStream;
-        setState((prev) => ({ ...prev, hasRemoteStream: true }));
-
-        if (onRemoteStream) {
-          onRemoteStream(remoteStream);
-        }
-      }
-    };
-
-    // Data channel handling
-    pc.ondatachannel = (event) => {
-      dataChannelRef.current = event.channel;
-      setupDataChannelListeners(event.channel);
-
-      if (onDataChannel) {
-        onDataChannel(event.channel);
-      }
-    };
-
-    peerConnectionRef.current = pc;
-
-    return pc;
-  }, [iceServers, onIceCandidate, onConnectionStateChange, onRemoteStream, onDataChannel]);
-
-  // ============================================================================
-  // Connection Failure Handling
-  // ============================================================================
-
-  const handleConnectionFailure = useCallback(() => {
-    setState((prev) => {
-      if (prev.reconnectAttempts >= maxReconnectAttempts) {
-        if (onError) {
-          onError(new Error('Max reconnection attempts reached'));
-        }
-        return prev;
-      }
-
-      // Schedule reconnection
-      if (reconnectTimeoutRef.current !== null) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-
-      reconnectTimeoutRef.current = window.setTimeout(() => {
-        createPeerConnection();
-        // Re-add local stream if it exists
-        if (localStreamRef.current) {
-          addStream(localStreamRef.current);
-        }
-      }, RECONNECT_DELAY);
-
-      return {
-        ...prev,
-        reconnectAttempts: prev.reconnectAttempts + 1,
-      };
-    });
-  }, [maxReconnectAttempts, onError, createPeerConnection]);
-
-  // ============================================================================
-  // Stream Management
-  // ============================================================================
-
-  const addStream = useCallback((stream: MediaStream) => {
-    const pc = peerConnectionRef.current;
-    if (!pc) {
-      throw new Error('Peer connection not initialized');
+    // Handle reconnection
+    if (pc.connectionState === 'failed') {
+      handleConnectionFailure();
     }
+  };
 
-    localStreamRef.current = stream;
+  pc.oniceconnectionstatechange = () => {
+    setState((prev) => ({
+      ...prev,
+      iceConnectionState: pc.iceConnectionState,
+    }));
+  };
 
-    // Add all tracks to peer connection
-    for (const track of stream.getTracks()) {
-      const sender = pc.addTrack(track, stream);
+  pc.onicegatheringstatechange = () => {
+    setState((prev) => ({
+      ...prev,
+      iceGatheringState: pc.iceGatheringState,
+    }));
+  };
 
-      // Enable simulcast if requested
-      if (enableSimulcast && track.kind === 'video') {
-        const params = sender.getParameters();
-        if (!params.encodings) {
-          params.encodings = [];
-        }
+  pc.onsignalingstatechange = () => {
+    setState((prev) => ({
+      ...prev,
+      signalingState: pc.signalingState,
+    }));
+  };
 
-        // Configure simulcast layers
-        params.encodings = [
-          { rid: 'h', maxBitrate: 900000 }, // High quality
-          { rid: 'm', maxBitrate: 300000, scaleResolutionDownBy: 2 }, // Medium
-          { rid: 'l', maxBitrate: 100000, scaleResolutionDownBy: 4 }, // Low
-        ];
+  // Remote stream handling
+  pc.ontrack = (event) => {
+    const [remoteStream] = event.streams;
+    if (remoteStream) {
+      remoteStreamRef.current = remoteStream;
+      setState((prev) => ({ ...prev, hasRemoteStream: true }));
 
-        sender.setParameters(params).catch((error) => {
-          if (onError) {
-            onError(error as Error);
-          }
-        });
+      if (onRemoteStream) {
+        onRemoteStream(remoteStream);
       }
     }
+  };
 
-    setState((prev) => ({ ...prev, hasLocalStream: true }));
-  }, [enableSimulcast, onError]);
+  // Data channel handling
+  pc.ondatachannel = (event) => {
+    dataChannelRef.current = event.channel;
+    attachDataChannelListeners(event.channel, onError);
 
-  const removeStream = useCallback(() => {
-    const pc = peerConnectionRef.current;
-    if (!pc) return;
-
-    // Remove all senders
-    const senders = pc.getSenders();
-    for (const sender of senders) {
-      pc.removeTrack(sender);
+    if (onDataChannel) {
+      onDataChannel(event.channel);
     }
+  };
+}
 
-    localStreamRef.current = null;
-    setState((prev) => ({ ...prev, hasLocalStream: false }));
-  }, []);
+// ============================================================================
+// Helper Hooks
+// ============================================================================
 
-  // ============================================================================
-  // Signaling
-  // ============================================================================
-
+function useSignaling(
+  peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>,
+  iceCandidatesQueueRef: React.MutableRefObject<RTCIceCandidate[]>,
+  createPeerConnection: () => RTCPeerConnection
+) {
   const createOffer = useCallback(async (): Promise<RTCSessionDescriptionInit> => {
     const pc = peerConnectionRef.current ?? createPeerConnection();
 
@@ -379,42 +344,39 @@ export function useWebRTC(config: WebRTCConfig) {
     }
   }, []);
 
-  // ============================================================================
-  // Data Channel
-  // ============================================================================
+  return {
+    createOffer,
+    createAnswer,
+    handleOffer,
+    handleAnswer,
+    addIceCandidate,
+  };
+}
 
-  const createDataChannel = useCallback((label: string): RTCDataChannel => {
-    const pc = peerConnectionRef.current;
-    if (!pc) {
-      throw new Error('Peer connection not initialized');
-    }
-
-    const channel = pc.createDataChannel(label, {
-      ordered: true,
-      maxRetransmits: 3,
-    });
-
-    dataChannelRef.current = channel;
-    setupDataChannelListeners(channel);
-
-    return channel;
-  }, []);
-
-  const setupDataChannelListeners = useCallback((channel: RTCDataChannel) => {
-    channel.onopen = () => {
-      // Channel ready
-    };
-
-    channel.onclose = () => {
-      // Channel closed
-    };
-
-    channel.onerror = (error) => {
-      if (onError) {
-        onError(new Error(`Data channel error: ${error}`));
+function useDataChannel(
+  peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>,
+  dataChannelRef: React.MutableRefObject<RTCDataChannel | null>,
+  onError?: (error: Error) => void
+) {
+  const createDataChannel = useCallback(
+    (label: string): RTCDataChannel => {
+      const pc = peerConnectionRef.current;
+      if (!pc) {
+        throw new Error('Peer connection not initialized');
       }
-    };
-  }, [onError]);
+
+      const channel = pc.createDataChannel(label, {
+        ordered: true,
+        maxRetransmits: 3,
+      });
+
+      dataChannelRef.current = channel;
+      attachDataChannelListeners(channel, onError);
+
+      return channel;
+    },
+    [onError]
+  );
 
   const sendData = useCallback((data: string | Blob | ArrayBuffer): void => {
     const channel = dataChannelRef.current;
@@ -426,45 +388,67 @@ export function useWebRTC(config: WebRTCConfig) {
     channel.send(data as never);
   }, []);
 
-  // ============================================================================
-  // Statistics
-  // ============================================================================
+  return { createDataChannel, sendData };
+}
 
-  const getStats = useCallback(async (): Promise<ConnectionStats | null> => {
+function useMediaStream(
+  peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>,
+  localStreamRef: React.MutableRefObject<MediaStream | null>,
+  setState: React.Dispatch<React.SetStateAction<WebRTCState>>,
+  enableSimulcast: boolean,
+  onError?: (error: Error) => void
+) {
+  const addStream = useCallback(
+    (stream: MediaStream) => {
+      const pc = peerConnectionRef.current;
+      if (!pc) {
+        throw new Error('Peer connection not initialized');
+      }
+
+      localStreamRef.current = stream;
+
+      // Add all tracks to peer connection
+      for (const track of stream.getTracks()) {
+        const sender = pc.addTrack(track, stream);
+
+        // Enable simulcast if requested
+        if (enableSimulcast && track.kind === 'video') {
+          void configureSimulcast(sender, onError);
+        }
+      }
+
+      setState((prev) => ({ ...prev, hasLocalStream: true }));
+    },
+    [enableSimulcast, onError, setState]
+  );
+
+  const removeStream = useCallback(() => {
     const pc = peerConnectionRef.current;
-    if (!pc) return null;
+    if (!pc) return;
 
-    const stats = await pc.getStats();
-    let bitrate = 0;
-    let packetLoss = 0;
-    let jitter = 0;
-    let roundTripTime = 0;
+    // Remove all senders
+    const senders = pc.getSenders();
+    for (const sender of senders) {
+      pc.removeTrack(sender);
+    }
 
-    stats.forEach((report) => {
-      if (report.type === 'inbound-rtp') {
-        bitrate = (report.bytesReceived ?? 0) * 8; // bits per second
-        packetLoss = report.packetsLost ?? 0;
-        jitter = report.jitter ?? 0;
-      }
+    localStreamRef.current = null;
+    setState((prev) => ({ ...prev, hasLocalStream: false }));
+  }, [setState]);
 
-      if (report.type === 'candidate-pair' && report.state === 'succeeded') {
-        roundTripTime = report.currentRoundTripTime ?? 0;
-      }
-    });
+  return { addStream, removeStream };
+}
 
-    return {
-      bitrate,
-      packetLoss,
-      jitter,
-      roundTripTime: roundTripTime * 1000, // Convert to ms
-      timestamp: Date.now(),
-    };
-  }, []);
-
-  // ============================================================================
-  // Cleanup
-  // ============================================================================
-
+function useCleanup(
+  peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>,
+  dataChannelRef: React.MutableRefObject<RTCDataChannel | null>,
+  localStreamRef: React.MutableRefObject<MediaStream | null>,
+  remoteStreamRef: React.MutableRefObject<MediaStream | null>,
+  iceCandidatesQueueRef: React.MutableRefObject<RTCIceCandidate[]>,
+  statsIntervalRef: React.MutableRefObject<number | null>,
+  reconnectTimeoutRef: React.MutableRefObject<number | null>,
+  setState: React.Dispatch<React.SetStateAction<WebRTCState>>
+) {
   const close = useCallback(() => {
     if (statsIntervalRef.current !== null) {
       clearInterval(statsIntervalRef.current);
@@ -500,7 +484,200 @@ export function useWebRTC(config: WebRTCConfig) {
       reconnectAttempts: 0,
       stats: null,
     });
+  }, [
+    setState,
+    peerConnectionRef,
+    dataChannelRef,
+    localStreamRef,
+    remoteStreamRef,
+    iceCandidatesQueueRef,
+    statsIntervalRef,
+    reconnectTimeoutRef,
+  ]);
+
+  return { close };
+}
+
+// ============================================================================
+// Hook Implementation
+// ============================================================================
+
+export function useWebRTC(config: WebRTCConfig) {
+  const {
+    iceServers = DEFAULT_ICE_SERVERS,
+    onRemoteStream,
+    onDataChannel,
+    onConnectionStateChange,
+    onIceCandidate,
+    onError,
+    enableDataChannel = false,
+    enableSimulcast = false,
+    maxReconnectAttempts = MAX_RECONNECT_ATTEMPTS,
+  } = config;
+
+  // State
+  const [state, setState] = useState<WebRTCState>({
+    connectionState: 'new',
+    iceConnectionState: 'new',
+    iceGatheringState: 'new',
+    signalingState: 'stable',
+    hasRemoteStream: false,
+    hasLocalStream: false,
+    reconnectAttempts: 0,
+    stats: null,
+  });
+
+  // Refs
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteStreamRef = useRef<MediaStream | null>(null);
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
+  const statsIntervalRef = useRef<number | null>(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
+  const iceCandidatesQueueRef = useRef<RTCIceCandidate[]>([]);
+  const createPeerConnectionRef = useRef<(() => RTCPeerConnection) | null>(null);
+
+  // ============================================================================
+  // Stream Management
+  // ============================================================================
+
+  const { addStream, removeStream } = useMediaStream(
+    peerConnectionRef,
+    localStreamRef,
+    setState,
+    enableSimulcast,
+    onError
+  );
+
+  // ============================================================================
+  // Connection Failure Handling
+  // ============================================================================
+
+  const handleConnectionFailure = useCallback(() => {
+    setState((prev) => {
+      if (prev.reconnectAttempts >= maxReconnectAttempts) {
+        if (onError) {
+          onError(new Error('Max reconnection attempts reached'));
+        }
+        return prev;
+      }
+
+      // Schedule reconnection
+      if (reconnectTimeoutRef.current !== null) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+
+      reconnectTimeoutRef.current = window.setTimeout(() => {
+        if (createPeerConnectionRef.current) {
+          createPeerConnectionRef.current();
+        }
+        // Re-add local stream if it exists
+        if (localStreamRef.current) {
+          addStream(localStreamRef.current);
+        }
+      }, RECONNECT_DELAY);
+
+      return {
+        ...prev,
+        reconnectAttempts: prev.reconnectAttempts + 1,
+      };
+    });
+  }, [maxReconnectAttempts, onError, addStream]);
+
+  // ============================================================================
+  // Peer Connection Setup
+  // ============================================================================
+
+  const createPeerConnection = useCallback(() => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+
+    const pc = new RTCPeerConnection({
+      ...RTC_CONFIGURATION,
+      iceServers: iceServers as RTCIceServer[],
+    });
+
+    initializePeerConnection(
+      pc,
+      {
+        onIceCandidate,
+        onConnectionStateChange,
+        onRemoteStream,
+        onDataChannel,
+        onError,
+        setState,
+        handleConnectionFailure,
+      },
+      {
+        remoteStreamRef,
+        dataChannelRef,
+      }
+    );
+
+    peerConnectionRef.current = pc;
+
+    return pc;
+  }, [
+    iceServers,
+    onIceCandidate,
+    onConnectionStateChange,
+    onRemoteStream,
+    onDataChannel,
+    onError,
+    handleConnectionFailure,
+  ]);
+
+  // Update ref for reconnection
+  useEffect(() => {
+    createPeerConnectionRef.current = createPeerConnection;
+  }, [createPeerConnection]);
+
+  // ============================================================================
+  // Signaling
+  // ============================================================================
+
+  const { createOffer, createAnswer, handleOffer, handleAnswer, addIceCandidate } = useSignaling(
+    peerConnectionRef,
+    iceCandidatesQueueRef,
+    createPeerConnection
+  );
+
+  // ============================================================================
+  // Data Channel
+  // ============================================================================
+
+  const { createDataChannel, sendData } = useDataChannel(
+    peerConnectionRef,
+    dataChannelRef,
+    onError
+  );
+
+  // ============================================================================
+  // Statistics
+  // ============================================================================
+
+  const getStats = useCallback(async (): Promise<ConnectionStats | null> => {
+    const pc = peerConnectionRef.current;
+    if (!pc) return null;
+
+    return getConnectionStats(pc);
   }, []);
+
+  // ============================================================================
+  // Cleanup
+  // ============================================================================
+
+  const { close } = useCleanup(
+    peerConnectionRef,
+    dataChannelRef,
+    localStreamRef,
+    remoteStreamRef,
+    iceCandidatesQueueRef,
+    statsIntervalRef,
+    reconnectTimeoutRef,
+    setState
+  );
 
   // ============================================================================
   // Effects

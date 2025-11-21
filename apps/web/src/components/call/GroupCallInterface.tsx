@@ -465,7 +465,7 @@ export default function GroupCallInterface({
                 <Users size={24} weight="fill" className="text-primary" aria-hidden="true" />
                 <div>
                   <h1 className="font-bold text-foreground text-lg">
-                    {session.call.title || 'Playdate Video Call'}
+                    {session.call.title ?? 'Playdate Video Call'}
                   </h1>
                   <div className="flex items-center gap-2 text-sm" role="status" aria-live="polite">
                     {statusIndicator}

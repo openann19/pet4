@@ -9,6 +9,7 @@ import {
   withSequence,
   withTiming,
   MotionView,
+  type AnimatedStyle,
   type MotionValue,
 } from '@petspark/motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -25,14 +26,14 @@ export function SyncStatusIndicator() {
 
   const iconScale = useSharedValue(1);
   const iconRotate = useSharedValue(0);
-  const iconStyle = useAnimatedStyle(() => {
+  const iconStyle: AnimatedStyle = useAnimatedStyle(() => {
     const scale = iconScale.value;
     const rotate = iconRotate.value;
-    const transforms: Array<{ [key: string]: number | string | MotionValue<number> }> = [];
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale });
     transforms.push({ rotate: `${rotate}deg` });
     return { transform: transforms };
-  }) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  });
 
   useEffect(() => {
     if (syncStatus.isSyncing) {
@@ -114,7 +115,7 @@ export function SyncStatusIndicator() {
           size="sm"
           className="h-9 px-3 gap-2 hover:bg-primary/10 active:bg-primary/20 transition-colors"
         >
-          <MotionView style={iconStyle as React.CSSProperties}>{getIcon()}</MotionView>
+          <MotionView style={iconStyle}>{getIcon()}</MotionView>
           <span className="text-xs font-medium">{getLabel()}</span>
         </Button>
       </PopoverTrigger>

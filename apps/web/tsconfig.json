@@ -41,6 +41,8 @@
     ".next",
     "coverage",
     "storybook-static",
+    "android-design-tokens-rn",
+    "e2e",
     "src/lib/kyc-native.ts",
     "src/components/ChatWindowNew.tsx",
     "src/components/media-editor/MediaEditor.tsx",

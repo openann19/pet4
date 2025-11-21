@@ -1,19 +1,28 @@
-import { MotionView } from "@petspark/motion";
+import { MotionView } from '@petspark/motion';
 /**
  * Chat Header Component
  *
  * Header section with user info and actions
  */
 
-import { ArrowLeft, DotsThree } from '@phosphor-icons/react';
+import {
+  ArrowLeft,
+  DotsThree,
+  Phone,
+  VideoCamera,
+} from '@phosphor-icons/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
-import { TypingIndicator as TypingIndicatorComponent } from './TypingIndicator';
 import type { ChatRoom } from '@/lib/chat-types';
-import { useUIConfig } from "@/hooks/use-ui-config";
+import { useUIConfig } from '@/hooks/use-ui-config';
 import { getTypographyClasses } from '@/lib/typography';
+import { TypingIndicator } from './TypingIndicator';
 
 export interface ChatHeaderProps {
   room: ChatRoom;
@@ -22,6 +31,8 @@ export interface ChatHeaderProps {
   onBack?: () => void;
   onToggleAwayMode: () => void;
   onBlockUser: () => void;
+  onVideoCall?: () => void;
+  onVoiceCall?: () => void;
 }
 
 export function ChatHeader({
@@ -31,6 +42,8 @@ export function ChatHeader({
   onBack,
   onToggleAwayMode,
   onBlockUser,
+  onVideoCall,
+  onVoiceCall,
 }: ChatHeaderProps): JSX.Element {
   const _uiConfig = useUIConfig();
   const animation = useEntryAnimation({ initialY: -20, delay: 0 });
@@ -61,9 +74,32 @@ export function ChatHeader({
         </Avatar>
 
         <div className="flex-1">
-          <h2 className={getTypographyClasses('subheading')}>{room.matchedPetName}</h2>
-          {typingUsers.length > 0 && <TypingIndicatorComponent users={typingUsers} />}
+          <h2 className={getTypographyClasses('subheading')}>
+            {room.matchedPetName}
+          </h2>
+          {typingUsers.length > 0 && <TypingIndicator users={typingUsers} />}
         </div>
+
+        {onVoiceCall && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onVoiceCall}
+            aria-label="Start voice call"
+          >
+            <Phone size={24} />
+          </Button>
+        )}
+        {onVideoCall && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onVideoCall}
+            aria-label="Start video call"
+          >
+            <VideoCamera size={24} />
+          </Button>
+        )}
 
         <Popover>
           <PopoverTrigger asChild>
@@ -78,7 +114,11 @@ export function ChatHeader({
           </PopoverTrigger>
           <PopoverContent className="w-64 glass-strong">
             <div className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" onClick={onToggleAwayMode}>
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={onToggleAwayMode}
+              >
                 {awayMode ? '🟢 Available' : '🌙 Away Mode'}
               </Button>
               <Button

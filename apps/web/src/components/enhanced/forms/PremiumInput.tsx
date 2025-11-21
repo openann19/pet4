@@ -5,7 +5,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
@@ -77,33 +76,23 @@ export function PremiumInput({
     setHasValue(hasContent);
 
     if (hasContent || isFocused) {
-      const scaleTransition = withSpring(0.85, springConfigs.smooth);
-      animate(labelScale, scaleTransition.target, scaleTransition.transition);
-      const yTransition = withSpring(-24, springConfigs.smooth);
-      animate(labelY, yTransition.target, yTransition.transition);
+      labelScale.value = withSpring(0.85, springConfigs.smooth);
+      labelY.value = withSpring(-24, springConfigs.smooth);
     } else {
-      const scaleTransition = withSpring(1, springConfigs.smooth);
-      animate(labelScale, scaleTransition.target, scaleTransition.transition);
-      const yTransition = withSpring(0, springConfigs.smooth);
-      animate(labelY, yTransition.target, yTransition.transition);
+      labelScale.value = withSpring(1, springConfigs.smooth);
+      labelY.value = withSpring(0, springConfigs.smooth);
     }
   }, [value, isFocused, labelScale, labelY]);
 
   useEffect(() => {
     if (isFocused) {
-      const widthTransition = withSpring(2, springConfigs.smooth);
-      animate(borderWidth, widthTransition.target, widthTransition.transition);
-      const colorTransition = withTiming(error ? 1 : 0.5, timingConfigs.fast);
-      animate(borderColor, colorTransition.target, colorTransition.transition);
-      const iconTransition = withSpring(1.1, springConfigs.smooth);
-      animate(iconScale, iconTransition.target, iconTransition.transition);
+      borderWidth.value = withSpring(2, springConfigs.smooth);
+      borderColor.value = withTiming(error ? 1 : 0.5, timingConfigs.fast);
+      iconScale.value = withSpring(1.1, springConfigs.smooth);
     } else {
-      const widthTransition = withSpring(variant === 'outlined' ? 1 : 0, springConfigs.smooth);
-      animate(borderWidth, widthTransition.target, widthTransition.transition);
-      const colorTransition = withTiming(error ? 1 : 0, timingConfigs.fast);
-      animate(borderColor, colorTransition.target, colorTransition.transition);
-      const iconTransition = withSpring(1, springConfigs.smooth);
-      animate(iconScale, iconTransition.target, iconTransition.transition);
+      borderWidth.value = withSpring(variant === 'outlined' ? 1 : 0, springConfigs.smooth);
+      borderColor.value = withTiming(error ? 1 : 0, timingConfigs.fast);
+      iconScale.value = withSpring(1, springConfigs.smooth);
     }
   }, [isFocused, error, variant, borderWidth, borderColor, iconScale]);
 
@@ -152,12 +141,12 @@ export function PremiumInput({
   }, [showPassword]);
 
   const labelStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: labelScale.get() }, { translateY: labelY.get() }],
+    transform: `scale(${labelScale.get()}) translateY(${labelY.get()}px)`,
   }));
 
   // Use design token colors for animated styles
   // Note: For static styles, CSS variables are used in className
-  const themeMode = _uiConfig.theme.mode || 'light';
+  const themeMode = 'light';
   const THEME_COLORS = {
     primary: getColorToken('accent', themeMode),
     error: getColorToken('destructive', themeMode),
@@ -175,7 +164,7 @@ export function PremiumInput({
   }));
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconScale.get() }],
+    transform: `scale(${iconScale.get()})`,
   }));
 
   const inputType =

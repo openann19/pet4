@@ -39,6 +39,11 @@ export interface AnimationConfig {
   showParticles: boolean;
   showTrails: boolean;
   motionFPS: number;
+  /**
+   * App-level motion intensity preference for web surfaces.
+   * This is read by the web motion system via useMotionPreferences.
+   */
+  motionLevel: 'full' | 'reduced' | 'off';
 }
 
 export interface PerformanceConfig {
@@ -117,6 +122,7 @@ export const ABSOLUTE_MAX_UI_MODE: AbsoluteMaxUIModeConfig = {
     showParticles: true,
     showTrails: true,
     motionFPS: 60,
+    motionLevel: 'full',
   },
   performance: {
     runOnUIThread: true,

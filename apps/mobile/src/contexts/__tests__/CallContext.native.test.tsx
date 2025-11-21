@@ -45,8 +45,8 @@ describe('CallProvider', () => {
         <TestConsumer />
       </CallProvider>
     )
-    // Directly invoke for simplicity
-    const call = (UNSAFE_root.findByType(TestConsumer).props as any).children
-    expect(call).toBeDefined()
+    // Directly inspect rendered TestConsumer children for simplicity
+    const props = UNSAFE_root.findByType(TestConsumer).props as { children?: unknown }
+    expect(props.children).toBeDefined()
   })
 })

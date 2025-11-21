@@ -31,7 +31,7 @@ export default function GlobalNavErrorTrap(): null {
         const onError = (e: ErrorEvent): void => {
             push('error', {
                 message: e.message,
-                stack: e.error?.stack,
+                stack: e.error instanceof Error ? e.error.stack : undefined,
                 filename: e.filename,
                 lineno: e.lineno,
                 colno: e.colno,
@@ -47,7 +47,7 @@ export default function GlobalNavErrorTrap(): null {
                 stack,
             });
 
-            const msg = String(e.reason?.message ?? e.reason ?? '');
+            const msg = reason;
             if (/Loading chunk [\s\S]* failed|ChunkLoadError/.test(msg)) {
                 const hasReloaded = sessionStorage.getItem('__chunk_reload_attempted') === 'true';
                 if (!hasReloaded) {

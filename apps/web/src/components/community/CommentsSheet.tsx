@@ -170,6 +170,7 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
               className="rounded-full"
               aria-label={t.common?.close ?? 'Close comments'}
             >
+              <span className="sr-only">{t.common?.close ?? 'Close comments'}</span>
               <X size={24} />
             </Button>
           </div>
@@ -245,7 +246,7 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
                 disabled={!commentText.trim() || submitting}
                 size="icon"
                 className="h-11 w-11 shrink-0"
-                aria-label={t.community?.sendComment ?? 'Send comment'}
+                aria-label={t.community?.postComment ?? 'Send comment'}
               >
                 {submitting ? (
                   <MotionView
@@ -435,7 +436,11 @@ function CommentItem({ comment, onReply, translator, isReply = false, isAuthor =
             onClick={handleLike}
             className="group/like flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus-ring) focus-visible:ring-offset-2"
             aria-pressed={isLiked}
-            aria-label={isLiked ? (translator.community?.unlike ?? 'Unlike comment') : (translator.community?.like ?? 'Like comment')}
+            aria-label={
+              isLiked
+                ? translator.community?.liked ?? 'Liked comment'
+                : translator.community?.like ?? 'Like comment'
+            }
           >
             <MotionView whileTap={{ scale: 0.85 }}>
               <Heart
@@ -464,7 +469,7 @@ function CommentItem({ comment, onReply, translator, isReply = false, isAuthor =
           <button
             type="button"
             className="ml-auto opacity-0 transition-opacity group-hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus-ring) focus-visible:ring-offset-2"
-            aria-label={translator.community?.commentOptions ?? 'Comment options'}
+            aria-label={`${translator.community?.comment ?? 'Comment'} options`}
           >
             <DotsThree size={16} weight="bold" className="text-muted-foreground" />
           </button>

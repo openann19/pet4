@@ -10,7 +10,6 @@
  * - Offline-first support with queue management
  */
 
-import type { APIClientImpl } from '@/lib/api-client';
 import { APIClient } from '@/lib/api-client';
 import { createLogger } from '@/lib/logger';
 import type { z } from 'zod';
@@ -51,13 +50,13 @@ export interface TelemetryEvent {
  * Base class for all service implementations
  */
 export abstract class BaseService {
-  protected readonly apiClient: APIClientImpl;
+  protected readonly apiClient: typeof APIClient;
   protected readonly serviceName: string;
   private readonly cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
   private readonly telemetryEvents: TelemetryEvent[] = [];
   private readonly maxTelemetryEvents = 100;
 
-  constructor(serviceName: string, apiClient?: APIClientImpl) {
+  constructor(serviceName: string, apiClient?: typeof APIClient) {
     this.serviceName = serviceName;
     this.apiClient = apiClient || APIClient;
   }
@@ -99,107 +98,20 @@ export abstract class BaseService {
       const response = await this.executeWithRetry(async () => {
         switch (method) {
           case 'GET': {
-            const retryConfig = config.retry
-              ? {
-                  attempts: config.retry.attempts ?? 3,
-                  delay: config.retry.delay ?? 1000,
-                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
-                }
-              : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
-            return await this.apiClient.get<T>(endpoint, requestConfig);
+            return await APIClient.get<T>(endpoint, {});
           }
           case 'POST': {
-            const retryConfig = config.retry
-              ? {
-                  attempts: config.retry.attempts ?? 3,
-                  delay: config.retry.delay ?? 1000,
-                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
-                }
-              : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
-            return await this.apiClient.post<T>(endpoint, body, requestConfig);
+            return await APIClient.post<T>(endpoint, body, {});
           }
           case 'PUT': {
-            const retryConfig = config.retry
-              ? {
-                  attempts: config.retry.attempts ?? 3,
-                  delay: config.retry.delay ?? 1000,
-                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
-                }
-              : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
-            return await this.apiClient.put<T>(endpoint, body, requestConfig);
+            return await APIClient.put<T>(endpoint, body, {});
           }
           case 'PATCH': {
-            const retryConfig = config.retry
-              ? {
-                  attempts: config.retry.attempts ?? 3,
-                  delay: config.retry.delay ?? 1000,
-                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
-                }
-              : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
-            return await this.apiClient.patch<T>(endpoint, body, requestConfig);
+            return await APIClient.patch<T>(endpoint, body, {});
           }
           case 'DELETE': {
-            const retryConfig = config.retry
-              ? {
-                  attempts: config.retry.attempts ?? 3,
-                  delay: config.retry.delay ?? 1000,
-                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
-                }
-              : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
-            return await this.apiClient.delete<T>(endpoint, requestConfig);
+            return await APIClient.delete<T>(endpoint, {});
           }
-          default:
-            throw new Error(`Unsupported method: ${method}`);
         }
       }, config.retry);
 
@@ -380,7 +292,7 @@ export abstract class BaseService {
     }
 
     const now = Date.now();
-    const cacheTTL = ttl || cached.ttl;
+    const cacheTTL = ttl ?? cached.ttl;
     if (now - cached.timestamp > cacheTTL) {
       this.cache.delete(key);
       return null;
@@ -394,7 +306,7 @@ export abstract class BaseService {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: ttl || defaultTTL,
+      ttl: ttl ?? defaultTTL,
     });
   }
 

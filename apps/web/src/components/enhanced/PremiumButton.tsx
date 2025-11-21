@@ -4,11 +4,10 @@ import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { ButtonHTMLAttributes } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
-import { Button, type buttonVariants } from '@/components/ui/button';
-import type { VariantProps } from 'class-variance-authority';
+import { Button } from '@/components/ui/button';
 import { getAriaButtonAttributes } from '@/lib/accessibility';
 
-interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {                                                                
+interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'gradient';
   size?: 'sm' | 'default' | 'lg';
   icon?: React.ReactNode;
@@ -19,14 +18,14 @@ interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 
 /**
  * PremiumButton - Enhanced button with animations
- * 
+ *
  * Composes the core Button component and adds:
  * - Hover lift animation
  * - Bounce on tap
  * - Loading spinner
  * - Icon support
  * - Gradient variant (optional)
- * 
+ *
  * Maintains all core Button accessibility and styling standards.
  */
 export function PremiumButton({
@@ -66,14 +65,13 @@ export function PremiumButton({
   };
 
   // Map size prop to Button size prop
-  const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
+  const buttonSize: 'sm' | 'md' | 'lg' | 'icon' = size === 'default' ? 'md' : size;
 
   // Map variant - gradient uses default with gradient overlay
-  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = 
-    variant === 'gradient' ? 'default' : variant;
+  const buttonVariant = variant === 'gradient' ? 'primary' : (variant === 'default' ? 'primary' : variant);
 
   const buttonAriaAttrs = getAriaButtonAttributes({
-    label: props['aria-label'] ?? (typeof children === 'string' ? children : undefined),                                                                        
+    label: props['aria-label'] ?? (typeof children === 'string' ? children : undefined),
     disabled: loading ?? props.disabled,
   });
 
@@ -94,35 +92,35 @@ export function PremiumButton({
       {...pressMotion.motionProps}
       className="inline-block"
     >
-        <Button
-          variant={buttonVariant}
-          size={buttonSize}
-          onClick={handleClick}
-          disabled={loading ?? props.disabled}
-          className={cn(
-            'relative overflow-hidden',
-            variant === 'gradient' && 'bg-gradient-to-r from-primary via-secondary to-primary hover:from-primary/90 hover:via-secondary/90 hover:to-primary/90',
-            className
-          )}
-          {...buttonAriaAttrs}
-          {...props}
-        >
-          {loading ? (
-            <motion.div
-              variants={loadingVariants}
-              animate="spinning"
-              style={{ rotate: rotation }}
-              className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"                                                                         
-              aria-hidden="true"
-            />
-          ) : (
-            <>
-              {icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}                                                                           
-              {children}
-              {icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}                                                                          
-            </>
-          )}
-        </Button>
+      <Button
+        variant={buttonVariant}
+        size={buttonSize}
+        onClick={handleClick}
+        disabled={loading ?? props.disabled}
+        className={cn(
+          'relative overflow-hidden',
+          variant === 'gradient' && 'bg-linear-to-r from-primary via-secondary to-primary hover:from-primary/90 hover:via-secondary/90 hover:to-primary/90',
+          className
+        )}
+        {...buttonAriaAttrs}
+        {...props}
+      >
+        {loading ? (
+          <motion.div
+            variants={loadingVariants}
+            animate="spinning"
+            style={{ rotate: rotation }}
+            className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"
+            aria-hidden="true"
+          />
+        ) : (
+          <>
+            {icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}
+            {children}
+            {icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}
+          </>
+        )}
+      </Button>
     </MotionView>
   );
 }

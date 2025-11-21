@@ -136,13 +136,13 @@ export function useTypingShimmer(options: UseTypingShimmerOptions = {}): UseTypi
     const gradientEnd = shimmerTranslateX.value + shimmerWidth;
 
     return {
-      transform: [{ translateX: shimmerTranslateX.value }],
+      transform: `translateX(${shimmerTranslateX.value}px)`,
       opacity: shimmerOpacity.value,
-      background: `linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5 ?? '')}) ${String(gradientStart ?? '')}px, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value ?? '')}) ${String((gradientStart + gradientEnd) / 2 ?? '')}px, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5 ?? '')}) ${String(gradientEnd ?? '')}px, 
+      background: `linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, ${shimmerOpacity.value * 0.5}) ${gradientStart}px,
+        rgba(255, 255, 255, ${shimmerOpacity.value}) ${(gradientStart + gradientEnd) / 2}px,
+        rgba(255, 255, 255, ${shimmerOpacity.value * 0.5}) ${gradientEnd}px,
         transparent 100%
       )`,
     };
@@ -151,14 +151,14 @@ export function useTypingShimmer(options: UseTypingShimmerOptions = {}): UseTypi
   const placeholderStyle = useAnimatedStyle(() => {
     return {
       opacity: placeholderOpacity.value,
-      transform: [{ scale: placeholderScale.value }],
+      transform: `scale(${placeholderScale.value})`,
     };
   });
 
   const contentStyle = useAnimatedStyle(() => {
     return {
       opacity: contentOpacity.value,
-      transform: [{ scale: contentScale.value }],
+      transform: `scale(${contentScale.value})`,
     };
   });
 

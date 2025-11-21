@@ -47,7 +47,7 @@ export function useReactionAnimation(
     if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
     
     const rotationValue = rotation.get();
-    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue as number}deg` });
+    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue}deg` });
 
     return {
       transform: transforms,

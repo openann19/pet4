@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CommentsSheet } from '@/components/community/CommentsSheet';
+import type { Comment } from '@/lib/community-types';
 
 // Mock dependencies
 vi.mock('@/lib/community-service', () => ({
@@ -57,6 +58,11 @@ vi.mock('@/contexts/AppContext', () => ({
         commentPosted: 'Comment posted!',
         commentError: 'Failed to post comment',
         commentsLoadError: 'Failed to load comments',
+        commentPlaceholder: 'Write a comment',
+        replyPlaceholder: 'Write a reply',
+      },
+      common: {
+        close: 'Close comments',
       },
     },
   }),
@@ -66,6 +72,7 @@ describe('CommentsSheet', () => {
   const mockOnOpenChange = vi.fn();
 
   beforeEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -83,10 +90,10 @@ describe('CommentsSheet', () => {
       />
     );
 
-    expect(screen.getByText(/comments/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: /comments/i })).toBeInTheDocument();
   });
 
-  it('should not render when closed', () => {
+  it('should not render when closed', async () => {
     render(
       <CommentsSheet
         open={false}
@@ -96,7 +103,7 @@ describe('CommentsSheet', () => {
       />
     );
 
-    expect(screen.queryByText(/comments/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /comments/i })).not.toBeInTheDocument();
   });
 
   it('should load comments when opened', async () => {
@@ -127,12 +134,16 @@ describe('CommentsSheet', () => {
     await waitFor(() => {
       expect(communityService.getComments).toHaveBeenCalledWith('post-1');
     });
+
+    expect(await screen.findByText('First comment')).toBeInTheDocument();
   });
 
   it('should submit comment', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityService } = await import('@/lib/community-service');
     const { toast } = await import('sonner');
+
+    vi.mocked(communityService.getComments).mockResolvedValue([]);
 
     render(
       <CommentsSheet
@@ -143,10 +154,10 @@ describe('CommentsSheet', () => {
       />
     );
 
-    const textarea = screen.getByPlaceholderText(/add a comment/i);
+    const textarea = await screen.findByPlaceholderText(/write a comment/i);
     await user.type(textarea, 'Test comment');
 
-    const submitButton = screen.getByRole('button', { name: /post/i });
+    const submitButton = await screen.findByRole('button', { name: /send comment/i });
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -158,10 +169,10 @@ describe('CommentsSheet', () => {
   });
 
   it('should handle reply to comment', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityService } = await import('@/lib/community-service');
 
-    const mockComments = [
+    const mockComments: Comment[] = [
       {
         id: 'comment-1',
         postId: 'post-1',
@@ -175,7 +186,7 @@ describe('CommentsSheet', () => {
       },
     ];
 
-    vi.mocked(communityService.getComments).mockResolvedValue(mockComments as Awaited<ReturnType<typeof communityService.getComments>>);
+    vi.mocked(communityService.getComments).mockResolvedValue(mockComments);
 
     render(
       <CommentsSheet
@@ -186,17 +197,15 @@ describe('CommentsSheet', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Parent comment')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Parent comment')).toBeInTheDocument();
 
-    const replyButton = screen.getByRole('button', { name: /reply/i });
+    const replyButton = await screen.findByRole('button', { name: /reply/i });
     await user.click(replyButton);
 
-    const textarea = screen.getByPlaceholderText(/add a comment/i);
+    const textarea = await screen.findByPlaceholderText(/write a reply/i);
     await user.type(textarea, 'Reply comment');
 
-    const submitButton = screen.getByRole('button', { name: /post/i });
+    const submitButton = await screen.findByRole('button', { name: /send comment/i });
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -208,6 +217,10 @@ describe('CommentsSheet', () => {
   });
 
   it('should show empty state when no comments', async () => {
+    const { communityService } = await import('@/lib/community-service');
+
+    vi.mocked(communityService.getComments).mockResolvedValue([]);
+
     render(
       <CommentsSheet
         open={true}
@@ -217,13 +230,11 @@ describe('CommentsSheet', () => {
       />
     );
 
-    await waitFor(() => {
-      expect(screen.getByText(/no comments yet/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/no comments yet/i)).toBeInTheDocument();
   });
 
   it('should close on close button click', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <CommentsSheet
         open={true}
@@ -233,7 +244,7 @@ describe('CommentsSheet', () => {
       />
     );
 
-    const closeButton = screen.getByRole('button', { name: /close/i });
+    const closeButton = await screen.findByRole('button', { name: /close comments/i });
     await user.click(closeButton);
 
     expect(mockOnOpenChange).toHaveBeenCalledWith(false);

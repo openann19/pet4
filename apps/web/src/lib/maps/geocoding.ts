@@ -27,6 +27,60 @@ function generateRequestId(): string {
   return `geocoding_${Date.now()}_${++requestIdCounter}`;
 }
 
+interface GeocodingFeature {
+  id: string;
+  place_name: string;
+  center: [number, number];
+  place_type?: string[];
+  relevance?: number;
+}
+
+interface RawGeocodingResponse {
+  features?: unknown;
+}
+
+function isCoordinatePair(value: unknown): value is [number, number] {
+  return (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    typeof value[0] === 'number' &&
+    typeof value[1] === 'number'
+  );
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function isGeocodingFeature(value: unknown): value is GeocodingFeature {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const feature = value as Partial<GeocodingFeature>;
+  return (
+    typeof feature.place_name === 'string' &&
+    typeof feature.id === 'string' &&
+    isCoordinatePair(feature.center) &&
+    (feature.place_type === undefined || isStringArray(feature.place_type))
+  );
+}
+
+function parseGeocodingFeatures(data: unknown): GeocodingFeature[] {
+  if (typeof data !== 'object' || data === null) {
+    return [];
+  }
+
+  const response = data as RawGeocodingResponse;
+  if (!Array.isArray(response.features)) {
+    return [];
+  }
+
+  return response.features.filter((feature): feature is GeocodingFeature =>
+    isGeocodingFeature(feature)
+  );
+}
+
 export async function forwardGeocode(
   query: string,
   language: 'en' | 'bg' = 'en',
@@ -66,29 +120,22 @@ export async function forwardGeocode(
       throw new Error(`Geocoding failed: ${String(response.statusText ?? '')}`);
     }
 
-    const data = await response.json();
+    const parsed: unknown = await response.json();
     const latency = Date.now() - startTime;
 
-    const results: GeocodingResult[] = (data.features ?? []).map(
-      (feature: {
-        id: string;
-        place_name: string;
-        center: [number, number];
-        place_type: string[];
-        relevance?: number;
-        properties?: Record<string, unknown>;
-      }) => ({
-        id: feature.id ?? `place_${Date.now()}_${Math.random()}`,
-        name: feature.place_name ?? query,
-        address: feature.place_name ?? '',
-        location: {
-          lng: feature.center[0],
-          lat: feature.center[1],
-        },
-        placeType: feature.place_type?.[0],
-        relevance: feature.relevance,
-      })
-    );
+    const features = parseGeocodingFeatures(parsed);
+
+    const results: GeocodingResult[] = features.map((feature) => ({
+      id: feature.id,
+      name: feature.place_name,
+      address: feature.place_name,
+      location: {
+        lng: feature.center[0],
+        lat: feature.center[1],
+      },
+      placeType: feature.place_type?.[0],
+      relevance: feature.relevance,
+    }));
 
     const metrics: GeocodingMetrics = {
       requestId,
@@ -153,18 +200,18 @@ export async function reverseGeocode(
       throw new Error(`Reverse geocoding failed: ${String(response.statusText ?? '')}`);
     }
 
-    const data = await response.json();
+    const parsed: unknown = await response.json();
     const latency = Date.now() - startTime;
 
-    const feature = data.features?.[0];
+    const [feature] = parseGeocodingFeatures(parsed);
     if (!feature) {
       return null;
     }
 
     const result: GeocodingResult = {
-      id: feature.id ?? `place_${Date.now()}_${Math.random()}`,
-      name: feature.place_name ?? 'Unknown location',
-      address: feature.place_name ?? '',
+      id: feature.id,
+      name: feature.place_name,
+      address: feature.place_name,
       location: {
         lng: feature.center[0],
         lat: feature.center[1],

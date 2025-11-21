@@ -1,5 +1,3 @@
- 
-
 import { expect, afterEach, beforeEach, vi } from 'vitest';
 import { cleanup, act } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
@@ -10,10 +8,7 @@ import { createMockResizeObserver } from './mocks/resize-observer';
 import { setupStorageMocks } from './mocks/storage';
 import { setupWebRTCMocks } from './mocks/webrtc';
 import { cleanupTestState, resetAllMocks } from './utilities/test-helpers';
-import type {
-  UseOverlayTransitionOptions,
-  UseOverlayTransitionReturn,
-} from '@petspark/motion';
+import type { UseOverlayTransitionOptions, UseOverlayTransitionReturn } from '@petspark/motion';
 
 // Suppress React act() warnings for Radix UI components during testing
 const originalError = console.error;
@@ -87,6 +82,21 @@ vi.mock('@/contexts/AppContext', () => ({
     t: {
       app: { title: 'PetSpark' },
       common: { loading: 'Loading...', error: 'Error', cancel: 'Cancel', save: 'Save' },
+      welcome: {
+        title: 'Welcome to PawfectMatch',
+        subtitle: 'Smarter matches, safer connections.',
+        proof1: 'Smart matching',
+        proof2: 'Safe chat',
+        proof3: 'Trusted community',
+        offlineMessage: 'You appear to be offline. Please check your connection.',
+        getStarted: 'Get started',
+        signIn: 'I already have an account',
+        explore: 'Explore first',
+        legal: 'By continuing you agree to our',
+        terms: 'Terms',
+        and: 'and',
+        privacy: 'Privacy Policy',
+      },
       chat: {
         createProfile: 'Create Profile',
         createProfileDesc: 'Create your profile first',
@@ -170,15 +180,17 @@ interface FileInit {
   lastModified?: number;
 }
 
-global.File = vi.fn().mockImplementation((chunks: unknown[], filename: string, options?: FileInit) => ({
-  name: filename,
-  size: chunks.reduce((acc: number, chunk: unknown) => {
-    const chunkLength = (chunk as { length?: number })?.length ?? 0;
-    return acc + chunkLength;
-  }, 0),
-  type: options?.type ?? '',
-  lastModified: Date.now(),
-})) as typeof File;
+global.File = vi
+  .fn()
+  .mockImplementation((chunks: unknown[], filename: string, options?: FileInit) => ({
+    name: filename,
+    size: chunks.reduce((acc: number, chunk: unknown) => {
+      const chunkLength = (chunk as { length?: number })?.length ?? 0;
+      return acc + chunkLength;
+    }, 0),
+    type: options?.type ?? '',
+    lastModified: Date.now(),
+  })) as typeof File;
 
 interface MockFileReaderInstance {
   readAsDataURL: ReturnType<typeof vi.fn>;
@@ -199,29 +211,46 @@ interface MockFileReaderInstance {
   readyState: number;
 }
 
-const MockFileReader = vi.fn().mockImplementation((): MockFileReaderInstance => ({
-  readAsDataURL: vi.fn(),
-  readAsText: vi.fn(),
-  readAsArrayBuffer: vi.fn(),
-  result: null,
-  error: null,
-  onload: null,
-  onerror: null,
-  onabort: null,
-  onloadstart: null,
-  onloadend: null,
-  onprogress: null,
-  abort: vi.fn(),
-  EMPTY: 0,
-  LOADING: 1,
-  DONE: 2,
-  readyState: 0,
-})) as unknown as typeof FileReader;
+const MockFileReader = vi.fn().mockImplementation(
+  (): MockFileReaderInstance => ({
+    readAsDataURL: vi.fn(),
+    readAsText: vi.fn(),
+    readAsArrayBuffer: vi.fn(),
+    result: null,
+    error: null,
+    onload: null,
+    onerror: null,
+    onabort: null,
+    onloadstart: null,
+    onloadend: null,
+    onprogress: null,
+    abort: vi.fn(),
+    EMPTY: 0,
+    LOADING: 1,
+    DONE: 2,
+    readyState: 0,
+  })
+) as unknown as typeof FileReader;
 
 // Assign static properties to the mock constructor
-Object.defineProperty(MockFileReader, 'EMPTY', { value: 0, writable: false, enumerable: true, configurable: false });
-Object.defineProperty(MockFileReader, 'LOADING', { value: 1, writable: false, enumerable: true, configurable: false });
-Object.defineProperty(MockFileReader, 'DONE', { value: 2, writable: false, enumerable: true, configurable: false });
+Object.defineProperty(MockFileReader, 'EMPTY', {
+  value: 0,
+  writable: false,
+  enumerable: true,
+  configurable: false,
+});
+Object.defineProperty(MockFileReader, 'LOADING', {
+  value: 1,
+  writable: false,
+  enumerable: true,
+  configurable: false,
+});
+Object.defineProperty(MockFileReader, 'DONE', {
+  value: 2,
+  writable: false,
+  enumerable: true,
+  configurable: false,
+});
 
 global.FileReader = MockFileReader;
 
@@ -1133,65 +1162,67 @@ vi.mock('@petspark/motion', () => {
       onPressOut: vi.fn(),
       animatedStyle: { transform: [{ scale: scaleOnRelease }] },
     })),
-    useOverlayTransition: vi.fn((options: UseOverlayTransitionOptions): UseOverlayTransitionReturn => {
-      const isOpen = options.isOpen;
-      const type = options.type ?? 'modal';
-      const drawerSide = options.drawerSide ?? 'right';
-      
-      // Backdrop variants (same for all types)
-      const backdropVariants = {
-        initial: { opacity: 0 },
-        animate: { opacity: isOpen ? 1 : 0 },
-        exit: { opacity: 0 },
-      };
-      
-      // Content variants based on type
-      let contentVariants: Record<string, Record<string, number | string>>;
-      
-      if (type === 'drawer') {
-        const translateKey = drawerSide === 'left' || drawerSide === 'right' ? 'x' : 'y';
-        const translateValue = drawerSide === 'left' || drawerSide === 'top' ? -100 : 100;
-        contentVariants = {
-          initial: { [translateKey]: translateValue, opacity: 0 },
-          animate: { [translateKey]: isOpen ? 0 : translateValue, opacity: isOpen ? 1 : 0 },
-          exit: { [translateKey]: translateValue, opacity: 0 },
+    useOverlayTransition: vi.fn(
+      (options: UseOverlayTransitionOptions): UseOverlayTransitionReturn => {
+        const isOpen = options.isOpen;
+        const type = options.type ?? 'modal';
+        const drawerSide = options.drawerSide ?? 'right';
+
+        // Backdrop variants (same for all types)
+        const backdropVariants = {
+          initial: { opacity: 0 },
+          animate: { opacity: isOpen ? 1 : 0 },
+          exit: { opacity: 0 },
         };
-      } else if (type === 'sheet') {
-        contentVariants = {
-          initial: { y: '100%', opacity: 0 },
-          animate: { y: isOpen ? 0 : '100%', opacity: isOpen ? 1 : 0 },
-          exit: { y: '100%', opacity: 0 },
-        };
-      } else {
-        // modal (default)
-        contentVariants = {
-          initial: { opacity: 0, scale: 0.95, y: 20 },
-          animate: { 
-            opacity: isOpen ? 1 : 0, 
-            scale: isOpen ? 1 : 0.95,
-            y: isOpen ? 0 : 20,
+
+        // Content variants based on type
+        let contentVariants: Record<string, Record<string, number | string>>;
+
+        if (type === 'drawer') {
+          const translateKey = drawerSide === 'left' || drawerSide === 'right' ? 'x' : 'y';
+          const translateValue = drawerSide === 'left' || drawerSide === 'top' ? -100 : 100;
+          contentVariants = {
+            initial: { [translateKey]: translateValue, opacity: 0 },
+            animate: { [translateKey]: isOpen ? 0 : translateValue, opacity: isOpen ? 1 : 0 },
+            exit: { [translateKey]: translateValue, opacity: 0 },
+          };
+        } else if (type === 'sheet') {
+          contentVariants = {
+            initial: { y: '100%', opacity: 0 },
+            animate: { y: isOpen ? 0 : '100%', opacity: isOpen ? 1 : 0 },
+            exit: { y: '100%', opacity: 0 },
+          };
+        } else {
+          // modal (default)
+          contentVariants = {
+            initial: { opacity: 0, scale: 0.95, y: 20 },
+            animate: {
+              opacity: isOpen ? 1 : 0,
+              scale: isOpen ? 1 : 0.95,
+              y: isOpen ? 0 : 20,
+            },
+            exit: { opacity: 0, scale: 0.95, y: 20 },
+          };
+        }
+
+        return {
+          backdropProps: {
+            initial: 'initial',
+            animate: isOpen ? 'animate' : 'exit',
+            exit: 'exit',
+            variants: backdropVariants,
+            transition: { duration: 0.2 },
           },
-          exit: { opacity: 0, scale: 0.95, y: 20 },
+          contentProps: {
+            initial: 'initial',
+            animate: isOpen ? 'animate' : 'exit',
+            exit: 'exit',
+            variants: contentVariants,
+            transition: { type: 'spring', stiffness: 300, damping: 30 },
+          },
         };
       }
-      
-      return {
-        backdropProps: {
-          initial: 'initial',
-          animate: isOpen ? 'animate' : 'exit',
-          exit: 'exit',
-          variants: backdropVariants,
-          transition: { duration: 0.2 },
-        },
-        contentProps: {
-          initial: 'initial',
-          animate: isOpen ? 'animate' : 'exit',
-          exit: 'exit',
-          variants: contentVariants,
-          transition: { type: 'spring', stiffness: 300, damping: 30 },
-        },
-      };
-    }),
+    ),
     animate: vi.fn((value: unknown, keyframes: unknown, options?: unknown) => {
       return Promise.resolve(value);
     }),

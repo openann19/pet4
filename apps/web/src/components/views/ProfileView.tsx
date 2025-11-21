@@ -65,24 +65,24 @@ export default function ProfileView() {
   const emptyStateButtonHover = useHoverLift({ scale: 1.05 })
   const emptyStateButtonTap = useBounceOnTap({ scale: 0.95 })
 
-  // Create style objects from MotionValues (framer-motion supports MotionValues in style prop)                                                                 
+  // Create style objects from MotionValues (framer-motion supports MotionValues in style prop)
   const emptyStateIconStyle = useMemo(() => ({
     scale: emptyStateIcon.scale,
     rotate: emptyStateIcon.rotate,
     opacity: emptyStateIcon.opacity,
-  }), [emptyStateIcon.scale, emptyStateIcon.rotate, emptyStateIcon.opacity])                                                  
+  }), [emptyStateIcon.scale, emptyStateIcon.rotate, emptyStateIcon.opacity])
   const emptyStateTitleStyle = useMemo(() => ({
     opacity: emptyStateTitle.opacity,
     y: emptyStateTitle.translateY,
-  }), [emptyStateTitle.opacity, emptyStateTitle.translateY])                                                                  
+  }), [emptyStateTitle.opacity, emptyStateTitle.translateY])
   const emptyStateDescStyle = useMemo(() => ({
     opacity: emptyStateDesc.opacity,
     y: emptyStateDesc.translateY,
-  }), [emptyStateDesc.opacity, emptyStateDesc.translateY])                                                                    
+  }), [emptyStateDesc.opacity, emptyStateDesc.translateY])
   const emptyStateButtonStyle = useMemo(() => ({
     opacity: emptyStateButton.opacity,
     y: emptyStateButton.translateY,
-  }), [emptyStateButton.opacity, emptyStateButton.translateY])                                                                
+  }), [emptyStateButton.opacity, emptyStateButton.translateY])
   const emptyStateButtonHoverStyle = useMemo(() => ({
     scale: emptyStateButtonHover.scale,
     y: emptyStateButtonHover.translateY,
@@ -90,7 +90,7 @@ export default function ProfileView() {
 
   // Animation hooks for pet cards
   const _petCardsContainer = useStaggeredContainer({ delay: 0.08 })
-  
+
   // Animation hooks for sections
   const themeSection = useMotionVariants({
     initial: { opacity: 0, translateY: 20 },
@@ -189,8 +189,8 @@ export default function ProfileView() {
               onMouseLeave={emptyStateButtonHover.handleLeave}
               onClick={emptyStateButtonTap.handlePress}
             >
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={() => { setShowCreateDialog(true); }}
                 className="px-6 py-3 rounded-xl font-semibold shadow-md transition focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
@@ -200,7 +200,7 @@ export default function ProfileView() {
             </MotionView>
           </MotionView>
         </div>
-        <CreatePetDialog 
+        <CreatePetDialog
           open={showCreateDialog}
           onOpenChange={setShowCreateDialog}
         />
@@ -214,7 +214,7 @@ export default function ProfileView() {
         style={themeSectionStyle}
         className="sticky top-16 z-10 bg-background/95 backdrop-blur-sm py-2 sm:py-0 sm:bg-transparent sm:backdrop-blur-none"
       >
-        <ThemePresetSelector 
+        <ThemePresetSelector
           currentPreset={themePreset}
           onPresetChange={handleThemePresetChange}
         />
@@ -278,7 +278,7 @@ export default function ProfileView() {
           const editButtonHover = useHoverLift({ scale: 1.2 })
           const editButtonRotation = useIconRotation({ enabled: false, targetRotation: 360 })
           const editButtonTap = useBounceOnTap({ scale: 0.9 })
-          
+
           const cardEntryStyle = useMemo(() => ({
             opacity: cardEntry.opacity,
             y: cardEntry.translateY,
@@ -299,7 +299,7 @@ export default function ProfileView() {
           const editButtonTapStyle = useMemo(() => ({
             scale: editButtonTap.scale,
           }), [editButtonTap.scale])
-          
+
           return (
             <MotionView
               key={pet.id}
@@ -324,8 +324,7 @@ export default function ProfileView() {
                   </MotionView>
                   <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <MotionView
-                    style={editButtonRotation.style}
-                    style={{ ...editButtonHoverStyle, ...editButtonTapStyle }}
+                    style={{ ...editButtonRotation.style, ...editButtonHoverStyle, ...editButtonTapStyle }}
                     onMouseEnter={() => {
                       editButtonHover.handleEnter()
                     }}
@@ -342,59 +341,59 @@ export default function ProfileView() {
                   </MotionView>
                 </div>
 
-              <div className="p-5 bg-linear-to-br from-white/40 to-white/20 backdrop-blur-md">
-                <h3 className="text-xl font-bold mb-2 truncate">{pet.name}</h3>
-                <p className="text-muted-foreground mb-4">
-                  {pet.breed} • {pet.age} {t.profile.yearsOld} • {pet.gender}
-                </p>
+                <div className="p-5 bg-linear-to-br from-white/40 to-white/20 backdrop-blur-md">
+                  <h3 className="text-xl font-bold mb-2 truncate">{pet.name}</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {pet.breed} • {pet.age} {t.profile.yearsOld} • {pet.gender}
+                  </p>
 
-                {pet.bio && (
-                  <p className="text-sm text-foreground mb-4 line-clamp-3">{pet.bio}</p>
-                )}
+                  {pet.bio && (
+                    <p className="text-sm text-foreground mb-4 line-clamp-3">{pet.bio}</p>
+                  )}
 
-                {pet.personality && Array.isArray(pet.personality) && pet.personality.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2">{t.petProfile.personality.toUpperCase()}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {pet.personality.slice(0, 5).map((trait, idx) => (
-                        <Badge key={idx} variant="secondary">{trait}</Badge>
-                      ))}
+                  {pet.personality && Array.isArray(pet.personality) && pet.personality.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{t.petProfile.personality.toUpperCase()}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {pet.personality.slice(0, 5).map((trait, idx) => (
+                          <Badge key={idx} variant="secondary">{trait}</Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
-                  <div className="mb-4">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2">{t.petProfile.interests.toUpperCase()}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {pet.interests.slice(0, 5).map((interest, idx) => (
-                        <Badge key={idx} variant="outline">{interest}</Badge>
-                      ))}
+                  {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs font-semibold text-muted-foreground mb-2">{t.petProfile.interests.toUpperCase()}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {pet.interests.slice(0, 5).map((interest, idx) => (
+                          <Badge key={idx} variant="outline">{interest}</Badge>
+                        ))}
+                      </div>
                     </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <VerificationButton
+                      petId={pet.id}
+                      userId={pet.ownerId}
+                      variant="card"
+                      className="mb-2"
+                    />
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        setSelectedHealthPet(pet)
+                        setShowHealthDashboard(true)
+                      }}
+                    >
+                      <Heart size={16} className="mr-2" weight="fill" />
+                      Health Dashboard
+                    </Button>
                   </div>
-                )}
-
-                <div className="space-y-2">
-                  <VerificationButton
-                    petId={pet.id}
-                    userId={pet.ownerId}
-                    variant="card"
-                    className="mb-2"
-                  />
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => {
-                      setSelectedHealthPet(pet)
-                      setShowHealthDashboard(true)
-                    }}
-                  >
-                    <Heart size={16} className="mr-2" weight="fill" />
-                    Health Dashboard
-                  </Button>
-                </div>
                 </div>
               </div>
             </MotionView>
@@ -404,14 +403,14 @@ export default function ProfileView() {
       <MotionView
         style={videoSectionStyle}
       >
-        <VideoQualitySettings 
+        <VideoQualitySettings
           currentQuality={preferredQuality}
           onQualityChange={(quality) => {
             void setPreferredQuality(quality);
           }}
         />
       </MotionView>
-      <CreatePetDialog 
+      <CreatePetDialog
         open={showCreateDialog}
         onOpenChange={handleCloseDialog}
         editingPet={editingPet}

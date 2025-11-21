@@ -22,7 +22,7 @@ import { getTypographyClasses } from '@/lib/typography';
 
 interface BasicTabProps {
     draft: DiscoveryPreferences;
-    onDraftChange(next: DiscoveryPreferences): void;
+    onDraftChange(this: void, next: DiscoveryPreferences): void;
 }
 
 export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps) {

@@ -3,11 +3,11 @@
  *
  * Showcases the complete motion system: press bounce, hover lift, magnetic
  * Feels more expensive than any competitor app
- * 
+ *
  * Composes the core Button component and adds motion effects.
  */
 
-import { MotionView, usePressBounce, useHoverLift, useMagnetic } from '@petspark/motion';                                                                       
+import { MotionView, usePressBounce } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { Button, type buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
@@ -16,7 +16,6 @@ interface PremiumButtonProps {
   label: string;
   variant?: 'default' | 'secondary' | 'outline';
   size?: 'sm' | 'default' | 'lg';
-  magnetic?: boolean;
   disabled?: boolean;
   className?: string;
   onPress: () => void;
@@ -26,36 +25,24 @@ export function PremiumButton({
   label,
   variant = 'default',
   size = 'default',
-  magnetic = false,
   disabled = false,
   className = '',
   onPress,
 }: PremiumButtonProps) {
   // Motion hooks - combine for premium feel
   const pressBounce = usePressBounce(0.94);
-  const hoverLift = useHoverLift(size === 'lg' ? 8 : size === 'sm' ? 4 : 6);
-  const magneticEffect = useMagnetic(magnetic ? 80 : 0);
 
-  // Combine all animated styles
-  const combinedAnimatedStyles = [
-    pressBounce.animatedStyle,
-    hoverLift.animatedStyle,
-    magnetic ? magneticEffect.animatedStyle : undefined,
-  ].filter(Boolean);
+  // Use the animated style
+  const combinedAnimatedStyle = pressBounce.animatedStyle;
 
   // Map size prop to Button size prop
-  const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
+  const buttonSize: 'sm' | 'md' | 'lg' | 'icon' = size === 'default' ? 'md' : size;
 
   // Map variant to Button variant
   const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = variant;
 
   return (
-    <div
-      onMouseEnter={hoverLift.onMouseEnter}
-      onMouseLeave={hoverLift.onMouseLeave}
-      onPointerMove={magnetic ? magneticEffect.onPointerMove : undefined}
-      className="inline-block"
-    >
+    <div className="inline-block">
       <Button
         variant={buttonVariant}
         size={buttonSize}
@@ -79,8 +66,8 @@ export function PremiumButton({
         )}
       >
         <MotionView
-          style={combinedAnimatedStyles}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}                                                                             
+          style={combinedAnimatedStyle}
+          className="flex items-center justify-center"
         >
           {label}
         </MotionView>

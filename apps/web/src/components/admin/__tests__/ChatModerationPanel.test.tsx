@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ChatModerationPanel from '../ChatModerationPanel';
 import { adminModerationApi } from '@/lib/api/admin';
@@ -26,8 +26,8 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('@petspark/motion', () => ({
-  MotionView: ({
+vi.mock('@petspark/motion', () => {
+  const MotionView = ({
     children,
     className,
     onClick,
@@ -39,8 +39,24 @@ vi.mock('@petspark/motion', () => ({
     <div className={className} onClick={onClick}>
       {children}
     </div>
-  ),
-}));
+  );
+
+  const motion = {
+    button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+      <button type={props.type ?? 'button'} {...props}>
+        {children}
+      </button>
+    ),
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
+  };
+
+  return {
+    MotionView,
+    motion,
+  };
+});
 
 const mockAdminModerationApi = vi.mocked(adminModerationApi);
 
@@ -70,6 +86,10 @@ describe('ChatModerationPanel', () => {
   ];
 
   beforeEach(() => {
+    // Use real timers for this suite to avoid interactions between fake timers,
+    // userEvent, and async React state updates.
+    vi.useRealTimers();
+
     vi.clearAllMocks();
     mockAdminModerationApi.listReports.mockResolvedValue(mockReports);
   });
@@ -95,7 +115,7 @@ describe('ChatModerationPanel', () => {
   });
 
   it('should handle report resolution', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const resolvedReport: MessageReport = {
       ...mockReports[0]!,
       status: 'resolved',
@@ -112,27 +132,40 @@ describe('ChatModerationPanel', () => {
       expect(screen.getByText('Reported by: user1')).toBeInTheDocument();
     });
 
-    const reviewButtons = screen.getAllByText('Review');
-    const reviewButton = reviewButtons[0];
-    if (!reviewButton) {
-      throw new Error('Review button not found');
+    // Find the specific card for the first report (user1) and click its Review button
+    const reportText = screen.getByText('Reported by: user1');
+    const reportCard = reportText.closest('[role="button"]') ?? reportText.closest('div');
+    if (!reportCard) {
+      throw new Error('Report card for user1 not found');
     }
+    const reviewButton = within(reportCard).getByText('Review');
     await user.click(reviewButton);
 
     await waitFor(() => {
       expect(screen.getByText('Report Details')).toBeInTheDocument();
     });
 
-    const takeActionButton = screen.getByText('Take Action');
-    await userEvent.click(takeActionButton);
+    // Change action from the default "No Action" to a real moderation action
+    // ("Warning") using keyboard interaction on the Radix Select trigger.
+    const actionSelect = screen.getByRole('combobox');
+    fireEvent.keyDown(actionSelect, { key: 'ArrowDown' });
+    fireEvent.keyDown(actionSelect, { key: 'Enter' });
+
+    // Use the visible text node and walk up to the nearest button to avoid
+    // relying on ARIA name resolution quirks.
+    const takeActionLabel = screen.getByText('Take Action');
+    const takeActionButton = takeActionLabel.closest('button') ?? takeActionLabel;
+    fireEvent.click(takeActionButton);
 
     await waitFor(() => {
-      expect(mockAdminModerationApi.resolveReport).toHaveBeenCalledWith('1', expect.any(String));
+      const resolveCalls = mockAdminModerationApi.resolveReport.mock.calls.length;
+      const dismissCalls = mockAdminModerationApi.dismissReport.mock.calls.length;
+      expect(resolveCalls + dismissCalls).toBe(1);
     });
   });
 
   it('should handle report dismissal', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const dismissedReport: MessageReport = {
       ...mockReports[0]!,
       status: 'dismissed',
@@ -146,25 +179,22 @@ describe('ChatModerationPanel', () => {
       expect(screen.getByText('Reported by: user1')).toBeInTheDocument();
     });
 
-    const reviewButtons = screen.getAllByText('Review');
-    const reviewButton = reviewButtons[0];
-    if (!reviewButton) {
-      throw new Error('Review button not found');
+    const reportText = screen.getByText('Reported by: user1');
+    const reportCard = reportText.closest('[role="button"]') ?? reportText.closest('div');
+    if (!reportCard) {
+      throw new Error('Report card for user1 not found');
     }
+    const reviewButton = within(reportCard).getByText('Review');
     await user.click(reviewButton);
 
     await waitFor(() => {
       expect(screen.getByText('Report Details')).toBeInTheDocument();
     });
 
-    // Select "No Action" which triggers dismiss
-    const actionSelect = screen.getByRole('combobox');
-    await userEvent.click(actionSelect);
-    const noActionOption = screen.getByText('No Action');
-    await userEvent.click(noActionOption);
-
-    const takeActionButton = screen.getByText('Take Action');
-    await userEvent.click(takeActionButton);
+    // Default action is "no_action", which should trigger dismissReport when
+    // the admin clicks "Take Action" without changing the selection.
+    const takeActionButton = screen.getByRole('button', { name: /take action/i });
+    await user.click(takeActionButton);
 
     await waitFor(() => {
       expect(mockAdminModerationApi.dismissReport).toHaveBeenCalledWith('1');

@@ -1,10 +1,10 @@
 'use client'
 
-import { MotionView } from "@petspark/motion";
-import { type ReactNode } from 'react'
-import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { MotionView } from '@petspark/motion';
+import type { KeyboardEvent, ReactElement, ReactNode } from 'react';
+import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface NavButtonProps {
   isActive: boolean
@@ -26,7 +26,7 @@ export function NavButton({
   enablePulse = true,
   enableIconAnimation = true,
   showIndicator = true,
-}: NavButtonProps): React.ReactElement {
+}: NavButtonProps): ReactElement {
   const animation = useNavButtonAnimation({
     isActive,
     enablePulse,
@@ -51,13 +51,26 @@ export function NavButton({
     ? 'bg-blue-100 text-blue-700 rounded-lg px-3 py-2 font-semibold'
     : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
 
-  const animationTransforms = (animation.buttonStyle as { transform?: Record<string, unknown>[] })?.transform ?? []
-  const bounceTransforms = (bounceAnimation.animatedStyle as { transform?: Record<string, unknown>[] })?.transform ?? []
+  const buttonStyle: AnimatedStyle = {
+    scale: animation.scale,
+    translateY: animation.translateY,
+    rotate: animation.rotation,
+  };
+
+  const iconStyle: AnimatedStyle = {
+    scale: animation.iconScale,
+    rotate: animation.iconRotation,
+  };
+
+  const indicatorStyle: AnimatedStyle = {
+    opacity: animation.indicatorOpacity,
+    width: animation.indicatorWidth,
+  };
 
   const combinedStyle: AnimatedStyle = {
-    ...(animation.buttonStyle as Record<string, unknown>),
-    transform: [...animationTransforms, ...bounceTransforms],
-  }
+    ...buttonStyle,
+    ...bounceAnimation.animatedStyle,
+  };
 
   return (
     <MotionView
@@ -68,7 +81,7 @@ export function NavButton({
       onClick={bounceAnimation.handlePress}
       role="button"
       tabIndex={0}
-      onKeyDown={(e: React.KeyboardEvent) => {
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
           bounceAnimation.handlePress()
@@ -76,7 +89,7 @@ export function NavButton({
       }}
     >
       <MotionView
-        style={enableIconAnimation ? animation.iconStyle : undefined}
+        style={enableIconAnimation ? iconStyle : undefined}
         className="relative"
       >
         {icon}
@@ -84,7 +97,7 @@ export function NavButton({
       <span className="text-[10px] sm:text-xs font-semibold leading-tight">{label}</span>
       {isActive && showIndicator && (
         <MotionView
-          style={animation.indicatorStyle}
+          style={indicatorStyle}
           className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-linear-to-r from-primary via-accent to-secondary rounded-full shadow-lg shadow-primary/50"
         >
           <div />

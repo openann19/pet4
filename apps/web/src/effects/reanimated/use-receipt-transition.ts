@@ -132,7 +132,7 @@ export function useReceiptTransition(
 
     return {
       opacity: opacity.value,
-      transform: [{ scale: scale.value }, { rotate: `${iconRotation.value}deg` }],
+      transform: `scale(${scale.value}) rotate(${iconRotation.value}deg)`,
       color: `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`,
     };
   });

@@ -39,7 +39,7 @@ export function CallParticipantTile({
   emphasis = 'primary',
 }: CallParticipantTileProps): React.ReactElement {
   const streamURL = useMemo(
-    () => (stream && typeof (stream as any).toURL === 'function' ? (stream as any).toURL() : ''),
+    () => (stream && typeof stream.toURL === 'function' ? stream.toURL() : ''),
     [stream]
   )
   const initials = useMemo(

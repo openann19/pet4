@@ -92,9 +92,10 @@ export function AnimatedCard({
 
   const handleClick = useCallback(() => {
     if (isTruthy(isClickable)) {
-      scale.value = withSpring(0.98, { damping: 15, stiffness: 400 }, () => {
+      scale.value = withSpring(0.98, { damping: 15, stiffness: 400 });
+      setTimeout(() => {
         scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-      });
+      }, 120);
       onClick?.();
     }
   }, [isClickable, onClick, scale]);
@@ -116,7 +117,7 @@ export function AnimatedCard({
       className={cn(
         'transition-transform duration-300',
         isClickable &&
-          'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl',
+        'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl',
         className
       )}
       style={containerStyle}

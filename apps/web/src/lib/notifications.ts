@@ -26,8 +26,12 @@ export interface NotificationOptions {
   };
   onDismiss?: () => void;
   onAutoClose?: () => void;
-  important?: boolean;
   closeButton?: boolean;
+  important?: boolean;
+}
+
+interface ExtendedToastOptions extends ExternalToast {
+  important?: boolean;
 }
 
 export interface PromiseNotificationOptions<T> {
@@ -55,12 +59,12 @@ class NotificationManager {
       cancel,
       onDismiss,
       onAutoClose,
-      important = false,
       closeButton = true,
+      important, // Add important flag to options
     } = options;
 
     // Build toast options compatible with sonner's ExternalToast
-    const toastOptions: ExternalToast = {};
+    const toastOptions: ExtendedToastOptions = {};
 
     if (duration !== undefined) {
       toastOptions.duration = duration;
@@ -77,21 +81,30 @@ class NotificationManager {
     if (action) {
       toastOptions.action = {
         label: action.label,
-        onClick: action.onClick,
+        onClick: () => {
+          action.onClick();
+        },
       };
     }
     if (cancel) {
-      toastOptions.cancel = {
-        label: cancel.label,
-        ...(cancel.onClick ? { onClick: cancel.onClick } : {}),
-      };
+      if (cancel.onClick) {
+        toastOptions.cancel = {
+          label: cancel.label,
+          onClick: (_event) => {
+            cancel.onClick?.();
+          },
+        };
+      } else {
+        // When there is no click handler, fall back to a simple label string (ReactNode)
+        toastOptions.cancel = cancel.label;
+      }
     }
     if (important !== undefined) {
       toastOptions.important = important;
     }
 
     // Build the complete options with description
-    const completeOptions: ExternalToast = {
+    const completeOptions: ExtendedToastOptions = {
       ...toastOptions,
     };
     if (description !== undefined) {
@@ -102,7 +115,7 @@ class NotificationManager {
       case 'success':
         return toast.success(message, completeOptions);
       case 'error': {
-        const errorOptions: ExternalToast = {
+        const errorOptions: ExtendedToastOptions = {
           ...completeOptions,
           duration: duration ?? 6000,
         };
@@ -172,7 +185,7 @@ class NotificationManager {
   }
 
   custom(component: ReactNode, options?: NotificationOptions): string | number {
-    const toastOptions: ExternalToast = {};
+    const toastOptions: ExtendedToastOptions = {};
     if (options?.duration !== undefined) {
       toastOptions.duration = options.duration;
     }
@@ -231,7 +244,6 @@ export function showMatchNotification(petName: string, yourPetName: string) {
     `${String(yourPetName ?? '')} and ${String(petName ?? '')} are now connected!`,
     {
       duration: 5000,
-      important: true,
       action: {
         label: 'View Match',
         onClick: () => {

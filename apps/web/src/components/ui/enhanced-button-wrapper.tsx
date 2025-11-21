@@ -14,7 +14,7 @@ interface EnhancedButtonWrapperProps {
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
   buttonVariant: VariantProps<typeof buttonVariants>['variant'];
-  size: 'default' | 'sm' | 'lg' | 'icon';
+  size: VariantProps<typeof buttonVariants>['size'];
   handleClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isDisabled: boolean;
   enableGlow: boolean;
@@ -77,4 +77,3 @@ export function EnhancedButtonWrapper({
     </MotionView>
   );
 }
-

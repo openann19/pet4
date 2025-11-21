@@ -52,7 +52,7 @@ function NotificationItemComponent({
 
   const itemStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,
-    transform: [{ translateY: itemTranslateY.value }, { scale: hover.scale.value }],
+    transform: [{ translateY: itemTranslateY.value, scale: hover.scale.value }],
   })) as AnimatedStyle;
 
   const unreadDotScale = useSharedValue(notification.read ? 0 : 1);

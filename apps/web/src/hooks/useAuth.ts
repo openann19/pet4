@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { enhancedAuth, type UserProfile } from '@/lib/enhanced-auth';
+import { enhancedAuth, type UserProfile, type UserRole } from '@/lib/enhanced-auth';
 
 export function useAuth(): {
   user: UserProfile | null;
@@ -76,7 +76,7 @@ export function useAuth(): {
     isLoading,
     error,
     isAuthenticated: enhancedAuth.isAuthenticated(),
-    hasRole: enhancedAuth.hasRole.bind(enhancedAuth),
+    hasRole: (role: string): boolean => enhancedAuth.hasRole(role as UserRole),
     isOwner: enhancedAuth.isOwner.bind(enhancedAuth),
     updateProfile,
     updatePreferences,

@@ -1,4 +1,4 @@
-import { MotionView } from '@petspark/motion';
+import { MotionView, useAnimatedStyle } from '@petspark/motion';
 import { Heart, ChatCircle, Users, Sparkle, MapPin, User } from '@phosphor-icons/react';
 import { NavButton } from '@/components/navigation/NavButton';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
@@ -18,15 +18,46 @@ export function AppNavBar({
   animations,
   onNavigate,
 }: AppNavBarProps) {
+  const navStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+
+    const translateY = animations.navBarAnimation.translateY.get();
+    if (translateY !== 0) {
+      transforms.push({ translateY });
+    }
+
+    const scale = animations.navBarAnimation.scale.get();
+    if (scale !== 1) {
+      transforms.push({ scale });
+    }
+
+    return {
+      opacity: animations.navBarAnimation.opacity.get(),
+      transform: transforms,
+    };
+  });
+
+  const shimmerStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+
+    const translateX = animations.navBarAnimation.shimmerTranslateX.get();
+    transforms.push({ translateX: `${translateX}%` });
+
+    return {
+      opacity: animations.navBarAnimation.shimmerOpacity.get(),
+      transform: transforms,
+    };
+  });
+
   return (
-    <MotionView 
-      style={animations.navBarAnimation.navStyle}
-      className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-2xl border-t border-border/50 z-40 shadow-2xl shadow-primary/20 safe-area-inset-bottom"                                                                               
+    <MotionView
+      style={navStyle}
+      className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-2xl border-t border-border/50 z-40 shadow-2xl shadow-primary/20 safe-area-inset-bottom"
     >
-      <div className="absolute inset-0 bg-linear-to-t from-primary/8 via-accent/4 to-transparent pointer-events-none" />                                      
-      <MotionView 
-        style={animations.navBarAnimation.shimmerStyle}
-        className="absolute inset-0 bg-linear-to-r from-transparent via-accent/5 to-transparent pointer-events-none"                                          
+      <div className="absolute inset-0 bg-linear-to-t from-primary/8 via-accent/4 to-transparent pointer-events-none" />
+      <MotionView
+        style={shimmerStyle}
+        className="absolute inset-0 bg-linear-to-r from-transparent via-accent/5 to-transparent pointer-events-none"
       >
         <div />
       </MotionView>
@@ -74,11 +105,10 @@ export function AppNavBar({
           />
 
           <MotionView
-            className={`${String(NAV_BUTTON_BASE_CLASSES ?? '')} relative cursor-pointer ${
-              String(currentView === 'lost-found'
-                ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/60')
-            }`}
+            className={`${String(NAV_BUTTON_BASE_CLASSES ?? '')} relative cursor-pointer ${String(currentView === 'lost-found'
+              ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/60')
+              }`}
             style={{ scale: animations.lostFoundAnimation.scale, y: animations.lostFoundAnimation.translateY }}
             onMouseEnter={animations.lostFoundAnimation.handleHover}
             onMouseLeave={animations.lostFoundAnimation.handleLeave}
@@ -113,4 +143,3 @@ export function AppNavBar({
     </MotionView>
   );
 }
-

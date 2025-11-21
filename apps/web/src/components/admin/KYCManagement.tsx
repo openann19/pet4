@@ -1,4 +1,4 @@
-import { MotionView, type Variants } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { kycApi } from '@/api/kyc-api';
@@ -519,7 +519,9 @@ export function KYCManagement() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      onClick={handleVerify}
+                      onClick={() => {
+                        void handleVerify();
+                      }}
                       disabled={loading}
                       className="bg-green-600 hover:bg-green-700"
                     >
@@ -527,7 +529,9 @@ export function KYCManagement() {
                       Verify & Approve
                     </Button>
                     <Button
-                      onClick={handleReject}
+                      onClick={() => {
+                        void handleReject();
+                      }}
                       disabled={loading || !rejectText}
                       variant="destructive"
                     >

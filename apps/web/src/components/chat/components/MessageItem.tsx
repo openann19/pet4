@@ -110,11 +110,11 @@ export function MessageItem({
     const scale = messageAnimation.scale.get();
     const translateY = messageAnimation.translateY.get();
     const opacity = messageAnimation.opacity.get();
-    
+
     if (isCurrentUser) {
       const translateX = sendWarp.translateX.get();
       return {
-        opacity: opacity * sendWarp.opacity.get(),
+        opacity: opacity * sendWarp.opacityValue.get(),
         transform: [
           { translateX, scale, translateY },
         ],

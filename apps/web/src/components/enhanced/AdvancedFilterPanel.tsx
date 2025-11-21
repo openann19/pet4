@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, useAnimatedStyle, withTiming, animate, MotionView, motion } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, MotionView, motion } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
@@ -190,8 +190,8 @@ export function AdvancedFilterPanel({
           <Eraser size={16} aria-hidden="true" />
           Reset
         </Button>
-        <Button 
-          onClick={handleApply} 
+        <Button
+          onClick={handleApply}
           className={cn('flex-1', getSpacingClassesFromConfig({ gap: 'sm' }))}
           aria-label={`Apply ${activeFiltersCount > 0 ? `${activeFiltersCount} ` : ''}filters`}
         >
@@ -277,8 +277,7 @@ function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
       translateX.value = checked ? 20 : 0;
       return;
     }
-    const translateXTransition = withTiming(checked ? 20 : 0, { duration: 200 });
-    animate(translateX, translateXTransition.target, translateXTransition.transition);
+    translateX.value = withTiming(checked ? 20 : 0, { duration: 200 });
   }, [checked, translateX, prefersReducedMotion]);
 
   const handleClick = useCallback(() => {

@@ -1,4 +1,4 @@
-import { MotionView } from '@petspark/motion';
+import { MotionView, useAnimatedStyle } from '@petspark/motion';
 import { lazy, Suspense } from 'react';
 import HoloBackground from '@/components/chrome/HoloBackground';
 import GlowTrail from '@/effects/cursor/GlowTrail';
@@ -108,6 +108,45 @@ export function MainAppContent({
         return null;
     }
   };
+
+  const loadingStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+
+    const translateY = animations.loadingTransition.translateY.get();
+    if (translateY !== 0) {
+      transforms.push({ translateY });
+    }
+
+    const scale = animations.loadingTransition.scale.get();
+    if (scale !== 1) {
+      transforms.push({ scale });
+    }
+
+    return {
+      opacity: animations.loadingTransition.opacity.get(),
+      transform: transforms,
+    };
+  });
+
+  const pageStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+
+    const translateY = animations.pageTransition.translateY.get();
+    if (translateY !== 0) {
+      transforms.push({ translateY });
+    }
+
+    const scale = animations.pageTransition.scale.get();
+    if (scale !== 1) {
+      transforms.push({ scale });
+    }
+
+    return {
+      opacity: animations.pageTransition.opacity.get(),
+      transform: transforms,
+    };
+  });
+
   return (
     <div className="min-h-screen pb-20 sm:pb-24 bg-background text-foreground relative overflow-hidden">
       <HoloBackground intensity={0.6} />
@@ -115,11 +154,11 @@ export function MainAppContent({
       <AmbientAuroraBackground intensity={0.35} className="hidden md:block" />
       <PageChangeFlash key={currentView} />
       <ScrollProgressBar />
-      
+
       <Suspense fallback={null}>
         <SeedDataInitializer />
       </Suspense>
-      
+
       <AppHeader
         t={t}
         theme={theme}
@@ -136,15 +175,14 @@ export function MainAppContent({
       </Suspense>
 
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8 relative z-10">
-        <Suspense fallback={
-          <MotionView style={animations.loadingTransition.style}>
-            <LoadingState />
-          </MotionView>
-        }>
-          <MotionView
-            key={currentView}
-            style={animations.pageTransition.style}
-          >
+        <Suspense
+          fallback={(
+            <MotionView style={loadingStyle}>
+              <LoadingState />
+            </MotionView>
+          )}
+        >
+          <MotionView key={currentView} style={pageStyle}>
             {renderView()}
           </MotionView>
         </Suspense>
@@ -166,9 +204,15 @@ export function MainAppContent({
           onViewHealth={onNavigateToProfile}
           onSchedulePlaydate={onNavigateToMatches}
           onSavedSearches={onNavigateToDiscover}
-          onGenerateProfiles={() => {}}
-          onViewStats={() => {}}
-          onViewMap={() => {}}
+          onGenerateProfiles={() => {
+            haptics.selection();
+          }}
+          onViewStats={() => {
+            haptics.selection();
+          }}
+          onViewMap={() => {
+            haptics.selection();
+          }}
         />
       </Suspense>
 
@@ -199,4 +243,3 @@ export function MainAppContent({
     </div>
   );
 }
-

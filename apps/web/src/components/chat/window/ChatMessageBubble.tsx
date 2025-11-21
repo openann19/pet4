@@ -15,7 +15,6 @@ import type { AnimatedStyle } from '@petspark/motion';
 export interface ChatMessageBubbleProps {
   message: ChatMessage;
   isCurrentUser: boolean;
-  currentUserId: string;
   voiceMessages?: Record<string, { blob: string; duration: number; waveform: number[] }>;
   playingVoice: string | null;
   showReactions: string | null;
@@ -50,7 +49,6 @@ export interface ChatMessageBubbleProps {
 export function ChatMessageBubble({
   message,
   isCurrentUser,
-  currentUserId,
   voiceMessages,
   playingVoice,
   showReactions,
@@ -77,7 +75,7 @@ export function ChatMessageBubble({
             src={message.senderAvatar ?? undefined}
             alt={message.senderName ?? undefined}
           />
-          <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+          <AvatarFallback className="bg-secondary text-secondary-foreground text-xs font-bold">
             {message.senderName?.[0] ?? '?'}
           </AvatarFallback>
         </Avatar>
@@ -91,8 +89,8 @@ export function ChatMessageBubble({
           onMouseLeave={messageBubbleHover.handleLeave}
           className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'
             } rounded-2xl shadow-lg ${isCurrentUser
-              ? 'bg-linear-to-br from-primary to-accent text-white'
-              : 'glass-strong backdrop-blur-xl border border-white/20'
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-card border'
             }`}
         >
           {message.type === 'text' && (
@@ -149,7 +147,6 @@ export function ChatMessageBubble({
             <PopoverTrigger asChild>
               <MotionView
                 style={reactionButtonTap.animatedStyle}
-                onClick={() => { }}
                 className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 onMouseEnter={reactionButtonHover.handleEnter}
                 onMouseLeave={reactionButtonHover.handleLeave}
@@ -158,7 +155,7 @@ export function ChatMessageBubble({
               </MotionView>
             </PopoverTrigger>
             <PopoverContent
-              className="w-auto p-2 glass-strong backdrop-blur-2xl border-white/30"
+              className="w-auto p-2 bg-popover border"
               side="top"
             >
               <div className="flex gap-1">
@@ -192,7 +189,7 @@ export function ChatMessageBubble({
                   style={reactionButtonHover.animatedStyle}
                   onMouseEnter={reactionButtonHover.handleEnter}
                   onMouseLeave={reactionButtonHover.handleLeave}
-                  className="text-lg bg-white/80 rounded-full px-2 py-0.5 shadow-sm cursor-pointer"
+                  className="text-lg bg-background/80 rounded-full px-2 py-0.5 shadow-sm cursor-pointer"
                   title={reaction.userName}
                 >
                   {reaction.emoji}
@@ -220,4 +217,3 @@ export function ChatMessageBubble({
     </MotionView>
   );
 }
-

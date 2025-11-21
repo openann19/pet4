@@ -16,8 +16,36 @@ import type { Playdate } from '@/lib/playdate-types';
 import { useAppEffects } from '@/hooks/use-app-effects';
 import { AppRoutesContent } from '@/components/AppRoutes';
 
-const OfflineIndicator = lazy(() => import('@/components/network/OfflineIndicator').then(module => ({ default: module.OfflineIndicator })));
-const InstallPrompt = lazy(() => import('@/components/pwa/InstallPrompt').then(module => ({ default: module.InstallPrompt })));
+const OfflineIndicator = lazy(() =>
+  import('@/components/network/OfflineIndicator').then((module) => ({ default: module.OfflineIndicator }))
+);
+const InstallPrompt = lazy(() =>
+  import('@/components/pwa/InstallPrompt').then((module) => ({ default: module.InstallPrompt }))
+);
+
+const OfflineStatus = () => (
+  <Suspense fallback={<LoadingState />}>
+    <OfflineIndicator />
+  </Suspense>
+);
+
+const PwaInstallPrompt = () => (
+  <Suspense fallback={null}>
+    <InstallPrompt />
+  </Suspense>
+);
+
+interface AgeVerificationOverlayProps {
+  ageVerified: boolean;
+  onVerified: (verified: boolean) => void;
+}
+
+const AgeVerificationOverlay = ({ ageVerified, onVerified }: AgeVerificationOverlayProps) => {
+  if (ageVerified) {
+    return null;
+  }
+  return <AgeVerification onVerified={onVerified} />;
+};
 
 function App() {
   const { currentView, setCurrentView } = useAppNavigation();
@@ -33,12 +61,8 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <Suspense fallback={<LoadingState />}>
-        <OfflineIndicator />
-      </Suspense>
-      <Suspense fallback={null}>
-        <InstallPrompt />
-      </Suspense>
+      <OfflineStatus />
+      <PwaInstallPrompt />
       <AppRoutesContent
         appState={appState}
         authMode={authMode}
@@ -72,12 +96,7 @@ function App() {
         onAuthSuccess={handleAuthSuccess}
         onAuthBack={handleAuthBack}
       />
-      {!ageVerified && (
-        <AgeVerification
-          onVerified={(verified) => setAgeVerified(verified)}
-          requiredAge={13}
-        />
-      )}
+      <AgeVerificationOverlay ageVerified={ageVerified} onVerified={setAgeVerified} />
       <ConsentManager />
     </ErrorBoundary>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, withSpring, useAnimatedStyle, MotionView } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { cn } from '@/lib/utils';
 
@@ -14,29 +14,24 @@ export function AchievementBadge({
   color = 'var(--primary)',
   className = '',
 }: AchievementBadgeProps) {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(0);
+  const _uiConfig = useUIConfig();
+  const scale = useSharedValue(0);
 
   useEffect(() => {
-    const scaleTransition = withSpring(1, { stiffness: 300, damping: 20 });
-    animate(scale, scaleTransition.target, scaleTransition.transition);
+    scale.value = withSpring(1, { stiffness: 300, damping: 20 });
   }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.get() }],
+    width: size,
+    height: size,
+    borderRadius: size / 2,
+    backgroundColor: color,
   }));
 
   return (
     <MotionView
-      style={[
-        animatedStyle,
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: color,
-        },
-      ]}
+      style={animatedStyle}
       className={cn('bg-primary rounded-full', className)}
     />
   );

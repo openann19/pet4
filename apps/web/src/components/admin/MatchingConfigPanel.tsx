@@ -176,8 +176,8 @@ export function MatchingConfigPanel() {
   };
 
   const getTotalWeight = () => {
-    if (!config) return 0;
-    return Object.values(config.weights).reduce((sum, val) => sum + val, 0);
+    const weightValues = Object.values(config?.weights ?? {}) as number[];
+    return weightValues.reduce((sum, val) => sum + (typeof val === 'number' ? val : 0), 0);
   };
 
   if (isTruthy(loading)) {

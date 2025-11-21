@@ -98,10 +98,11 @@ export function KYCSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('KYC');
-        triggerHaptic('success');
+        void onTest('KYC').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -178,10 +179,11 @@ export function ModerationSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('Photo Moderation');
-        triggerHaptic('success');
+        void onTest('Photo Moderation').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -291,10 +293,11 @@ export function SMSSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('SMS');
-        triggerHaptic('success');
+        void onTest('SMS').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -381,10 +384,11 @@ export function EmailSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('Email');
-        triggerHaptic('success');
+        void onTest('Email').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -461,10 +465,11 @@ export function StorageSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('Storage');
-        triggerHaptic('success');
+        void onTest('Storage').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -558,10 +563,11 @@ export function AnalyticsSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('Analytics');
-        triggerHaptic('success');
+        void onTest('Analytics').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -627,10 +633,11 @@ export function LiveKitSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('LiveKit');
-        triggerHaptic('success');
+        void onTest('LiveKit').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -662,4 +669,3 @@ export function LiveKitSection({
     </APIConfigSection>
   );
 }
-

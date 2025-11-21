@@ -86,23 +86,19 @@ export function SegmentedControl({
 
   const indicatorVariants: Variants = prefersReducedMotion
     ? {
-        animate: {
-          x: indicatorPosition,
-          width: indicatorWidth,
-          transition: { duration: 0 },
-        },
-      }
+      animate: {
+        transition: { duration: 0 },
+      },
+    }
     : {
-        animate: {
-          x: indicatorPosition,
-          width: indicatorWidth,
-          transition: {
-            type: 'spring',
-            damping: springConfigs.smooth.damping,
-            stiffness: springConfigs.smooth.stiffness,
-          },
+      animate: {
+        transition: {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
         },
-      };
+      },
+    };
 
   const handleOptionClick = useCallback(
     (optionValue: string) => {

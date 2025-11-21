@@ -1,6 +1,6 @@
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('MapProviderConfig');
 
@@ -20,37 +20,44 @@ const DEFAULT_PROVIDER_CONFIG: MapProviderConfig = {
   PROVIDER: 'maplibre',
 };
 
-function getEnvConfig(): MapProviderConfig {
-  const env = import.meta.env.MODE ?? 'development';
+type MapEnv = 'development' | 'staging' | 'production';
 
-  const configs: Record<string, Partial<MapProviderConfig>> = {
-    development: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
-      GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
-    },
-    staging: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
-      GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
-    },
-    production: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
-      GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
-    },
+function getEnvConfig(): MapProviderConfig {
+  const allowedEnvs: readonly MapEnv[] = ['development', 'staging', 'production'];
+  const mode = import.meta.env.MODE ?? 'development';
+  const env: MapEnv = allowedEnvs.includes(mode as MapEnv) ? (mode as MapEnv) : 'development';
+
+  const baseConfig = {
+    MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+    MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
+    GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
+    GEOCODING_ENDPOINT:
+      import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+    PROVIDER: import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre',
+  } as const;
+
+  const configs: Record<MapEnv, Partial<MapProviderConfig>> = {
+    development: baseConfig,
+    staging: baseConfig,
+    production: baseConfig,
   };
 
   return { ...DEFAULT_PROVIDER_CONFIG, ...configs[env] };
+}
+
+function isMapProviderConfig(value: unknown): value is MapProviderConfig {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<MapProviderConfig>;
+  return (
+    typeof candidate.MAP_STYLE_URL === 'string' &&
+    typeof candidate.MAP_TILES_API_KEY === 'string' &&
+    typeof candidate.GEOCODING_API_KEY === 'string' &&
+    typeof candidate.GEOCODING_ENDPOINT === 'string' &&
+    (candidate.PROVIDER === 'maplibre' || candidate.PROVIDER === 'mapbox')
+  );
 }
 
 let cachedAdminConfig: MapProviderConfig | null = null;
@@ -63,8 +70,13 @@ export function getAdminMapProviderConfig(): MapProviderConfig {
   try {
     const stored = localStorage.getItem('admin-map-provider-config');
     if (isTruthy(stored)) {
-      cachedAdminConfig = JSON.parse(stored);
-      return cachedAdminConfig ?? getEnvConfig();
+      const parsed = JSON.parse(stored) as unknown;
+      if (isMapProviderConfig(parsed)) {
+        cachedAdminConfig = parsed;
+        return cachedAdminConfig;
+      }
+
+      logger.warn('Invalid stored map provider config, falling back to defaults');
     }
   } catch {
     return getEnvConfig();
@@ -101,12 +113,18 @@ export function useMapProviderConfig(): {
 
   const updateConfig = (updates: Partial<MapProviderConfig>): void => {
     const newConfig = { ...config, ...updates };
-    setAdminConfig(newConfig);
+    void setAdminConfig(newConfig).catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to persist admin map provider config', err);
+    });
     setAdminMapProviderConfig(newConfig);
   };
 
   const resetToDefaults = (): void => {
-    setAdminConfig(envConfig);
+    void setAdminConfig(envConfig).catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to reset admin map provider config', err);
+    });
     setAdminMapProviderConfig(envConfig);
   };
 

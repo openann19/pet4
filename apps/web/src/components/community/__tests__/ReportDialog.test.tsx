@@ -2,7 +2,7 @@
  * ReportDialog tests
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ReportDialog } from '@/components/community/ReportDialog';
 
@@ -59,6 +59,7 @@ describe('ReportDialog', () => {
   const mockOnReported = vi.fn();
 
   beforeEach(() => {
+    vi.useRealTimers();
     vi.clearAllMocks();
   });
 
@@ -76,7 +77,9 @@ describe('ReportDialog', () => {
       />
     );
 
-    expect(screen.getByText(/report/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /report post/i })
+    ).toBeInTheDocument();
   });
 
   it('should not render when closed', () => {
@@ -108,8 +111,7 @@ describe('ReportDialog', () => {
   });
 
   it('should require reason selection', async () => {
-    const user = userEvent.setup();
-    const { toast } = await import('sonner');
+    const user = userEvent.setup({ delay: null });
 
     render(
       <ReportDialog
@@ -121,19 +123,19 @@ describe('ReportDialog', () => {
     );
 
     const submitButton = screen.getByRole('button', { name: /submit report/i });
-    await act(async () => {
-      await user.click(submitButton);
-    });
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith('Please select a reason for reporting');
-      });
-    });
+    // With no reason selected, submit should be disabled
+    expect(submitButton).toBeDisabled();
+
+    // Selecting a reason should enable submit
+    const spamLabel = screen.getByText('Spam');
+    await user.click(spamLabel);
+
+    expect(submitButton).not.toBeDisabled();
   });
 
   it('should submit report successfully', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityAPI } = await import('@/api/community-api');
     const { toast } = await import('sonner');
 
@@ -147,7 +149,8 @@ describe('ReportDialog', () => {
       />
     );
 
-    const spamOption = screen.getByLabelText(/spam/i);
+    const spamLabel = screen.getByText('Spam');
+    const spamOption = spamLabel.closest('label') ?? spamLabel;
     await user.click(spamOption);
 
     const submitButton = screen.getByRole('button', { name: /submit report/i });
@@ -166,7 +169,7 @@ describe('ReportDialog', () => {
   });
 
   it('should include details when provided', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     const { communityAPI } = await import('@/api/community-api');
 
     render(
@@ -197,7 +200,7 @@ describe('ReportDialog', () => {
   });
 
   it('should close dialog on cancel', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     render(
       <ReportDialog
         open={true}

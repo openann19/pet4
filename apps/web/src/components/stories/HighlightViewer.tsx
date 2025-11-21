@@ -2,8 +2,9 @@ import { Button } from '@/components/ui/button';
 import { useStorage } from '@/hooks/use-storage';
 import { haptics } from '@/lib/haptics';
 import type { StoryHighlight } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { motion } from '@petspark/motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import StoryViewer from './StoryViewer';
@@ -68,14 +69,14 @@ export default function HighlightViewer({
   }
 
   return (
-    <MotionView
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
-      <MotionView
+      <motion.div
         initial={{ y: '100%', opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
@@ -135,8 +136,7 @@ export default function HighlightViewer({
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-3 gap-3">
             {highlight.stories.map((story, index) => (
-              <MotionView
-                as="button"
+              <motion.button
                 key={story.id}
                 onClick={() => { handleStoryClick(index); }}
                 className="aspect-[9/16] rounded-2xl overflow-hidden relative group"
@@ -147,11 +147,11 @@ export default function HighlightViewer({
                 transition={{ delay: index * 0.03 }}
                 aria-label={`View story ${index + 1}: ${story.caption || 'Untitled story'}`}
               >
-                  <img
-                    src={story.thumbnailUrl || story.mediaUrl}
-                    alt={story.caption || `Story ${String(index + 1)}`}
-                    className="w-full h-full object-cover"
-                  />                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <img
+                  src={story.thumbnailUrl || story.mediaUrl}
+                  alt={story.caption || `Story ${String(index + 1)}`}
+                  className="w-full h-full object-cover"
+                />                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                 {story.caption && (
                   <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -166,11 +166,11 @@ export default function HighlightViewer({
                     <span className="text-white text-xs">▶</span>
                   </div>
                 )}
-              </MotionView>
+              </motion.button>
             ))}
           </div>
         </div>
-      </MotionView>
-    </MotionView>
+      </motion.div>
+    </motion.div>
   );
 }

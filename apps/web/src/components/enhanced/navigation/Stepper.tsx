@@ -1,6 +1,6 @@
 'use client';;
 import React, { useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -57,8 +57,7 @@ export function Stepper({
       progressWidth.value = progressPercentage;
       return;
     }
-    const progressTransition = withSpring(progressPercentage, springConfigs.smooth);
-    animate(progressWidth, progressTransition.target, progressTransition.transition);
+    progressWidth.value = withSpring(progressPercentage, springConfigs.smooth);
   }, [progressPercentage, progressWidth, prefersReducedMotion]);
 
   if (orientation === 'vertical') {
@@ -167,10 +166,10 @@ export function Stepper({
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
                   isCompleted && 'bg-(--primary) border-(--primary) text-(--primary-foreground)',
                   isCurrent &&
-                    cn(
-                      'bg-(--primary) border-(--primary) text-(--primary-foreground) shadow-lg',
-                      prefersReducedMotion ? '' : 'scale-110'
-                    ),
+                  cn(
+                    'bg-(--primary) border-(--primary) text-(--primary-foreground) shadow-lg',
+                    prefersReducedMotion ? '' : 'scale-110'
+                  ),
                   isUpcoming && 'bg-(--surface) border-(--border) text-(--text-muted)',
                   isUpcoming && 'cursor-not-allowed',
                   'w-10 h-10 min-w-[44px] min-h-[44px]'

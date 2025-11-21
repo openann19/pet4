@@ -14,6 +14,12 @@ export interface MapMarker {
   color?: string;
 }
 
+// Minimal runtime shape we rely on from maplibre-gl
+interface MapLibreModule {
+  Map: new (options: unknown) => MapInstance;
+  Marker: new (element?: HTMLElement) => MarkerInstance;
+}
+
 interface UseMapLibreMapProps {
   container: HTMLDivElement | null;
   center: Location;
@@ -25,17 +31,18 @@ interface UseMapLibreMapProps {
 }
 
 // Singleton promise to ensure we only load the library & CSS once
-let mapLibreLoadPromise: Promise<typeof import('maplibre-gl')> | null = null;
-function loadMapLibre(): Promise<typeof import('maplibre-gl')> {
+let mapLibreLoadPromise: Promise<MapLibreModule> | null = null;
+function loadMapLibre(): Promise<MapLibreModule> {
   mapLibreLoadPromise ??= import('maplibre-gl').then(async (mod) => {
-      // Load CSS side-effect dynamically (ignored in SSR)
-      try {
-        await import('maplibre-gl/dist/maplibre-gl.css');
-      } catch {
-        // CSS load failure should not break map usage
-      }
-      return mod.default ?? mod;
-    });
+    // Load CSS side-effect dynamically (ignored in SSR)
+    try {
+      await import('maplibre-gl/dist/maplibre-gl.css');
+    } catch {
+      // CSS load failure should not break map usage
+    }
+    const resolved = (mod.default ?? mod) as unknown;
+    return resolved as MapLibreModule;
+  });
   return mapLibreLoadPromise;
 }
 
@@ -68,7 +75,7 @@ export function useMapLibreMap({
 } {
   const mapRef = useRef<MapInstance | null>(null);
   const markersRef = useRef<MarkerInstance[]>([]);
-  const runtimeLibRef = useRef<typeof import('maplibre-gl') | null>(null);
+  const runtimeLibRef = useRef<MapLibreModule | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -76,7 +83,7 @@ export function useMapLibreMap({
     if (!container) return;
     let cancelled = false;
 
-    (async () => {
+    void (async () => {
       try {
         const lib = await loadMapLibre();
         if (isTruthy(cancelled)) return;

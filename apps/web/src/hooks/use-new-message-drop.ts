@@ -108,7 +108,7 @@ export function useNewMessageDrop(options: UseNewMessageDropOptions = {}): UseNe
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      transform: `translateY(${translateY.value}px) scale(${scale.value})`,
       opacity: opacity.value,
     };
   });

@@ -84,16 +84,14 @@ describe('retry', () => {
   });
 
   it('should throw after all attempts fail', async () => {
+    // Use real timers here to avoid unhandled rejections under fake timers
+    vi.useRealTimers();
+
     const error = new Error('persistent failure');
     const fn = vi.fn().mockRejectedValue(error);
 
-    const promise = retry(fn, { attempts: 3, delay: 100 });
+    await expect(retry(fn, { attempts: 3, delay: 5 })).rejects.toThrow('persistent failure');
 
-    await vi.advanceTimersByTimeAsync(0);
-    await vi.advanceTimersByTimeAsync(100);
-    await vi.advanceTimersByTimeAsync(100);
-
-    await expect(promise).rejects.toThrow('persistent failure');
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -127,10 +125,7 @@ describe('retry', () => {
   });
 
   it('should handle non-Error values in catch', async () => {
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce('string error')
-      .mockResolvedValueOnce('success');
+    const fn = vi.fn().mockRejectedValueOnce('string error').mockResolvedValueOnce('success');
 
     const promise = retry(fn, { attempts: 3, delay: 100 });
 

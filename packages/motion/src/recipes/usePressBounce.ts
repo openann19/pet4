@@ -1,4 +1,4 @@
-import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from '../'
 import { motion } from '../tokens'
 import { useCallback } from 'react'
 import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion'
@@ -43,7 +43,7 @@ export function usePressBounce(scaleOnPress = 0.96, scaleOnRelease = 1): UsePres
   }, [scaleOnRelease, reducedMotion, s])
 
   const animatedStyle = useAnimatedStyle(() => ({
-    scale: s.value,
+    transform: `scale(${s.value})`,
   }))
 
   return { onPressIn, onPressOut, animatedStyle }

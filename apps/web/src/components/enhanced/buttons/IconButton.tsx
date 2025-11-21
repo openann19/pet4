@@ -188,13 +188,7 @@ export function IconButton({
       onMouseMove={magnetic.handleMouseMove}
       className="inline-block relative"
     >
-      <motion.div
-        style={magnetic.variants ? undefined : { x: magnetic.translateX, y: magnetic.translateY }}
-        variants={magnetic.variants}
-        initial="rest"
-        animate="rest"
-        whileHover="hover"
-      >
+      <motion.div style={magnetic.animatedStyle}>
         <motion.div
           variants={hoverLift.variants}
           initial="rest"

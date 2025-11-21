@@ -2,10 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode, MouseEventHandler } from 'react';
-import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS } from '@petspark/motion';
-
-// Use MotionStyle from Framer Motion for full compatibility
-import type { MotionStyle } from 'framer-motion';
+import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS, type MotionStyle } from '@petspark/motion';
 
 // Accept MotionStyle or functions that return style objects
 export type AnimatedStyle =
@@ -76,7 +73,7 @@ export function useAnimatedStyleValue(animatedStyle: AnimatedStyle): CSSProperti
       const rafId = requestAnimationFrame(updateStyle);
       return () => cancelAnimationFrame(rafId);
     }
-    
+
     // No cleanup needed for static styles
     return undefined;
   }, [animatedStyle]);
@@ -116,11 +113,11 @@ export function AnimatedView({
   // If onClick is provided, make it keyboard accessible
   const handleKeyDown = onClick
     ? (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
-        }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
       }
+    }
     : undefined;
 
   const role = onClick ? 'button' : undefined;

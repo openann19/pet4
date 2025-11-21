@@ -3,7 +3,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSendWarp } from './use-send-warp';
 import { triggerHaptic } from '../core/haptic-manager';
 import { logEffectStart, logEffectEnd, clearActiveEffects } from '../core/telemetry';
-import { useReducedMotionSV } from '../core/reduced-motion';
+import { useMotionPreferences } from '../../reanimated/useMotionPreferences';
 
 // Mock dependencies
 vi.mock('../core/haptic-manager', () => ({
@@ -16,11 +16,12 @@ vi.mock('../core/telemetry', () => ({
   clearActiveEffects: vi.fn(),
 }));
 
-vi.mock('../core/reduced-motion', () => ({
-  useReducedMotionSV: vi.fn(() => ({
-    value: false,
+vi.mock('@/effects/reanimated/useMotionPreferences', () => ({
+  useMotionPreferences: vi.fn(() => ({
+    level: 'full',
+    isReduced: false,
+    isOff: false,
   })),
-  getReducedMotionDuration: vi.fn((duration: number) => duration),
 }));
 
 describe('useSendWarp', () => {
@@ -38,15 +39,14 @@ describe('useSendWarp', () => {
     const { result } = renderHook(() => useSendWarp());
 
     expect(result.current.translateX).toBeDefined();
-    expect(result.current.opacity).toBeDefined();
+    expect(result.current.opacityValue).toBeDefined();
     expect(result.current.glowOpacity).toBeDefined();
     expect(result.current.bloomIntensity).toBeDefined();
-    expect(result.current.animatedStyle).toBeDefined();
     expect(result.current.trigger).toBeDefined();
     expect(result.current.triggerStatusChange).toBeDefined();
 
     expect(result.current.translateX.value).toBe(0);
-    expect(result.current.opacity.value).toBe(1);
+    expect(result.current.opacityValue.value).toBe(1);
     expect(result.current.glowOpacity.value).toBe(0);
     expect(result.current.bloomIntensity.value).toBe(0);
   });
@@ -65,7 +65,7 @@ describe('useSendWarp', () => {
 
     // Check that animation values have changed
     expect(result.current.translateX.value).toBeGreaterThan(0);
-    expect(result.current.opacity.value).toBeLessThan(1);
+    expect(result.current.opacityValue.value).toBeLessThan(1);
   });
 
   it('should trigger haptic feedback on send', () => {
@@ -97,6 +97,7 @@ describe('useSendWarp', () => {
 
     expect(logEffectStart).toHaveBeenCalledWith('send-warp', {
       reducedMotion: false,
+      level: 'full',
     });
   });
 
@@ -145,8 +146,10 @@ describe('useSendWarp', () => {
   });
 
   it('should respect reduced motion', () => {
-    vi.mocked(useReducedMotionSV).mockReturnValue({
-      value: true,
+    vi.mocked(useMotionPreferences).mockReturnValue({
+      level: 'reduced',
+      isReduced: true,
+      isOff: false,
     });
 
     const { result } = renderHook(() => useSendWarp());
@@ -217,12 +220,5 @@ describe('useSendWarp', () => {
 
     // Bloom should animate
     expect(result.current.bloomIntensity.value).toBeGreaterThan(0);
-  });
-
-  it('should return animated style', () => {
-    const { result } = renderHook(() => useSendWarp());
-
-    expect(result.current.animatedStyle).toBeDefined();
-    expect(typeof result.current.animatedStyle).toBe('object');
   });
 });

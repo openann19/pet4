@@ -12,7 +12,7 @@
  * - Accessibility features and ARIA attributes
  * - Multiple animation layers and effects
  */
- 
+
 
 import { useApp } from '@/contexts/AppContext';
 import { isTruthy } from '@petspark/shared';
@@ -113,7 +113,7 @@ function MessageBubble({
   const {
     // Animation hooks
     hoverTilt,
-    deliveryTransition,
+    statusMotion,
     typingReveal,
     smartHighlight,
     undoAnimation,
@@ -312,43 +312,47 @@ function MessageBubble({
   };
 
   const getStatusIcon = () => {
-    const statusStyle = deliveryTransition.animatedStyle;
+    const statusStyle = statusMotion.animatedStyle;
+    const statusColor = statusMotion.color;
 
     if (message.status === 'sending') {
       return (
-        <MotionView style={statusStyle}>
-          <Clock size={12} className="text-muted-foreground" />
+        <MotionView style={statusStyle} aria-live="polite" aria-label="Message sending status">
+          <Clock size={12} color={statusColor} />
         </MotionView>
       );
     }
     if (message.status === 'failed') {
       return (
-        <button
-          onClick={handleRetry}
-          className="text-destructive hover:text-destructive/80"
-          aria-label="Retry sending"
-        >
-          <X size={12} />
-        </button>
+        <MotionView style={statusStyle}>
+          <button
+            onClick={handleRetry}
+            className="text-destructive hover:text-destructive/80"
+            aria-label="Retry sending message"
+            type="button"
+          >
+            <X size={12} color={statusColor} />
+          </button>
+        </MotionView>
       );
     }
     if (message.status === 'read') {
       return (
         <MotionView style={statusStyle}>
-          <Checks size={12} className="text-primary" />
+          <Checks size={12} color={statusColor} />
         </MotionView>
       );
     }
     if (message.status === 'delivered') {
       return (
         <MotionView style={statusStyle}>
-          <Checks size={12} className="text-muted-foreground" />
+          <Checks size={12} color={statusColor} />
         </MotionView>
       );
     }
     return (
       <MotionView style={statusStyle}>
-        <Check size={12} className="text-muted-foreground" />
+        <Check size={12} color={statusColor} />
       </MotionView>
     );
   };

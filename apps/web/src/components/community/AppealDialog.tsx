@@ -45,11 +45,6 @@ export function AppealDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!appealText.trim()) {
-      toast.error('Please provide a reason for your appeal');
-      return;
-    }
-
     if (appealText.trim().length < 50) {
       toast.error('Please provide more details (at least 50 characters)');
       return;
@@ -162,9 +157,9 @@ export function AppealDialog({
             variant="outline"
             onClick={handleClose}
             disabled={isSubmitting}
-            aria-label="Cancel appeal"
           >
-            Cancel
+            <span className="sr-only">Cancel appeal</span>
+            <span aria-hidden="true">Cancel</span>
           </Button>
           <Button
             onClick={handleSubmit}

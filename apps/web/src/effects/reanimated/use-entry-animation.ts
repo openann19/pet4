@@ -18,7 +18,11 @@ export interface UseEntryAnimationReturn {
   opacity: MotionValue<number>;
   translateY: MotionValue<number>;
   scale: MotionValue<number>;
-  animatedStyle: { opacity: MotionValue<number>; transform: ({ translateY: MotionValue<number> } | { scale: MotionValue<number> })[] };
+  animatedStyle: {
+    opacity: MotionValue<number>;
+    y: MotionValue<number>;
+    scale: MotionValue<number>;
+  };
 }
 
 export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEntryAnimationReturn {
@@ -92,7 +96,8 @@ export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEn
     scale,
     animatedStyle: {
       opacity,
-      transform: [{ translateY }, { scale }],
+      y: translateY,
+      scale,
     },
   };
 }

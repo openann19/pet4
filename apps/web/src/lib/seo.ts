@@ -74,14 +74,14 @@ export function updateSEO(config: SEOConfig): void {
 function updateMetaTag(attribute: 'name' | 'property', key: string, value: string): void {
   if (typeof document === 'undefined') return;
 
-  let meta = document.querySelector(`meta[${attribute}="${key}"]`)!;
-  
+  let meta = document.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);
+
   if (!meta) {
     meta = document.createElement('meta');
     meta.setAttribute(attribute, key);
     document.head.appendChild(meta);
   }
-  
+
   meta.content = value;
 }
 
@@ -91,14 +91,14 @@ function updateMetaTag(attribute: 'name' | 'property', key: string, value: strin
 function updateLinkTag(rel: string, href: string): void {
   if (typeof document === 'undefined') return;
 
-  let link = document.querySelector(`link[rel="${rel}"]`)!;
-  
+  let link = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
+
   if (!link) {
     link = document.createElement('link');
     link.rel = rel;
     document.head.appendChild(link);
   }
-  
+
   link.href = href;
 }
 
@@ -108,7 +108,8 @@ function updateLinkTag(rel: string, href: string): void {
 export function resetSEO(): void {
   updateSEO({
     title: 'PawfectMatch - AI-Powered Pet Companion Matching',
-    description: 'Connect with pet lovers, find perfect matches for your furry friends, and build lasting pet friendships.',
+    description:
+      'Connect with pet lovers, find perfect matches for your furry friends, and build lasting pet friendships.',
     url: 'https://pawfectmatch.com',
     image: 'https://pawfectmatch.com/og-image.jpg',
   });
@@ -137,4 +138,3 @@ export function setMatchSEO(petName: string): void {
     type: 'website',
   });
 }
-

@@ -164,7 +164,7 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
               )}
               <Button
                 type="button"
-                onClick={handleVerify}
+                onClick={() => { void handleVerify(); }}
                 disabled={isLoading || !birthDate}
                 className="flex-1"
               >

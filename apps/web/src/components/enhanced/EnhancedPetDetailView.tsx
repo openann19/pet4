@@ -1,4 +1,5 @@
 'use client';;
+import type { AnimatedStyle } from '@petspark/motion';
 import { useCallback, useState, useEffect } from 'react';
 import {
   Calendar,
@@ -27,7 +28,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withDelay,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
@@ -132,25 +132,18 @@ export function EnhancedPetDetailView({
 
   useEffect(() => {
     if (isVisible) {
-      const containerOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
-      animate(containerOpacity, containerOpacityTransition.target, containerOpacityTransition.transition);
-      const containerScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
-      animate(containerScale, containerScaleTransition.target, containerScaleTransition.transition);
-      const modalOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
-      animate(modalOpacity, modalOpacityTransition.target, modalOpacityTransition.transition);
-      const modalScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
-      animate(modalScale, modalScaleTransition.target, modalScaleTransition.transition);
+      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+      containerScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+      modalOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+      modalScale.value = withSpring(1, { damping: 20, stiffness: 300 });
     } else {
-      const containerOpacityTransition = withSpring(0, { damping: 20, stiffness: 300 });
-      animate(containerOpacity, containerOpacityTransition.target, containerOpacityTransition.transition);
-      const modalScaleTransition = withSpring(0.95, { damping: 20, stiffness: 300 });
-      animate(modalScale, modalScaleTransition.target, modalScaleTransition.transition);
+      containerOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
+      modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
     }
   }, [isVisible, containerOpacity, containerScale, modalOpacity, modalScale]);
 
   useEffect(() => {
-    const photoOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
-    animate(photoOpacity, photoOpacityTransition.target, photoOpacityTransition.transition);
+    photoOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
   }, [currentPhotoIndex, photoOpacity]);
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -347,10 +340,8 @@ function CompatibilityBadge({ score }: CompatibilityBadgeProps): React.JSX.Eleme
   const badgeScale = useSharedValue(0.8);
 
   useEffect(() => {
-    const badgeOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
-    animate(badgeOpacity, badgeOpacityTransition.target, badgeOpacityTransition.transition);
-    const badgeScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
-    animate(badgeScale, badgeScaleTransition.target, badgeScaleTransition.transition);
+    badgeOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+    badgeScale.value = withSpring(1, { damping: 20, stiffness: 300 });
   }, [badgeOpacity, badgeScale]);
 
   const badgeStyle = useAnimatedStyle(() => ({
@@ -438,10 +429,8 @@ function MatchReasonItem({ reason, index }: MatchReasonItemProps): React.JSX.Ele
   const itemX = useSharedValue(-10);
 
   useEffect(() => {
-    const itemOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    animate(itemOpacity, itemOpacityDelay.target, itemOpacityDelay.transition);
-    const itemXDelay = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }));
-    animate(itemX, itemXDelay.target, itemXDelay.transition);
+    itemOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    itemX.value = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }));
   }, [index, itemOpacity, itemX]);
 
   const itemStyle = useAnimatedStyle(() => ({
@@ -580,10 +569,8 @@ function PersonalityTrait({ trait, index }: PersonalityTraitProps): React.JSX.El
   const traitScale = useSharedValue(0.9);
 
   useEffect(() => {
-    const traitOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    animate(traitOpacity, traitOpacityDelay.target, traitOpacityDelay.transition);
-    const traitScaleDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    animate(traitScale, traitScaleDelay.target, traitScaleDelay.transition);
+    traitOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    traitScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
   }, [index, traitOpacity, traitScale]);
 
   const traitStyle = useAnimatedStyle(() => ({
@@ -644,10 +631,8 @@ function TrustBadgeItem({ badge, index }: TrustBadgeItemProps): React.JSX.Elemen
   const badgeScale = useSharedValue(0.8);
 
   useEffect(() => {
-    const badgeOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    animate(badgeOpacity, badgeOpacityDelay.target, badgeOpacityDelay.transition);
-    const badgeScaleDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    animate(badgeScale, badgeScaleDelay.target, badgeScaleDelay.transition);
+    badgeOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    badgeScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
   }, [index, badgeOpacity, badgeScale]);
 
   const badgeStyle = useAnimatedStyle(() => ({

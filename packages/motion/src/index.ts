@@ -6,7 +6,9 @@
  */
 
 // Platform detection
-const isWeb = typeof window !== 'undefined' && typeof (window as { document?: unknown }).document !== 'undefined'
+const isWeb =
+  typeof window !== 'undefined' &&
+  typeof (window as { document?: unknown }).document !== 'undefined'
 
 // Framer Motion API exports (web)
 export * from './framer-api'
@@ -34,31 +36,27 @@ export {
   type SharedValue,
 } from './framer-api/hooks'
 
-// Type exports for compatibility
-export type { MotionValue, AnimationPlaybackControls, MotionStyle } from 'framer-motion'
-// Import needed for the custom animate function
-import { animate as framerAnimate } from 'framer-motion'
-import type { MotionValue, AnimationPlaybackControls, MotionStyle } from 'framer-motion'
+// Framer Motion direct exports
+export { animate, useTransform } from 'framer-motion'
 
-
-// Custom animate function for compatibility with both signatures
-export function animate<T extends number | string>(
-  motionValue: MotionValue<T>,
-  target: T,
-  _transition?: unknown
-): AnimationPlaybackControls {
-  // If transition is provided, ignore it for now (Framer Motion doesn't support 3-param in this way)
-  // Use the two-parameter form which is what Framer Motion actually supports
-  return framerAnimate(motionValue, target)
-}
+// Framer Motion type exports
+export type {
+  MotionValue,
+  AnimationPlaybackControls,
+  MotionStyle,
+  Transition,
+  Variants,
+  HTMLMotionProps,
+  Transition as FramerTransition, // Alias for clarity if needed elsewhere
+} from 'framer-motion'
 
 // Stub exports for Reanimated APIs not yet implemented
 // These can be implemented as needed
 export const useAnimatedProps = () => ({})
 export const useAnimatedReaction = () => {}
 export const useAnimatedGestureHandler = () => ({})
-export const useAnimatedRef = <T,>() => ({ current: null as T | null })
-export const cancelAnimation = () => {}
+export const useAnimatedRef = <T>() => ({ current: null as T | null })
+export const cancelAnimation = (_value?: unknown): void => {}
 export const runOnJS = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn
 export const runOnUI = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn
 
@@ -79,29 +77,47 @@ export const FadeOut = {
 
 export const FadeInUp = {
   duration: (ms: number) => ({
-    keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+    keyframes: [
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0 },
+    ],
     duration: ms,
     delay: (delayMs: number) => ({
-      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      keyframes: [
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0 },
+      ],
       duration: ms,
       delay: delayMs,
       springify: () => ({
-        keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+        keyframes: [
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0 },
+        ],
         type: 'spring',
         damping: (d: number) => ({ damping: d, stiffness: (s: number) => ({ stiffness: s }) }),
       }),
     }),
     springify: () => ({
-      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      keyframes: [
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0 },
+      ],
       type: 'spring',
       damping: (d: number) => ({ damping: d, stiffness: (s: number) => ({ stiffness: s }) }),
     }),
   }),
   delay: (delayMs: number) => ({
-    keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+    keyframes: [
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0 },
+    ],
     delay: delayMs,
     duration: (ms: number) => ({
-      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      keyframes: [
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0 },
+      ],
       duration: ms,
       delay: delayMs,
     }),
@@ -163,22 +179,22 @@ export const interpolate = (
     extrapolateLeft = opts.extrapolateLeft ?? 'extend'
     extrapolateRight = opts.extrapolateRight ?? 'extend'
   }
-  
+
   if (inputRange.length === 0 || outputRange.length === 0) {
     return 0
   }
-  
+
   if (inputRange.length !== outputRange.length) {
     return 0
   }
-  
+
   const firstInput = inputRange[0]
   const lastInput = inputRange[inputRange.length - 1]
-  
+
   if (firstInput === undefined || lastInput === undefined) {
     return 0
   }
-  
+
   if (value <= firstInput) {
     if (extrapolateLeft === 'clamp') {
       const firstOutput = outputRange[0]
@@ -187,7 +203,7 @@ export const interpolate = (
     const firstOutput = outputRange[0]
     return firstOutput ?? 0
   }
-  
+
   if (value >= lastInput) {
     if (extrapolateRight === 'clamp') {
       const lastOutput = outputRange[outputRange.length - 1]
@@ -196,32 +212,37 @@ export const interpolate = (
     const lastOutput = outputRange[outputRange.length - 1]
     return lastOutput ?? 0
   }
-  
+
   const inputIndex = inputRange.findIndex((v, i) => {
     if (i === 0) return false
     const prev = inputRange[i - 1]
     return prev !== undefined && value >= prev && value <= v
   })
-  
+
   if (inputIndex === -1 || inputIndex === 0) {
     const firstOutput = outputRange[0]
     return firstOutput ?? 0
   }
-  
+
   const inputMin = inputRange[inputIndex - 1]
   const inputMax = inputRange[inputIndex]
   const outputMin = outputRange[inputIndex - 1]
   const outputMax = outputRange[inputIndex]
-  
-  if (inputMin === undefined || inputMax === undefined || outputMin === undefined || outputMax === undefined) {
+
+  if (
+    inputMin === undefined ||
+    inputMax === undefined ||
+    outputMin === undefined ||
+    outputMax === undefined
+  ) {
     const firstOutput = outputRange[0]
     return firstOutput ?? 0
   }
-  
+
   if (inputMax === inputMin) {
     return outputMin
   }
-  
+
   const ratio = (value - inputMin) / (inputMax - inputMin)
   return outputMin + (outputMax - outputMin) * ratio
 }
@@ -233,7 +254,7 @@ export const Extrapolation = {
 } as const
 
 // Define AnimatedStyle as MotionStyle for compatibility
-export type AnimatedStyle = MotionStyle
+export type AnimatedStyle = import('framer-motion').MotionStyle
 export type AnimatedProps = Record<string, unknown>
 
 // Animated export for backward compatibility
@@ -252,15 +273,15 @@ export type PetSparkEasingFunction = (value: number) => number
 
 export type PetSparkTransition =
   | {
-      type: 'spring';
-      stiffness: number;
-      damping: number;
-      mass?: number;
+      type: 'spring'
+      stiffness: number
+      damping: number
+      mass?: number
     }
   | {
-      duration: number;
-      ease?: number[] | string;
-    };
+      duration: number
+      ease?: number[] | string
+    }
 
 // Import and re-export motion primitives
 import { MotionView } from './primitives/MotionView'
@@ -279,13 +300,31 @@ export { useMagnetic } from './recipes/useMagnetic'
 export { useShimmer } from './recipes/useShimmer'
 export { useRipple } from './recipes/useRipple'
 export { useBubbleTheme } from './recipes/useBubbleTheme'
-export type { UseBubbleThemeOptions, UseBubbleThemeReturn, SenderType, MessageType, ChatTheme, THEME_COLORS, SENDER_INTENSITY, MESSAGE_INTENSITY } from './recipes/useBubbleTheme'
+export type {
+  UseBubbleThemeOptions,
+  UseBubbleThemeReturn,
+  SenderType,
+  MessageType,
+  ChatTheme,
+  THEME_COLORS,
+  SENDER_INTENSITY,
+  MESSAGE_INTENSITY,
+} from './recipes/useBubbleTheme'
 export { useBubbleTilt } from './recipes/useBubbleTilt'
 export type { UseBubbleTiltOptions, UseBubbleTiltReturn } from './recipes/useBubbleTilt'
 export { useMediaBubble } from './recipes/useMediaBubble'
-export type { UseMediaBubbleOptions, UseMediaBubbleReturn, MediaType } from './recipes/useMediaBubble'
+export type {
+  UseMediaBubbleOptions,
+  UseMediaBubbleReturn,
+  MediaType,
+} from './recipes/useMediaBubble'
 export { useReactionSparkles } from './recipes/useReactionSparkles'
-export type { UseReactionSparklesOptions, UseReactionSparklesReturn, ReactionType, EMOJI_COLORS } from './recipes/useReactionSparkles'
+export type {
+  UseReactionSparklesOptions,
+  UseReactionSparklesReturn,
+  ReactionType,
+  EMOJI_COLORS,
+} from './recipes/useReactionSparkles'
 export { haptic } from './haptic'
 export { useWaveAnimation, useMultiWave } from './recipes/useWaveAnimation'
 
@@ -343,24 +382,13 @@ export {
   validateSpringConfig,
   SPRING_RANGES,
 } from './shared-transitions'
-export type {
-  SpringConfigRange,
-} from './shared-transitions'
+export type { SpringConfigRange } from './shared-transitions'
 
 // Platform-specific exports
 // On web, Framer Motion is the primary animation library
 // On native, React Native Reanimated is used
 export type { ViewStyle, TextStyle, ImageStyle } from 'react-native'
 
-// Framer Motion direct exports (web only - use with platform checks)
-// Note: These are conditionally available based on platform
-// Use type guards or platform checks when using these
-export type { Variants, HTMLMotionProps, Transition } from 'framer-motion'
-// Export Transition from framer-motion with alias to avoid conflict
-export type { Transition as FramerTransition } from 'framer-motion'
-// Re-export useTransform from framer-motion for direct use
-// Note: useMotionValue is already exported via ./framer-api
-export { useTransform } from 'framer-motion'
 // For runtime exports, import directly from 'framer-motion' when needed
 // This avoids TypeScript issues with conditional exports
 

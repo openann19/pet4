@@ -85,18 +85,20 @@ JSON format:
 }`;
 
       const result = await llmService.llm(prompt, 'gpt-4o', true);
-      const data = JSON.parse(result);
+      const parsed = JSON.parse(result) as unknown;
 
-      if (!data.pets || !Array.isArray(data.pets)) {
+      if (!parsed || typeof parsed !== 'object' || !Array.isArray((parsed as { pets?: unknown }).pets)) {
         throw new Error('Invalid response format');
       }
 
-      setGeneratedCount(data.pets.length);
+      const petsData = (parsed as { pets: GeneratedPet[] }).pets;
+
+      setGeneratedCount(petsData.length);
 
       const existingIds = new Set((pets ?? []).map((p: GeneratedPet) => p.id));
       let newPetsAdded = 0;
 
-      const newPets = data.pets.map((pet: GeneratedPet) => {
+      const newPets = petsData.map((pet) => {
         let id: string;
         do {
           id = `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -107,9 +109,9 @@ JSON format:
 
         return {
           id,
-          name: pet.name,
-          breed: pet.breed,
-          age: pet.age,
+          name: String(pet.name ?? 'Unknown'),
+          breed: String(pet.breed ?? 'Unknown'),
+          age: Number(pet.age ?? 0),
           gender: pet.gender,
           size: pet.size,
           photoUrl: pet.photo,
@@ -120,14 +122,14 @@ JSON format:
           lookingFor: pet.lookingFor,
           location: pet.location,
           ownerName: pet.ownerName,
-          verified: pet.verified || false,
+          verified: Boolean(pet.verified),
           liked: false,
           disliked: false,
           createdAt: Date.now(),
         };
       });
 
-      setPets((currentPets) => [...(currentPets ?? []), ...newPets]);
+      void setPets((currentPets) => [...(currentPets ?? []), ...newPets]);
 
       toast.success(`Successfully generated and added ${String(newPetsAdded ?? '')} new pet profiles!`, {
         duration: 5000,
@@ -165,7 +167,13 @@ JSON format:
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          <Button onClick={generatePets} disabled={isGenerating} className="w-full sm:w-auto">
+          <Button
+            onClick={() => {
+              void generatePets();
+            }}
+            disabled={isGenerating}
+            className="w-full sm:w-auto"
+          >
             {isGenerating ? (
               <>
                 <Sparkle size={20} weight="fill" className="mr-2 animate-spin" />

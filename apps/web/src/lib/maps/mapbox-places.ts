@@ -48,6 +48,64 @@ interface MapboxResponse {
   attribution?: string;
 }
 
+function isCoordinatePair(value: unknown): value is [number, number] {
+  return (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    typeof value[0] === 'number' &&
+    typeof value[1] === 'number'
+  );
+}
+
+function isMapboxFeature(value: unknown): value is MapboxFeature {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const feature = value as Partial<MapboxFeature>;
+  const hasContext =
+    feature.context === undefined ||
+    (Array.isArray(feature.context) &&
+      feature.context.every(
+        (ctx) =>
+          typeof ctx === 'object' &&
+          ctx !== null &&
+          typeof ctx.id === 'string' &&
+          typeof ctx.text === 'string'
+      ));
+
+  return (
+    typeof feature.id === 'string' &&
+    typeof feature.type === 'string' &&
+    Array.isArray(feature.place_type) &&
+    feature.place_type.every((item) => typeof item === 'string') &&
+    typeof feature.relevance === 'number' &&
+    typeof feature.properties === 'object' &&
+    feature.properties !== null &&
+    typeof feature.text === 'string' &&
+    typeof feature.place_name === 'string' &&
+    isCoordinatePair(feature.center) &&
+    typeof feature.geometry === 'object' &&
+    feature.geometry !== null &&
+    typeof feature.geometry.type === 'string' &&
+    isCoordinatePair(feature.geometry.coordinates) &&
+    hasContext
+  );
+}
+
+function isMapboxResponse(value: unknown): value is MapboxResponse {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const response = value as Partial<MapboxResponse>;
+  return (
+    typeof response.type === 'string' &&
+    Array.isArray(response.features) &&
+    response.features.every((feature) => isMapboxFeature(feature))
+  );
+}
+
 async function getMapboxAccessToken(): Promise<string> {
   const mapsConfig = await getMapsConfig();
   if (!mapsConfig || !mapsConfig.enabled || mapsConfig.provider !== 'mapbox') {
@@ -128,7 +186,11 @@ export async function searchNearbyPlaces(
       throw new Error(`Mapbox API error: ${response.status} ${response.statusText}`);
     }
 
-    const data: MapboxResponse = await response.json();
+    const parsed = (await response.json()) as unknown;
+    if (!isMapboxResponse(parsed)) {
+      throw new Error('Mapbox API returned unexpected payload');
+    }
+    const data: MapboxResponse = parsed;
 
     const places: MapboxPlace[] = data.features
       .filter((feature) => {
@@ -231,7 +293,11 @@ export async function searchPlacesByQuery(
       throw new Error(`Mapbox API error: ${response.status} ${response.statusText}`);
     }
 
-    const data: MapboxResponse = await response.json();
+    const parsed = (await response.json()) as unknown;
+    if (!isMapboxResponse(parsed)) {
+      throw new Error('Mapbox API returned unexpected payload');
+    }
+    const data: MapboxResponse = parsed;
 
     const places: MapboxPlace[] = data.features.slice(0, limit).map((feature) => {
       const placeLocation: Location = {

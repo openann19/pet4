@@ -95,7 +95,7 @@ export default function BottomNavBar() {
 
   return (
     <MotionView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <nav 
+      <nav
         className="border-t border-border/40 bg-card/85 backdrop-blur-3xl shadow-2xl relative overflow-hidden"
         aria-label="Bottom navigation"
       >
@@ -122,7 +122,7 @@ export default function BottomNavBar() {
           {/* Holographic color shift overlay */}
           <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-accent/10 via-secondary/10 to-primary/10 opacity-40 pointer-events-none mix-blend-overlay" />
 
-          <ul 
+          <ul
             className={cn(
               'grid grid-cols-6 relative z-10',
               getSpacingClassesFromConfig({ gap: 'xs' })
@@ -167,6 +167,17 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
     hapticFeedback: true,
   });
 
+  const buttonStyle: AnimatedStyle = {
+    scale: animation.scale,
+    translateY: animation.translateY,
+    rotate: animation.rotation,
+  };
+
+  const indicatorStyle: AnimatedStyle = {
+    opacity: animation.indicatorOpacity,
+    width: animation.indicatorWidth,
+  };
+
   const bounceAnimation = useBounceOnTap({
     scale: 0.85,
     hapticFeedback: false,
@@ -199,8 +210,10 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
   const iconStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { scale: iconScale.value },
-        { translateY: iconY.value },
+        {
+          scale: iconScale.value,
+          translateY: iconY.value,
+        },
       ],
     };
   }) as AnimatedStyle;
@@ -237,7 +250,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
         {...navAriaAttrs}
       >
         <MotionView
-          style={animation.buttonStyle}
+          style={buttonStyle}
           className={cn(
             'relative flex flex-col items-center justify-center',
             getSpacingClassesFromConfig({ gap: 'xs' })
@@ -246,7 +259,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           {/* Active indicator background */}
           {isActive && (
             <MotionView
-              style={animation.indicatorStyle}
+              style={indicatorStyle}
               className="absolute inset-0 rounded-2xl bg-(--coral-primary)/20 blur-xl"
             >
               <></>
@@ -282,7 +295,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           {/* Active indicator dot */}
           {isActive && (
             <MotionView
-              style={animation.indicatorStyle}
+              style={indicatorStyle}
               className="absolute bottom-0 w-1 h-1 rounded-full bg-(--coral-primary)"
             >
               <></>
@@ -314,9 +327,8 @@ function Badge({ count, isActive }: BadgeProps) {
 
   useEffect(() => {
     if (isTruthy(isActive)) {
-      pulseScale.value = withSpring(1.2, springConfigs.bouncy, () => {
-        pulseScale.value = withSpring(1, springConfigs.smooth);
-      });
+      pulseScale.value = withSpring(1.2, springConfigs.bouncy);
+      pulseScale.value = withSpring(1, springConfigs.smooth);
     }
   }, [isActive, pulseScale]);
 

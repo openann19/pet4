@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { MotionView, useAnimatedStyle } from '@petspark/motion';
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+// Motion imports kept for future animated variants; current implementation does not use them directly.
+// import { MotionView, useAnimatedStyle } from '@petspark/motion';
+// import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,15 @@ import {
 import { toast } from 'sonner';
 import type { Pet } from '@/lib/types';
 import { ProgressiveImage } from '@/components/enhanced/ProgressiveImage';
+
+function InfoItem({ label, value }: { label: string; value: string | number | undefined }) {
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="font-medium">{value ?? 'N/A'}</p>
+    </div>
+  );
+}
 
 export default function ContentView() {
   const [allPets] = useStorage<Pet[]>('all-pets', []);
@@ -211,90 +221,26 @@ export default function ContentView() {
             <Button variant="outline" onClick={() => { setDialogOpen(false); }}>
               Close
             </Button>
-            <Button variant="destructive" onClick={handleRemovePet}>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                void handleRemovePet();
+              }}
+            >
               <XCircle size={16} className="mr-2" />
               Remove Profile
             </Button>
-            <Button onClick={handleApprovePet}>
+            <Button
+              onClick={() => {
+                void handleApprovePet();
+              }}
+            >
               <CheckCircle size={16} className="mr-2" />
               Approve
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-interface AnimatedPetCardProps {
-  pet: Pet
-  index: number
-  onReview: (pet: Pet) => void
-}
-
-function AnimatedPetCard({ pet, index, onReview }: AnimatedPetCardProps) {
-  const entry = useEntryAnimation({
-    initialScale: 0.95,
-    initialOpacity: 0,
-    delay: index * 20
-  })
-
-  const entryStyle = useAnimatedStyle(() => {
-    const scale = entry.scale.get();
-    const translateY = entry.translateY.get();
-    return {
-      opacity: entry.opacity.get(),
-      transform: [{ scale, translateY }] as Record<string, number>[],
-    };
-  });
-
-  return (
-    <MotionView style={entryStyle}>
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-        <div className="aspect-square relative bg-muted">
-          {pet.photo ? (
-            <img
-              src={pet.photo}
-              alt={pet.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <ImageIcon size={48} className="text-muted-foreground" />
-            </div>
-          )}
-          <Badge className="absolute top-2 right-2" variant="secondary">
-            Active
-          </Badge>
-        </div>
-        <CardContent className="p-4">
-          <h3 className="font-semibold truncate">{pet.name}</h3>
-          <p className="text-sm text-muted-foreground truncate">
-            {pet.breed} • {pet.age?.toString() ?? 'N/A'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Owner: {pet.ownerName}
-          </p>
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-full mt-3"
-            onClick={() => { onReview(pet); }}
-          >
-            <Eye size={16} className="mr-2" />
-            Review
-          </Button>
-        </CardContent>
-      </Card>
-    </MotionView>
-  );
-}
-
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium capitalize">{value}</p>
     </div>
   );
 }

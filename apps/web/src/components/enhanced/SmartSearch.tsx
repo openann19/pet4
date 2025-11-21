@@ -1,13 +1,14 @@
 import { useState, useRef, useMemo } from 'react';
 import { MotionView } from '@petspark/motion';
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/input';
+import { Input, type InputRef } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useStorage } from '@/hooks/use-storage';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 
 interface SmartSearchProps<T> {
   placeholder?: string;
@@ -41,7 +42,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
     'Small dogs',
     'Near me',
   ]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -92,7 +93,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
     haptics.impact('light');
 
     if (showHistory) {
-      setSearchHistory((prev) => {
+      void setSearchHistory((prev) => {
         const updated = [queryText, ...(prev ?? []).filter((q) => q !== queryText)].slice(0, 10);
         return updated;
       });
@@ -112,7 +113,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
 
   const handleClearHistory = () => {
     haptics.impact('medium');
-    setSearchHistory([]);
+    void setSearchHistory([]);
   };
 
   const highlightText = (text: string, highlight: string) => {
@@ -134,7 +135,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
     );
   };
 
-  const showDropdown = Boolean(isFocused && (query.trim() || showHistory || showTrending));
+  const showDropdown = isFocused && (query.trim().length > 0 || (showHistory && (searchHistory ?? []).length > 0) || (showTrending && (trendingSearches ?? []).length > 0));
 
   return (
     <div className={cn('relative', className)}>
@@ -166,97 +167,102 @@ export function SmartSearch<T extends Record<string, unknown>>({
           </button>
         )}
       </div>
-      {presence.shouldRender && (
-        <MotionView
-          style={presence.animatedStyle}
-        >
-          <Card className="absolute top-full mt-2 w-full max-h-100 overflow-y-auto shadow-xl border z-50 p-2">
-            {query.trim() ? (
-              <>
-                {results.length > 0 ? (
-                  <div className="space-y-1">
-                    <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-2">
-                      <Sparkle size={14} weight="fill" />
-                      Results ({results.length})
-                    </div>
-                    {results.map(({ item, matchedKey }, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSelect(item, query)}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
-                      >
-                        {renderResult ? (
-                          renderResult(item, query)
-                        ) : (
-                          <div className="text-sm">
-                            {highlightText(String(item[matchedKey]), query)}
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                    No results found for "{query}"
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                {showHistory && (searchHistory ?? []).length > 0 && (
-                  <div className="space-y-1 mb-3">
-                    <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} />
-                        Recent Searches
+      <AnimatePresence>
+        {showDropdown && (
+          <MotionView
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+          >
+            <Card className="absolute top-full mt-2 w-full max-h-100 overflow-y-auto shadow-xl border z-50 p-2">
+              {query.trim() ? (
+                <>
+                  {results.length > 0 ? (
+                    <div className="space-y-1">
+                      <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-2">
+                        <Sparkle size={14} weight="fill" />
+                        Results ({results.length})
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleClearHistory}
-                        className="h-6 text-xs"
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                    {(searchHistory ?? []).slice(0, 5).map((historyQuery, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleHistoryClick(historyQuery)}
-                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center gap-2"
-                      >
-                        <Clock size={16} className="text-muted-foreground" />
-                        <span className="text-sm">{historyQuery}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {showTrending && (trendingSearches ?? []).length > 0 && (
-                  <div className="space-y-1">
-                    <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-2">
-                      <TrendUp size={14} />
-                      Trending
-                    </div>
-                    <div className="flex flex-wrap gap-2 p-2">
-                      {(trendingSearches ?? []).map((trending, index) => (
-                        <Badge
+                      {results.map(({ item, matchedKey }, index) => (
+                        <button
                           key={index}
-                          variant="secondary"
-                          className="cursor-pointer hover:bg-primary/10 transition-colors"
-                          onClick={() => handleHistoryClick(trending)}
+                          onClick={() => handleSelect(item, query)}
+                          className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
                         >
-                          {trending}
-                        </Badge>
+                          {renderResult ? (
+                            renderResult(item, query)
+                          ) : (
+                            <div className="text-sm">
+                              {highlightText(String(item[matchedKey]), query)}
+                            </div>
+                          )}
+                        </button>
                       ))}
                     </div>
-                  </div>
-                )}
-              </>
-            )}
-          </Card>
-        </MotionView>
-      )}
+                  ) : (
+                    <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+                      No results found for "{query}"
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {showHistory && (searchHistory ?? []).length > 0 && (
+                    <div className="space-y-1 mb-3">
+                      <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} />
+                          Recent Searches
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleClearHistory}
+                          className="h-6 text-xs"
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                      {(searchHistory ?? []).slice(0, 5).map((historyQuery, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleHistoryClick(historyQuery)}
+                          className="w-full text-left px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors flex items-center gap-2"
+                        >
+                          <Clock size={16} className="text-muted-foreground" />
+                          <span className="text-sm">{historyQuery}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {showTrending && (trendingSearches ?? []).length > 0 && (
+                    <div className="space-y-1">
+                      <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-2">
+                        <TrendUp size={14} />
+                        Trending
+                      </div>
+                      <div className="flex flex-wrap gap-2 p-2">
+                        {(trendingSearches ?? []).map((trending, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="cursor-pointer hover:bg-primary/10 transition-colors"
+                            onClick={() => handleHistoryClick(trending)}
+                          >
+                            {trending}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </Card>
+          </MotionView>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

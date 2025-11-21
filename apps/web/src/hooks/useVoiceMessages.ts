@@ -32,7 +32,7 @@ export function useVoiceMessages(roomId: string): {
         reader.onloadend = () => {
           const base64Audio = reader.result as string;
 
-          setVoiceMessages((current) => ({
+          void setVoiceMessages((current) => ({
             ...current,
             [messageId]: { blob: base64Audio, duration, waveform },
           }));
@@ -72,7 +72,10 @@ export function useVoiceMessages(roomId: string): {
         setPlayingVoice(null);
         audioRef.current = null;
       };
-      audio.play();
+      void audio.play().catch(() => {
+        setPlayingVoice(null);
+        audioRef.current = null;
+      });
       audioRef.current = audio;
       setPlayingVoice(messageId);
     },

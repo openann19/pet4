@@ -110,12 +110,8 @@ describe('AdoptionAPIStrict.updateListing', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
-     
-    const listing = await adoptionAPIStrict.updateListing(
-      'listing-1',
-      { fee: undefined } as { fee?: number },
-      'owner-1'
-    );
+    const updates: { fee?: number } = {};
+    const listing = await adoptionAPIStrict.updateListing('listing-1', updates, 'owner-1');
 
     expect(listing).toMatchObject({
       id: 'listing-1',

@@ -5,7 +5,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  animate,
   MotionView,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
@@ -57,43 +56,35 @@ export function PremiumDrawer({
   closeOnOverlayClick = true,
   className,
 }: PremiumDrawerProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0);
+  const _uiConfig = useUIConfig();
+  const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0);
   const translateY = useSharedValue(side === 'top' ? -100 : side === 'bottom' ? 100 : 0);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (isTruthy(open)) {
       if (side === 'right' || side === 'left') {
-        const xTransition = withSpring(0, springConfigs.smooth);
-        animate(translateX, xTransition.target, xTransition.transition);
+        translateX.value = withSpring(0, springConfigs.smooth);
       } else {
-        const yTransition = withSpring(0, springConfigs.smooth);
-        animate(translateY, yTransition.target, yTransition.transition);
+        translateY.value = withSpring(0, springConfigs.smooth);
       }
-      const opacityTransition = withTiming(1, { duration: 200 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
+      opacity.value = withTiming(1, { duration: 200 });
     } else {
       if (side === 'right') {
-        const xTransition = withSpring(100, springConfigs.smooth);
-        animate(translateX, xTransition.target, xTransition.transition);
+        translateX.value = withSpring(100, springConfigs.smooth);
       } else if (side === 'left') {
-        const xTransition = withSpring(-100, springConfigs.smooth);
-        animate(translateX, xTransition.target, xTransition.transition);
+        translateX.value = withSpring(-100, springConfigs.smooth);
       } else if (side === 'top') {
-        const yTransition = withSpring(-100, springConfigs.smooth);
-        animate(translateY, yTransition.target, yTransition.transition);
+        translateY.value = withSpring(-100, springConfigs.smooth);
       } else {
-        const yTransition = withSpring(100, springConfigs.smooth);
-        animate(translateY, yTransition.target, yTransition.transition);
+        translateY.value = withSpring(100, springConfigs.smooth);
       }
-      const opacityTransition = withTiming(0, { duration: 150 });
-      animate(opacity, opacityTransition.target, opacityTransition.transition);
+      opacity.value = withTiming(0, { duration: 150 });
     }
   }, [open, side, translateX, translateY, opacity]);
 
   const contentStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.get() }, { translateY: translateY.get() }],
+    transform: `translateX(${translateX.get()}%) translateY(${translateY.get()}%)`,
     opacity: opacity.get(),
   }));
 

@@ -5,8 +5,10 @@
 
 import { Suspense, lazy } from 'react'
 import { MotionView } from '@petspark/motion'
+import type { MotionStyle } from '@petspark/motion'
 import LoadingState from '@/components/LoadingState'
 import type { View } from '@/lib/routes'
+import type { UseNavigationReturn } from '@/hooks/use-navigation'
 
 const DiscoverView = lazy(() => import(/* webpackPrefetch: true */ '@/components/views/DiscoverView'))
 const MatchesView = lazy(() => import(/* webpackPrefetch: true */ '@/components/views/MatchesView'))
@@ -18,17 +20,13 @@ const LostFoundView = lazy(() => import(/* webpackPrefetch: true */ '@/component
 
 interface AppMainContentProps {
   currentView: View
-  navigation: {
-    navigateToView: (view: View) => void
-    navigate?: (config: any) => void
-    routes?: any
-  }
+  navigation: UseNavigationReturn
   animations: {
     loadingTransition: {
-      style: unknown
+      style: MotionStyle
     }
     pageTransition: {
-      style: unknown
+      style: MotionStyle
     }
   }
 }
@@ -45,7 +43,7 @@ export function AppMainContent({ currentView, navigation, animations }: AppMainC
   };
 
   return (
-    <main 
+    <main
       className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8 relative z-10"
       aria-label={viewLabels[currentView] || 'Main content'}
     >
@@ -71,4 +69,3 @@ export function AppMainContent({ currentView, navigation, animations }: AppMainC
     </main>
   )
 }
-

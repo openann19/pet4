@@ -457,7 +457,12 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
   };
 };
 
-export default defineConfig(async (): Promise<UserConfig> => {
+interface VitestConfig extends UserConfig {
+  // Vitest config field is not part of Vite's UserConfig
+  test?: Record<string, unknown>;
+}
+
+export default defineConfig(async (): Promise<VitestConfig> => {
   const plugins: PluginOption[] = [
     stubGestureHandlerPlugin(),
     stubExpoHapticsPlugin(),
@@ -664,25 +669,16 @@ export default defineConfig(async (): Promise<UserConfig> => {
                 return `view-${viewName}`;
               }
             }
-            if (id.includes('/components/chat/')) {
-              return 'feature-chat';
-            }
-            if (id.includes('/components/stories/')) {
-              return 'feature-stories';
-            }
-            if (id.includes('/components/community/')) {
-              return 'feature-community';
-            }
-            if (id.includes('/components/adoption/')) {
-              return 'feature-adoption';
-            }
-            if (id.includes('/components/admin/')) {
-              return 'feature-admin';
-            }
             return undefined;
           },
         },
       },
     },
-  };
-});
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.ts',
+      css: true,
+    },
+    };
+  });

@@ -35,9 +35,11 @@ export interface UseFloatingParticleReturn {
  * Adapts the base hook with web-specific defaults and behaviors
  */
 export function useFloatingParticle(
-  options: WebFloatingParticleOptions = {}
+  options: UseFloatingParticleOptions = {}
 ): UseFloatingParticleReturn {
   const {
+    initialX = 0,
+    initialY = 0,
     width = 1920,
     height = 1080,
     duration = 15,
@@ -108,7 +110,7 @@ export function useFloatingParticle(
 
   const style = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: x.value }, { translateY: y.value }, { scale: scale.value }],
+      transform: `translateX(${x.value}px) translateY(${y.value}px) scale(${scale.value})`,
       opacity: opacityValue.value,
     };
   }) as AnimatedStyle;

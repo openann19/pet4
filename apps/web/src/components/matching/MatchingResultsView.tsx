@@ -119,7 +119,7 @@ function MatchCard({ match, index, onClick }: MatchCardProps) {
         <div className="relative">
           {match.pet.photos?.[0] && (
             <img
-              src={match.pet.photos[0].url}
+              src={match.pet.photos[0]}
               alt={match.pet.name}
               className="w-full h-48 object-cover rounded-xl mb-4"
             />
@@ -272,4 +272,3 @@ function MatchExplanationDialog({ match, userPet, onClose }: MatchExplanationDia
     </div>
   );
 }
-

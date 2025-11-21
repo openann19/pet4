@@ -19,6 +19,7 @@ import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics';
 import { colors } from '@mobile/theme/colors';
 import { useWebRTC } from '@mobile/hooks/call/use-web-rtc';
+import type { MediaStream as WebRTCMediaStream } from '@/types/webrtc';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -35,8 +36,8 @@ export function LiveStreamScreen({
 }: LiveStreamScreenProps): React.JSX.Element {
   const [viewerCount, setViewerCount] = useState(0);
   const [isLive, setIsLive] = useState(false);
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [localStream, setLocalStream] = useState<WebRTCMediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<WebRTCMediaStream | null>(null);
 
   // Note: useWebRTC requires callId and remoteUserId - these should come from props or navigation params
   // For now, using placeholder values - this should be fixed when integrating with actual call system
@@ -45,7 +46,7 @@ export function LiveStreamScreen({
     remoteUserId: 'host', // Placeholder - should be actual host user ID
     isCaller: !isHost,
     onRemoteStream: (stream) => {
-      setRemoteStream(stream as any);
+      setRemoteStream(stream);
     },
     onConnectionStateChange: (state) => {
       // Handle connection state changes
@@ -60,10 +61,10 @@ export function LiveStreamScreen({
   // Update remote stream from callState
   useEffect(() => {
     if (callState.remoteStream) {
-      setRemoteStream(callState.remoteStream as any);
+      setRemoteStream(callState.remoteStream);
     }
     if (callState.localStream) {
-      setLocalStream(callState.localStream as any);
+      setLocalStream(callState.localStream);
     }
   }, [callState.remoteStream, callState.localStream]);
 
@@ -222,4 +223,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

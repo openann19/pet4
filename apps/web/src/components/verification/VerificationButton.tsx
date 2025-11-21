@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { motion } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react';
@@ -62,15 +62,14 @@ export function VerificationButton({
     },
   };
 
-  const status = request?.status || 'unverified';
+  const status = request?.status ?? 'unverified';
   const config = statusConfig[status];
   const Icon = config.icon;
 
   if (variant === 'card') {
     return (
       <>
-        <MotionView
-          as="button"
+        <motion.button
           onClick={() => setShowDialog(true)}
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
@@ -114,7 +113,7 @@ export function VerificationButton({
               {config.label}
             </Badge>
           </div>
-        </MotionView>
+        </motion.button>
 
         <VerificationDialog
           open={showDialog}
@@ -130,7 +129,7 @@ export function VerificationButton({
     <>
       <Button
         onClick={() => { setShowDialog(true); }}
-        variant={status === 'verified' ? 'outline' : 'default'}
+        variant={status === 'verified' ? 'outline' : 'primary'}
         size="sm"
         className={cn('gap-2', config.color, className)}
       >

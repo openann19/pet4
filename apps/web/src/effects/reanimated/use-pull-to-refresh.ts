@@ -56,7 +56,12 @@ export function usePullToRefresh({
       if (!enabled || !containerRef.current) return;
 
       if (containerRef.current.scrollTop === 0) {
-        startY.current = e.touches[0].clientY;
+        const firstTouch = e.touches[0];
+        if (!firstTouch) {
+          return;
+        }
+
+        startY.current = firstTouch.clientY;
         isPulling.current = true;
       }
     },
@@ -67,7 +72,12 @@ export function usePullToRefresh({
     (e: globalThis.TouchEvent): void => {
       if (!enabled || !isPulling.current || !containerRef.current) return;
 
-      const currentY = e.touches[0].clientY;
+      const firstTouch = e.touches[0];
+      if (!firstTouch) {
+        return;
+      }
+
+      const currentY = firstTouch.clientY;
       const diff = currentY - startY.current;
 
       if (diff > 0 && diff < maxDistance) {
@@ -110,13 +120,13 @@ export function usePullToRefresh({
   const animatedStyle = useAnimatedStyle(() => {
     if (isTruthy(reducedMotion)) {
       return {
-        transform: [{ translateY: 0 }],
+        transform: 'translateY(0)',
         opacity: 0,
       };
     }
 
     return {
-      transform: [{ translateY: pullDistance.value }],
+      transform: `translateY(${pullDistance.value}px)`,
       opacity: pullOpacity.value,
     };
   }) as AnimatedStyle;
@@ -124,14 +134,14 @@ export function usePullToRefresh({
   const indicatorStyle = useAnimatedStyle(() => {
     if (isTruthy(reducedMotion)) {
       return {
-        transform: [{ rotate: '0deg' }, { scale: 0.5 }],
+        transform: `rotate(0deg) scale(0.5)`,
       };
     }
 
     return {
-      transform: [{ rotate: `${pullRotation.value}deg` }, { scale: pullScale.value }],
+      transform: `rotate(${pullRotation.value}deg) scale(${pullScale.value})`,
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     pullDistance,

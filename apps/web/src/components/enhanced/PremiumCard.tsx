@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
+import { useSharedValue, withTiming, useAnimatedStyle } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
-import { useHoverLift } from '@petspark/motion';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getSpacingClassesFromConfig } from '@/lib/typography';
@@ -25,25 +25,25 @@ export function PremiumCard({
   style: _style,
   ...props
 }: PremiumCardProps) {
-    const _uiConfig = useUIConfig();
-    const opacity = useSharedValue(0);
+  const _uiConfig = useUIConfig();
+  const opacity = useSharedValue(0);
   const translateY = useSharedValue(20);
-  const hoverLift = useHoverLift(8);
+  const hoverLift = useHoverLift({ translateY: -8 });
 
   useEffect(() => {
-    const opacityTransition = withTiming(1, { duration: 220 });
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
-    const translateYTransition = withTiming(0, { duration: 220 });
-    animate(translateY, translateYTransition.target, translateYTransition.transition);
+    opacity.value = withTiming(1, { duration: 220 });
+    translateY.value = withTiming(0, { duration: 220 });
   }, [opacity, translateY]);
 
   const entryStyle = useAnimatedStyle(() => ({
     opacity: opacity.get(),
-    transform: [{ translateY: translateY.get() }],
+    transform: `translateY(${translateY.get()}px)`,
   }));
 
-  const combinedStyle =
-    hover && hoverLift.animatedStyle ? [entryStyle, hoverLift.animatedStyle] : entryStyle;
+  const combinedStyle = {
+    ...entryStyle,
+    ...hoverLift.animatedStyle,
+  };
 
   const variants = {
     default: 'bg-card border border-border',
@@ -55,8 +55,8 @@ export function PremiumCard({
   return (
     <MotionView
       style={combinedStyle}
-      onMouseEnter={hover ? hoverLift.onMouseEnter : undefined}
-      onMouseLeave={hover ? hoverLift.onMouseLeave : undefined}
+      onMouseEnter={hover ? hoverLift.handleEnter : undefined}
+      onMouseLeave={hover ? hoverLift.handleLeave : undefined}
       className={cn(
         'rounded-xl transition-all duration-300',
         getSpacingClassesFromConfig({ padding: 'xl' }),

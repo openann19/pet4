@@ -30,14 +30,15 @@ export function useCommunityFeed(options?: {
 }): ReturnType<typeof useInfiniteQuery<CommunityPost[]>> {
   return useInfiniteQuery({
     queryKey: [...queryKeys.community.posts, options],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam: _pageParam }) => {
       const response = await communityAPI.getFeed({
         ...options,
         // Add pagination params if needed
       });
       return response.items;
     },
-    getNextPageParam: (lastPage, allPages) => {
+    initialPageParam: undefined,
+    getNextPageParam: (_lastPage, _allPages) => {
       // Return cursor for next page if available
       return undefined;
     },

@@ -1,23 +1,12 @@
 import type { APIConfig } from '@/api/api-config-api';
 import { APIConfigSection } from './APIConfigSection';
 import { ConfigField } from './ConfigField';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import {
   MapPin,
   Robot,
-  ShieldCheck,
-  Image as ImageIcon,
-  Bell,
-  Envelope,
-  Database,
-  ChartBar,
-  VideoCamera,
-  Warning,
 } from '@phosphor-icons/react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface ServiceSectionProps {
   config: APIConfig;
@@ -94,10 +83,11 @@ export function MapsServiceSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('Maps');
-        triggerHaptic('success');
+        void onTest('Maps').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -163,10 +153,11 @@ export function AIServiceSection({
         triggerHaptic('light');
         onToggleSecret(key);
       }}
-      onTest={async () => {
+      onTest={() => {
         triggerHaptic('light');
-        await onTest('AI');
-        triggerHaptic('success');
+        void onTest('AI').then(() => {
+          triggerHaptic('success');
+        });
       }}
       onReset={() => {
         triggerHaptic('medium');
@@ -231,4 +222,3 @@ export {
   AnalyticsSection,
   LiveKitSection,
 } from './section-helpers';
-

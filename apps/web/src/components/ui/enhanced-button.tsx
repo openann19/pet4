@@ -2,16 +2,20 @@
 
 import type { ReactNode, ButtonHTMLAttributes } from 'react';
 import { usePressMotion } from '@petspark/motion';
+import { motionTheme } from '@/config/motionTheme';
 import { useGlowAnimation, useLoadingSpinner, useResolvedGlowColor } from './enhanced-button-hooks';
 import { useEnhancedButtonHandlers } from './enhanced-button-handlers';
 import { useEnhancedButtonProps } from './enhanced-button-props';
 import { EnhancedButtonWrapper } from './enhanced-button-wrapper';
 
+import type { VariantProps } from 'class-variance-authority';
+import type { buttonVariants } from '@/components/ui/button';
+
 export interface EnhancedButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   children: ReactNode;
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+  size?: VariantProps<typeof buttonVariants>['size'];
   enableHoverLift?: boolean;
   enableGlow?: boolean;
   glowColor?: string;
@@ -24,7 +28,7 @@ export interface EnhancedButtonProps
 export function EnhancedButton({
   children,
   variant = 'default',
-  size = 'default',
+  size = 'md',
   enableHoverLift = true,
   enableGlow = false,
   glowColor,
@@ -38,8 +42,8 @@ export function EnhancedButton({
   ...props
 }: EnhancedButtonProps): React.JSX.Element {
   const pressMotion = usePressMotion({
-    scaleOnPress: 0.96,
-    scaleOnHover: 1.05,
+    scaleOnPress: motionTheme.scale.press,
+    scaleOnHover: motionTheme.scale.hover,
     enableHover: enableHoverLift,
   });
 
@@ -47,7 +51,7 @@ export function EnhancedButton({
   const { glowOverlayStyle, glowOpacity } = useGlowAnimation(enableGlow, resolvedGlowColor);
   const { loadingSpinnerStyle } = useLoadingSpinner(loading);
   const { handleClick, handleMouseEnter, handleMouseLeave } = useEnhancedButtonHandlers({
-    disabled, loading, hapticFeedback, enableGlow, glowOpacity, onClick, variant, size,
+    disabled, loading, hapticFeedback, enableGlow, glowOpacity, onClick, variant, size: size ?? 'md',
   });
   const { buttonVariant, isDisabled } = useEnhancedButtonProps(variant, disabled, loading);
 

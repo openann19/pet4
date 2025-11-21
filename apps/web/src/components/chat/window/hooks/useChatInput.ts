@@ -4,6 +4,8 @@ import { haptics } from '@/lib/haptics';
 import { normalizeError } from '@/lib/error-utils';
 import { createLogger } from '@/lib/logger';
 
+import type { InputRef } from '@/components/ui/input';
+
 const logger = createLogger('ChatWindowInput');
 
 interface UseChatInputProps {
@@ -18,7 +20,7 @@ export function useChatInput({ sendChatMessage, handleTypingMessageSend }: UseCh
   const [inputValue, setInputValue] = useState('');
   const [showStickers, setShowStickers] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const handleSendMessage = (content: string, type: 'text' | 'sticker' | 'voice' = 'text') => {
     if (!content.trim() && type === 'text') return;
@@ -73,4 +75,3 @@ export function useChatInput({ sendChatMessage, handleTypingMessageSend }: UseCh
     handleUseTemplate,
   };
 }
-

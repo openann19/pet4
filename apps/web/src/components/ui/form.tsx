@@ -1,4 +1,4 @@
-import type { ComponentProps} from "react";
+import type { ComponentProps } from "react";
 import { createContext, useContext, useId } from "react"
 import type * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
@@ -94,7 +94,7 @@ function FormItem({ className, ...props }: ComponentProps<"div">) {
 function FormLabel({
   className,
   ...props
-}: ComponentProps<typeof LabelPrimitive.Root>) {
+}: ComponentProps<typeof LabelPrimitive.Root> & { children: React.ReactNode }) {
   const { error, formItemId } = useFormField()
 
   return (

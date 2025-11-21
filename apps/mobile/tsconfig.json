@@ -1,24 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
-    "lib": ["ES2022"],
-    "types": [],
-    "exactOptionalPropertyTypes": true,
-    "jsx": "react-jsx",
     "baseUrl": ".",
-    "typeRoots": ["../../node_modules/@types", "./node_modules/@types", "./types"],
     "paths": {
-      "@/*": ["./src/*"],
-      "@mobile/*": ["./src/*"],
-      "@pet/domain/*": ["../web/src/core/domain/*"],
-      "@petspark/shared": ["../../packages/shared/src"],
-      "@petspark/core": ["../../packages/core/src"],
-      "@shared/types": ["../../packages/shared/src/types/index.ts"],
-      "@shared/utils": ["../../packages/shared/src/utils/index.ts"],
-      "@ui-mobile/*": ["../../packages/ui-mobile/*"],
-      "@ui-mobile": ["../../packages/ui-mobile/index.ts"]
-    }
+      "@/*": ["./src/*"]
+    },
+    "typeRoots": [
+      "../../node_modules/@types",
+      "./node_modules/@types",
+      "./types"
+    ]
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
   "exclude": [

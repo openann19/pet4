@@ -369,7 +369,7 @@ function CommunityViewContent(): JSX.Element {
   })) as AnimatedStyle;
 
   const emptyStateStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: emptyScale.value }, { rotate: `${emptyRotation.value}deg` }],
+    transform: `scale(${emptyScale.value}) rotate(${emptyRotation.value}deg)`,
   })) as AnimatedStyle;
 
   // Adoption skeleton animation
@@ -491,11 +491,11 @@ function CommunityViewContent(): JSX.Element {
         {/* Pull-to-Refresh Indicator */}
         <MotionView
           className="absolute top-0 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-          style={[pullToRefresh.pullTranslateStyle, pullToRefresh.pullOpacityStyle]}
+          style={{ ...pullToRefresh.pullTranslateStyle, ...pullToRefresh.pullOpacityStyle }}
         >
           <MotionView
             className="bg-card/95 backdrop-blur-xl shadow-xl rounded-full p-3 border border-border/50"
-            style={[pullToRefresh.pullRotationStyle, pullToRefresh.pullScaleStyle]}
+            style={{ ...pullToRefresh.pullRotationStyle, ...pullToRefresh.pullScaleStyle }}
           >
             <ArrowsClockwise
               size={24}
@@ -511,7 +511,7 @@ function CommunityViewContent(): JSX.Element {
             <h1
               className={cn(
                 'bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent',
-                getTypographyClasses('heading1')
+                getTypographyClasses('h1')
               )}
             >
               {t.community?.title ?? 'Community'}
@@ -633,7 +633,7 @@ function CommunityViewContent(): JSX.Element {
                       <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                         🐾
                       </MotionView>
-                      <h3 className={getTypographyClasses('heading2')}>
+                      <h3 className={getTypographyClasses('h2')}>
                         {t.community?.noPosts ?? 'No posts yet'}
                       </h3>
                       <p className={getTypographyClasses('body')}>
@@ -713,7 +713,7 @@ function CommunityViewContent(): JSX.Element {
                   <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                     🏠
                   </MotionView>
-                  <h3 className={getTypographyClasses('heading2')}>
+                  <h3 className={getTypographyClasses('h2')}>
                     {t.adoption?.noProfiles ?? 'No pets available for adoption'}
                   </h3>
                   <p className={getTypographyClasses('body')}>

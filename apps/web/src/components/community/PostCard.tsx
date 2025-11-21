@@ -95,8 +95,10 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
   const authorButtonStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { translateX: authorButtonTranslateX.value },
-        { scale: authorButtonHover.scale.value },
+        {
+          translateX: authorButtonTranslateX.value,
+          scale: authorButtonHover.scale.value,
+        },
       ],
     };
   }) as AnimatedStyle;
@@ -506,6 +508,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                   void handleLike();
                 }}
                 className="flex items-center gap-1.5 group"
+                aria-label={isLiked ? 'Unlike' : 'Like'}
               >
                 <MotionView
                   style={likeButtonStyle}
@@ -525,7 +528,11 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                 )}
               </button>
 
-              <button onClick={handleCommentClick} className="flex items-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+              <button
+                onClick={handleCommentClick}
+                className="flex items-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)"
+                aria-label="Comment"
+              >
                 <ChatCircle
                   size={24}
                   weight="regular"
@@ -543,6 +550,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                   void handleShare();
                 }}
                 className="group"
+                aria-label="Share post"
               >
                 <Share
                   size={24}
@@ -556,6 +564,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
               onClick={() => {
                 void handleSave();
               }}
+              aria-label={isSaved ? 'Unsave post' : 'Save post'}
             >
               <MotionView
                 style={bookmarkHover.animatedStyle}

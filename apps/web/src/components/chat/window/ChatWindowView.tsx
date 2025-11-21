@@ -6,7 +6,7 @@ import {
 import { ChatWindowContent } from '@/components/chat/window/ChatWindowContent';
 import type { ChatRoom, ChatMessage } from '@/lib/chat-types';
 import type { Call, CallSession } from '@/lib/call-types';
-import type { AnimatedStyle, SharedValue } from '@petspark/motion';
+import type { AnimatedStyle, MotionValue } from '@petspark/motion';
 import type { InputRef } from '@/components/ui/input';
 
 interface ChatWindowViewProps {
@@ -31,8 +31,8 @@ interface ChatWindowViewProps {
     typingContainerStyle: AnimatedStyle;
     typingTextStyle: AnimatedStyle;
     typingDotsStyle: AnimatedStyle;
-    videoButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
-    voiceButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
+    videoButtonHover: { scale: MotionValue<number>; translateY: MotionValue<number>; handleEnter: () => void; handleLeave: () => void };
+    voiceButtonHover: { scale: MotionValue<number>; translateY: MotionValue<number>; handleEnter: () => void; handleLeave: () => void };
     messageBubbleHover: { handleEnter: () => void; handleLeave: () => void };
     messageBubbleHoverStyle: AnimatedStyle;
     voiceButtonHoverStyle: AnimatedStyle;
@@ -78,6 +78,9 @@ interface ChatWindowViewProps {
     endCall: () => void;
     toggleMute: () => void;
     toggleVideo: () => void;
+    awayMode: boolean;
+    onToggleAwayMode: () => void;
+    onBlockUser: () => void;
   };
 }
 
@@ -107,6 +110,7 @@ export function ChatWindowView({
         currentUserId={currentUserId}
         currentUserName={currentUserName}
         typingUsers={chatWindowData.typingUsers}
+        messages={chatWindowData.messages}
         messageGroups={chatWindowData.messageGroups}
         voiceMessages={chatWindowData.voiceMessages}
         playingVoice={chatWindowData.playingVoice}
@@ -179,8 +183,10 @@ export function ChatWindowView({
         toggleMute={chatWindowData.toggleMute}
         toggleVideo={chatWindowData.toggleVideo}
         onBack={onBack}
+        awayMode={chatWindowData.awayMode}
+        onToggleAwayMode={chatWindowData.onToggleAwayMode}
+        onBlockUser={chatWindowData.onBlockUser}
       />
     </>
   );
 }
-

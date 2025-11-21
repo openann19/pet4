@@ -1,11 +1,25 @@
 import { createLogger } from './logger';
 import type { LayoutShiftEntry } from './types/performance-api';
+import { useEffect, useState } from 'react';
+import type React from 'react';
 
 const logger = createLogger('AdvancedPerformance');
 
 export class AdvancedPerformance {
   private static observers = new Map<string, IntersectionObserver>();
   private static prefetchCache = new Set<string>();
+
+  static hasPrefetched(url: string): boolean {
+    return this.prefetchCache.has(url);
+  }
+
+  static markPrefetched(url: string): void {
+    this.prefetchCache.add(url);
+  }
+
+  static clearPrefetchCache(): void {
+    this.prefetchCache.clear();
+  }
 
   static lazyLoadImages(container: HTMLElement = document.body): void {
     const images = container.querySelectorAll('img[data-src]');
@@ -38,14 +52,14 @@ export class AdvancedPerformance {
       if (!target) return;
 
       const href = target.getAttribute('href');
-      if (!href || this.prefetchCache.has(href)) return;
+      if (!href || this.hasPrefetched(href)) return;
 
       const link = document.createElement('link');
       link.rel = 'prefetch';
       link.href = href;
       document.head.appendChild(link);
 
-      this.prefetchCache.add(href);
+      this.markPrefetched(href);
     });
   }
 
@@ -59,13 +73,13 @@ export class AdvancedPerformance {
             const link = entry.target as HTMLAnchorElement;
             const href = link.href;
 
-            if (!this.prefetchCache.has(href)) {
+            if (!this.hasPrefetched(href)) {
               const prefetchLink = document.createElement('link');
               prefetchLink.rel = 'prefetch';
               prefetchLink.href = href;
               document.head.appendChild(prefetchLink);
 
-              this.prefetchCache.add(href);
+              this.markPrefetched(href);
             }
 
             observer.unobserve(link);
@@ -281,7 +295,7 @@ export class AdvancedPerformance {
   static cleanup(): void {
     this.observers.forEach((observer) => observer.disconnect());
     this.observers.clear();
-    this.prefetchCache.clear();
+    this.clearPrefetchCache();
   }
 }
 
@@ -308,18 +322,16 @@ export function useVirtualList<T>(items: T[], itemHeight: number, containerHeigh
   };
 }
 
-import { useEffect, useState } from 'react';
-
 export function usePrefetch(url: string, condition = true) {
   useEffect(() => {
-    if (!condition || AdvancedPerformance.prefetchCache.has(url)) return;
+    if (!condition || AdvancedPerformance.hasPrefetched(url)) return;
 
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = url;
     document.head.appendChild(link);
 
-    AdvancedPerformance.prefetchCache.add(url);
+    AdvancedPerformance.markPrefetched(url);
 
     return () => {
       document.head.removeChild(link);

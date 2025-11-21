@@ -48,8 +48,8 @@ if (import.meta.env.PROD) {
 
 export const BUILD_CONFIG = {
   useMocks: VITE_USE_MOCKS === 'true' && !import.meta.env.PROD,
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1',
-  wsUrl: import.meta.env.VITE_WS_URL || 'ws://localhost:3000',
+  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1',
+  wsUrl: import.meta.env.VITE_WS_URL ?? 'ws://localhost:3001',
   isProd: import.meta.env.PROD,
 } as const;
 

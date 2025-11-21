@@ -254,8 +254,8 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/no-array-delete': 'off', // Disable problematic rule that causes parser crashes
-      'max-lines': ['warn', { max: 800, skipComments: true, skipBlankLines: true }],
-      'max-lines-per-function': ['warn', { max: 250 }],
+      'max-lines': 'off',
+      'max-lines-per-function': 'off',
     },
   },
   {

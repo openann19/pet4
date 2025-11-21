@@ -91,7 +91,7 @@ export default function GenerateProfilesButton({
           }}
           disabled={isGenerating}
           variant={variant}
-          size={size}
+          size={size === 'default' ? 'md' : size}
           className={
             showLabel
               ? 'w-full h-12 bg-linear-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all relative overflow-hidden group'

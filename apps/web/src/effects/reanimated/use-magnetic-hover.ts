@@ -5,7 +5,7 @@
 
 import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { useState, useCallback } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseMagneticHoverOptions {
   strength?: number;
@@ -72,11 +72,7 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
+    transform: `translateX(${translateX.value}px) translateY(${translateY.value}px) scale(${scale.value})`,
   }));
 
   return {

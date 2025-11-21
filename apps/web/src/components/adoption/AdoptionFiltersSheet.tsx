@@ -239,7 +239,7 @@ export function AdoptionFiltersSheet({
                   onValueChange={([value]) => {
                     haptics.impact('light');
                     updateFilters({
-                      maxDistance: value !== undefined ? value : undefined,
+                      maxDistance: value ?? undefined,
                     });
                   }}
                   min={1}
