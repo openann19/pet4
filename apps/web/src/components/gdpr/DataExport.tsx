@@ -79,7 +79,7 @@ function convertToXML(data: Record<string, unknown>, rootName = 'data'): string 
       } else if (typeof value === 'object') {
         xml += `${spaces}<${safeKey}>\n${objectToXML(value as Record<string, unknown>, indent + 1)}${spaces}</${safeKey}>\n`;
       } else {
-        xml += `${spaces}<${safeKey}>${String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</${safeKey}>\n`;
+        xml += `${String(spaces)}<${safeKey}>${String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</${safeKey}>\n`;
       }
     }
 
@@ -232,7 +232,7 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           </div>
         )}
 
-        <Button onClick={handleExport} disabled={isExporting} className="w-full">
+        <Button onClick={() => void handleExport()} disabled={isExporting} className="w-full">
           {isExporting ? 'Exporting...' : 'Export My Data'}
         </Button>
 

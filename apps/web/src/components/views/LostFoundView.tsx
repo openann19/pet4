@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { Plus, MapPin } from '@phosphor-icons/react';
-import { MotionView } from '@petspark/motion';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import type { LostAlert } from '@/lib/lost-found-types';
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
@@ -162,7 +161,7 @@ export default function LostFoundView() {
           onClose={() => setShowCreateDialog(false)}
           onSuccess={() => {
             loadAlerts();
-            toast.success('Lost pet alert created successfully!');
+            void toast.success('Lost pet alert created successfully!');
           }}
         />
 
@@ -175,7 +174,7 @@ export default function LostFoundView() {
           }}
           onSuccess={() => {
             loadAlerts();
-          }}
+          void }}
         />
       </div>
     </PageTransitionWrapper>

@@ -7,9 +7,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Users, Heart, MessageCircle, Share2, Settings } from 'lucide-react';
+import { Users, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { ViewerEngagement } from './ViewerEngagement';
 import { StreamAnalyticsPanel } from './StreamAnalyticsPanel';
 import { PremiumFeatureGate } from '@/components/billing/PremiumFeatureGate';
@@ -33,13 +32,13 @@ export function LiveStreamRoom({
   onEndStream,
   className,
 }: LiveStreamRoomProps): React.JSX.Element {
-  const [viewerCount, setViewerCount] = useState(0);
+  const [viewerCount, _setViewerCount] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
-  const { addStream, state } = useWebRTC({
+  const { addStream, _state } = useWebRTC({
     onRemoteStream: (stream) => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;

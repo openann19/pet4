@@ -5,12 +5,10 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
   withTiming,
   withSequence,
   interpolate,
-  Easing,
-} from '@petspark/motion';
+  Easing } from '@petspark/motion';
 import { useCallback, useState } from 'react';
 import { makeRng } from '@petspark/shared';
 

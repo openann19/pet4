@@ -247,11 +247,11 @@ export function useWebRTC(options: UseWebRTCOptions) {
       }
     }
 
-    initialize();
+    void initialize();
 
     return () => {
       mounted = false;
-      cleanup();
+      void cleanup();
     };
   }, [callId, remoteUserId, isCaller, realtimeClient, stunServers, turnServers]);
 

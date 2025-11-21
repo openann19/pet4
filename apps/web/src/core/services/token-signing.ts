@@ -72,21 +72,21 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
 }
 
 function getConfigFromEnv(): TokenSigningConfig | null {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY || import.meta.env.LIVEKIT_API_KEY;
+  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY ?? import.meta.env.LIVEKIT_API_KEY as any;
   const apiSecret =
-    import.meta.env.VITE_LIVEKIT_API_SECRET || import.meta.env.LIVEKIT_API_SECRET;
+    import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
     return null;
   }
 
-  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL || import.meta.env.LIVEKIT_WS_URL;
+  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL as any;
 
   return {
     apiKey,
     apiSecret,
-    issuer: import.meta.env.VITE_LIVEKIT_ISSUER || 'livekit',
-    ...(apiUrl !== undefined && { apiUrl }),
+    issuer: import.meta.env.VITE_LIVEKIT_ISSUER ?? 'livekit',
+    ...(apiUrl != = undefined && { apiUrl }), as any;
   };
 }
 
@@ -138,7 +138,7 @@ export interface TokenPayload {
  * return await token.toJwt()
  * ```
  */
-export async function signLiveKitToken(
+export function signLiveKitToken(
   payload: TokenPayload,
   config?: TokenSigningConfig
 ): Promise<string> {
@@ -208,7 +208,7 @@ export async function signLiveKitToken(
  * }
  * ```
  */
-export async function verifyLiveKitToken(
+export function verifyLiveKitToken(
   token: string,
   config?: TokenSigningConfig
 ): Promise<TokenPayload | null> {
@@ -251,7 +251,7 @@ export function isTokenSigningConfigured(): boolean {
  * await roomService.deleteRoom(roomId)
  * ```
  */
-export async function deleteLiveKitRoom(
+export function deleteLiveKitRoom(
   roomId: string,
   config?: TokenSigningConfig
 ): Promise<void> {
@@ -317,7 +317,7 @@ export async function deleteLiveKitRoom(
  * return { vodUrl, posterUrl }
  * ```
  */
-export async function compositeStreamToHLS(
+export function compositeStreamToHLS(
   roomId: string,
   config?: TokenSigningConfig
 ): Promise<{ vodUrl: string; posterUrl: string } | null> {

@@ -63,21 +63,21 @@ export default function VenuePicker({
           } catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
             logger.error('VenuePicker snapToGrid error', err);
-            setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
+            setUserLocation(matchLocation ?? { lat: 40.7128, lng: -74.006 });
           }
         })
         .catch((error) => {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('VenuePicker getCurrentLocation error', err);
           // Fallback to match location or default location
-          setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
+          setUserLocation(matchLocation ?? { lat: 40.7128, lng: -74.006 });
         });
     }
   }, [open, matchLocation, mapSettings.PRIVACY_GRID_METERS]);
 
   useEffect(() => {
     if (open && userLocation) {
-      loadVenues();
+      void loadVenues();
     }
   }, [open, userLocation, selectedCategory]);
 
@@ -91,7 +91,7 @@ export default function VenuePicker({
       const places: Place[] = results.map((result) => ({
         id: result.id,
         name: result.name,
-        category: selectedCategory || 'other',
+        category: selectedCategory ?? 'other',
         location: result.location,
         address: result.address,
         photos: [],
@@ -133,7 +133,7 @@ export default function VenuePicker({
 
   const handleSearch = (): void => {
     haptics.trigger('light');
-    loadVenues();
+    void loadVenues();
   };
 
   const handleGetDirections = (venue: Place): void => {
@@ -144,7 +144,7 @@ export default function VenuePicker({
   const mapCenter = useMemo((): Location => {
     if (isTruthy(selectedVenue)) return selectedVenue.location;
     if (isTruthy(matchLocation)) return matchLocation;
-    return userLocation || { lat: 40.7128, lng: -74.006 };
+    return userLocation ?? { lat: 40.7128, lng: -74.006 };
   }, [selectedVenue, matchLocation, userLocation]);
 
   return (

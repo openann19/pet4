@@ -25,7 +25,7 @@ export type VideoFrameCleanup = () => void;
  * @param options - Edit options
  * @returns Edited media
  */
-export async function editVideo(
+export function editVideo(
   input: MediaInput,
   _operations: VideoOperation[],
   _options: EditOptions = {}

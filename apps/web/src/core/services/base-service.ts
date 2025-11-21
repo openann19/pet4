@@ -58,7 +58,7 @@ export abstract class BaseService {
 
   constructor(serviceName: string, apiClient?: typeof APIClient) {
     this.serviceName = serviceName;
-    this.apiClient = apiClient || APIClient;
+    this.apiClient = apiClient ?? APIClient;
   }
 
   /**
@@ -76,7 +76,7 @@ export abstract class BaseService {
     const { method = 'GET', body, schema, config = {} } = options;
 
     const startTime = Date.now();
-    const cacheKey = config.cache?.key || endpoint;
+    const cacheKey = config.cache?.key ?? endpoint;
 
     // Check cache for GET requests
     if (method === 'GET' && config.cache?.enabled !== false) {

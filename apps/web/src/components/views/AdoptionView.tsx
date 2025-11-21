@@ -78,8 +78,8 @@ export default function AdoptionView() {
                     : ('pending_review' as const),
 
             location: {
-              city: p.location.split(', ')[0] || '',
-              country: p.location.split(', ')[1] || '',
+              city: p.location.split(', ')[0] ?? '',
+              country: p.location.split(', ')[1] ?? '',
               privacyRadiusM: 1000,
             },
 
@@ -134,7 +134,7 @@ export default function AdoptionView() {
 
   const handleToggleFavorite = useCallback(
     (listingId: string) => {
-      setFavorites((currentFavorites) => {
+      void setFavorites((currentFavorites) => {
         const current = Array.isArray(currentFavorites) ? currentFavorites : [];
         if (current.includes(listingId)) return current.filter((id) => id !== listingId);
         return [...current, listingId];

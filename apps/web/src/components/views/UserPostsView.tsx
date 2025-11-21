@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Post } from '@/lib/community-types';
 import { createLogger } from '@/lib/logger';
 import { ArrowLeft, User } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -39,7 +39,7 @@ function _EmptyStateView({ authorName }: { authorName: string }) {
   );
 }
 
-function PostItemView({
+function _PostItemView({
   post,
   index,
   onPostClick,

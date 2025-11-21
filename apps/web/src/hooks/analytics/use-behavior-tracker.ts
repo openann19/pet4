@@ -457,7 +457,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
           fieldsFilled,
           totalFields,
           timeSpent: Date.now() - startTime,
-          lastField: lastField?.name || lastField?.id || 'unknown',
+          lastField: lastField?.name ?? lastField?.id ?? 'unknown',
           timestamp: Date.now(),
         };
 

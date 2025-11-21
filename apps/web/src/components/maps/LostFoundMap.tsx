@@ -94,7 +94,7 @@ export default function LostFoundMap({
     setSelectedAlert(marker.data as LostPetAlert);
   };
 
-  const handleReportSighting = async (): Promise<void> => {
+  const handleReportSighting = (): Promise<void> => {
     if (!selectedAlert || !userLocation || !onReportSighting) return;
 
     haptics.trigger('success');
@@ -216,7 +216,7 @@ export default function LostFoundMap({
           <p className="text-sm text-foreground">{selectedAlert.description}</p>
 
           {onReportSighting && (
-            <Button className="w-full" onClick={handleReportSighting}>
+            <Button className="w-full" onClick={() => void handleReportSighting()}>
               <MapPin size={18} className="mr-2" />
               {t.lostFound?.reportSighting ?? 'Report Sighting'}
             </Button>

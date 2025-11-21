@@ -273,7 +273,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
   }, []);
 
-  const signInWithGoogle = useCallback(async (token: string): Promise<User> => {
+  const signInWithGoogle = useCallback((_token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
     
@@ -292,7 +292,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const signInWithApple = useCallback(async (token: string): Promise<User> => {
+  const signInWithApple = useCallback((_token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
     

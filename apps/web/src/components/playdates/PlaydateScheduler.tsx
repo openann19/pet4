@@ -18,8 +18,6 @@ import { LocationPicker } from './LocationPicker';
 import { cn } from '@/lib/utils';
 import { getTypographyClasses } from '@/lib/typography';
 import type { PlaydateLocation } from '@petspark/core';
-import { format } from 'date-fns';
-
 export interface PlaydateSchedulerProps {
   onSchedule: (playdate: {
     title: string;

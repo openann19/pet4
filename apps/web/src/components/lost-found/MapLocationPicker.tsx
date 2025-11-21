@@ -97,7 +97,7 @@ export function MapLocationPicker({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       setAddress(data.display_name ?? 'Address not found');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));

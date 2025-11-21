@@ -200,7 +200,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
         )}
 
         <Button
-          onClick={handleSubmit}
+          onClick={() => void handleSubmit()}
           disabled={isSubmitting || Object.keys(corrections).length === 0}
           className="w-full"
         >

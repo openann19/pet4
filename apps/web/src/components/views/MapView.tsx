@@ -41,7 +41,7 @@ export default function MapView() {
           onSearchChange={places.setSearchQuery}
           onCategoryFilter={places.handleCategoryFilter}
           onToggleList={() => uiState.setShowList(!uiState.showList)}
-          onRequestLocation={location.requestLocation}
+          onRequestLocation={() => void location.requestLocation()}
           onEnablePrecise={preciseSharing.handleEnablePreciseSharing}
           onDisablePrecise={preciseSharing.handleDisablePreciseSharing}
         />

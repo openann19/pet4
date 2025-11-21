@@ -85,7 +85,7 @@ export function useMapPlaces(userLocation: Location | null, radiusKm: number): U
 
   const handleSavePlace = (placeId: string): void => {
     haptics.trigger('medium');
-    setSavedPlaces((current) => {
+    void setSavedPlaces((current) => {
       const currentPlaces = current ?? [];
       if (currentPlaces.includes(placeId)) {
         toast.info(t.map?.placeRemoved ?? 'Place removed from saved');

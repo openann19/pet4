@@ -162,7 +162,7 @@ export class MLMatchingWeightAdjuster {
     for (const factor of Object.keys(importance)) {
       const likedAvg = likedFactorScores[factor];
       const passedAvg = passedFactorScores[factor];
-      const currentImportance = importance[factor] ?? 0;
+      const _currentImportance = importance[factor] ?? 0;
       importance[factor] = Math.max(0, (likedAvg ?? 0) - (passedAvg ?? 0));
     }
 
@@ -309,7 +309,7 @@ export class MLMatchingWeightAdjuster {
     const adjusted: MatchingWeights = { ...baseWeights };
 
     // Calculate total current weight
-    const totalWeight = Object.values(baseWeights).reduce((sum, w) => sum + w, 0);
+    const totalWeight = Object.values(baseWeights).reduce((sum, w) => sum + w, 0) as any;
 
     // Calculate desired weights based on importance
     const desiredWeights: Record<string, number> = {};

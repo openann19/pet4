@@ -161,7 +161,7 @@ export function DataDeletion({ userId, onDeletionComplete }: DataDeletionProps):
                         </Button>
                         <Button
                             variant="destructive"
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={isDeleting || confirmText !== CONFIRMATION_TEXT}
                         >
                             {isDeleting ? 'Deleting...' : 'Delete Account'}

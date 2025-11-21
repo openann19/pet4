@@ -18,7 +18,7 @@ export interface MediaEditorProps {
 export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): React.ReactElement {
   const [filter, setFilter] = useState<FilterName>('none');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
+  const [transform, _setTransform] = useState({ scale: 1, x: 0, y: 0 });
 
   const handleExport = useCallback(async (): Promise<void> => {
     if (isProcessing) {
@@ -105,7 +105,7 @@ export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): Rea
             <ToolButton onPress={handleCancel} label="Cancel" variant="secondary" />
           )}
           <ToolButton
-            onPress={handleExport}
+            onPress={() => void handleExport()}
             label={isProcessing ? 'Processing...' : 'Save'}
             variant="primary"
             disabled={isProcessing}

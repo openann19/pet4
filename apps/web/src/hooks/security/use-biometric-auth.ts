@@ -31,10 +31,10 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { getBiometricStorage, type BiometricSecureStorage } from '@/lib/security/biometric-storage';
+import { getBiometricStorage } from '@/lib/security/biometric-storage';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('use-biometric-auth');
+const _logger = createLogger('use-biometric-auth');
 
 // ============================================================================
 // Types

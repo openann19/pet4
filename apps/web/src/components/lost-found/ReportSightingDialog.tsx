@@ -100,7 +100,7 @@ export function ReportSightingDialog({
         photos,
         contactMask: maskContactInfo(contactInfo),
         reporterId: user.id,
-        reporterName: user.login || 'Anonymous',
+        reporterName: user.login ?? 'Anonymous',
         reporterAvatar: user.avatarUrl ?? undefined,
       });
 
@@ -147,7 +147,7 @@ export function ReportSightingDialog({
             <div className="p-4 bg-muted rounded-lg">
               <h3 className="font-semibold mb-2">Lost Pet: {alert.petSummary.name}</h3>
               <p className="text-sm text-muted-foreground">
-                {alert.petSummary.species} • {alert.petSummary.breed || 'Unknown breed'}
+                {alert.petSummary.species} • {alert.petSummary.breed ?? 'Unknown breed'}
               </p>
             </div>
 
@@ -253,7 +253,7 @@ export function ReportSightingDialog({
             <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Button onClick={() => void handleSubmit()} disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Sighting Report'}
             </Button>
           </div>

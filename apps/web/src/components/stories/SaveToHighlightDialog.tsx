@@ -44,7 +44,7 @@ export default function SaveToHighlightDialog({
   const userHighlights = (highlights ?? []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
     const highlight = userHighlights.find((h) => h.id === highlightId);
-    return highlight?.stories.some((s) => s.id === story.id) || false;
+    return highlight?.stories.some((s) => s.id === story.id) ?? false;
   };
 
   const handleSelectHighlight = (highlightId: string) => {
@@ -61,7 +61,7 @@ export default function SaveToHighlightDialog({
 
     haptics.trigger('success');
 
-    setHighlights((current) =>
+    void setHighlights((current) =>
       (current ?? []).map((h) =>
         h.id === selectedHighlightId
           ? {
@@ -94,13 +94,13 @@ export default function SaveToHighlightDialog({
     const firstPet = userPets?.[0];
     const newHighlight = createStoryHighlight(
       story.userId,
-      firstPet?.id || story.petId,
+      firstPet?.id ?? story.petId,
       newHighlightTitle,
-      story.thumbnailUrl || story.mediaUrl,
+      story.thumbnailUrl ?? story.mediaUrl,
       [story]
     );
 
-    setHighlights((current) => [...(current ?? []), newHighlight]);
+    void setHighlights((current) => [...(current ?? []), newHighlight]);
 
     toast.success('Highlight created!', {
       duration: 2000,
@@ -160,7 +160,7 @@ export default function SaveToHighlightDialog({
 
               <div className="aspect-[9/16] max-h-48 rounded-2xl overflow-hidden bg-muted">
                 <img
-                  src={story.thumbnailUrl || story.mediaUrl}
+                  src={story.thumbnailUrl ?? story.mediaUrl}
                   alt="Story preview"
                   className="w-full h-full object-cover"
                 />

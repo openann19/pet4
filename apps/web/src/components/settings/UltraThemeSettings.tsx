@@ -21,7 +21,7 @@ function UltraThemeSettings() {
   const { themePreset, setThemePreset } = useApp();
   const [previewTheme, setPreviewTheme] = useState<ThemePreset | null>(null);
 
-  const currentTheme = previewTheme || themePreset;
+  const currentTheme = previewTheme ?? themePreset;
   const currentPreset = themePresets.find((p) => p.id === currentTheme);
 
   // Group themes by mode

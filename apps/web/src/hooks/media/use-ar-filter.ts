@@ -206,7 +206,7 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
   }, [])
 
   // Simple face detection (mock implementation - would use ML library in production)
-  const detectFaces = useCallback(async (): Promise<readonly DetectedFace[]> => {
+  const detectFaces = useCallback((): Promise<readonly DetectedFace[]> => {
     // Feature request: Integrate with actual face detection library (e.g., MediaPipe, face-api.js)
     // See: https://github.com/your-org/petspark/issues/face-detection
     // This is a mock implementation for demonstration
@@ -367,7 +367,7 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
 
     const video = videoRef.current
     video.srcObject = videoSource
-    video.play()
+    void video.play()
 
     video.onloadedmetadata = () => {
       if (canvasRef.current) {

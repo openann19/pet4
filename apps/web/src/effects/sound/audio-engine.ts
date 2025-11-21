@@ -85,7 +85,7 @@ class AudioEngineImpl {
   /**
    * Pre-warm audio context pool for better performance
    */
-  private async warmupPool(): Promise<void> {
+  private warmupPool(): Promise<void> {
     for (let i = 0; i < this.maxPoolSize; i++) {
       const context = this.createPooledContext();
       this.contextPool.push(context);
@@ -191,7 +191,7 @@ class AudioEngineImpl {
   /**
    * Play a sound preset
    */
-  private async playPreset(
+  private playPreset(
     preset: SoundPreset,
     options: {
       volume?: number;
@@ -269,7 +269,7 @@ class AudioEngineImpl {
         );
         gainNode.gain.exponentialRampToValueAtTime(
           0.0001,
-          context.currentTime + (preset.duration || 0.2)
+          context.currentTime + (preset.duration ?? 0.2)
         );
       }
 

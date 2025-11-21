@@ -31,7 +31,7 @@ import {
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
 import * as Reanimated from '@petspark/motion';
-import { interpolate, Extrapolation, MotionView, type MotionStyle } from '@petspark/motion';
+import { MotionView, type MotionStyle } from '@petspark/motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SaveToHighlightDialog from './SaveToHighlightDialog';
@@ -70,7 +70,7 @@ export default function StoryViewer({
   const progressIntervalRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaContainerRef = useRef<HTMLDivElement>(null);
-  const swipeProgress = Reanimated.useSharedValue(0);
+  const _swipeProgress = Reanimated.useSharedValue(0);
 
   const currentStory = stories[currentIndex];
   const isOwn = currentStory?.userId === currentUserId;
@@ -161,7 +161,7 @@ export default function StoryViewer({
     swipeThreshold: 50,
   });
 
-  const mediaContainerOpacity = Reanimated.useMotionValue(1);
+  const _mediaContainerOpacity = Reanimated.useMotionValue(1);
   const mediaContainerStyle = Reanimated.useAnimatedStyle(() => {
     const opacity = gestureState.isSwiping ? 0.5 : 1;
     const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale;
@@ -514,7 +514,7 @@ export default function StoryViewer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleFullscreen}
+                onClick={() => void toggleFullscreen()}
                 className="text-white hover:bg-white/20"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >

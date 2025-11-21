@@ -38,7 +38,7 @@ export default function HighlightViewer({
 
   const handleTogglePin = () => {
     haptics.trigger('selection');
-    setHighlights((current) =>
+    void setHighlights((current) =>
       (current ?? []).map((h) => (h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h))
     );
     toast.success(highlight.isPinned ? 'Unpinned' : 'Pinned', {
@@ -48,7 +48,7 @@ export default function HighlightViewer({
 
   const handleDelete = () => {
     haptics.trigger('warning');
-    setHighlights((current) => (current ?? []).filter((h) => h.id !== highlight.id));
+    void setHighlights((current) => (current ?? []).filter((h) => h.id !== highlight.id));
     toast.success('Highlight deleted', {
       duration: 2000,
     });
@@ -145,11 +145,11 @@ export default function HighlightViewer({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.03 }}
-                aria-label={`View story ${index + 1}: ${story.caption || 'Untitled story'}`}
+                aria-label={`View story ${index + 1}: ${story.caption ?? 'Untitled story'}`}
               >
                 <img
-                  src={story.thumbnailUrl || story.mediaUrl}
-                  alt={story.caption || `Story ${String(index + 1)}`}
+                  src={story.thumbnailUrl ?? story.mediaUrl}
+                  alt={story.caption ?? `Story ${String(index + 1)}`}
                   className="w-full h-full object-cover"
                 />                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 

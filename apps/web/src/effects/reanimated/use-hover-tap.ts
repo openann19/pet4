@@ -68,7 +68,7 @@ export function useHoverTap(options: UseHoverTapOptions = {}): UseHoverTapReturn
   }, [scale, damping, stiffness]);
 
   const handlePress = useCallback(() => {
-    animate(scale, tapScale, {
+    void animate(scale, tapScale, {
       type: 'spring',
       damping,
       stiffness,

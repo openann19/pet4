@@ -36,7 +36,7 @@ export class PhotoModerationEventService {
   /**
    * Emit state change event
    */
-  async emitStateChange(
+  emitStateChange(
     photoId: string,
     userId: string,
     action: PhotoModerationAction,
@@ -87,7 +87,7 @@ export class PhotoModerationEventService {
   /**
    * Emit batch processing event
    */
-  async emitBatchProcessed(
+  emitBatchProcessed(
     batchId: string,
     photoIds: string[],
     processedCount: number,
@@ -120,7 +120,7 @@ export class PhotoModerationEventService {
   /**
    * Emit queue stats update
    */
-  async emitQueueStatsUpdate(stats: {
+  emitQueueStatsUpdate(stats: {
     pending: number;
     scanning: number;
     heldForKYC: number;

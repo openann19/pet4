@@ -102,7 +102,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       };
 
       setCurrentRequest(updatedRequest);
-      setVerificationRequests((prev) => ({
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: updatedRequest,
       }));
@@ -131,7 +131,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
     };
 
     setCurrentRequest(updatedRequest);
-    setVerificationRequests((prev) => ({
+    void setVerificationRequests((prev) => ({
       ...prev,
       [petId]: updatedRequest,
     }));
@@ -155,7 +155,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       const submittedRequest = VerificationService.submitForReview(activeRequest);
 
       setCurrentRequest(submittedRequest);
-      setVerificationRequests((prev) => ({
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: submittedRequest,
       }));
@@ -181,7 +181,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       const reviewedRequest = VerificationService.processReview(activeRequest, approve);
 
       setCurrentRequest(reviewedRequest);
-      setVerificationRequests((prev) => ({
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: reviewedRequest,
       }));

@@ -20,9 +20,7 @@ import {
   useSharedValue,
   withSpring,
   withTiming,
-  withDelay,
-  type SharedValue,
-} from '@petspark/motion';
+  type SharedValue } from '@petspark/motion';
 import { createLogger } from '@/lib/logger';
 import { triggerHaptic } from '@/effects/chat/core/haptic-manager';
 import { useReducedMotionSV } from '@/effects/chat/core/reduced-motion';

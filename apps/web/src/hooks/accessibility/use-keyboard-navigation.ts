@@ -341,7 +341,7 @@ export function useKeyboardNavigation(
         return
       }
 
-      const { orientation = 'both', wrap = false, skipHidden = true } = arrowKeysConfig
+      const { orientation = 'both', wrap = false, _skipHidden = true } = arrowKeysConfig
 
       const container = focusTrapContainerRef.current ?? document.body
       const focusableElements = getFocusableElements(container)

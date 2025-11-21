@@ -16,7 +16,7 @@ export function VideoTrimmer({
 }: VideoTrimmerProps): React.ReactElement {
   const [thumbs, setThumbs] = useState<string[]>([]);
   const [width, setWidth] = useState(0);
-  const [start, setStart] = useState(0); // px from left
+  const [start, _setStart] = useState(0); // px from left
   const [end, setEnd] = useState(0); // px from left
   const timelineRef = useRef<HTMLDivElement>(null);
   const handleW = 16;
@@ -24,7 +24,7 @@ export function VideoTrimmer({
   useEffect(() => {
     let cancelled = false;
 
-    getVideoThumbnails(uri, 8).then((thumbnails) => {
+    void getVideoThumbnails(uri, 8).then((thumbnails) => {
       if (!cancelled) {
         setThumbs(thumbnails);
       }
@@ -44,7 +44,7 @@ export function VideoTrimmer({
     };
   }, [width, durationSec]);
 
-  const update = useCallback(() => {
+  const _update = useCallback(() => {
     const startSec = pxToSec(start);
     const endSec = pxToSec(end);
     onChange(Math.min(startSec, endSec), Math.max(startSec, endSec));
