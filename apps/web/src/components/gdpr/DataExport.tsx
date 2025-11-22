@@ -40,7 +40,7 @@ function convertToCSV(data: Record<string, unknown>): string {
       } else if (Array.isArray(value)) {
         result[newKey] = JSON.stringify(value);
       } else {
-        result[newKey] = String(value);
+        result[newKey] = value != null ? String(value) : '';
       }
     }
     return result;
@@ -79,7 +79,7 @@ function convertToXML(data: Record<string, unknown>, rootName = 'data'): string 
       } else if (typeof value === 'object') {
         xml += `${spaces}<${safeKey}>\n${objectToXML(value as Record<string, unknown>, indent + 1)}${spaces}</${safeKey}>\n`;
       } else {
-        xml += `${String(spaces)}<${safeKey}>${String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</${safeKey}>\n`;
+        xml += `${String(spaces)}<${safeKey}>${value != null ? String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : ''}</${safeKey}>\n`;
       }
     }
 
@@ -108,30 +108,32 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
 
       // Convert and create download based on format
       let blob: Blob;
-      let mimeType: string;
+      let _mimeType: string;
       let fileExtension: string;
 
       switch (exportFormat) {
         case 'json':
           blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-          mimeType = 'application/json';
+          _mimeType = 'application/json';
           fileExtension = 'json';
           break;
-        case 'csv':
+        case 'csv': {
           const csvData = convertToCSV(exportData as unknown as Record<string, unknown>);
           blob = new Blob([csvData], { type: 'text/csv' });
-          mimeType = 'text/csv';
+          _mimeType = 'text/csv';
           fileExtension = 'csv';
           break;
-        case 'xml':
+        }
+        case 'xml': {
           const xmlData = convertToXML(exportData as unknown as Record<string, unknown>, 'userData');
           blob = new Blob([xmlData], { type: 'application/xml' });
-          mimeType = 'application/xml';
+          _mimeType = 'application/xml';
           fileExtension = 'xml';
           break;
+        }
         default:
           blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-          mimeType = 'application/json';
+          _mimeType = 'application/json';
           fileExtension = 'json';
       }
 

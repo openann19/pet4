@@ -10,8 +10,24 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Trophy, Lock, CheckCircle2 } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Achievement } from '@petspark/core';
-import { gamificationClient } from '@petspark/core';
+// import type { Achievement } from '@petspark/core';
+// import { gamificationClient } from '@petspark/core';
+
+// TODO: Re-enable when gamification module is available
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  progress: number;
+  total: number;
+  unlocked: boolean;
+  unlockedAt?: string;
+}
+
+const gamificationClient = {
+  getAchievements: async (_userId: string): Promise<Achievement[]> => []
+};
 
 interface AchievementsPanelProps {
   userId: string;

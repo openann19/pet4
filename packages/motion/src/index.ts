@@ -55,7 +55,7 @@ export type {
 export const useAnimatedProps = () => ({})
 export const useAnimatedReaction = () => {}
 export const useAnimatedGestureHandler = () => ({})
-export const useAnimatedRef = <T>() => ({ current: null as T | null })
+export const useAnimatedRef = <T,>() => ({ current: null as T | null })
 export const cancelAnimation = (_value?: unknown): void => {}
 export const runOnJS = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn
 export const runOnUI = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn

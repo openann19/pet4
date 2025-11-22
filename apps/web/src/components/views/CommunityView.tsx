@@ -524,19 +524,21 @@ function CommunityViewContent(): JSX.Element {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={async () => {
-                    haptics.impact();
-                    try {
-                      await feedManagement.refreshFeed();
-                      await trendingTags.loadTrendingTags();
-                      haptics.success();
-                      toast.success(t.community?.refreshed ?? 'Feed refreshed!');
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
-                      logger.error('Failed to refresh feed', err);
-                      haptics.error();
+                  onClick={() => {
+                    void (async () => {
+                      haptics.impact();
+                      try {
+                        await feedManagement.refreshFeed();
+                        await trendingTags.loadTrendingTags();
+                        haptics.success();
+                        toast.success(t.community?.refreshed ?? 'Feed refreshed!');
+                      } catch (error) {
+                        const err = error instanceof Error ? error : new Error(String(error));
+                        logger.error('Failed to refresh feed', err);
+                        haptics.error();
                       toast.error(t.community?.refreshError ?? 'Failed to refresh');
                     }
+                    })();
                   }}
                   aria-label="Refresh feed"
                   disabled={pullToRefresh.isRefreshing}

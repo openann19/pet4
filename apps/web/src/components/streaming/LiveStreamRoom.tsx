@@ -38,7 +38,7 @@ export function LiveStreamRoom({
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
-  const { addStream, state } = useWebRTC({
+  const { addStream, _state } = useWebRTC({
     onRemoteStream: (stream) => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;

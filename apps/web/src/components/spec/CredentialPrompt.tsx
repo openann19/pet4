@@ -16,7 +16,7 @@ export function CredentialPrompt({
   className,
 }: CredentialPromptProps): React.JSX.Element | null {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
-  const [values, setValues] = useState<Record<string, string>>({})
+  const [_values, setValues] = useState<Record<string, string>>({})
 
   const prompts = mergedSpec?.configuration.credentials?.prompts ?? []
 

@@ -238,7 +238,9 @@ export function CreateLostAlertDialog({
   ]);
 
   const submitButtonAnimation = useBounceOnTap({
-    onPress: handleSubmit,
+    onPress: () => {
+      void handleSubmit();
+    },
     hapticFeedback: true,
   });
 

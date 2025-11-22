@@ -182,7 +182,9 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                 <Button
                   className="w-full"
                   variant={isPopular ? 'default' : 'outline'}
-                  onClick={() => handleSubscribe(plan)}
+                  onClick={() => {
+                    void handleSubscribe(plan);
+                  }}
                   disabled={loading || plan.tier === 'free'}
                   size="lg"
                 >
