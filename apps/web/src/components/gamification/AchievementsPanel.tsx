@@ -20,9 +20,12 @@ interface Achievement {
   description: string;
   icon: string;
   progress: number;
+  maxProgress?: number;
   total: number;
   unlocked: boolean;
   unlockedAt?: string;
+  points?: number;
+  rarity?: string;
 }
 
 const gamificationClient = {
