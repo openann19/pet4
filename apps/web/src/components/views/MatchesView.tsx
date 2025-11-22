@@ -34,11 +34,9 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-  MotionView,
-  Presence,
-} from '@petspark/motion';
+  MotionView } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface MatchesViewProps {
   onNavigateToChat?: () => void;
@@ -63,7 +61,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   const { activeCall, initiateCall, endCall, toggleMute, toggleVideo } = useCall(
     selectedPet?.id || 'room',
     userPet?.id || 'user',
-    userPet?.name || 'You',
+    userPet?.name ?? 'You',
     userPet?.photo
   );
 

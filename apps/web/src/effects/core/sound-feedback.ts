@@ -175,7 +175,7 @@ export class SoundFeedbackService {
   /**
    * Get or generate sound buffer
    */
-  private async getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
+  private getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
     // Check cache
     const cached = this.soundCache.get(soundType);
     if (cached) {
@@ -409,7 +409,7 @@ export class SoundFeedbackService {
   /**
    * Generate pop sound
    */
-  private generatePop(data: Float32Array, sampleRate: number, duration: number): void {
+  private generatePop(data: Float32Array, sampleRate: number, _duration: number): void {
     const frameCount = data.length;
     const frequency = 600;
 
@@ -438,7 +438,7 @@ export class SoundFeedbackService {
   /**
    * Generate buzz sound
    */
-  private generateBuzz(data: Float32Array, sampleRate: number, duration: number): void {
+  private generateBuzz(data: Float32Array, sampleRate: number, _duration: number): void {
     const frameCount = data.length;
     const frequency = 100;
 

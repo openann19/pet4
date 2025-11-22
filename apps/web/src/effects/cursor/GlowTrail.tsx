@@ -22,7 +22,7 @@ export default function GlowTrail() {
       return;
     }
 
-    const el = r.current!;
+    const _el = r.current!;
     const pts: { x: number; y: number; el: HTMLDivElement }[] = [];
     const pool: HTMLDivElement[] = [];
 

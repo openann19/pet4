@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import {
   MapPin,
   NavigationArrow,

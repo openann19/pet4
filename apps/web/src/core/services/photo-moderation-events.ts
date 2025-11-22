@@ -36,7 +36,7 @@ export class PhotoModerationEventService {
   /**
    * Emit state change event
    */
-  async emitStateChange(
+  emitStateChange(
     photoId: string,
     userId: string,
     action: PhotoModerationAction,
@@ -82,12 +82,13 @@ export class PhotoModerationEventService {
       });
       // Don't throw - events are non-critical
     }
+    return Promise.resolve();
   }
 
   /**
    * Emit batch processing event
    */
-  async emitBatchProcessed(
+  emitBatchProcessed(
     batchId: string,
     photoIds: string[],
     processedCount: number,
@@ -115,12 +116,13 @@ export class PhotoModerationEventService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to emit batch processed event', err, { batchId });
     }
+    return Promise.resolve();
   }
 
   /**
    * Emit queue stats update
    */
-  async emitQueueStatsUpdate(stats: {
+  emitQueueStatsUpdate(stats: {
     pending: number;
     scanning: number;
     heldForKYC: number;
@@ -140,6 +142,7 @@ export class PhotoModerationEventService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to emit queue stats update', err);
     }
+    return Promise.resolve();
   }
 }
 

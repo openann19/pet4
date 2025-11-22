@@ -13,7 +13,7 @@ import {
   Easing,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseBreathingAnimationOptions {
   minScale?: number;

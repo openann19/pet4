@@ -34,7 +34,7 @@ export function PlaydateCard({
 }: PlaydateCardProps): React.JSX.Element {
   const scheduledDate = new Date(playdate.scheduledAt);
   const isUpcoming = scheduledDate > new Date();
-  const isPast = scheduledDate < new Date();
+  const _isPast = scheduledDate < new Date();
 
   return (
     <PremiumCard variant="glass" className={cn('p-4 space-y-4', className)}>

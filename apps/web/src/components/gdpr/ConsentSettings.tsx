@@ -6,8 +6,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useConsentManager } from '@/hooks/use-consent-manager';
 import { createLogger } from '@/lib/logger';
@@ -46,7 +45,7 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
     };
 
     // Get consent status for a category
-    const getConsentStatus = (category: ConsentCategory): 'accepted' | 'rejected' | 'pending' => {
+    const _getConsentStatus = (category: ConsentCategory): 'accepted' | 'rejected' | 'pending' => {
         if (category === 'essential') {
             return 'accepted';
         }

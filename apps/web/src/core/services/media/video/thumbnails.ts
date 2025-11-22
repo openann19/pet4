@@ -33,7 +33,7 @@ async function generateWebThumbnails(uri: string, count: number): Promise<string
 
     const frames: string[] = [];
 
-    video.onloadedmetadata = async () => {
+    video.onloadedmetadata = () => {
       const maxWidth = 320;
       const aspectRatio = video.videoWidth / video.videoHeight;
       canvas.width = Math.min(maxWidth, video.videoWidth);

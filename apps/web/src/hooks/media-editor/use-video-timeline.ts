@@ -2,13 +2,10 @@ import { useCallback, useState, useRef, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
 import { getWorkerPool } from '@/lib/worker-pool';
 import {
-  VideoTimelineError,
   VideoFrameError,
   WaveformError,
-  VideoExportError,
   createErrorContext,
-  type MediaErrorContext,
-} from '@/lib/media-errors';
+  type MediaErrorContext } from '@/lib/media-errors';
 import { getPerformanceMonitor } from '@/lib/performance-monitor';
 
 const logger = createLogger('VideoTimeline');
@@ -130,18 +127,18 @@ export interface VideoFrame {
 // ============================================================================
 
 const DEFAULT_TRACK_HEIGHT = 80;
-const MIN_TRACK_HEIGHT = 40;
-const MAX_TRACK_HEIGHT = 200;
+const _MIN_TRACK_HEIGHT = 40;
+const _MAX_TRACK_HEIGHT = 200;
 const DEFAULT_ZOOM = 100; // Pixels per second
 const MIN_ZOOM = 10;
 const MAX_ZOOM = 1000;
-const SNAP_THRESHOLD = 5; // Pixels
+const _SNAP_THRESHOLD = 5; // Pixels
 const WAVEFORM_SAMPLES = 1000;
 const THUMBNAIL_INTERVAL = 1; // Generate thumbnail every N seconds
 const MAX_UNDO_HISTORY = 50;
 
 // Supported transition types with their implementations
-const TRANSITION_TYPES = [
+const _TRANSITION_TYPES = [
   'fade',
   'dissolve',
   'wipe-left',
@@ -185,14 +182,14 @@ export function useVideoTimeline() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const _timelineRef = useRef<HTMLDivElement | null>(null);
   const playbackTimerRef = useRef<number | null>(null);
   const undoStackRef = useRef<TimelineState[]>([]);
   const redoStackRef = useRef<TimelineState[]>([]);
   const waveformCacheRef = useRef<Map<string, AudioWaveform>>(new Map());
   const thumbnailCacheRef = useRef<Map<string, VideoFrame[]>>(new Map());
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Audio Waveform Generation

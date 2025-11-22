@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, Suspense } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import StoryRing from './StoryRing';
 import { StoryViewer } from '@/components/lazy-exports';

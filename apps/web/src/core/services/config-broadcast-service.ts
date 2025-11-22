@@ -81,7 +81,7 @@ class ConfigBroadcastService {
       };
 
       // Send via API (which will broadcast via WebSocket on server)
-      const result = await adminApi.broadcastConfig(configType, config);
+      const _result = await adminApi.broadcastConfig(configType, config);
 
       // Also trigger locally for immediate UI updates
       if (this.realtimeClient) {
@@ -161,7 +161,7 @@ class ConfigBroadcastService {
    * Get current version for a config type
    */
   getConfigVersion(configType: ConfigType): number {
-    return this.configVersions.get(configType) || 0;
+    return this.configVersions.get(configType) ?? 0;
   }
 
   /**

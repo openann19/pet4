@@ -5,7 +5,7 @@
 
 import { useSharedValue, useAnimatedStyle, withSpring, interpolate } from '@petspark/motion';
 import { useCallback, useState } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseSpringCarouselOptions {
   itemCount: number;

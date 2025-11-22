@@ -317,7 +317,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         clinic: 'Happy Paws Veterinary',
         createdAt: new Date().toISOString(),
       };
-      setVaccinations((current): VaccinationRecord[] => [...(current ?? []), newVaccination]);
+      void setVaccinations((current): VaccinationRecord[] => [...(current ?? []), newVaccination]);
       toast.success('Vaccination added', {
         description: 'Vaccination record created successfully',
       });
@@ -341,7 +341,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setHealthRecords((current): HealthRecord[] => [...(current ?? []), newRecord]);
+      void setHealthRecords((current): HealthRecord[] => [...(current ?? []), newRecord]);
       toast.success('Health record added', {
         description: 'Health record created successfully',
       });
@@ -365,7 +365,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         notificationsSent: 0,
         createdAt: new Date().toISOString(),
       };
-      setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
+      void setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
       toast.success('Reminder added', { description: 'Reminder created successfully' });
       logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
     } catch (error) {
@@ -378,7 +378,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
   const handleCompleteReminder = useCallback(
     (reminderId: string): void => {
       try {
-        setReminders((current): VetReminder[] =>
+        void setReminders((current): VetReminder[] =>
           (current ?? []).map(
             (r): VetReminder =>
               r.id === reminderId

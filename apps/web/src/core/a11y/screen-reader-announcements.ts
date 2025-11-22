@@ -138,7 +138,7 @@ const announcementQueue = new AnnouncementQueue();
 export function announceEnhanced(announcement: EnhancedAnnouncement): void {
   const announcementWithTimestamp: EnhancedAnnouncement = {
     ...announcement,
-    timestamp: announcement.timestamp || Date.now(),
+    timestamp: announcement.timestamp ?? Date.now(),
   };
 
   announcementQueue.add(announcementWithTimestamp);

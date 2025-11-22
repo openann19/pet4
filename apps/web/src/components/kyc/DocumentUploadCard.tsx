@@ -34,7 +34,7 @@ export function DocumentUploadCard({
   acceptedTypes = ['image/jpeg', 'image/png', 'application/pdf'],
   className,
 }: DocumentUploadCardProps): React.JSX.Element {
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [_uploading, _setUploading] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const handleFileSelect = useCallback(

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { Plus, Check } from '@phosphor-icons/react';
 import {
   Dialog,
@@ -95,7 +95,7 @@ export default function CreateHighlightDialog({
     const firstPet = userPets?.[0];
 
     if (isTruthy(existingHighlight)) {
-      setHighlights((current) =>
+      void setHighlights((current) =>
         (current ?? []).map((h) =>
           h.id === existingHighlight.id
             ? {
@@ -118,7 +118,7 @@ export default function CreateHighlightDialog({
         selectedStoryObjects
       );
 
-      setHighlights((current) => [...(current ?? []), newHighlight]);
+      void setHighlights((current) => [...(current ?? []), newHighlight]);
       toast.success('Highlight created!');
     }
 

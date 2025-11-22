@@ -40,13 +40,13 @@ export class TokenSigningError extends Error {
 
 function getConfigFromAdmin(): TokenSigningConfig | null {
   if (typeof window === 'undefined') {
-    return null;
+    return Promise.resolve(null);
   }
 
   try {
     const adminConfigStr = localStorage.getItem('admin-api-config');
     if (!adminConfigStr) {
-      return null;
+      return Promise.resolve(null);
     }
 
     const adminConfig = JSON.parse(adminConfigStr) as APIConfig;
@@ -55,7 +55,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
       !adminConfig.livekit?.apiKey ||
       !adminConfig.livekit?.apiSecret
     ) {
-      return null;
+      return Promise.resolve(null);
     }
 
     return {
@@ -67,27 +67,27 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.warn('Failed to read admin config', err);
-    return null;
+    return Promise.resolve(null);
   }
 }
 
 function getConfigFromEnv(): TokenSigningConfig | null {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY || import.meta.env.LIVEKIT_API_KEY;
+  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY ?? import.meta.env.LIVEKIT_API_KEY;
   const apiSecret =
-    import.meta.env.VITE_LIVEKIT_API_SECRET || import.meta.env.LIVEKIT_API_SECRET;
+    import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
-    return null;
+    return Promise.resolve(null);
   }
 
-  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL || import.meta.env.LIVEKIT_WS_URL;
+  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL;
 
   return {
     apiKey,
     apiSecret,
-    issuer: import.meta.env.VITE_LIVEKIT_ISSUER || 'livekit',
+    issuer: import.meta.env.VITE_LIVEKIT_ISSUER ?? 'livekit',
     ...(apiUrl !== undefined && { apiUrl }),
-  };
+  } as any;
 }
 
 function getEffectiveConfig(config?: TokenSigningConfig): TokenSigningConfig | null {
@@ -138,7 +138,7 @@ export interface TokenPayload {
  * return await token.toJwt()
  * ```
  */
-export async function signLiveKitToken(
+export function signLiveKitToken(
   payload: TokenPayload,
   config?: TokenSigningConfig
 ): Promise<string> {
@@ -208,7 +208,7 @@ export async function signLiveKitToken(
  * }
  * ```
  */
-export async function verifyLiveKitToken(
+export function verifyLiveKitToken(
   token: string,
   config?: TokenSigningConfig
 ): Promise<TokenPayload | null> {
@@ -218,7 +218,7 @@ export async function verifyLiveKitToken(
     logger.error('LiveKit configuration missing for token verification', {
       tokenPrefix: token.substring(0, 20),
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   // Server-side implementation would use LiveKit SDK here
@@ -227,7 +227,7 @@ export async function verifyLiveKitToken(
     tokenPrefix: token.substring(0, 20),
   });
 
-  return null;
+  return Promise.resolve(null);
 }
 
 /**
@@ -251,7 +251,7 @@ export function isTokenSigningConfigured(): boolean {
  * await roomService.deleteRoom(roomId)
  * ```
  */
-export async function deleteLiveKitRoom(
+export function deleteLiveKitRoom(
   roomId: string,
   config?: TokenSigningConfig
 ): Promise<void> {
@@ -317,7 +317,7 @@ export async function deleteLiveKitRoom(
  * return { vodUrl, posterUrl }
  * ```
  */
-export async function compositeStreamToHLS(
+export function compositeStreamToHLS(
   roomId: string,
   config?: TokenSigningConfig
 ): Promise<{ vodUrl: string; posterUrl: string } | null> {
@@ -327,7 +327,7 @@ export async function compositeStreamToHLS(
     logger.error('LiveKit configuration missing for HLS recording', {
       roomId,
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   logger.info('HLS VOD recording requested', {
@@ -340,5 +340,5 @@ export async function compositeStreamToHLS(
     roomId,
   });
 
-  return null;
+  return Promise.resolve(null);
 }

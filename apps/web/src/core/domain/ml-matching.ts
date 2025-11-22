@@ -162,7 +162,7 @@ export class MLMatchingWeightAdjuster {
     for (const factor of Object.keys(importance)) {
       const likedAvg = likedFactorScores[factor];
       const passedAvg = passedFactorScores[factor];
-      const currentImportance = importance[factor] ?? 0;
+      const _currentImportance = importance[factor] ?? 0;
       importance[factor] = Math.max(0, (likedAvg ?? 0) - (passedAvg ?? 0));
     }
 

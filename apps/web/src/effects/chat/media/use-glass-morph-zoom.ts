@@ -64,8 +64,8 @@ export function useGlassMorphZoom(options: UseGlassMorphZoomOptions = {}): UseGl
   const { enabled = DEFAULT_ENABLED, blurRadius = DEFAULT_BLUR_RADIUS, onComplete } = options;
 
   // Get device refresh rate for adaptive animations
-  const { hz, scaleDuration } = useDeviceRefreshRate();
-  const { visual, feedback, animation } = useUIConfig();
+  const { _hz, scaleDuration } = useDeviceRefreshRate();
+  const { visual, feedback, _animation } = useUIConfig();
 
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0);

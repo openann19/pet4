@@ -182,7 +182,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       // Attach to video element
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream
-        videoRef.current.play()
+        void videoRef.current.play()
       }
 
       triggerHaptic('success')
@@ -375,7 +375,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   // Auto-start if enabled
   useEffect(() => {
     if (autoStart) {
-      start()
+      void start()
     }
 
     return () => {

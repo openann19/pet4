@@ -20,7 +20,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
 import { useUIConfig } from '@/hooks/use-ui-config';
 
-const logger = createLogger('reply-ribbon');
+const _logger = createLogger('reply-ribbon');
 
 /**
  * Reply ribbon effect options

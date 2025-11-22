@@ -33,21 +33,17 @@ import {
 import {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
-  interpolate,
-  Extrapolation,
   withRepeat,
   withSequence,
-  MotionView,
-} from '@petspark/motion';
+  MotionView } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { OfflineIndicator } from '@/components/network/OfflineIndicator';
 import { useNetworkStatus } from '@/hooks/use-network-status';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useFeedManagement, useInfiniteScroll } from '@/components/community/features/feed';
 import { VirtualList, VirtualGrid } from '@/components/virtual';
@@ -95,7 +91,7 @@ function CommunityViewContent(): JSX.Element {
   });
 
   // Infinite scroll hook
-  const infiniteScroll = useInfiniteScroll({
+  const _infiniteScroll = useInfiniteScroll({
     hasMore: feedManagement.hasMore,
     loading: feedManagement.loading,
     onLoadMore: () => void feedManagement.loadFeed(true),
@@ -146,7 +142,7 @@ function CommunityViewContent(): JSX.Element {
   const [selectedAdoptionProfile, setSelectedAdoptionProfile] = useState<AdoptionProfile | null>(
     null
   );
-  const [favoritedProfiles, setFavoritedProfiles] = useStorage<string[]>(
+  const [favoritedProfiles, _setFavoritedProfiles] = useStorage<string[]>(
     'favorited-adoption-profiles',
     []
   );

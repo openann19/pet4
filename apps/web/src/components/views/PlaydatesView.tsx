@@ -195,7 +195,7 @@ export function PlaydatesView(): React.JSX.Element {
             <PlaydateMap
               playdates={nearbyPlaydates}
               currentLocation={currentLocation}
-              onPlaydateClick={(playdate) => {
+              onPlaydateClick={(_playdate) => {
                 // Handle playdate click
               }}
             />

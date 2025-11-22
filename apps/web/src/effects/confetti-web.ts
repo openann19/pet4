@@ -20,7 +20,7 @@ declare global {
 }
 
 export function toastSuccess(message: string): void {
-  confetti({
+  void confetti({
     particleCount: 80,
     spread: 70,
     origin: { y: 0.7 },
@@ -28,11 +28,11 @@ export function toastSuccess(message: string): void {
     scalar: 1.2,
   })
   // Use sonner toast for message
-  window.toast?.success?.(message) || window.sonner?.success?.(message)
+  window.toast?.success?.(message) ?? window.sonner?.success?.(message)
 }
 
 export function toastError(message: string): void {
-  confetti({
+  void confetti({
     particleCount: 60,
     spread: 60,
     origin: { y: 0.7 },
@@ -40,11 +40,11 @@ export function toastError(message: string): void {
     scalar: 1.1,
   })
   // Use sonner toast for message
-  window.toast?.error?.(message) || window.sonner?.error?.(message)
+  window.toast?.error?.(message) ?? window.sonner?.error?.(message)
 }
 
 export function toastInfo(message: string): void {
-  confetti({
+  void confetti({
     particleCount: 40,
     spread: 50,
     origin: { y: 0.7 },
@@ -52,5 +52,5 @@ export function toastInfo(message: string): void {
     scalar: 1.0,
   })
   // Use sonner toast for message
-  window.toast?.info?.(message) || window.sonner?.info?.(message)
+  window.toast?.info?.(message) ?? window.sonner?.info?.(message)
 }

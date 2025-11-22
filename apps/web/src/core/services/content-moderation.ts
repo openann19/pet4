@@ -533,9 +533,9 @@ export async function moderatePost(
 /**
  * Check for duplicate content using fingerprint
  */
-export async function checkDuplicateContent(
+export function checkDuplicateContent(
   fingerprint: string,
   existingFingerprints: Set<string>
 ): Promise<boolean> {
-  return existingFingerprints.has(fingerprint);
+  return Promise.resolve(existingFingerprints.has(fingerprint));
 }

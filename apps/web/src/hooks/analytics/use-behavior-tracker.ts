@@ -172,7 +172,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
     onDeadClick,
     onScrollMilestone,
     onFormAbandonment,
-    onError,
+    _onError,
     trackMouseMovement = false,
     trackVisibility = false,
     rageClickThreshold = DEFAULT_RAGE_THRESHOLD,
@@ -457,7 +457,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
           fieldsFilled,
           totalFields,
           timeSpent: Date.now() - startTime,
-          lastField: lastField?.name || lastField?.id || 'unknown',
+          lastField: lastField?.name ?? lastField?.id ?? 'unknown',
           timestamp: Date.now(),
         };
 

@@ -1,19 +1,16 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import {
+import type {
   useMotionValue,
   animate,
   type MotionValue,
   type Variants as FramerVariants,
-  type MotionStyle,
-} from '@petspark/motion';
+  MotionStyle } from '@petspark/motion';
 import {
   springConfigs,
   timingConfigs,
-  type SpringConfig,
-  type TimingConfig,
-} from '@/effects/reanimated/transitions';
+  _type } from '@/effects/reanimated/transitions';
 
 export interface VariantDefinition {
   opacity?: number;

@@ -70,10 +70,10 @@ const HAPTIC_PATTERNS: Record<string, number[]> = {
   error: [50, 10, 50, 10, 50],
 };
 
-const ANIMATION_DURATION = 200; // ms
+const _ANIMATION_DURATION = 200; // ms
 const VELOCITY_THRESHOLD = 0.5;
 const MOMENTUM_DECAY = 0.95;
-const SNAP_THRESHOLD = 0.1;
+const _SNAP_THRESHOLD = 0.1;
 
 // ============================================================================
 // Haptic Feedback
@@ -237,7 +237,7 @@ export function useAdvancedSlider(props: SliderProps) {
 
   const normalizeValue = useCallback(
     (value: number): number => {
-      const range = max - min;
+      const _range = max - min;
       const normalized = Math.max(min, Math.min(max, value));
 
       if (step) {

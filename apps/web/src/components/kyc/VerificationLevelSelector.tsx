@@ -7,7 +7,6 @@
 'use client';
 
 import { Check } from 'lucide-react';
-import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { cn } from '@/lib/utils';
 import { getTypographyClasses } from '@/lib/typography';
 import type { VerificationLevel } from './VerificationDialog';

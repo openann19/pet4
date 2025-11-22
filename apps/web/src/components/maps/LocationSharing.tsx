@@ -174,7 +174,7 @@ export function LocationPicker({
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('LocationPicker getCurrentLocation error', err);
         // Fallback to current location or default location
-        setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
+        setSelectedLocation(currentLocation ?? { lat: 40.7128, lng: -74.006 });
       });
   }, [sharingPrecise, mapSettings.PRIVACY_GRID_METERS, currentLocation]);
 

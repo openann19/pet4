@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, Presence, MotionView } from '@petspark/motion';
+import { Presence, MotionView } from '@petspark/motion';
 import {
   MapPin,
   MagnifyingGlass,
@@ -93,12 +93,12 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [customLocation, setCustomLocation] = useState({
-    name: value?.name || '',
-    address: value?.address || '',
+    name: value?.name ?? '',
+    address: value?.address ?? '',
   });
 
   useEffect(() => {
-    loadUserLocation();
+    void loadUserLocation();
   }, []);
 
   const loadUserLocation = async () => {
@@ -114,7 +114,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
 
       setNearbyPlaces(placesWithDistance);
       toast.success('Location detected');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Could not get your location');
     } finally {
       setIsLoadingLocation(false);

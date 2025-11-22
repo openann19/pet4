@@ -252,7 +252,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
           </div>
 
           {/* Label and description */}
-          {(label || description) && (
+          {(label ?? description) && (
             <div className="flex-1 space-y-1">
               {label && (
                 <label
@@ -338,7 +338,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
     >
       {React.Children.map(children, (child, index) => {
         if (React.isValidElement(child) && child.type === Checkbox) {
-          const itemValue = child.props.value || String(index)
+          const itemValue = child.props.value ?? String(index) as any;
           const isChecked = currentValue.includes(itemValue)
 
           return React.cloneElement(child as React.ReactElement<CheckboxProps>, {

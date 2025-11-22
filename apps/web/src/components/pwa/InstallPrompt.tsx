@@ -49,7 +49,7 @@ export function InstallPrompt() {
       </div>
       <div className="flex gap-2">
         <button
-          onClick={handleInstall}
+          onClick={() => void handleInstall()}
           className="flex-1 p-2.5 bg-white text-indigo-500 border-0 rounded-lg font-semibold cursor-pointer text-sm"
         >
           Install

@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConsentSettings } from '@/components/gdpr/ConsentSettings';
@@ -39,7 +39,7 @@ interface BlockedUser {
 
 export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Element {
     const consentManager = useConsentManager({ userId, autoLoad: true });
-    const gdprService = getGDPRService();
+    const _gdprService = getGDPRService();
     const [activeSection, setActiveSection] = useState<'overview' | 'consent' | 'export' | 'deletion' | 'rectification' | 'requests' | 'visibility' | 'blocked'>('overview');
     const [visibilitySettings, setVisibilitySettings] = useState<VisibilitySettings>({
         profileVisibility: 'public',

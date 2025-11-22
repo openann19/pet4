@@ -91,7 +91,7 @@ export function PremiumNotificationBell(): JSX.Element {
     try {
       haptics.medium();
       setIsOpen(true);
-      setLastCheckTime(Date.now());
+      void setLastCheckTime(Date.now());
       setHasNewNotification(false);
       logger.info('Notification bell clicked', { unreadCount, urgentCount });
     } catch (error) {
