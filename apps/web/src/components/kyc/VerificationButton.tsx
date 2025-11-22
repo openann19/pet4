@@ -65,7 +65,9 @@ export function VerificationButton({
       <VerificationDialog
         open={isOpen}
         onOpenChange={setIsOpen}
-        onVerify={handleVerify}
+        onVerify={(level, documents) => {
+          void handleVerify(level, documents);
+        }}
       />
     </>
   );

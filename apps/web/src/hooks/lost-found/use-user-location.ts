@@ -15,7 +15,7 @@ export function useUserLocation(): UseUserLocationReturn {
     lon: number;
   } | null>(null);
 
-  const getUserLocation = useCallback(() => {
+  const getUserLocation = useCallback(async () => {
     try {
       if (isTruthy(navigator.geolocation)) {
         navigator.geolocation.getCurrentPosition(

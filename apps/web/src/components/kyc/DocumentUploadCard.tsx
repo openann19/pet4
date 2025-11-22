@@ -35,7 +35,7 @@ export function DocumentUploadCard({
   className,
 }: DocumentUploadCardProps): React.JSX.Element {
   const [_uploading, _setUploading] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [uploadProgress, _setUploadProgress] = useState<Record<string, number>>({});
 
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

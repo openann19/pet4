@@ -160,7 +160,7 @@ export default function LostFoundView() {
           open={showCreateDialog}
           onClose={() => setShowCreateDialog(false)}
           onSuccess={() => {
-            loadAlerts();
+            void loadAlerts();
             void toast.success('Lost pet alert created successfully!');
           }}
         />

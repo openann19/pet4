@@ -17,7 +17,7 @@ interface UseUploadPickerReturn {
 const isWeb = typeof window !== 'undefined';
 
 function toObjectURLWeb(file: File): Promise<string> {
-  return URL.createObjectURL(file);
+  return Promise.resolve(URL.createObjectURL(file));
 }
 
 async function pickWebFile(accept: string): Promise<File | null> {

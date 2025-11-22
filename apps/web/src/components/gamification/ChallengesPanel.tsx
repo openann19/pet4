@@ -10,8 +10,37 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Target, Clock, Gift } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Challenge, ChallengeProgress } from '@petspark/core/gamification/types';
-import { gamificationClient } from '@petspark/core/gamification/gamification-client';
+// import type { Challenge, ChallengeProgress } from '@petspark/core/gamification/types';
+// import { gamificationClient } from '@petspark/core/gamification/gamification-client';
+
+// TODO: Re-enable when gamification module is available
+interface Challenge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  status: string;
+  progress: ChallengeProgress;
+  reward: string;
+  rewards?: Array<{ type: string; value: number }>;
+  expiresAt?: string;
+  endDate?: string;
+}
+
+interface ChallengeProgress {
+  current: number;
+  total: number;
+  overallProgress?: number;
+}
+
+const gamificationClient = {
+  getChallenges: async (_userId: string): Promise<Challenge[]> => [],
+  getChallengeProgress: async (_userId: string, _challengeId: string): Promise<ChallengeProgress> => ({
+    current: 0,
+    total: 100,
+    overallProgress: 0
+  })
+};
 
 interface ChallengesPanelProps {
   userId: string;
@@ -89,7 +118,7 @@ function ChallengeCard({ challenge, userId }: ChallengeCardProps) {
     })();
   }, [challenge.id, userId]);
 
-  const endDate = new Date(challenge.endDate);
+  const endDate = challenge.endDate ? new Date(challenge.endDate) : new Date();
   const daysLeft = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
   return (
@@ -113,19 +142,19 @@ function ChallengeCard({ challenge, userId }: ChallengeCardProps) {
         <div className="mt-4">
           <div className="flex justify-between text-xs mb-2">
             <span>Progress</span>
-            <span>{Math.round(progress.overallProgress)}%</span>
+            <span>{Math.round(progress.overallProgress ?? 0)}%</span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-linear-to-r from-primary to-accent transition-all"
-              style={{ width: `${progress.overallProgress}%` }}
+              style={{ width: `${progress.overallProgress ?? 0}%` }}
             />
           </div>
         </div>
       )}
 
       <div className="flex items-center gap-2 mt-4">
-        {challenge.rewards.map((reward, idx) => (
+        {challenge.rewards?.map((reward, idx) => (
           <div
             key={idx}
             className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-primary/20 text-primary"

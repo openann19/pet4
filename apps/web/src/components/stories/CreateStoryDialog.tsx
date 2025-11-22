@@ -41,7 +41,7 @@ export default function CreateStoryDialog({
   userAvatar,
   onStoryCreated,
 }: CreateStoryDialogProps) {
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [_mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string>('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
   const [caption, setCaption] = useState('');

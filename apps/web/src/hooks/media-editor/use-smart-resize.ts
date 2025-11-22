@@ -238,7 +238,7 @@ export function useSmartResize() {
         height: source.height,
       });
 
-      return performanceMonitor.measureOperation('detect-faces', () => {
+      return performanceMonitor.measureOperation('detect-faces', async () => {
         try {
           setIsProcessing(true);
           setProgress(10);

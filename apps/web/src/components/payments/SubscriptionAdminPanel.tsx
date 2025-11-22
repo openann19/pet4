@@ -262,7 +262,9 @@ export function SubscriptionAdminPanel() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleCancelSubscription(subscription)}
+                            onClick={() => {
+                              void handleCancelSubscription(subscription);
+                            }}
                             disabled={subscription.status === 'canceled'}
                           >
                             <X className="h-4 w-4" />

@@ -10,9 +10,31 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Flame, TrendingUp } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Streak } from '@petspark/core/gamification/types';
-import { gamificationClient } from '@petspark/core/gamification/gamification-client';
-import { getStreakEmoji } from '@petspark/core/gamification/streaks';
+// import type { Streak } from '@petspark/core/gamification/types';
+// import { gamificationClient } from '@petspark/core/gamification/gamification-client';
+// import { getStreakEmoji } from '@petspark/core/gamification/streaks';
+
+// TODO: Re-enable when gamification module is available
+interface Streak {
+  type: string;
+  current: number;
+  longest: number;
+  nextMilestone?: number;
+}
+
+const gamificationClient = {
+  getStreaks: async (_userId: string): Promise<Streak[]> => []
+};
+
+const getStreakEmoji = (streak: Streak): string => {
+  const emojis: Record<string, string> = {
+    login: '🔥',
+    messaging: '💬',
+    playdates: '🎾',
+    profile_updates: '✏️',
+  };
+  return emojis[streak.type] ?? '⭐';
+};
 
 interface StreaksPanelProps {
   userId: string;
