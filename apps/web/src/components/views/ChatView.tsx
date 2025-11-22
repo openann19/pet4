@@ -1,0 +1,182 @@
+// A comment to force re-evaluation
+'use client';
+import { useEffect } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  MotionView,
+} from '@petspark/motion';
+import ChatRoomsList from '@/components/ChatRoomsList';
+import ChatWindow from '@/components/ChatWindowNew';
+import { ChatErrorBoundary } from '@/components/chat/window/ChatErrorBoundary';
+import { useApp } from '@/contexts/AppContext';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useChatRooms } from '@/hooks/chat/use-chat-rooms';
+import type { AnimatedStyle } from '@petspark/motion';
+import { usePageTransition } from '@/effects/reanimated/use-page-transition';
+import { timingConfigs } from '@/effects/reanimated/transitions';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { cn } from '@/lib/utils';
+
+export default function ChatView() {
+  const { t } = useApp();
+  const isMobile = useIsMobile();
+  const {
+    chatRooms,
+    isLoading,
+    userPet,
+    selectedRoom,
+    handleSelectRoom,
+    handleBack,
+  } = useChatRooms();
+
+  const headerAnimation = usePageTransition({
+    isVisible: !isLoading,
+    direction: 'down',
+    duration: 300,
+  });
+
+  const emptyStateAnimation = usePageTransition({
+    isVisible: !userPet,
+    direction: 'up',
+    duration: 300,
+  });
+
+  const roomsListAnimation = usePageTransition({
+    isVisible: !isMobile || !selectedRoom,
+    direction: 'fade',
+    duration: 250,
+  });
+
+  const chatWindowAnimation = usePageTransition({
+    isVisible: Boolean(selectedRoom && (!isMobile || selectedRoom)),
+    direction: 'fade',
+    duration: 250,
+  });
+
+  const emptyChatAnimation = usePageTransition({
+    isVisible: !selectedRoom && !isMobile,
+    direction: 'fade',
+    duration: 300,
+  });
+
+  const emptyChatIconScale = useSharedValue(1);
+  const emptyChatIconRotation = useSharedValue(0);
+
+  useEffect(() => {
+    if (!selectedRoom && !isMobile) {
+      emptyChatIconScale.value = withRepeat(
+        withSequence(withTiming(1.1, timingConfigs.smooth), withTiming(1, timingConfigs.smooth)),
+        -1,
+        true
+      );
+      emptyChatIconRotation.value = withRepeat(
+        withSequence(
+          withTiming(5, { duration: 500 }),
+          withTiming(-5, { duration: 500 }),
+          withTiming(0, { duration: 500 })
+        ),
+        -1,
+        false
+      );
+    } else {
+      emptyChatIconScale.value = 1;
+      emptyChatIconRotation.value = 0;
+    }
+  }, [selectedRoom, isMobile, emptyChatIconScale, emptyChatIconRotation]);
+
+  const emptyChatIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: `scale(${emptyChatIconScale.value}) rotate(${emptyChatIconRotation.value}deg)`,
+    };
+  }) as AnimatedStyle;
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!userPet) {
+    return (
+      <main aria-label="Chat view" className={cn('flex flex-col items-center justify-center min-h-[60vh] text-center', getSpacingClassesFromConfig({ paddingX: 'lg' }))}>
+        <MotionView
+          style={emptyStateAnimation.style}
+          className={cn('glass-strong rounded-3xl max-w-md', getSpacingClassesFromConfig({ padding: '2xl' }))}
+        >
+          <h2 className={cn(getTypographyClasses('h2'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.createProfile}</h2>
+          <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>{t.chat.createProfileDesc}</p>
+        </MotionView>
+      </main>
+    );
+  }
+
+  const showChatWindow = selectedRoom && (!isMobile || selectedRoom);
+  const showRoomsList = !isMobile || !selectedRoom;
+
+  return (
+    <PageTransitionWrapper key="chat-view" direction="up">
+      <main aria-label="Chat view" className="h-[calc(100vh-8rem)]">
+        <MotionView style={headerAnimation.style} className={getSpacingClassesFromConfig({ marginY: 'xl' })}>
+          <h2 className={cn(getTypographyClasses('h2'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.title}</h2>
+          <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>
+            {(chatRooms ?? []).length}{' '}
+            {(chatRooms ?? []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
+          </p>
+        </MotionView>
+
+        <div className={cn('grid grid-cols-1 md:grid-cols-12 h-[calc(100%-5rem)]', getSpacingClassesFromConfig({ gap: 'xl' }))}>
+          {showRoomsList && (
+            <MotionView
+              style={roomsListAnimation.style}
+              className="md:col-span-4 glass-strong rounded-3xl p-4 shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden"
+            >
+              <ChatRoomsList
+                rooms={chatRooms ?? []}
+                onSelectRoom={handleSelectRoom}
+                {...(selectedRoom?.id && { selectedRoomId: selectedRoom.id })}
+              />
+            </MotionView>
+          )}
+
+          {showChatWindow && selectedRoom && (
+            <MotionView
+              style={chatWindowAnimation.style}
+              className={`${isMobile ? 'col-span-1' : 'md:col-span-8'
+                } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
+            >
+              <ChatErrorBoundary>
+                <ChatWindow
+                  room={selectedRoom}
+                  currentUserId={userPet.id}
+                  currentUserName={userPet.name}
+                  currentUserAvatar={userPet.photo}
+                  {...(isMobile && { onBack: handleBack })}
+                />
+              </ChatErrorBoundary>
+            </MotionView>
+          )}
+
+          {!selectedRoom && !isMobile && (
+            <MotionView
+              style={emptyChatAnimation.style}
+              className="md:col-span-8 glass-effect rounded-3xl flex items-center justify-center border border-white/20"
+              role="status"
+              aria-live="polite"
+            >
+              <div className={cn('text-center', getSpacingClassesFromConfig({ paddingX: 'lg' }))}>
+                <MotionView style={emptyChatIconStyle} className={cn('text-6xl', getSpacingClassesFromConfig({ marginY: 'lg' }))} aria-hidden="true">
+                  💬
+                </MotionView>
+                <h3 className={cn(getTypographyClasses('h3'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.selectConversation}</h3>
+                <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>{t.chat.selectConversationDesc}</p>
+              </div>
+            </MotionView>
+          )}
+        </div>
+      </main>
+    </PageTransitionWrapper>
+  );
+}

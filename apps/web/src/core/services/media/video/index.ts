@@ -1,0 +1,1 @@
+export { getVideoThumbnails } from './thumbnails';

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚀 Manual Profile Generator</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      text-align: center;
+      padding: 3rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 2rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { 
+      font-size: 2.5rem; 
+      margin-bottom: 1rem;
+    }
+    .status {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 1rem;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .success { 
+      color: #4ade80; 
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .info {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    button {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      margin: 0.5rem;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐾 Manual Profile Generator</h1>
+    <p style="font-size: 1.1rem; margin-bottom: 2rem;">Generate 15 profiles instantly (no AI required)</p>
+    
+    <button id="generateBtn" onclick="generate()">Generate 15 Profiles</button>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    <div id="info" class="info" style="display: none;"></div>
+  </div>
+
+  <script type="module">
+    async function generate() {
+      const btn = document.getElementById('generateBtn');
+      const status = document.getElementById('status');
+      const info = document.getElementById('info');
+      
+      btn.disabled = true;
+      status.style.display = 'block';
+      status.innerHTML = '🔄 Generating 15 manual profiles...';
+      info.style.display = 'none';
+
+      try {
+        if (!window.spark || !window.spark.kv) {
+          throw new Error('Spark KV not available. Please run in a Spark environment.');
+        }
+
+        // Import manual generator
+        const { generateManualProfilesInFeed } = await import('./src/lib/profile-generator-helper.ts');
+        
+        status.innerHTML = '⏳ Creating profiles...';
+        
+        const profiles = await generateManualProfilesInFeed(15);
+        
+        status.innerHTML = `
+          <div class="success">
+            ✅ SUCCESS! Generated ${profiles.length} profiles!<br><br>
+            <small style="font-weight: normal;">Refresh the main app to see them in the Discover feed.</small>
+          </div>
+        `;
+        
+        info.style.display = 'block';
+        info.innerHTML = `
+          <strong>🎉 Profiles Generated!</strong><br>
+          • ${profiles.length} new pet profiles added<br>
+          • Includes dogs and cats<br>
+          • Ready to use in Discover feed<br>
+          <small style="opacity: 0.8;">Generated at ${new Date().toLocaleTimeString()}</small>
+        `;
+        
+        console.log('✅ Generated profiles:', profiles);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        status.innerHTML = `
+          <div style="color: #f87171;">
+            ❌ Error: ${error.message}<br><br>
+            <small>Check console for details</small>
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Make function available globally
+    window.generate = generate;
+  </script>
+</body>
+</html>
+

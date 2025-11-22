@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@petspark/shared": ["../../packages/shared/src"]
+    }
+  },
+  "include": [
+    "./src/env.d.ts",
+    "./src/components/WelcomeScreenBasic.tsx",
+    "./src/components/AuthScreenSimple.tsx"
+  ]
+}

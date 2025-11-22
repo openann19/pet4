@@ -1,0 +1,27 @@
+{
+  "name": "@petspark/spec-testing",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@petspark/spec-core": "workspace:*",
+    "@petspark/spec-security": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "@vitest/coverage-v8": "^1.0.0",
+    "typescript": "~5.7.2",
+    "vitest": "^1.0.0"
+  }
+}

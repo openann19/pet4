@@ -1,0 +1,4469 @@
+[
+  {
+    "path": "packages/motion/vitest.config.ts"
+  },
+  {
+    "path": "packages/motion/src/global.d.ts"
+  },
+  {
+    "path": "packages/motion/src/index.ts"
+  },
+  {
+    "path": "packages/motion/src/platform.ts"
+  },
+  {
+    "path": "packages/motion/src/react-native-reanimated.d.ts"
+  },
+  {
+    "path": "packages/motion/src/reduced-motion.test.ts"
+  },
+  {
+    "path": "packages/motion/src/reduced-motion.ts"
+  },
+  {
+    "path": "packages/motion/src/tokens.ts"
+  },
+  {
+    "path": "packages/motion/src/usePerfBudget.ts"
+  },
+  {
+    "path": "packages/motion/types/dom-shim.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/browser.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/config.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/coverage.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/environments.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/execute.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/globals.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/import-meta.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/importMeta.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/jsdom.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/node.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/reporters.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/runners.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/snapshot.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/suite.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/workers.d.ts"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionScrollView.tsx"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionText.tsx"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionView.native.tsx"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionView.tsx"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionView.web.reanimated.tsx"
+  },
+  {
+    "path": "packages/motion/src/primitives/MotionView.web.tsx"
+  },
+  {
+    "path": "packages/motion/src/recipes/haptic.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useHoverLift.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useMagnetic.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useParallax.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/usePressBounce.test.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/usePressBounce.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useRipple.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useShimmer.test.ts"
+  },
+  {
+    "path": "packages/motion/src/recipes/useShimmer.ts"
+  },
+  {
+    "path": "packages/motion/src/test/setup.ts"
+  },
+  {
+    "path": "packages/motion/src/transitions/presence.tsx"
+  },
+  {
+    "path": "packages/motion/src/types/expo-haptics.d.ts"
+  },
+  {
+    "path": "packages/motion/src/types/react-native-gesture-handler.d.ts"
+  },
+  {
+    "path": "packages/motion/types/vendor/expo-haptics.d.ts"
+  },
+  {
+    "path": "packages/motion/types/vendor/react-native-gesture-handler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@testing-library/react/pure.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/canary.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/experimental.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/global.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/jsx-dev-runtime.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/jsx-runtime.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/client.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/dom-mini.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/dom.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/m.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/mini.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/framer-motion/dist/three.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/template/App.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/experimental.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/ActionType.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/Directions.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/EnableNewWebImplementation.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/GestureHandlerRootViewContext.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/PlatformConstants.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/PlatformConstants.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/PointerType.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/RNGestureHandlerModule.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/RNGestureHandlerModule.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/RNGestureHandlerModule.windows.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/RNRenderer.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/RNRenderer.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/State.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/TouchEventType.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/findNodeHandle.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/findNodeHandle.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/getShadowNodeFromRef.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/getShadowNodeFromRef.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/ghQueueMicrotask.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/init.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/mountRegistry.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/typeUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/metro-config/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/Animated.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/Bezier.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/Colors.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ConfigHelper.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/Easing.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/PlatformChecker.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/PropAdapters.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReducedMotion.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/Sensor.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/SensorContainer.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/UpdateLayoutAnimations.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ViewDescriptorsSet.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/WorkletEventHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animationBuilder.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/commonTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/core.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/errors.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/fabricUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/fabricUtils.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/helperTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/initializers.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/interpolateColor.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/interpolation.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/isSharedValue.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/jestUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/jestUtils.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/mappers.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/mock.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/mockedRequestAnimationFrame.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/mutables.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/pluginUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/privateGlobals.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/processBoxShadow.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/propsAllowlists.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/publicGlobals.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/reactUtils.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/runtimes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/shareableMappingCache.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/shareables.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/threads.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/valueSetter.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.decorators.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.decorators.legacy.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.dom.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.dom.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.dom.iterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.collection.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.core.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.generator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.iterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.promise.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.proxy.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.reflect.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.symbol.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2016.array.include.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2016.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2016.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2016.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.date.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.object.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.promise.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2018.regexp.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.array.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.object.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2019.symbol.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.bigint.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.date.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.number.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.promise.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.promise.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2021.weakref.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.array.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.error.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.object.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.regexp.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2022.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2023.array.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2023.collection.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2023.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2023.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2023.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.arraybuffer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.collection.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.object.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.promise.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.regexp.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es2024.string.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es5.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.es6.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.array.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.collection.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.decorators.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.disposable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.full.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.intl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.esnext.iterator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.scripthost.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.webworker.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.webworker.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.webworker.importscripts.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/lib.webworker.iterable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/tsserverlibrary.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/typescript/lib/typescript.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/browser.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/config.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/coverage.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/environments.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/execute.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/node.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/reporters-w_64AS5f.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/reporters.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/runners.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/snapshot.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/suite-dWqIFb_-.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/suite.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/vitest/dist/workers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@testing-library/react/types/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@testing-library/react/types/pure.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/canary.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/experimental.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/global.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/jsx-dev-runtime.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@types/react/ts5.0/jsx-runtime.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/@vitejs/plugin-react/dist/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Alert/Alert.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Animated/Animated.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Animated/Easing.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Animated/useAnimatedValue.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/AppState/AppState.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/BatchedBridge/NativeModules.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Button.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Core/registerCallableModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/DevToolsSettings/DevToolsSettingsManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/EventEmitter/NativeEventEmitter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Image/Image.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Image/ImageResizeMode.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Image/ImageSource.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Interaction/InteractionManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Interaction/PanResponder.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/LayoutAnimation/LayoutAnimation.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Linking/Linking.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Lists/FlatList.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Lists/SectionList.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/LogBox/LogBox.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Modal/Modal.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Performance/Systrace.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/PermissionsAndroid/PermissionsAndroid.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/PushNotificationIOS/PushNotificationIOS.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/AppRegistry.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/I18nManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/RendererProxy.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/RootTag.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/UIManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/ReactNative/requireNativeComponent.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Settings/Settings.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Share/Share.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/StyleSheet/PlatformColorValueTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/StyleSheet/StyleSheet.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/StyleSheet/StyleSheetTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/StyleSheet/processColor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Text/Text.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/TurboModule/RCTExport.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/TurboModule/TurboModuleRegistry.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Types/CoreEventTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/Appearance.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/BackHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/DevSettings.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/Dimensions.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/IPerformanceLogger.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/PixelRatio.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Utilities/Platform.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Vibration/Vibration.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/YellowBox/YellowBoxDeprecated.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/template/__tests__/App.test.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/modules/BatchedBridge.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/modules/Codegen.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/modules/Devtools.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/modules/LaunchScreen.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/modules/globals.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/private/TimerMixin.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/private/Utilities.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/public/DeprecatedPropertiesAlias.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/public/Insets.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/public/ReactNativeRenderer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/types/public/ReactNativeTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/ActionType.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/Directions.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/EnableNewWebImplementation.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/GestureHandlerRootViewContext.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/PlatformConstants.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/PlatformConstants.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/PointerType.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/RNGestureHandlerModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/RNGestureHandlerModule.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/RNGestureHandlerModule.windows.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/RNRenderer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/RNRenderer.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/State.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/TouchEventType.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/findNodeHandle.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/findNodeHandle.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/getShadowNodeFromRef.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/getShadowNodeFromRef.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/ghQueueMicrotask.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/init.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/mountRegistry.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/typeUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/DrawerLayout.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureButtons.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureButtonsProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureComponents.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureComponents.web.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureHandlerButton.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureHandlerButton.web.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureHandlerRootView.android.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureHandlerRootView.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/GestureHandlerRootView.web.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/ReanimatedDrawerLayout.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Swipeable.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Text.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/gestureHandlerRootHOC.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/FlingGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/ForceTouchGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/GestureHandlerEventPayload.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/LongPressGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/NativeViewGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/PanGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/PinchGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/PressabilityDebugView.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/PressabilityDebugView.web.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/RotationGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/TapGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/createHandler.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/createNativeWrapper.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/customDirectEventTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/customDirectEventTypes.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestureHandlerCommon.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestureHandlerTypesCompat.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/getNextHandlerTag.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/handlersRegistry.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/jestUtils/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/jestUtils/jestUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/mocks/Pressable.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/mocks/mocks.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/specs/NativeRNGestureHandlerModule.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/specs/RNGestureHandlerButtonNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/specs/RNGestureHandlerRootViewNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/Gestures.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/constants.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/interfaces.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/DiscreteGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/DraggingGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/Errors.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/FlingGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/GestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/IndiscreteGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/LongPressGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/NativeViewGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/NodeManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/PanGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/PinchGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/PressGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/RotationGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/TapGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/constants.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web_hammer/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/Animated.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/Bezier.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/Colors.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ConfigHelper.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/Easing.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/PlatformChecker.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/PropAdapters.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReducedMotion.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/Sensor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/SensorContainer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/UpdateLayoutAnimations.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ViewDescriptorsSet.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/WorkletEventHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animationBuilder.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/commonTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/core.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/errors.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/fabricUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/fabricUtils.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/helperTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/initializers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/interpolateColor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/interpolation.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/isSharedValue.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/jestUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/jestUtils.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/mappers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/mock.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/mockedRequestAnimationFrame.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/mutables.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/pluginUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/processBoxShadow.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/propsAllowlists.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/publicGlobals.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/reactUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/runtimes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/shareableMappingCache.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/shareables.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/threads.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/valueSetter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/NativeReanimated.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/index.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleInstance.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleInstance.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/reanimatedModuleProxy.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/clamp.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/commonTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/delay.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/repeat.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/sequence.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/spring.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/springUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/styleAnimation.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/timing.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/util.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/FlatList.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/Image.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/LayoutAnimationConfig.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/PerformanceMonitor.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/ReducedMotionConfig.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/ScrollView.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/Text.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/component/View.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/InlinePropManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/JSPropsUpdater.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/JSPropsUpdater.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/NativeEventsManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/PropsFilter.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/commonTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/createAnimatedComponent.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/getViewInfo.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/setAndForwardRef.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/createAnimatedComponent/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/culori/Colors.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/culori/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/culori/lrgb.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/culori/oklab.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/frameCallback/FrameCallbackRegistryJS.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/frameCallback/FrameCallbackRegistryUI.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/frameCallback/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/commonTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedKeyboard.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedReaction.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedRef.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedScrollHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedSensor.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useAnimatedStyle.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useComposedEventHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useDerivedValue.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useEvent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useFrameCallback.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useReducedMotion.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useScrollViewOffset.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useSharedValue.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/useWorkletCallback.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/hook/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/animationsManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/logger/LogBox.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/logger/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/logger/logger.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platform-specific/checkCppVersion.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platform-specific/jsVersion.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/dispatchCommand.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/dispatchCommand.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/findNodeHandle.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/findNodeHandle.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/getRelativeCoords.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/measure.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/measure.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/scrollTo.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/scrollTo.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/setGestureState.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/setGestureState.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/setNativeProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/platformFunctions/setNativeProps.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/RNScreensTurboModule.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/animationManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/commonTypes.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/presets.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/styleUpdater.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/screenTransition/swipeSimulator.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/specs/NativeReanimatedModule.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/specs/NativeWorkletsModule.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/specs/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/updateProps/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/updateProps/processTransformOrigin.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/updateProps/updateProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/valueUnpacker.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/ActivityIndicator/ActivityIndicator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Clipboard/Clipboard.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Keyboard/Keyboard.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Pressable/Pressable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/RefreshControl/RefreshControl.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/SafeAreaView/SafeAreaView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/ScrollView/ScrollView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/StatusBar/StatusBar.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Switch/Switch.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/TextInput/InputAccessoryView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/TextInput/TextInput.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/ToastAndroid/ToastAndroid.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Touchable/Touchable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Touchable/TouchableHighlight.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Touchable/TouchableNativeFeedback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Touchable/TouchableOpacity.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/Touchable/TouchableWithoutFeedback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/View/View.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/View/ViewAccessibility.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/Components/View/ViewPropTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/vendor/core/ErrorUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native/Libraries/vendor/emitter/EventEmitter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/commonjs/specs/RNGestureHandlerButtonNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/commonjs/specs/RNGestureHandlerRootViewNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/module/specs/RNGestureHandlerButtonNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/module/specs/RNGestureHandlerRootViewNativeComponent.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/DrawerLayout.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureButtons.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureButtonsProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureComponents.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureComponents.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureHandlerButton.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureHandlerButton.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureHandlerRootView.android.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureHandlerRootView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/GestureHandlerRootView.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/ReanimatedDrawerLayout.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Swipeable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Text.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/gestureHandlerRootHOC.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/FlingGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/ForceTouchGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/GestureHandlerEventPayload.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/LongPressGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/NativeViewGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/PanGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/PinchGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/PressabilityDebugView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/PressabilityDebugView.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/RotationGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/TapGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/createHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/createNativeWrapper.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/customDirectEventTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/customDirectEventTypes.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestureHandlerCommon.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestureHandlerTypesCompat.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/getNextHandlerTag.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/handlersRegistry.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/jestUtils/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/jestUtils/jestUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/mocks/Pressable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/mocks/mocks.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/specs/NativeRNGestureHandlerModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/specs/RNGestureHandlerButtonNativeComponent.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/specs/RNGestureHandlerRootViewNativeComponent.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/Gestures.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/constants.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/interfaces.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/DiscreteGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/DraggingGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/Errors.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/FlingGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/GestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/IndiscreteGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/LongPressGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/NativeViewGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/NodeManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/PanGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/PinchGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/PressGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/RotationGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/TapGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/constants.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web_hammer/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/Pressable.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/PressableProps.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/StateMachine.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/stateDefinitions.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/Pressable/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/ReanimatedSwipeable/ReanimatedSwipeable.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/ReanimatedSwipeable/ReanimatedSwipeableProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/ReanimatedSwipeable/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/ExtraButtonProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/GenericTouchable.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/GenericTouchableProps.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableHighlight.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableNativeFeedback.android.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableNativeFeedback.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableNativeFeedbackProps.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableOpacity.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/TouchableWithoutFeedback.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/components/touchables/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/eventReceiver.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/flingGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/forceTouchGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/gesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/gestureComposition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/gestureObjects.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/gestureStateManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/gestureStateManager.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/hoverGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/longPressGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/manualGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/nativeGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/panGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/pinchGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/reanimatedWrapper.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/rotationGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/tapGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/detectors/RotationGestureDetector.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/detectors/ScaleGestureDetector.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/FlingGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/GestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/HoverGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/IGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/LongPressGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/ManualGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/NativeViewGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/PanGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/PinchGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/RotationGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/handlers/TapGestureHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/CircularBuffer.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/EventManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/GestureHandlerDelegate.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/GestureHandlerOrchestrator.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/GestureHandlerWebDelegate.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/InteractionManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/KeyboardEventManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/LeastSquareSolver.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/NodeManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/PointerEventManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/PointerTracker.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/Vector.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/VelocityTracker.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/web/tools/WheelEventManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/NativeReanimated.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/index.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/reanimatedModuleInstance.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/reanimatedModuleInstance.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/reanimatedModuleProxy.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/clamp.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/commonTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/delay.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/repeat.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/sequence.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/spring.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/springUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/styleAnimation.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/timing.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/util.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/FlatList.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/Image.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/LayoutAnimationConfig.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/PerformanceMonitor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/ReducedMotionConfig.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/ScrollView.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/Text.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/component/View.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/InlinePropManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/JSPropsUpdater.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/JSPropsUpdater.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/NativeEventsManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/PropsFilter.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/commonTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/createAnimatedComponent.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/getViewInfo.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/setAndForwardRef.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/createAnimatedComponent/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/culori/Colors.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/culori/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/culori/lrgb.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/culori/oklab.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/frameCallback/FrameCallbackRegistryJS.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/frameCallback/FrameCallbackRegistryUI.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/frameCallback/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/commonTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedKeyboard.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedReaction.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedRef.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedScrollHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedSensor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useAnimatedStyle.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useComposedEventHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useDerivedValue.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useEvent.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useFrameCallback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useReducedMotion.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useScrollViewOffset.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useSharedValue.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/useWorkletCallback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/hook/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/animationsManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/logger/LogBox.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/logger/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/logger/logger.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platform-specific/checkCppVersion.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platform-specific/findHostInstance.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platform-specific/findHostInstance.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platform-specific/jsVersion.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/dispatchCommand.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/dispatchCommand.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/findNodeHandle.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/findNodeHandle.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/getRelativeCoords.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/measure.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/measure.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/scrollTo.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/scrollTo.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/setGestureState.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/setGestureState.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/setNativeProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/platformFunctions/setNativeProps.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/RNScreensTurboModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/animationManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/commonTypes.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/presets.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/styleUpdater.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/screenTransition/swipeSimulator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/specs/NativeReanimatedModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/specs/NativeWorkletsModule.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/specs/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/updateProps/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/updateProps/processTransformOrigin.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/updateProps/updateProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/valueUnpacker.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/JSReanimated.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/WebSensor.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/react-native-web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/webUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/ReanimatedModule/js-reanimated/webUtils.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/decay/decay.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/decay/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/decay/rigidDecay.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/decay/rubberBandDecay.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/decay/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/animation/transformationMatrix/matrixUtils.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/animationBuilder/BaseAnimationBuilder.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/animationBuilder/ComplexAnimationBuilder.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/animationBuilder/Keyframe.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/animationBuilder/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Bounce.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Fade.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Flip.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Lightspeed.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Pinwheel.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Roll.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Rotate.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Slide.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Stretch.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/Zoom.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultAnimations/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/CurvedTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/EntryExitTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/FadingTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/JumpingTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/LinearTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/SequencedTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/defaultTransitions/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/sharedTransitions/ProgressTransitionManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/sharedTransitions/SharedTransition.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/sharedTransitions/SharedTransition.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/sharedTransitions/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/Easing.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animationParser.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animationsManager.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/componentStyle.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/componentUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/config.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/createAnimation.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/domUtils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/JSWorklets.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/NativeWorklets.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/index.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/workletsModuleInstance.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/workletsModuleInstance.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/worklets/WorkletsModule/workletsModuleProxy.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/Pressable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/PressableProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/StateMachine.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/stateDefinitions.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/Pressable/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/ReanimatedSwipeable/ReanimatedSwipeable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/ReanimatedSwipeable/ReanimatedSwipeableProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/ReanimatedSwipeable/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/ExtraButtonProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchableProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableHighlight.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableNativeFeedback.android.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableNativeFeedback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableNativeFeedbackProps.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableOpacity.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/TouchableWithoutFeedback.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/components/touchables/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/eventReceiver.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/flingGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/forceTouchGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureComposition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureObjects.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/gestureStateManager.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/hoverGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/longPressGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/manualGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/nativeGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/panGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/pinchGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/reanimatedWrapper.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/rotationGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/tapGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/detectors/RotationGestureDetector.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/detectors/ScaleGestureDetector.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/FlingGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/GestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/HoverGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/IGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/LongPressGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/ManualGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/NativeViewGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/PanGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/PinchGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/RotationGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/handlers/TapGestureHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/CircularBuffer.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/EventManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/GestureHandlerDelegate.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/GestureHandlerOrchestrator.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/GestureHandlerWebDelegate.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/InteractionManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/KeyboardEventManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/LeastSquareSolver.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/NodeManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/PointerEventManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/PointerTracker.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/Vector.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/VelocityTracker.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/web/tools/WheelEventManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/Wrap.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/Wrap.web.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/attachHandlers.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/dropHandlers.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/index.tsx"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/needsToReattach.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/types.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/updateHandlers.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/useAnimatedGesture.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/useDetectorUpdater.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/useMountReactions.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/useViewRefHandler.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/src/handlers/gestures/GestureDetector/utils.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/js-reanimated/JSReanimated.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/js-reanimated/WebSensor.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/js-reanimated/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/js-reanimated/webUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/ReanimatedModule/js-reanimated/webUtils.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/decay/decay.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/decay/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/decay/rigidDecay.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/decay/rubberBandDecay.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/decay/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/animation/transformationMatrix/matrixUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/animationBuilder/BaseAnimationBuilder.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/animationBuilder/ComplexAnimationBuilder.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/animationBuilder/Keyframe.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/animationBuilder/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Bounce.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Fade.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Flip.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Lightspeed.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Pinwheel.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Roll.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Rotate.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Slide.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Stretch.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/Zoom.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultAnimations/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/CurvedTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/EntryExitTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/FadingTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/JumpingTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/LinearTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/SequencedTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/defaultTransitions/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/sharedTransitions/ProgressTransitionManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/sharedTransitions/SharedTransition.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/sharedTransitions/SharedTransition.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/sharedTransitions/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/Easing.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animationParser.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animationsManager.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/componentStyle.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/componentUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/config.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/createAnimation.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/domUtils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/JSWorklets.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/NativeWorklets.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/workletsModuleInstance.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/workletsModuleInstance.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/worklets/WorkletsModule/workletsModuleProxy.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Bounce.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Fade.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Flip.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Lightspeed.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Pinwheel.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Roll.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Rotate.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Slide.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Stretch.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/animation/Zoom.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/Curved.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/EntryExit.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/Fading.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/Jumping.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/Linear.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/src/layoutReanimation/web/transition/Sequenced.web.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/Wrap.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/Wrap.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/attachHandlers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/dropHandlers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/index.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/needsToReattach.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/types.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/updateHandlers.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/useAnimatedGesture.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/useDetectorUpdater.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/useMountReactions.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/useViewRefHandler.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-gesture-handler/lib/typescript/handlers/gestures/GestureDetector/utils.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Bounce.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Fade.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Flip.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Lightspeed.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Pinwheel.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Roll.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Rotate.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Slide.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Stretch.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/animation/Zoom.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/Curved.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/EntryExit.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/Fading.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/Jumping.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/Linear.web.d.ts"
+  },
+  {
+    "path": "packages/motion/node_modules/react-native-reanimated/lib/typescript/layoutReanimation/web/transition/Sequenced.web.d.ts"
+  },
+  {
+    "path": "packages/config/src/feature-flags.ts"
+  },
+  {
+    "path": "packages/config/src/index.ts"
+  },
+  {
+    "path": "packages/config/src/legal.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/browser.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/config.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/coverage.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/environments.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/execute.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/globals.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/import-meta.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/importMeta.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/jsdom.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/node.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/reporters.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/runners.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/snapshot.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/suite.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/utils.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/workers.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.decorators.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.decorators.legacy.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.dom.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.dom.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.dom.iterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.collection.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.core.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.generator.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.iterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.promise.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.proxy.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.reflect.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.symbol.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2016.array.include.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2016.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2016.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2016.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.date.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.object.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2017.typedarrays.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.promise.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2018.regexp.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.array.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.object.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2019.symbol.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.bigint.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.date.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.number.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.promise.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.promise.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2021.weakref.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.array.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.error.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.object.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.regexp.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2022.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2023.array.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2023.collection.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2023.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2023.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2023.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.arraybuffer.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.collection.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.object.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.promise.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.regexp.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.sharedmemory.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es2024.string.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es5.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.es6.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.array.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.collection.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.decorators.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.disposable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.full.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.intl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.esnext.iterator.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.scripthost.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.webworker.asynciterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.webworker.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.webworker.importscripts.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/lib.webworker.iterable.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/tsserverlibrary.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/typescript/lib/typescript.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/browser.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/config.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/coverage.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/environments.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/execute.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/node.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/reporters-w_64AS5f.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/reporters.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/runners.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/snapshot.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/suite-dWqIFb_-.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/suite.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/utils.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/vitest/dist/workers.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/ZodError.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/errors.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/external.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/standard-schema.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/types.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4-mini/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/ZodError.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/errors.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/external.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/standard-schema.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/types.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4-mini/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/enumUtil.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/errorUtil.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/parseUtil.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/partialUtil.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/typeAliases.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/helpers/util.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v3/locales/en.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/checks.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/coerce.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/compat.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/errors.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/external.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/iso.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/parse.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/classic/schemas.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/api.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/checks.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/core.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/doc.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/errors.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/function.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/json-schema.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/parse.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/regexes.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/registries.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/schemas.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/standard-schema.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/to-json-schema.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/util.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/core/versions.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ar.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/az.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/be.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ca.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/cs.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/de.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/en.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/eo.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/es.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/fa.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/fi.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/fr-CA.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/fr.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/he.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/hu.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/id.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/it.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ja.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/kh.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ko.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/mk.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ms.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/nl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/no.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ota.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/pl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ps.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/pt.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ru.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/sl.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/sv.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ta.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/th.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/tr.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ua.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/ur.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/vi.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/zh-CN.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/locales/zh-TW.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/checks.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/coerce.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/external.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/index.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/iso.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/parse.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/v4/mini/schemas.d.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/datetime.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/discriminatedUnion.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/ipv4.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/object.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/primitives.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/realworld.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/string.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/benchmarks/union.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/enumUtil.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/errorUtil.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/parseUtil.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/partialUtil.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/typeAliases.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/helpers/util.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/locales/en.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/Mocker.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/all-errors.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/anyunknown.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/array.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/async-parsing.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/async-refinements.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/base.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/bigint.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/branded.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/catch.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/coerce.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/complex.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/custom.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/date.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/deepmasking.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/default.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/description.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/discriminated-unions.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/enum.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/error.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/firstparty.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/firstpartyschematypes.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/function.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/generics.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/instanceof.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/intersection.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/language-server.source.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/language-server.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/literal.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/map.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/masking.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/mocker.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/nan.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/nativeEnum.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/nullable.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/number.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/object-augmentation.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/object-in-es5-env.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/object.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/optional.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/parseUtil.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/parser.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/partials.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/pickomit.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/pipeline.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/preprocess.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/primitive.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/promise.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/readonly.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/record.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/recursive.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/refine.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/safeparse.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/set.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/standard-schema.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/string.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/transformer.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/tuple.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/unions.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/validations.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v3/tests/void.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/checks.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/coerce.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/compat.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/errors.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/external.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/iso.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/parse.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/schemas.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/api.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/checks.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/config.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/core.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/doc.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/errors.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/function.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/json-schema.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/parse.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/regexes.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/registries.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/schemas.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/standard-schema.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/to-json-schema.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/util.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/versions.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/zsf.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ar.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/az.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/be.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ca.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/cs.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/de.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/en.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/eo.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/es.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/fa.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/fi.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/fr-CA.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/fr.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/he.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/hu.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/id.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/it.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ja.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/kh.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ko.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/mk.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ms.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/nl.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/no.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ota.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/pl.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ps.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/pt.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ru.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/sl.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/sv.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ta.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/th.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/tr.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ua.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/ur.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/vi.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/zh-CN.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/locales/zh-TW.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/checks.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/coerce.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/external.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/index.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/iso.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/parse.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/schemas.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/anyunknown.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/array.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/assignability.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/async-parsing.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/async-refinements.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/base.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/bigint.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/brand.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/catch.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/coalesce.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/coerce.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/continuability.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/custom.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/date.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/datetime.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/default.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/description.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/discriminated-unions.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/enum.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/error-utils.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/error.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/file.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/firstparty.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/function.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/generics.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/index.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/instanceof.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/intersection.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/json.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/lazy.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/literal.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/map.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/nan.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/nested-refine.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/nonoptional.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/nullable.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/number.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/object.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/optional.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/partial.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/pickomit.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/pipe.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/prefault.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/preprocess.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/primitive.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/promise.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/prototypes.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/readonly.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/record.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/recursive-types.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/refine.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/registries.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/set.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/standard-schema.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/string-formats.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/string.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/stringbool.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/template-literal.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/to-json-schema.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/transform.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/tuple.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/union.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/validations.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/classic/tests/void.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/tests/index.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/assignability.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/brand.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/checks.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/computed.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/error.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/functions.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/index.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/number.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/object.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/prototypes.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/recursive-types.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/mini/tests/string.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/tests/locales/be.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/tests/locales/en.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/tests/locales/ru.test.ts"
+  },
+  {
+    "path": "packages/config/node_modules/zod/src/v4/core/tests/locales/tr.test.ts"
+  }
+]

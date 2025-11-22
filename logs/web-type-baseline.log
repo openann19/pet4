@@ -1,0 +1,137 @@
+
+> spark-template@0.0.0 type-check /home/ben/Public/PETSPARK/apps/web
+> tsc --noEmit
+
+src/App.tsx(222,15): error TS2322: Type 'DefaultStyle' is not assignable to type 'AnimatedStyle'.
+  Type 'ViewStyle' is not assignable to type 'AnimatedStyle'.
+    Type 'ViewStyle' is not assignable to type '{ [key: string]: unknown; opacity?: number | undefined; transform?: Record<string, string | number>[] | undefined; backgroundColor?: string | number | undefined; color?: string | number | undefined; height?: string | ... 1 more ... | undefined; width?: string | ... 1 more ... | undefined; }'.
+      Types of property 'opacity' are incompatible.
+        Type 'AnimatableNumericValue | undefined' is not assignable to type 'number | undefined'.
+          Type 'AnimatedNode' is not assignable to type 'number'.
+src/App.tsx(473,27): error TS2322: Type 'DefaultStyle' is not assignable to type 'AnimatedStyle'.
+  Type 'ViewStyle' is not assignable to type 'AnimatedStyle'.
+    Type 'ViewStyle' is not assignable to type '{ [key: string]: unknown; opacity?: number | undefined; transform?: Record<string, string | number>[] | undefined; backgroundColor?: string | number | undefined; color?: string | number | undefined; height?: string | ... 1 more ... | undefined; width?: string | ... 1 more ... | undefined; }'.
+      Types of property 'opacity' are incompatible.
+        Type 'AnimatableNumericValue | undefined' is not assignable to type 'number | undefined'.
+          Type 'AnimatedNode' is not assignable to type 'number'.
+src/App.tsx(501,27): error TS2322: Type 'DefaultStyle' is not assignable to type 'AnimatedStyle'.
+  Type 'ViewStyle' is not assignable to type 'AnimatedStyle'.
+    Type 'ViewStyle' is not assignable to type '{ [key: string]: unknown; opacity?: number | undefined; transform?: Record<string, string | number>[] | undefined; backgroundColor?: string | number | undefined; color?: string | number | undefined; height?: string | ... 1 more ... | undefined; width?: string | ... 1 more ... | undefined; }'.
+      Types of property 'opacity' are incompatible.
+        Type 'AnimatableNumericValue | undefined' is not assignable to type 'number | undefined'.
+          Type 'AnimatedNode' is not assignable to type 'number'.
+src/agi_ui_engine/effects/useDynamicBackgroundMesh.tsx(58,42): error TS2345: Argument of type '() => { background?: undefined; backgroundSize?: undefined; backgroundPosition?: undefined; } | { background: string; backgroundSize: string; backgroundPosition: string; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ background?: undefined; backgroundSize?: undefined; backgroundPosition?: undefined; } | { background: string; backgroundSize: string; backgroundPosition: string; }' is not assignable to type 'DefaultStyle'.
+    Type '{ background?: undefined; backgroundSize?: undefined; backgroundPosition?: undefined; }' is not assignable to type 'DefaultStyle'.
+src/agi_ui_engine/effects/useMoodTheme.tsx(87,42): error TS2345: Argument of type '() => { background?: undefined; backgroundOpacity?: undefined; } | { background: string; backgroundOpacity: number; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ background?: undefined; backgroundOpacity?: undefined; } | { background: string; backgroundOpacity: number; }' is not assignable to type 'DefaultStyle'.
+    Type '{ background?: undefined; backgroundOpacity?: undefined; }' is not assignable to type 'DefaultStyle'.
+src/components/admin/ModerationQueue.tsx(93,9): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string'.
+src/components/admin/ModerationQueue.tsx(121,9): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string'.
+src/components/admin/ModerationQueue.tsx(150,9): error TS2345: Argument of type '{}' is not assignable to parameter of type 'string'.
+src/components/admin/VerificationReviewDashboard.tsx(70,9): error TS2322: Type 'VerificationStatus[] | undefined' is not assignable to type '("pending" | "approved" | "rejected")[] | undefined'.
+  Type 'VerificationStatus[]' is not assignable to type '("pending" | "approved" | "rejected")[]'.
+    Type 'VerificationStatus' is not assignable to type '"pending" | "approved" | "rejected"'.
+      Type '"verified"' is not assignable to type '"pending" | "approved" | "rejected"'.
+src/components/admin/VerificationReviewDashboard.tsx(72,31): error TS2345: Argument of type 'VerificationRequest[]' is not assignable to parameter of type 'SetStateAction<VerificationRequest[]>'.
+  Type 'import("/home/ben/Public/PETSPARK/apps/web/src/api/verification-api").VerificationRequest[]' is not assignable to type 'import("/home/ben/Public/PETSPARK/apps/web/src/components/admin/VerificationReviewDashboard").VerificationRequest[]'.
+    Type 'VerificationRequest' is missing the following properties from type 'VerificationRequest': level, requestedAt, documents
+src/components/admin/VerificationReviewDashboard.tsx(478,34): error TS2339: Property 'fileName' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(486,79): error TS2339: Property 'fileName' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(488,37): error TS2339: Property 'fileSize' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(488,101): error TS2339: Property 'uploadedAt' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(494,35): error TS2339: Property 'fileData' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(496,45): error TS2339: Property 'fileData' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/admin/VerificationReviewDashboard.tsx(497,49): error TS2339: Property 'fileName' does not exist on type '{ id: string; type: string; url: string; status: "verified" | "pending" | "rejected"; reviewedAt?: string | undefined; reviewedBy?: string | undefined; rejectionReason?: string | undefined; }'.
+src/components/chat/bubble-wrapper-god-tier/effects/useBubbleCompressionOnSpeed.ts(84,42): error TS2345: Argument of type '() => { transform: { scaleY: number; }[]; marginBottom: `${number}px`; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ transform: { scaleY: number; }[]; marginBottom: `${number}px`; }' is not assignable to type 'DefaultStyle'.
+    Type '{ transform: { scaleY: number; }[]; marginBottom: `${number}px`; }' is not assignable to type 'TextStyle'.
+      Types of property 'marginBottom' are incompatible.
+        Type '`${number}px`' is not assignable to type 'DimensionValue | undefined'.
+src/components/lost-found/CreateLostAlertDialog.tsx(96,9): error TS2322: Type '{}' is not assignable to type 'string'.
+src/components/lost-found/CreateLostAlertDialog.tsx(97,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+src/components/swipe/CardStack.tsx(229,9): error TS2322: Type 'DefaultStyle' is not assignable to type 'AnimatedStyle'.
+  Type 'ViewStyle' is not assignable to type 'AnimatedStyle'.
+    Type 'ViewStyle' is not assignable to type '{ [key: string]: unknown; opacity?: number | undefined; transform?: Record<string, string | number>[] | undefined; backgroundColor?: string | number | undefined; color?: string | number | undefined; height?: string | ... 1 more ... | undefined; width?: string | ... 1 more ... | undefined; }'.
+      Types of property 'opacity' are incompatible.
+        Type 'AnimatableNumericValue | undefined' is not assignable to type 'number | undefined'.
+          Type 'AnimatedNode' is not assignable to type 'number'.
+src/components/swipe/CardStack.tsx(335,25): error TS2322: Type 'DefaultStyle' is not assignable to type 'AnimatedStyle'.
+  Type 'ViewStyle' is not assignable to type 'AnimatedStyle'.
+    Type 'ViewStyle' is not assignable to type '{ [key: string]: unknown; opacity?: number | undefined; transform?: Record<string, string | number>[] | undefined; backgroundColor?: string | number | undefined; color?: string | number | undefined; height?: string | ... 1 more ... | undefined; width?: string | ... 1 more ... | undefined; }'.
+      Types of property 'opacity' are incompatible.
+        Type 'AnimatableNumericValue | undefined' is not assignable to type 'number | undefined'.
+          Type 'AnimatedNode' is not assignable to type 'number'.
+src/components/views/CommunityView.tsx(53,10): error TS6133: '_mapSizeToAdoptionSize' is declared but its value is never read.
+src/components/views/CommunityView.tsx(62,10): error TS6133: '_mapStatusToAdoptionStatus' is declared but its value is never read.
+src/components/views/CommunityView.tsx(70,10): error TS6133: '_mapEnergyLevel' is declared but its value is never read.
+src/components/views/NotificationsView.tsx(10,1): error TS6133: 'Badge' is declared but its value is never read.
+src/components/views/NotificationsView.tsx(11,39): error TS6133: 'TabsContent' is declared but its value is never read.
+src/components/views/NotificationsView.tsx(34,9): error TS6133: 't' is declared but its value is never read.
+src/components/views/NotificationsView.tsx(252,21): error TS2322: Type '{ children: Element; src: string | undefined; alt: string; className: string; }' is not assignable to type 'IntrinsicAttributes & AvatarProps & RefAttributes<HTMLSpanElement>'.
+  Property 'src' does not exist on type 'IntrinsicAttributes & AvatarProps & RefAttributes<HTMLSpanElement>'.
+src/components/views/SavedPostsView.tsx(56,9): error TS6133: 'handleUnsave' is declared but its value is never read.
+src/components/views/UserPostsView.tsx(35,9): error TS6133: 't' is declared but its value is never read.
+src/components/views/UserPostsView.tsx(87,13): error TS18048: 'firstPost' is possibly 'undefined'.
+src/components/views/UserPostsView.tsx(88,25): error TS18048: 'firstPost' is possibly 'undefined'.
+src/components/views/UserPostsView.tsx(90,13): error TS18048: 'firstPost' is possibly 'undefined'.
+src/components/views/UserPostsView.tsx(91,27): error TS18048: 'firstPost' is possibly 'undefined'.
+src/components/views/UserPostsView.tsx(133,13): error TS2322: Type '{ children: Element; src: string | undefined; alt: string; className: string; }' is not assignable to type 'IntrinsicAttributes & AvatarProps & RefAttributes<HTMLSpanElement>'.
+  Property 'src' does not exist on type 'IntrinsicAttributes & AvatarProps & RefAttributes<HTMLSpanElement>'.
+src/effects/reanimated/use-gradient-animation.ts(99,34): error TS2345: Argument of type '() => { transform: Record<string, number>[]; opacity: number; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ transform: Record<string, number>[]; opacity: number; }' is not assignable to type 'DefaultStyle'.
+    Type '{ transform: Record<string, number>[]; opacity: number; }' is not assignable to type 'TextStyle'.
+      Types of property 'transform' are incompatible.
+        Type 'Record<string, number>[]' is not assignable to type 'string | readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; ... 6 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[] | undefined'.
+          Type 'Record<string, number>[]' is not assignable to type 'readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[]'.
+            Type 'Record<string, number>' is not assignable to type '({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; })'.
+              Type 'Record<string, number>' is not assignable to type '{ matrix: AnimatableNumericValue[]; } & { perspective?: undefined; rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; ... 5 more ...; skewY?: undefined; }'.
+                Property 'matrix' is missing in type 'Record<string, number>' but required in type '{ matrix: AnimatableNumericValue[]; }'.
+src/hooks/use-bubble-hover-tilt.ts(69,42): error TS2345: Argument of type '() => { transform: ({ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; })[]; boxShadow: string; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ transform: ({ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; })[]; boxShadow: string; }' is not assignable to type 'DefaultStyle'.
+    Type '{ transform: ({ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; })[]; boxShadow: string; }' is not assignable to type 'TextStyle'.
+      Types of property 'transform' are incompatible.
+        Type '({ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; })[]' is not assignable to type 'string | readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; ... 6 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[] | undefined'.
+          Type '({ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; })[]' is not assignable to type 'readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[]'.
+            Type '{ rotateX: string; rotateY?: undefined; translateZ?: undefined; } | { rotateY: string; rotateX?: undefined; translateZ?: undefined; } | { translateZ: string; rotateX?: undefined; rotateY?: undefined; }' is not assignable to type '({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; })'.
+              Type '{ translateZ: string; rotateX?: undefined; rotateY?: undefined; }' is not assignable to type '({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; })'.
+                Type '{ translateZ: string; rotateX?: undefined; rotateY?: undefined; }' is not assignable to type '({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 9 more ... | ({ ...; } & { ...; })'.
+                  Type '{ translateZ: string; rotateX?: undefined; rotateY?: undefined; }' is not assignable to type '{ matrix: AnimatableNumericValue[]; } & { perspective?: undefined; rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; ... 5 more ...; skewY?: undefined; }'.
+                    Property 'matrix' is missing in type '{ translateZ: string; rotateX?: undefined; rotateY?: undefined; }' but required in type '{ matrix: AnimatableNumericValue[]; }'.
+src/hooks/use-bubble-hover-tilt.ts(87,38): error TS2345: Argument of type '() => { opacity: number; transform: { translateZ: string; }[]; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ opacity: number; transform: { translateZ: string; }[]; }' is not assignable to type 'DefaultStyle'.
+    Type '{ opacity: number; transform: { translateZ: string; }[]; }' is not assignable to type 'TextStyle'.
+      Types of property 'transform' are incompatible.
+        Type '{ translateZ: string; }[]' is not assignable to type 'string | readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; ... 6 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[] | undefined'.
+          Type '{ translateZ: string; }[]' is not assignable to type 'readonly (({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; }))[]'.
+            Type '{ translateZ: string; }' is not assignable to type '({ perspective: AnimatableNumericValue; } & { rotate?: undefined; scale?: undefined; translateX?: undefined; translateY?: undefined; rotateX?: undefined; rotateY?: undefined; ... 5 more ...; matrix?: undefined; }) | ... 11 more ... | ({ ...; } & { ...; })'.
+src/hooks/use-native-swipe.ts(285,5): error TS2322: Type 'AnimatedStyle' is not assignable to type 'DefaultStyle'.
+  Type 'undefined' is not assignable to type 'DefaultStyle'.
+src/hooks/use-native-swipe.ts(286,5): error TS2322: Type 'AnimatedStyle' is not assignable to type 'DefaultStyle'.
+  Type 'undefined' is not assignable to type 'DefaultStyle'.
+src/hooks/use-nav-button-animation.ts(155,43): error TS2345: Argument of type '() => { opacity: number; width: `${number}px`; }' is not assignable to parameter of type '() => DefaultStyle'.
+  Type '{ opacity: number; width: `${number}px`; }' is not assignable to type 'DefaultStyle'.
+    Type '{ opacity: number; width: `${number}px`; }' is not assignable to type 'TextStyle'.
+      Types of property 'width' are incompatible.
+        Type '`${number}px`' is not assignable to type 'DimensionValue | undefined'.
+src/lib/chat-service.ts(8,51): error TS6196: 'ReadReceipt' is declared but never used.
+src/lib/chat-service.ts(8,64): error TS6196: 'TypingIndicator' is declared but never used.
+src/lib/feature-flags.ts(243,11): error TS6133: 'err' is declared but its value is never read.
+src/lib/feature-flags.ts(260,11): error TS6133: 'err' is declared but its value is never read.
+src/lib/feature-flags.ts(301,11): error TS6133: 'err' is declared but its value is never read.
+src/lib/monitoring/sentry-config.ts(20,64): error TS2724: '"/home/ben/Public/PETSPARK/apps/web/node_modules/.pnpm/@sentry+browser@10.22.0/node_modules/@sentry/browser/build/npm/types/index"' has no exported member named 'Integration'. Did you mean 'addIntegration'?
+src/lib/monitoring/sentry-config.ts(24,7): error TS2322: Type '(event: Sentry.Event, _hint?: Sentry.EventHint) => Sentry.Event | null' is not assignable to type '(event: ErrorEvent, hint: EventHint) => ErrorEvent | PromiseLike<ErrorEvent | null> | null'.
+  Type 'Event | null' is not assignable to type 'ErrorEvent | PromiseLike<ErrorEvent | null> | null'.
+    Type 'Event' is not assignable to type 'ErrorEvent | PromiseLike<ErrorEvent | null> | null'.
+      Type 'Event' is not assignable to type 'ErrorEvent'.
+        Types of property 'type' are incompatible.
+          Type 'EventType' is not assignable to type 'undefined'.
+            Type '"profile"' is not assignable to type 'undefined'.
+src/lib/notifications-service.ts(302,17): error TS6133: 'queryUsersInRadius' is declared but its value is never read.
+src/lib/notifications-service.ts(322,11): error TS6133: 'calculateDistance' is declared but its value is never read.
+src/lib/offline-sync.ts(237,53): error TS2322: Type 'unknown' is not assignable to type 'ReactionType'.
+src/lib/purchase-service.ts(17,7): error TS6133: 'ERROR_INVALID_RESPONSE_FORMAT' is declared but its value is never read.
+src/lib/purchase-service.ts(31,10): error TS6133: 'isValidVerificationResponse' is declared but its value is never read.
+src/lib/purchase-service.ts(277,22): error TS2339: Property 'swipeDailyCap' does not exist on type 'UserEntitlements'.
+ ELIFECYCLE  Command failed with exit code 2.

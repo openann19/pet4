@@ -1,0 +1,98 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '8'
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'production' }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Run pre-deployment checks
+        working-directory: apps/web
+        run: |
+          pnpm type-check
+          pnpm lint
+          pnpm test:run
+
+      - name: Build for production
+        working-directory: apps/web
+        run: pnpm build
+        env:
+          VITE_ENVIRONMENT: ${{ github.event.inputs.environment || 'production' }}
+          VITE_USE_MOCKS: false
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_STRIPE_PUBLIC_KEY: ${{ secrets.VITE_STRIPE_PUBLIC_KEY }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+
+      - name: Verify build
+        working-directory: apps/web
+        run: |
+          pnpm check:budget
+          if [ ! -d "dist" ] || [ ! -f "dist/index.html" ]; then
+            echo "❌ Build verification failed"
+            exit 1
+          fi
+
+      - name: Deploy to hosting platform
+        run: |
+          echo "🚀 Deployment would happen here"
+          echo "Configure your deployment platform (Vercel, Netlify, AWS, etc.)"
+          echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+          # Example: vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Health check
+        run: |
+          echo "⏳ Waiting for deployment to be ready..."
+          sleep 10
+          # Add actual health check endpoint verification
+          # curl -f https://pawfectmatch.com/healthz || exit 1
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful"
+          else
+            echo "❌ Deployment failed"
+          fi
+

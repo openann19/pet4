@@ -1,0 +1,1303 @@
+{
+  "summary": {
+    "total": 143,
+    "byType": {
+      "timer-without-clear": 106,
+      "listener-without-remove": 22,
+      "animation-without-cancel": 15
+    },
+    "bySeverity": {
+      "high": 143
+    }
+  },
+  "issues": [
+    {
+      "file": "apps/web/vite.config.ts",
+      "line": 312,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "'process.nextTick': 'setTimeout',",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/reanimated-web-polyfill.ts",
+      "line": 99,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => _callback(true), 0);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/reanimated-web-polyfill.ts",
+      "line": 113,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => _callback(true), 0);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/performance.ts",
+      "line": 82,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/pwa/service-worker-registration.ts",
+      "line": 55,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setInterval without clearInterval",
+      "code": "window.setInterval(",
+      "suggestion": "Add clearInterval in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/monitoring/performance-monitor.ts",
+      "line": 176,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setInterval without clearInterval",
+      "code": "setInterval(() => {",
+      "suggestion": "Add clearInterval in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 114,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(callback, timeout);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 190,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(processBatch, delay);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 255,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 276,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/enhanced-notification-service.ts",
+      "line": 57,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/offline-queue.ts",
+      "line": 194,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/security/biometric-storage.ts",
+      "line": 69,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setInterval without clearInterval",
+      "code": "setInterval(() => {",
+      "suggestion": "Add clearInterval in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/security/e2e-encryption.ts",
+      "line": 82,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setInterval without clearInterval",
+      "code": "setInterval(() => {",
+      "suggestion": "Add clearInterval in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/mobile-accessibility.ts",
+      "line": 107,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/mobile-accessibility.ts",
+      "line": 115,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/mobile-accessibility.ts",
+      "line": 257,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/verification-service.ts",
+      "line": 103,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "window.setTimeout(resolve, 300);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/notifications.ts",
+      "line": 217,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "await new Promise((resolve) => setTimeout(resolve, 100));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/retry.ts",
+      "line": 50,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "await new Promise((resolve) => setTimeout(resolve, currentDelay));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/maps/deep-links.ts",
+      "line": 53,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/web-vitals.ts",
+      "line": 146,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/accessibility.ts",
+      "line": 51,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/agi_ui_engine/effects/useDeleteBurst.tsx",
+      "line": 71,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/agi_ui_engine/effects/useParticleBurstOnDelete.tsx",
+      "line": 49,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/agi_ui_engine/effects/useReactionParticleTrail.tsx",
+      "line": 48,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/agi_ui_engine/effects/useParticleFX.tsx",
+      "line": 102,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/agi_ui_engine/effects/useParticleBurstOnSend.tsx",
+      "line": 49,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/test/utils/test-helpers.tsx",
+      "line": 46,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "return new Promise((resolve) => setTimeout(resolve, 0));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/test/mocks/storage.ts",
+      "line": 80,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/core/services/base-service.ts",
+      "line": 479,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "return new Promise((resolve) => setTimeout(resolve, ms));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/DetailedPetAnalytics.tsx",
+      "line": 252,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/DetailedPetAnalytics.tsx",
+      "line": 272,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/DetailedPetAnalytics.tsx",
+      "line": 292,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/navigation/PremiumTabs.tsx",
+      "line": 88,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(updateIndicator, 0);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/EnhancedPetDetailView.tsx",
+      "line": 61,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/states/PremiumErrorState.tsx",
+      "line": 51,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/states/PremiumErrorState.tsx",
+      "line": 53,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/SmartSearch.tsx",
+      "line": 152,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "onBlur={() => setTimeout(() => setIsFocused(false), 200)}",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/buttons/SegmentedControl.tsx",
+      "line": 88,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(updateIndicator, 0);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/display/PremiumAvatar.tsx",
+      "line": 88,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/display/PremiumChip.tsx",
+      "line": 52,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/admin/APIConfigView.tsx",
+      "line": 252,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "await new Promise((resolve) => setTimeout(resolve, 1500));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/VisualAnalysisDemo.tsx",
+      "line": 129,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/views/DiscoverView.tsx",
+      "line": 280,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/views/DiscoverView.tsx",
+      "line": 788,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/demo/UltraAnimationShowcase.tsx",
+      "line": 236,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => setShowDemo(true), 100);",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/media/SmartImage.tsx",
+      "line": 79,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 115,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 133,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 152,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 158,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 174,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 187,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/LoadingState.tsx",
+      "line": 200,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/streaming/LiveStreamRoom.tsx",
+      "line": 123,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/swipe/CardStack.tsx",
+      "line": 81,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/community/CommentsSheet.tsx",
+      "line": 96,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/community/PostDetailView.tsx",
+      "line": 124,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/OptimizedImage.tsx",
+      "line": 92,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/MessagePeek.tsx",
+      "line": 59,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/AdvancedChatWindow.tsx",
+      "line": 177,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/AnimatedReaction.tsx",
+      "line": 28,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/StickerPicker.tsx",
+      "line": 113,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/features/input-handling/use-input-handling.ts",
+      "line": 51,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/features/input-handling/use-input-handling.ts",
+      "line": 76,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/MessageBubble.tsx",
+      "line": 406,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/MessageBubble.tsx",
+      "line": 499,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/MessageBubble.tsx",
+      "line": 652,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/components/SendButtonIcon.tsx",
+      "line": 33,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useReactionTrail.ts",
+      "line": 155,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/health/PetHealthDashboard.tsx",
+      "line": 197,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/network/OfflineIndicator.tsx",
+      "line": 15,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/gdpr/DataExport.tsx",
+      "line": 166,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/gdpr/DataRectification.tsx",
+      "line": 81,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/gdpr/DataDeletion.tsx",
+      "line": 57,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/lost-found/MapLocationPicker.tsx",
+      "line": 69,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/cursor/GlowTrail.tsx",
+      "line": 44,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 49,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/status/use-status-ticks.ts",
+      "line": 202,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/media/use-glass-morph-zoom.ts",
+      "line": 151,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/media/use-glass-morph-zoom.ts",
+      "line": 157,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/media/use-sticker-physics.ts",
+      "line": 156,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/media/use-sticker-physics.ts",
+      "line": 162,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/celebrations/use-match-confetti.ts",
+      "line": 162,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/celebrations/use-confetti-burst.ts",
+      "line": 226,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/celebrations/use-confetti-burst.ts",
+      "line": 235,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/celebrations/use-confetti-burst.ts",
+      "line": 241,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/typing/use-liquid-dots.ts",
+      "line": 141,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/typing/use-liquid-dots.ts",
+      "line": 161,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/core/haptic-manager.ts",
+      "line": 268,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "await new Promise((resolve) => setTimeout(resolve, interval));",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/gestures/use-reply-ribbon.ts",
+      "line": 253,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/gestures/use-reply-ribbon.ts",
+      "line": 261,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/gestures/use-reply-ribbon.ts",
+      "line": 271,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/gestures/use-reply-ribbon.ts",
+      "line": 315,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/reactions/use-reaction-burst.ts",
+      "line": 238,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/reactions/use-reaction-burst.ts",
+      "line": 244,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/bubbles/use-send-warp.ts",
+      "line": 156,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/bubbles/use-send-warp.ts",
+      "line": 162,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/bubbles/use-receive-air-cushion.ts",
+      "line": 135,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/bubbles/use-receive-air-cushion.ts",
+      "line": 141,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/reanimated/use-reaction-sparkles.ts",
+      "line": 119,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/reanimated/use-confetti-burst.ts",
+      "line": 102,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/reanimated/use-header-button-animation.ts",
+      "line": 73,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/reanimated/use-swipe-reply.ts",
+      "line": 102,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/reanimated/use-ripple-effect.ts",
+      "line": 51,
+      "type": "timer-without-clear",
+      "severity": "high",
+      "description": "setTimeout without clearTimeout",
+      "code": "setTimeout(() => {",
+      "suggestion": "Add clearTimeout in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/notifications-service.ts",
+      "line": 279,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "navigator.serviceWorker.addEventListener('notificationclick', (event: Event) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/performance.ts",
+      "line": 81,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('load', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/pwa/service-worker-registration.ts",
+      "line": 39,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "registration.addEventListener('updatefound', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/pwa/service-worker-registration.ts",
+      "line": 43,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "newWorker.addEventListener('statechange', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/monitoring/performance-monitor.ts",
+      "line": 369,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('beforeunload', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 36,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "document.addEventListener('mouseover', (e) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/security/audit-logger.ts",
+      "line": 200,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('beforeunload', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/upload-service.ts",
+      "line": 101,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "xhr.upload.addEventListener('progress', (event) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/upload-service.ts",
+      "line": 111,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "xhr.addEventListener('load', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/upload-service.ts",
+      "line": 119,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "xhr.addEventListener('error', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/upload-service.ts",
+      "line": 123,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "xhr.addEventListener('abort', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/analytics/errors.ts",
+      "line": 104,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('error', (event) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/analytics/errors.ts",
+      "line": 116,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('unhandledrejection', (event) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/push-notifications.ts",
+      "line": 127,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('popstate', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/telemetry.ts",
+      "line": 222,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('beforeunload', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/maps/useMapLibreMap.ts",
+      "line": 169,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "el.addEventListener('click', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/maps/useMapLibreMap.ts",
+      "line": 198,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "el.addEventListener('click', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/web-vitals.ts",
+      "line": 141,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('beforeunload', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-analytics.ts",
+      "line": 255,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('beforeunload', () => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/VoiceRecorder.tsx",
+      "line": 92,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "mediaRecorder.addEventListener('dataavailable', (event) => {",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/chat/VoiceRecorder.tsx",
+      "line": 153,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "mediaRecorderRef.current.addEventListener(",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/hooks/performance/use-performance-budget.ts",
+      "line": 443,
+      "type": "listener-without-remove",
+      "severity": "high",
+      "description": "addEventListener without removeEventListener",
+      "code": "window.addEventListener('load', checkBudgets, { once: true });",
+      "suggestion": "Add removeEventListener in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 149,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "rafId = requestAnimationFrame(() => {",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-performance.ts",
+      "line": 192,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(processBatch);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/mobile-performance.ts",
+      "line": 125,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(sampleFrame);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/mobile-performance.ts",
+      "line": 129,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(sampleFrame);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/lib/video-compression.ts",
+      "line": 285,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(captureFrame);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/components/PetDetailDialog.tsx",
+      "line": 96,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(() => {",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 44,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(() => {",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 134,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(animateScroll);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 138,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(animateScroll);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 154,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(updateCount);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/micro-interactions/core.ts",
+      "line": 158,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame(updateCount);",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/web/src/effects/chat/core/telemetry.ts",
+      "line": 72,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "* Uses requestAnimationFrame to detect actual refresh rate.",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/mobile/types/dom-shim.d.ts",
+      "line": 35,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame?: (callback: FrameRequestCallback) => number",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "apps/native/types/dom-shim.d.ts",
+      "line": 26,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame?: (callback: FrameRequestCallback) => number;",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    },
+    {
+      "file": "packages/motion/types/dom-shim.d.ts",
+      "line": 35,
+      "type": "animation-without-cancel",
+      "severity": "high",
+      "description": "requestAnimationFrame without cancelAnimationFrame",
+      "code": "requestAnimationFrame?: (callback: FrameRequestCallback) => number",
+      "suggestion": "Add cancelAnimationFrame in cleanup function"
+    }
+  ],
+  "timestamp": "2025-11-09T12:21:23.722Z"
+}

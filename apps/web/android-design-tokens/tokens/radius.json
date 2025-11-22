@@ -1,0 +1,63 @@
+{
+  "radius": {
+    "base": 4,
+    "scale": [0, 2, 4, 8, 12, 16, 20, 24],
+    "tokens": {
+      "none": 0,
+      "xs": 2,
+      "sm": 4,
+      "md": 8,
+      "lg": 12,
+      "xl": 16,
+      "2xl": 20,
+      "3xl": 24,
+      "full": 9999
+    },
+    "component": {
+      "button": {
+        "sm": 8,
+        "md": 12,
+        "lg": 16
+      },
+      "card": {
+        "default": 16,
+        "elevated": 20
+      },
+      "chip": {
+        "sm": 8,
+        "md": 12,
+        "lg": 16
+      },
+      "textField": {
+        "default": 12,
+        "outlined": 12
+      },
+      "sheet": {
+        "top": 20,
+        "bottom": 20,
+        "dialog": 24
+      },
+      "badge": 8,
+      "avatar": {
+        "sm": 16,
+        "md": 20,
+        "lg": 24,
+        "xl": 32,
+        "full": 9999
+      },
+      "image": {
+        "card": 16,
+        "thumbnail": 8,
+        "full": 0
+      },
+      "tab": {
+        "indicator": 2,
+        "container": 12
+      }
+    },
+    "glow": {
+      "spread": 8,
+      "note": "Glow effects should respect border radius and not clip at corners"
+    }
+  }
+}

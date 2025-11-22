@@ -1,0 +1,2 @@
+-keep class com.sumsub.** { *; }
+-keep class com.pawfectmatch.KycModule { *; }

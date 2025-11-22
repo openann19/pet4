@@ -1,0 +1,48 @@
+{
+  "name": "petspark-replica",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "pnpm install",
+    "typecheck": "tsc --noEmit",
+    "build:types": "tsc -b",
+    "build:types:watch": "tsc -b -w",
+    "lint": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0",
+    "lint:fix": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0 --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "validate": "pnpm typecheck && pnpm lint && pnpm test",
+    "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec -- pnpm test:run 2>/dev/null || pnpm -r --filter './apps/*' --filter './packages/*' exec -- vitest run --passWithNoTests 2>/dev/null || true",
+    "web-dev": "pnpm --filter petspark-web dev",
+    "mobile-start": "pnpm --filter petspark-mobile start",
+    "mobile-android": "pnpm --filter petspark-mobile android",
+    "mobile-ios": "pnpm --filter petspark-mobile ios",
+    "check:parity": "tsx scripts/check-mobile-parity.ts",
+    "e2e:web": "pnpm --filter petspark-web e2e",
+    "e2e:mobile": "pnpm --filter petspark-mobile e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.5",
+    "eslint": "^9.28.0",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-sonarjs": "^0.25.1",
+    "globals": "^16.0.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.20.6",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.38.0",
+    "vitest": "^4.0.6"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}

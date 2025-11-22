@@ -1,0 +1,45 @@
+{
+	"folders": [
+		{
+			"name": "PETSPARK Root",
+			"path": "."
+		},
+		{
+			"name": "Web App",
+			"path": "apps/web"
+		},
+		{
+			"name": "Mobile App",
+			"path": "apps/mobile"
+		},
+		{
+			"name": "Backend",
+			"path": "apps/backend"
+		},
+		{
+			"name": "Shared Packages",
+			"path": "packages"
+		}
+	],
+	"settings": {
+		"typescript.preferences.includePackageJsonAutoImports": "auto",
+		"typescript.preferences.importModuleSpecifier": "relative",
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"eslint.workingDirectories": [
+			"apps/web",
+			"apps/mobile",
+			"packages"
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"esbenp.prettier-vscode",
+			"dbaeumer.vscode-eslint",
+			"ms-vscode.vscode-typescript-next",
+			"bradlc.vscode-tailwindcss",
+			"ms-vscode.vscode-json",
+			"ms-vscode-remote.remote-containers"
+		]
+	}
+}

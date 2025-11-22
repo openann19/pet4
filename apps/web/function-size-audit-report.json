@@ -1,0 +1,2834 @@
+{
+  "violations": [
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/DiscoverView.tsx",
+      "functionName": "DiscoverViewContent",
+      "lineCount": 1062,
+      "startLine": 72,
+      "endLine": 1133,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/MessageBubble.tsx",
+      "functionName": "MessageBubble",
+      "lineCount": 894,
+      "startLine": 95,
+      "endLine": 988,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-video-timeline.ts",
+      "functionName": "useVideoTimeline",
+      "lineCount": 832,
+      "startLine": 170,
+      "endLine": 1001,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/CreateAdoptionListingWizard.tsx",
+      "functionName": "CreateAdoptionListingWizard",
+      "lineCount": 785,
+      "startLine": 71,
+      "endLine": 855,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/PostComposer.tsx",
+      "functionName": "PostComposer",
+      "lineCount": 752,
+      "startLine": 70,
+      "endLine": 821,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/CommunityView.tsx",
+      "functionName": "CommunityViewContent",
+      "lineCount": 737,
+      "startLine": 82,
+      "endLine": 818,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-background-removal.ts",
+      "functionName": "useBackgroundRemoval",
+      "lineCount": 718,
+      "startLine": 156,
+      "endLine": 873,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/MediaViewer.tsx",
+      "functionName": "MediaViewer",
+      "lineCount": 713,
+      "startLine": 97,
+      "endLine": 809,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-smart-resize.ts",
+      "functionName": "useSmartResize",
+      "lineCount": 693,
+      "startLine": 220,
+      "endLine": 912,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-media-processor.ts",
+      "functionName": "useMediaProcessor",
+      "lineCount": 635,
+      "startLine": 127,
+      "endLine": 761,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/MapView.tsx",
+      "functionName": "MapViewContent",
+      "lineCount": 599,
+      "startLine": 37,
+      "endLine": 635,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/PostCard.tsx",
+      "functionName": "PostCardComponent",
+      "lineCount": 590,
+      "startLine": 58,
+      "endLine": 647,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/VerificationReviewDashboard.tsx",
+      "functionName": "VerificationReviewDashboard",
+      "lineCount": 575,
+      "startLine": 39,
+      "endLine": 613,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/ModerationQueue.tsx",
+      "functionName": "ModerationQueue",
+      "lineCount": 572,
+      "startLine": 36,
+      "endLine": 607,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-filters.ts",
+      "functionName": "useFilters",
+      "lineCount": 544,
+      "startLine": 667,
+      "endLine": 1210,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/ContentModerationQueue.tsx",
+      "functionName": "ContentModerationQueue",
+      "lineCount": 529,
+      "startLine": 59,
+      "endLine": 587,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/PhotoModerationQueue.tsx",
+      "functionName": "PhotoModerationQueueAdmin",
+      "lineCount": 518,
+      "startLine": 39,
+      "endLine": 556,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/PostDetailView.tsx",
+      "functionName": "PostDetailView",
+      "lineCount": 503,
+      "startLine": 44,
+      "endLine": 546,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/streaming/use-webrtc.ts",
+      "functionName": "useWebRTC",
+      "lineCount": 464,
+      "startLine": 95,
+      "endLine": 558,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/health/PetHealthDashboard.tsx",
+      "functionName": "PetHealthDashboard",
+      "lineCount": 459,
+      "startLine": 177,
+      "endLine": 635,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/lost-found/CreateLostAlertDialog.tsx",
+      "functionName": "CreateLostAlertDialog",
+      "lineCount": 459,
+      "startLine": 74,
+      "endLine": 532,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/MatchingConfigPanel.tsx",
+      "functionName": "MatchingConfigPanel",
+      "lineCount": 452,
+      "startLine": 28,
+      "endLine": 479,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/verification/VerificationDialog.tsx",
+      "functionName": "VerificationDialog",
+      "lineCount": 442,
+      "startLine": 47,
+      "endLine": 488,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/streaming/use-live-stream.ts",
+      "functionName": "useLiveStream",
+      "lineCount": 439,
+      "startLine": 105,
+      "endLine": 543,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/community-seed-data.ts",
+      "functionName": "generateCommunitySeedData",
+      "lineCount": 437,
+      "startLine": 5,
+      "endLine": 441,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/KYCManagement.tsx",
+      "functionName": "KYCManagement",
+      "lineCount": 433,
+      "startLine": 32,
+      "endLine": 464,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/analytics/use-behavior-tracker.ts",
+      "functionName": "useBehaviorTracker",
+      "lineCount": 433,
+      "startLine": 169,
+      "endLine": 601,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/WelcomeScreen.tsx",
+      "functionName": "WelcomeScreenContent",
+      "lineCount": 418,
+      "startLine": 56,
+      "endLine": 473,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/streaming/LiveStreamRoom.tsx",
+      "functionName": "LiveStreamRoom",
+      "lineCount": 387,
+      "startLine": 34,
+      "endLine": 420,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionListingDetailDialog.tsx",
+      "functionName": "AdoptionListingDetailDialog",
+      "lineCount": 386,
+      "startLine": 37,
+      "endLine": 422,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/performance/use-performance-budget.ts",
+      "functionName": "usePerformanceBudget",
+      "lineCount": 385,
+      "startLine": 101,
+      "endLine": 485,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-media-editor.ts",
+      "functionName": "useMediaEditor",
+      "lineCount": 382,
+      "startLine": 144,
+      "endLine": 525,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-editor-ui.ts",
+      "functionName": "useAdvancedSlider",
+      "lineCount": 376,
+      "startLine": 209,
+      "endLine": 584,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/NotificationTabs.tsx",
+      "functionName": "NotificationTabs",
+      "lineCount": 365,
+      "startLine": 148,
+      "endLine": 512,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionDetailDialog.tsx",
+      "functionName": "AdoptionDetailDialog",
+      "lineCount": 364,
+      "startLine": 36,
+      "endLine": 399,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/settings/PrivacySettings.tsx",
+      "functionName": "PrivacySettings",
+      "lineCount": 355,
+      "startLine": 40,
+      "endLine": 394,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/LiveStreamManagement.tsx",
+      "functionName": "LiveStreamManagement",
+      "lineCount": 354,
+      "startLine": 16,
+      "endLine": 369,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionFiltersSheet.tsx",
+      "functionName": "AdoptionFiltersSheet",
+      "lineCount": 348,
+      "startLine": 41,
+      "endLine": 388,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/security/use-encryption.ts",
+      "functionName": "useEncryption",
+      "lineCount": 348,
+      "startLine": 205,
+      "endLine": 552,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/analytics/use-analytics.ts",
+      "functionName": "useAnalytics",
+      "lineCount": 343,
+      "startLine": 279,
+      "endLine": 621,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/payments/SubscriptionAdminPanel.tsx",
+      "functionName": "SubscriptionAdminPanel",
+      "lineCount": 342,
+      "startLine": 45,
+      "endLine": 386,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionApplicationDialog.tsx",
+      "functionName": "AdoptionApplicationDialog",
+      "lineCount": 329,
+      "startLine": 59,
+      "endLine": 387,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media/use-camera.ts",
+      "functionName": "useCamera",
+      "lineCount": 316,
+      "startLine": 100,
+      "endLine": 415,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/LostFoundManagement.tsx",
+      "functionName": "LostFoundManagement",
+      "lineCount": 315,
+      "startLine": 14,
+      "endLine": 328,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/LostFoundView.tsx",
+      "functionName": "LostFoundViewContent",
+      "lineCount": 314,
+      "startLine": 29,
+      "endLine": 342,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useCall.ts",
+      "functionName": "useCall",
+      "lineCount": 314,
+      "startLine": 19,
+      "endLine": 332,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/gestures/use-drag-drop.ts",
+      "functionName": "useDragDrop",
+      "lineCount": 311,
+      "startLine": 70,
+      "endLine": 380,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/AdoptionListingReview.tsx",
+      "functionName": "AdoptionListingReview",
+      "lineCount": 310,
+      "startLine": 89,
+      "endLine": 398,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/AdoptionView.tsx",
+      "functionName": "AdoptionViewContent",
+      "lineCount": 309,
+      "startLine": 31,
+      "endLine": 339,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/security/use-biometric-auth.ts",
+      "functionName": "useBiometricAuth",
+      "lineCount": 306,
+      "startLine": 110,
+      "endLine": 415,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useGroupCall.ts",
+      "functionName": "useGroupCall",
+      "lineCount": 306,
+      "startLine": 21,
+      "endLine": 326,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/seedData.ts",
+      "functionName": "getFallbackPets",
+      "lineCount": 305,
+      "startLine": 147,
+      "endLine": 451,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/security/use-rate-limiter.ts",
+      "functionName": "useRateLimiter",
+      "lineCount": 303,
+      "startLine": 111,
+      "endLine": 413,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media/use-ar-filter.ts",
+      "functionName": "useARFilter",
+      "lineCount": 293,
+      "startLine": 166,
+      "endLine": 458,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/call/useWebRTC.ts",
+      "functionName": "useWebRTC",
+      "lineCount": 292,
+      "startLine": 44,
+      "endLine": 335,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useOutbox.ts",
+      "functionName": "useOutbox",
+      "lineCount": 288,
+      "startLine": 66,
+      "endLine": 353,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/enhanced-button.tsx",
+      "functionName": "EnhancedButton",
+      "lineCount": 284,
+      "startLine": 43,
+      "endLine": 326,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useChatMessages.ts",
+      "functionName": "useChatMessages",
+      "lineCount": 282,
+      "startLine": 40,
+      "endLine": 321,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/MyApplicationsView.tsx",
+      "functionName": "MyApplicationsView",
+      "lineCount": 281,
+      "startLine": 38,
+      "endLine": 318,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/streaming/use-stream-quality.ts",
+      "functionName": "useStreamQuality",
+      "lineCount": 281,
+      "startLine": 157,
+      "endLine": 437,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/ConsentBanner.tsx",
+      "functionName": "ConsentBanner",
+      "lineCount": 280,
+      "startLine": 29,
+      "endLine": 308,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/forms/PremiumInput.tsx",
+      "functionName": "PremiumInput",
+      "lineCount": 277,
+      "startLine": 30,
+      "endLine": 306,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/security/use-privacy-consent.ts",
+      "functionName": "usePrivacyConsent",
+      "lineCount": 272,
+      "startLine": 172,
+      "endLine": 443,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/payments/SubscriptionStatusCard.tsx",
+      "functionName": "SubscriptionStatusCard",
+      "lineCount": 271,
+      "startLine": 15,
+      "endLine": 285,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/AdoptionMarketplaceView.tsx",
+      "functionName": "AdoptionMarketplaceViewContent",
+      "lineCount": 270,
+      "startLine": 28,
+      "endLine": 297,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/MatchesView.tsx",
+      "functionName": "MatchesViewContent",
+      "lineCount": 269,
+      "startLine": 51,
+      "endLine": 319,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/BubbleGestureWrapper.tsx",
+      "functionName": "BubbleGestureWrapper",
+      "lineCount": 266,
+      "startLine": 31,
+      "endLine": 296,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/CommentsSheet.tsx",
+      "functionName": "CommentsSheet",
+      "lineCount": 266,
+      "startLine": 34,
+      "endLine": 299,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/NotificationCenter.tsx",
+      "functionName": "NotificationCenter",
+      "lineCount": 264,
+      "startLine": 56,
+      "endLine": 319,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/ProfileView.tsx",
+      "functionName": "ProfileViewContent",
+      "lineCount": 259,
+      "startLine": 157,
+      "endLine": 415,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/ChatView.tsx",
+      "functionName": "ChatViewContent",
+      "lineCount": 254,
+      "startLine": 33,
+      "endLine": 286,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-native-swipe.ts",
+      "functionName": "useNativeSwipe",
+      "lineCount": 251,
+      "startLine": 55,
+      "endLine": 305,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/lost-found/ReportSightingDialog.tsx",
+      "functionName": "ReportSightingDialog",
+      "lineCount": 245,
+      "startLine": 28,
+      "endLine": 272,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-story-gestures.ts",
+      "functionName": "useStoryGestures",
+      "lineCount": 245,
+      "startLine": 28,
+      "endLine": 272,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useSwipe.ts",
+      "functionName": "useSwipe",
+      "lineCount": 241,
+      "startLine": 22,
+      "endLine": 262,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/ConsentSettings.tsx",
+      "functionName": "ConsentSettings",
+      "lineCount": 240,
+      "startLine": 23,
+      "endLine": 262,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/analytics/use-ab-testing.ts",
+      "functionName": "useABTesting",
+      "lineCount": 239,
+      "startLine": 234,
+      "endLine": 472,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/services/media/picker/use-upload-picker.ts",
+      "functionName": "useUploadPicker",
+      "lineCount": 233,
+      "startLine": 65,
+      "endLine": 297,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/status/use-status-ticks.ts",
+      "functionName": "useStatusTicks",
+      "lineCount": 233,
+      "startLine": 67,
+      "endLine": 299,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/core/use-effect-telemetry.ts",
+      "functionName": "useEffectTelemetry",
+      "lineCount": 233,
+      "startLine": 96,
+      "endLine": 328,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/PremiumNotificationCenter.tsx",
+      "functionName": "PremiumNotificationCenter",
+      "lineCount": 230,
+      "startLine": 61,
+      "endLine": 290,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/demo/UltraAnimationShowcase.tsx",
+      "functionName": "UltraAnimationShowcase",
+      "lineCount": 225,
+      "startLine": 22,
+      "endLine": 246,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/AdoptionApplicationReview.tsx",
+      "functionName": "ApplicationCard",
+      "lineCount": 221,
+      "startLine": 77,
+      "endLine": 297,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/reactions/use-reaction-burst.ts",
+      "functionName": "useReactionBurst",
+      "lineCount": 221,
+      "startLine": 63,
+      "endLine": 283,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/ProgressiveImage.tsx",
+      "functionName": "ProgressiveImage",
+      "lineCount": 219,
+      "startLine": 30,
+      "endLine": 248,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/components/MessageItem.tsx",
+      "functionName": "MessageItem",
+      "lineCount": 212,
+      "startLine": 40,
+      "endLine": 251,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/useMapLibreMap.ts",
+      "functionName": "useMapLibreMap",
+      "lineCount": 212,
+      "startLine": 57,
+      "endLine": 268,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/EnhancedCarousel.tsx",
+      "functionName": "EnhancedCarousel",
+      "lineCount": 211,
+      "startLine": 24,
+      "endLine": 234,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/DetailedPetAnalytics.tsx",
+      "functionName": "DetailedPetAnalytics",
+      "lineCount": 210,
+      "startLine": 18,
+      "endLine": 227,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/streaming/GoLiveDialog.tsx",
+      "functionName": "GoLiveDialog",
+      "lineCount": 210,
+      "startLine": 55,
+      "endLine": 264,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/StickerPicker.tsx",
+      "functionName": "StickerPicker",
+      "lineCount": 208,
+      "startLine": 39,
+      "endLine": 246,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionCard.tsx",
+      "functionName": "AdoptionCardComponent",
+      "lineCount": 205,
+      "startLine": 29,
+      "endLine": 233,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/forms/PremiumSelect.tsx",
+      "functionName": "PremiumSelect",
+      "lineCount": 204,
+      "startLine": 44,
+      "endLine": 247,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/EnhancedPetDetailView.tsx",
+      "functionName": "EnhancedPetDetailView",
+      "lineCount": 203,
+      "startLine": 44,
+      "endLine": 246,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/window/ChatInputBar.tsx",
+      "functionName": "ChatInputBar",
+      "lineCount": 201,
+      "startLine": 42,
+      "endLine": 242,
+      "priority": "critical"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/PetRatings.tsx",
+      "functionName": "PetRatings",
+      "lineCount": 199,
+      "startLine": 19,
+      "endLine": 217,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/lost-found/MapLocationPicker.tsx",
+      "functionName": "MapLocationPicker",
+      "lineCount": 198,
+      "startLine": 29,
+      "endLine": 226,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/window/VirtualMessageList.tsx",
+      "functionName": "VirtualMessageList",
+      "lineCount": 196,
+      "startLine": 37,
+      "endLine": 232,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced-ui/AnimatedButton.tsx",
+      "functionName": "AnimatedButton",
+      "lineCount": 196,
+      "startLine": 48,
+      "endLine": 243,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/payments/PricingModal.tsx",
+      "functionName": "PricingModal",
+      "lineCount": 196,
+      "startLine": 24,
+      "endLine": 219,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-drag-gesture.ts",
+      "functionName": "useDragGesture",
+      "lineCount": 196,
+      "startLine": 46,
+      "endLine": 241,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/window/MessageItem.tsx",
+      "functionName": "MessageItem",
+      "lineCount": 193,
+      "startLine": 36,
+      "endLine": 228,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/DataRectification.tsx",
+      "functionName": "DataRectification",
+      "lineCount": 192,
+      "startLine": 25,
+      "endLine": 216,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/admin/use-api-config.ts",
+      "functionName": "useAPIConfig",
+      "lineCount": 192,
+      "startLine": 89,
+      "endLine": 280,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/DismissibleOverlay.tsx",
+      "functionName": "DismissibleOverlay",
+      "lineCount": 190,
+      "startLine": 24,
+      "endLine": 213,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/admin/PetProfileGenerator.tsx",
+      "functionName": "PetProfileGenerator",
+      "lineCount": 190,
+      "startLine": 31,
+      "endLine": 220,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/buttons/IconButton.tsx",
+      "functionName": "IconButton",
+      "lineCount": 190,
+      "startLine": 55,
+      "endLine": 244,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/UserPostsView.tsx",
+      "functionName": "UserPostsViewContent",
+      "lineCount": 190,
+      "startLine": 30,
+      "endLine": 219,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/SmartSkeleton.tsx",
+      "functionName": "SmartSkeleton",
+      "lineCount": 188,
+      "startLine": 19,
+      "endLine": 206,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/App.tsx",
+      "functionName": "AppContent",
+      "lineCount": 186,
+      "startLine": 94,
+      "endLine": 279,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/celebrations/use-confetti-burst.ts",
+      "functionName": "useConfettiBurst",
+      "lineCount": 185,
+      "startLine": 80,
+      "endLine": 264,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-typing-manager.ts",
+      "functionName": "useTypingManager",
+      "lineCount": 184,
+      "startLine": 28,
+      "endLine": 211,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/layout/AppHeader.tsx",
+      "functionName": "AppHeader",
+      "lineCount": 181,
+      "startLine": 28,
+      "endLine": 208,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/media-editor/video-trimmer.tsx",
+      "functionName": "VideoTrimmer",
+      "lineCount": 180,
+      "startLine": 14,
+      "endLine": 193,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/adoption/AdoptionListingCard.tsx",
+      "functionName": "AdoptionListingCardComponent",
+      "lineCount": 179,
+      "startLine": 19,
+      "endLine": 197,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/SyncStatusIndicator.tsx",
+      "functionName": "SyncStatusIndicator",
+      "lineCount": 177,
+      "startLine": 16,
+      "endLine": 192,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/QueryProvider.tsx",
+      "functionName": "QueryProvider",
+      "lineCount": 173,
+      "startLine": 20,
+      "endLine": 192,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/verification/DocumentUploadCard.tsx",
+      "functionName": "DocumentUploadCard",
+      "lineCount": 173,
+      "startLine": 20,
+      "endLine": 192,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/usePetDiscovery.ts",
+      "functionName": "usePetDiscovery",
+      "lineCount": 172,
+      "startLine": 25,
+      "endLine": 196,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/TypingDots.tsx",
+      "functionName": "TypingDots",
+      "lineCount": 170,
+      "startLine": 30,
+      "endLine": 199,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-motion-variants.ts",
+      "functionName": "useMotionVariants",
+      "lineCount": 169,
+      "startLine": 114,
+      "endLine": 282,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/lost-found/LostAlertCard.tsx",
+      "functionName": "LostAlertCard",
+      "lineCount": 168,
+      "startLine": 17,
+      "endLine": 184,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/presence/use-aurora-ring.ts",
+      "functionName": "useAuroraRing",
+      "lineCount": 165,
+      "startLine": 91,
+      "endLine": 255,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/NotificationCenter.tsx",
+      "functionName": "NotificationItem",
+      "lineCount": 163,
+      "startLine": 332,
+      "endLine": 494,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/MessagePeek.tsx",
+      "functionName": "MessagePeek",
+      "lineCount": 162,
+      "startLine": 33,
+      "endLine": 194,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/AdvancedFilterPanel.tsx",
+      "functionName": "AdvancedFilterPanel",
+      "lineCount": 159,
+      "startLine": 43,
+      "endLine": 201,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/tokens/button-tokens-generator.ts",
+      "functionName": "generateButtonTokensForTheme",
+      "lineCount": 159,
+      "startLine": 54,
+      "endLine": 212,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-animate-presence.ts",
+      "functionName": "useAnimatePresence",
+      "lineCount": 159,
+      "startLine": 34,
+      "endLine": 192,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useReactionTrail.ts",
+      "functionName": "useReactionTrail",
+      "lineCount": 157,
+      "startLine": 45,
+      "endLine": 201,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/FloatingActionButton.tsx",
+      "functionName": "FloatingActionButton",
+      "lineCount": 157,
+      "startLine": 36,
+      "endLine": 192,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/navigation/PremiumTabs.tsx",
+      "functionName": "PremiumTabs",
+      "lineCount": 157,
+      "startLine": 33,
+      "endLine": 189,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/ReportDialog.tsx",
+      "functionName": "ReportDialog",
+      "lineCount": 156,
+      "startLine": 68,
+      "endLine": 223,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/DataExport.tsx",
+      "functionName": "DataExport",
+      "lineCount": 155,
+      "startLine": 92,
+      "endLine": 246,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/navigation/Stepper.tsx",
+      "functionName": "Stepper",
+      "lineCount": 154,
+      "startLine": 29,
+      "endLine": 182,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useMatches.ts",
+      "functionName": "useMatches",
+      "lineCount": 154,
+      "startLine": 51,
+      "endLine": 204,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/test/mocks/analytics.ts",
+      "functionName": "createAnalyticsMock",
+      "lineCount": 154,
+      "startLine": 42,
+      "endLine": 195,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/bubble-wrapper-god-tier/BubbleWrapperGodTier.tsx",
+      "functionName": "BubbleWrapperGodTier",
+      "lineCount": 153,
+      "startLine": 33,
+      "endLine": 185,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
+      "functionName": "UploadAndEditScreen",
+      "lineCount": 152,
+      "startLine": 23,
+      "endLine": 174,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationGroupItem.tsx",
+      "functionName": "NotificationGroupItem",
+      "lineCount": 152,
+      "startLine": 33,
+      "endLine": 184,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/typing/use-liquid-dots.ts",
+      "functionName": "useLiquidDots",
+      "lineCount": 152,
+      "startLine": 65,
+      "endLine": 216,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/test/utils/runtime-test-helpers.ts",
+      "functionName": "mockPerformanceAPI",
+      "lineCount": 152,
+      "startLine": 60,
+      "endLine": 211,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/DataDeletion.tsx",
+      "functionName": "DataDeletion",
+      "lineCount": 151,
+      "startLine": 24,
+      "endLine": 174,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/contexts/AuthContext.tsx",
+      "functionName": "AuthProvider",
+      "lineCount": 150,
+      "startLine": 33,
+      "endLine": 182,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/WebBubbleWrapper.tsx",
+      "functionName": "WebBubbleWrapper",
+      "lineCount": 149,
+      "startLine": 35,
+      "endLine": 183,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/NotificationCenter.tsx",
+      "functionName": "NotificationCenter",
+      "lineCount": 149,
+      "startLine": 28,
+      "endLine": 176,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/NotificationsView.tsx",
+      "functionName": "NotificationsViewContent",
+      "lineCount": 149,
+      "startLine": 316,
+      "endLine": 464,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/bubbles/use-send-warp.ts",
+      "functionName": "useSendWarp",
+      "lineCount": 149,
+      "startLine": 59,
+      "endLine": 207,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-story-analytics.ts",
+      "functionName": "useStoryAnalytics",
+      "lineCount": 148,
+      "startLine": 16,
+      "endLine": 163,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/AppealDialog.tsx",
+      "functionName": "AppealDialog",
+      "lineCount": 146,
+      "startLine": 35,
+      "endLine": 180,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/components/ChatFooter.tsx",
+      "functionName": "ChatFooter",
+      "lineCount": 145,
+      "startLine": 49,
+      "endLine": 193,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/discovery/SavedSearchesManager.tsx",
+      "functionName": "SearchItem",
+      "lineCount": 143,
+      "startLine": 55,
+      "endLine": 197,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/gdpr/RequestStatus.tsx",
+      "functionName": "RequestStatus",
+      "lineCount": 142,
+      "startLine": 58,
+      "endLine": 199,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-swipe-gesture.ts",
+      "functionName": "useSwipeGesture",
+      "lineCount": 141,
+      "startLine": 27,
+      "endLine": 167,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/media/use-sticker-physics.ts",
+      "functionName": "useStickerPhysics",
+      "lineCount": 140,
+      "startLine": 63,
+      "endLine": 202,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-typing-shimmer.ts",
+      "functionName": "useTypingShimmer",
+      "lineCount": 140,
+      "startLine": 40,
+      "endLine": 179,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-bubble-gesture.ts",
+      "functionName": "useBubbleGesture",
+      "lineCount": 139,
+      "startLine": 44,
+      "endLine": 182,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/hooks/useNotifications.ts",
+      "functionName": "useNotifications",
+      "lineCount": 138,
+      "startLine": 39,
+      "endLine": 176,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/DeleteConfirmationModal.tsx",
+      "functionName": "DeleteConfirmationModal",
+      "lineCount": 137,
+      "startLine": 26,
+      "endLine": 162,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/chart.tsx",
+      "functionName": "ChartTooltipContent",
+      "lineCount": 137,
+      "startLine": 128,
+      "endLine": 264,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/verification/VerificationButton.tsx",
+      "functionName": "VerificationButton",
+      "lineCount": 137,
+      "startLine": 18,
+      "endLine": 154,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/smart-reply.tsx",
+      "functionName": "generateContextualSuggestions",
+      "lineCount": 135,
+      "startLine": 172,
+      "endLine": 306,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/display/PremiumAvatar.tsx",
+      "functionName": "PremiumAvatar",
+      "lineCount": 135,
+      "startLine": 42,
+      "endLine": 176,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/forms/PremiumSlider.tsx",
+      "functionName": "PremiumSlider",
+      "lineCount": 135,
+      "startLine": 29,
+      "endLine": 163,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationList.tsx",
+      "functionName": "NotificationList",
+      "lineCount": 135,
+      "startLine": 29,
+      "endLine": 163,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/features/pull-to-refresh/use-pull-to-refresh.ts",
+      "functionName": "usePullToRefresh",
+      "lineCount": 132,
+      "startLine": 36,
+      "endLine": 167,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/buttons/SplitButton.tsx",
+      "functionName": "SplitButton",
+      "lineCount": 125,
+      "startLine": 42,
+      "endLine": 166,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/media/SmartImage.tsx",
+      "functionName": "SmartImage",
+      "lineCount": 125,
+      "startLine": 29,
+      "endLine": 153,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/navigation/BottomNavBar.tsx",
+      "functionName": "NavItem",
+      "lineCount": 124,
+      "startLine": 151,
+      "endLine": 274,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/admin/use-subscription-admin.ts",
+      "functionName": "useSubscriptionAdmin",
+      "lineCount": 124,
+      "startLine": 25,
+      "endLine": 148,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useMatching.ts",
+      "functionName": "useMatching",
+      "lineCount": 120,
+      "startLine": 16,
+      "endLine": 135,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/smart-reply.tsx",
+      "functionName": "SmartReply",
+      "lineCount": 119,
+      "startLine": 49,
+      "endLine": 167,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/PremiumNotificationBell.tsx",
+      "functionName": "PremiumNotificationBell",
+      "lineCount": 119,
+      "startLine": 26,
+      "endLine": 144,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/SavedPostsView.tsx",
+      "functionName": "SavedPostsViewContent",
+      "lineCount": 119,
+      "startLine": 26,
+      "endLine": 144,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/seedData.ts",
+      "functionName": "generateSamplePets",
+      "lineCount": 119,
+      "startLine": 27,
+      "endLine": 145,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/OptimizedImage.tsx",
+      "functionName": "OptimizedImage",
+      "lineCount": 118,
+      "startLine": 18,
+      "endLine": 135,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationItem.tsx",
+      "functionName": "NotificationItemComponent",
+      "lineCount": 117,
+      "startLine": 35,
+      "endLine": 151,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/micro-interactions/use-toast.ts",
+      "functionName": "useToastAnimation",
+      "lineCount": 116,
+      "startLine": 195,
+      "endLine": 310,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/settings/UltraThemeSettings.tsx",
+      "functionName": "ThemeCard",
+      "lineCount": 115,
+      "startLine": 174,
+      "endLine": 288,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/CallInterface.tsx",
+      "functionName": "CallControlsView",
+      "lineCount": 114,
+      "startLine": 459,
+      "endLine": 572,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/button.tsx",
+      "functionName": "Button",
+      "lineCount": 114,
+      "startLine": 56,
+      "endLine": 169,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/providers/QueryProvider.tsx",
+      "functionName": "QueryProvider",
+      "lineCount": 114,
+      "startLine": 23,
+      "endLine": 136,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-app-animations.ts",
+      "functionName": "useAppAnimations",
+      "lineCount": 113,
+      "startLine": 63,
+      "endLine": 175,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-bubble-variant.ts",
+      "functionName": "useBubbleVariant",
+      "lineCount": 113,
+      "startLine": 39,
+      "endLine": 151,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/a11y/KeyboardShortcutsHelp.tsx",
+      "functionName": "KeyboardShortcutsHelp",
+      "lineCount": 112,
+      "startLine": 60,
+      "endLine": 171,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-pull-to-refresh.ts",
+      "functionName": "usePullToRefresh",
+      "lineCount": 112,
+      "startLine": 36,
+      "endLine": 147,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/buttons/SegmentedControl.tsx",
+      "functionName": "SegmentedControl",
+      "lineCount": 111,
+      "startLine": 28,
+      "endLine": 138,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/maps/LocationSharing.tsx",
+      "functionName": "LocationBubble",
+      "lineCount": 110,
+      "startLine": 29,
+      "endLine": 138,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/media/use-voice-waveform.ts",
+      "functionName": "useVoiceWaveform",
+      "lineCount": 110,
+      "startLine": 55,
+      "endLine": 164,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/EnhancedPetDetailView.tsx",
+      "functionName": "PetTabs",
+      "lineCount": 108,
+      "startLine": 448,
+      "endLine": 555,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/navigation/PremiumToast.tsx",
+      "functionName": "PremiumToast",
+      "lineCount": 108,
+      "startLine": 53,
+      "endLine": 160,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-ai-typing-reveal.ts",
+      "functionName": "useAITypingReveal",
+      "lineCount": 108,
+      "startLine": 42,
+      "endLine": 149,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/advanced-analytics.ts",
+      "functionName": "getAnalyticsMetrics",
+      "lineCount": 108,
+      "startLine": 273,
+      "endLine": 380,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-swipe-reply.ts",
+      "functionName": "useSwipeReply",
+      "lineCount": 107,
+      "startLine": 40,
+      "endLine": 146,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-adoption-filters.ts",
+      "functionName": "useAdoptionFilters",
+      "lineCount": 107,
+      "startLine": 32,
+      "endLine": 138,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/AnimatedBackground.tsx",
+      "functionName": "AnimatedBackground",
+      "lineCount": 106,
+      "startLine": 44,
+      "endLine": 149,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/RankingSkeleton.tsx",
+      "functionName": "RankingSkeleton",
+      "lineCount": 106,
+      "startLine": 16,
+      "endLine": 121,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced-ui/AnimatedCard.tsx",
+      "functionName": "AnimatedCard",
+      "lineCount": 106,
+      "startLine": 34,
+      "endLine": 139,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/layout/AppNavBar.tsx",
+      "functionName": "AppNavBar",
+      "lineCount": 106,
+      "startLine": 35,
+      "endLine": 140,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/ProfileView.tsx",
+      "functionName": "PetCard",
+      "lineCount": 106,
+      "startLine": 50,
+      "endLine": 155,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-receipt-transition.ts",
+      "functionName": "useReceiptTransition",
+      "lineCount": 106,
+      "startLine": 43,
+      "endLine": 148,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/CallInterface.tsx",
+      "functionName": "CallInfoView",
+      "lineCount": 105,
+      "startLine": 342,
+      "endLine": 446,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/settings/UltraThemeSettings.tsx",
+      "functionName": "UltraThemeSettings",
+      "lineCount": 105,
+      "startLine": 20,
+      "endLine": 124,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-confetti-burst.ts",
+      "functionName": "useConfettiBurst",
+      "lineCount": 105,
+      "startLine": 59,
+      "endLine": 163,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/adoption-seed-data.ts",
+      "functionName": "generateAdoptionProfiles",
+      "lineCount": 105,
+      "startLine": 8,
+      "endLine": 112,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/media/use-media.ts",
+      "functionName": "useMedia",
+      "lineCount": 104,
+      "startLine": 30,
+      "endLine": 133,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/domain/matching-engine.ts",
+      "functionName": "evaluateHardGates",
+      "lineCount": 104,
+      "startLine": 56,
+      "endLine": 159,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/mapbox-places.ts",
+      "functionName": "searchNearbyPlaces",
+      "lineCount": 104,
+      "startLine": 92,
+      "endLine": 195,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/GroupCallInterface.tsx",
+      "functionName": "ParticipantVideo",
+      "lineCount": 103,
+      "startLine": 62,
+      "endLine": 164,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/offline/SyncStatus.tsx",
+      "functionName": "SyncStatus",
+      "lineCount": 103,
+      "startLine": 33,
+      "endLine": 135,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/slider.tsx",
+      "functionName": "Slider",
+      "lineCount": 103,
+      "startLine": 10,
+      "endLine": 112,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/discover/hooks/useDiscoverSwipe.ts",
+      "functionName": "useDiscoverSwipe",
+      "lineCount": 103,
+      "startLine": 39,
+      "endLine": 141,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/web-only/Slider.tsx",
+      "functionName": "Slider",
+      "lineCount": 103,
+      "startLine": 10,
+      "endLine": 112,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-media-bubble.ts",
+      "functionName": "useMediaBubble",
+      "lineCount": 103,
+      "startLine": 44,
+      "endLine": 146,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/adoption-seed-data.ts",
+      "functionName": "getFallbackProfiles",
+      "lineCount": 102,
+      "startLine": 114,
+      "endLine": 215,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/window/ChatHeader.tsx",
+      "functionName": "ChatHeader",
+      "lineCount": 101,
+      "startLine": 26,
+      "endLine": 126,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/sidebar.tsx",
+      "functionName": "Sidebar",
+      "lineCount": 101,
+      "startLine": 148,
+      "endLine": 248,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/verification/VerificationLevelSelector.tsx",
+      "functionName": "VerificationLevelSelector",
+      "lineCount": 101,
+      "startLine": 11,
+      "endLine": 111,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/overlay-manager.ts",
+      "functionName": "useOverlayManager",
+      "lineCount": 101,
+      "startLine": 12,
+      "endLine": 112,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationSettings.tsx",
+      "functionName": "NotificationSettings",
+      "lineCount": 100,
+      "startLine": 17,
+      "endLine": 116,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/offline/use-offline-queue.ts",
+      "functionName": "executeAPIOperation",
+      "lineCount": 100,
+      "startLine": 134,
+      "endLine": 233,
+      "priority": "high"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/GlowingBadge.tsx",
+      "functionName": "GlowingBadge",
+      "lineCount": 99,
+      "startLine": 49,
+      "endLine": 147,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/PremiumButton.tsx",
+      "functionName": "PremiumButton",
+      "lineCount": 99,
+      "startLine": 21,
+      "endLine": 119,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/maps/LocationSharing.tsx",
+      "functionName": "LocationPicker",
+      "lineCount": 99,
+      "startLine": 146,
+      "endLine": 244,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/media-editor/MediaEditor.tsx",
+      "functionName": "MediaEditor",
+      "lineCount": 99,
+      "startLine": 24,
+      "endLine": 122,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-slide-animation.ts",
+      "functionName": "useSlideAnimation",
+      "lineCount": 97,
+      "startLine": 28,
+      "endLine": 124,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-new-message-drop.ts",
+      "functionName": "useNewMessageDrop",
+      "lineCount": 97,
+      "startLine": 39,
+      "endLine": 135,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/display/PremiumChip.tsx",
+      "functionName": "PremiumChip",
+      "lineCount": 96,
+      "startLine": 25,
+      "endLine": 120,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-fullscreen.ts",
+      "functionName": "useFullscreen",
+      "lineCount": 96,
+      "startLine": 7,
+      "endLine": 102,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/UltraCard.tsx",
+      "functionName": "UltraCard",
+      "lineCount": 95,
+      "startLine": 30,
+      "endLine": 124,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/spec/CredentialPrompt.tsx",
+      "functionName": "CredentialPrompt",
+      "lineCount": 95,
+      "startLine": 13,
+      "endLine": 107,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/auth/ProtectedRoute.tsx",
+      "functionName": "ProtectedRoute",
+      "lineCount": 94,
+      "startLine": 19,
+      "endLine": 112,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/sidebar.tsx",
+      "functionName": "SidebarProvider",
+      "lineCount": 94,
+      "startLine": 53,
+      "endLine": 146,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/distance.ts",
+      "functionName": "getCityCoordinates",
+      "lineCount": 94,
+      "startLine": 85,
+      "endLine": 178,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/theme-init.ts",
+      "functionName": "initializeTheme",
+      "lineCount": 94,
+      "startLine": 10,
+      "endLine": 103,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/payments/BillingIssueBanner.tsx",
+      "functionName": "BillingIssueBanner",
+      "lineCount": 93,
+      "startLine": 10,
+      "endLine": 102,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/mapbox-places.ts",
+      "functionName": "searchPlacesByQuery",
+      "lineCount": 93,
+      "startLine": 197,
+      "endLine": 289,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/ReactionBurstParticles.tsx",
+      "functionName": "ReactionBurstParticles",
+      "lineCount": 92,
+      "startLine": 36,
+      "endLine": 127,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/buttons/ToggleButton.tsx",
+      "functionName": "ToggleButton",
+      "lineCount": 92,
+      "startLine": 24,
+      "endLine": 115,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-morph-shape.ts",
+      "functionName": "useMorphShape",
+      "lineCount": 92,
+      "startLine": 24,
+      "endLine": 115,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/geocoding.ts",
+      "functionName": "forwardGeocode",
+      "lineCount": 92,
+      "startLine": 30,
+      "endLine": 121,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/GroupCallInterface.tsx",
+      "functionName": "ParticipantsPanel",
+      "lineCount": 91,
+      "startLine": 835,
+      "endLine": 925,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/ConfettiBurst.tsx",
+      "functionName": "ConfettiBurst",
+      "lineCount": 91,
+      "startLine": 49,
+      "endLine": 139,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/LiquidDots.tsx",
+      "functionName": "LiquidDots",
+      "lineCount": 91,
+      "startLine": 39,
+      "endLine": 129,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/SmartToast.tsx",
+      "functionName": "SmartToast",
+      "lineCount": 91,
+      "startLine": 51,
+      "endLine": 141,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/forms/PremiumToggle.tsx",
+      "functionName": "PremiumToggle",
+      "lineCount": 90,
+      "startLine": 28,
+      "endLine": 117,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/navigation/PremiumProgress.tsx",
+      "functionName": "PremiumProgress",
+      "lineCount": 90,
+      "startLine": 24,
+      "endLine": 113,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-bubble-tilt.ts",
+      "functionName": "useBubbleTilt",
+      "lineCount": 90,
+      "startLine": 35,
+      "endLine": 124,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/design-tokens.ts",
+      "functionName": "injectTokenCSSVariables",
+      "lineCount": 90,
+      "startLine": 157,
+      "endLine": 246,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/rate-limiting.ts",
+      "functionName": "checkRateLimit",
+      "lineCount": 90,
+      "startLine": 214,
+      "endLine": 303,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-filters.ts",
+      "functionName": "useFilters",
+      "lineCount": 89,
+      "startLine": 22,
+      "endLine": 110,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/carousel.tsx",
+      "functionName": "Carousel",
+      "lineCount": 88,
+      "startLine": 44,
+      "endLine": 131,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useVoiceMessages.ts",
+      "functionName": "useVoiceMessages",
+      "lineCount": 88,
+      "startLine": 11,
+      "endLine": 98,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-scroll-to-new.ts",
+      "functionName": "useScrollToNew",
+      "lineCount": 87,
+      "startLine": 32,
+      "endLine": 118,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/web-vitals.ts",
+      "functionName": "initWebVitals",
+      "lineCount": 87,
+      "startLine": 66,
+      "endLine": 152,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-sound-feedback.ts",
+      "functionName": "useSoundFeedback",
+      "lineCount": 86,
+      "startLine": 51,
+      "endLine": 136,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/advanced-features.ts",
+      "functionName": "useNetworkStatus",
+      "lineCount": 86,
+      "startLine": 240,
+      "endLine": 325,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/quota-monitor.ts",
+      "functionName": "useMapQuotaMonitor",
+      "lineCount": 86,
+      "startLine": 30,
+      "endLine": 115,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/CommentsSheet.tsx",
+      "functionName": "CommentItem",
+      "lineCount": 85,
+      "startLine": 365,
+      "endLine": 449,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/StickerMessage.tsx",
+      "functionName": "StickerMessage",
+      "lineCount": 84,
+      "startLine": 20,
+      "endLine": 103,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/message-management/use-message-management.ts",
+      "functionName": "useMessageManagement",
+      "lineCount": 84,
+      "startLine": 33,
+      "endLine": 116,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/overlays/PremiumDrawer.tsx",
+      "functionName": "PremiumDrawer",
+      "lineCount": 84,
+      "startLine": 42,
+      "endLine": 125,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/VerificationBadge.tsx",
+      "functionName": "VerificationBadge",
+      "lineCount": 83,
+      "startLine": 15,
+      "endLine": 97,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/community/features/feed/use-feed-management.ts",
+      "functionName": "useFeedManagement",
+      "lineCount": 83,
+      "startLine": 26,
+      "endLine": 108,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/visual/particle-effect.tsx",
+      "functionName": "ParticleEffect",
+      "lineCount": 83,
+      "startLine": 28,
+      "endLine": 110,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/agi_ui_engine/effects/useParticleFX.tsx",
+      "functionName": "useParticleFX",
+      "lineCount": 82,
+      "startLine": 49,
+      "endLine": 130,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/MessageReactions.tsx",
+      "functionName": "AddReactionButton",
+      "lineCount": 82,
+      "startLine": 211,
+      "endLine": 292,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-spring-carousel.ts",
+      "functionName": "useSpringCarousel",
+      "lineCount": 82,
+      "startLine": 18,
+      "endLine": 99,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useAuth.ts",
+      "functionName": "useAuth",
+      "lineCount": 82,
+      "startLine": 4,
+      "endLine": 85,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/maps/geocoding.ts",
+      "functionName": "reverseGeocode",
+      "lineCount": 82,
+      "startLine": 123,
+      "endLine": 204,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/agi_ui_engine/effects/useSentimentMoodEngine.tsx",
+      "functionName": "useSentimentMoodEngine",
+      "lineCount": 81,
+      "startLine": 85,
+      "endLine": 165,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/a11y/HighContrastToggle.tsx",
+      "functionName": "HighContrastToggle",
+      "lineCount": 81,
+      "startLine": 35,
+      "endLine": 115,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/input-handling/use-input-handling.ts",
+      "functionName": "useInputHandling",
+      "lineCount": 81,
+      "startLine": 28,
+      "endLine": 108,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/PetAnalyticsSkeleton.tsx",
+      "functionName": "PetAnalyticsSkeleton",
+      "lineCount": 81,
+      "startLine": 5,
+      "endLine": 85,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-kinetic-scroll.ts",
+      "functionName": "useKineticScroll",
+      "lineCount": 81,
+      "startLine": 20,
+      "endLine": 100,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/overlays/PremiumModal.tsx",
+      "functionName": "PremiumModal",
+      "lineCount": 80,
+      "startLine": 44,
+      "endLine": 123,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/GroupCallInterface.tsx",
+      "functionName": "LocalParticipantVideo",
+      "lineCount": 79,
+      "startLine": 746,
+      "endLine": 824,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/NotificationCenter.tsx",
+      "functionName": "NotificationItem",
+      "lineCount": 79,
+      "startLine": 178,
+      "endLine": 256,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-liquid-swipe.ts",
+      "functionName": "useLiquidSwipe",
+      "lineCount": 79,
+      "startLine": 18,
+      "endLine": 96,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/micro-interactions/use-toast.ts",
+      "functionName": "useToast",
+      "lineCount": 79,
+      "startLine": 112,
+      "endLine": 190,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-voice-waveform.ts",
+      "functionName": "useVoiceWaveform",
+      "lineCount": 79,
+      "startLine": 30,
+      "endLine": 108,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/test/mocks/api-client.ts",
+      "functionName": "createMockAPIClient",
+      "lineCount": 79,
+      "startLine": 51,
+      "endLine": 129,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/LinkPreview.tsx",
+      "functionName": "LinkPreview",
+      "lineCount": 78,
+      "startLine": 28,
+      "endLine": 105,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/states/PremiumErrorState.tsx",
+      "functionName": "PremiumErrorState",
+      "lineCount": 77,
+      "startLine": 25,
+      "endLine": 101,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/navigation/NavButton.tsx",
+      "functionName": "NavButton",
+      "lineCount": 76,
+      "startLine": 19,
+      "endLine": 94,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/dialog.tsx",
+      "functionName": "DialogContent",
+      "lineCount": 76,
+      "startLine": 76,
+      "endLine": 151,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/a11y/focus-appearance.ts",
+      "functionName": "validateFocusAppearance",
+      "lineCount": 76,
+      "startLine": 192,
+      "endLine": 267,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/chat/core/telemetry.ts",
+      "functionName": "logEffectEnd",
+      "lineCount": 76,
+      "startLine": 157,
+      "endLine": 232,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/MessageReactions.tsx",
+      "functionName": "ReactionButton",
+      "lineCount": 75,
+      "startLine": 128,
+      "endLine": 202,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/MatchesView.tsx",
+      "functionName": "MatchCard",
+      "lineCount": 75,
+      "startLine": 331,
+      "endLine": 405,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useKeyboardNavigation.ts",
+      "functionName": "useKeyboardNavigation",
+      "lineCount": 75,
+      "startLine": 19,
+      "endLine": 93,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/trust-utils.ts",
+      "functionName": "generateTrustBadges",
+      "lineCount": 75,
+      "startLine": 3,
+      "endLine": 77,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/window/LiveRegions.tsx",
+      "functionName": "LiveRegions",
+      "lineCount": 74,
+      "startLine": 132,
+      "endLine": 205,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/TrustBadges.tsx",
+      "functionName": "TrustScore",
+      "lineCount": 74,
+      "startLine": 163,
+      "endLine": 236,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-bubble-entry.ts",
+      "functionName": "useBubbleEntry",
+      "lineCount": 74,
+      "startLine": 38,
+      "endLine": 111,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/i18n/hooks/useTranslation.ts",
+      "functionName": "useLazyTranslation",
+      "lineCount": 74,
+      "startLine": 194,
+      "endLine": 267,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/features/reactions/use-reactions.ts",
+      "functionName": "useReactions",
+      "lineCount": 73,
+      "startLine": 21,
+      "endLine": 93,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useStories.ts",
+      "functionName": "useStories",
+      "lineCount": 73,
+      "startLine": 11,
+      "endLine": 83,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useTheme.ts",
+      "functionName": "useTheme",
+      "lineCount": 73,
+      "startLine": 7,
+      "endLine": 79,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/pwa/InstallPrompt.tsx",
+      "functionName": "InstallPrompt",
+      "lineCount": 72,
+      "startLine": 9,
+      "endLine": 80,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/spinner.tsx",
+      "functionName": "Spinner",
+      "lineCount": 72,
+      "startLine": 28,
+      "endLine": 99,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/tokens/button-tokens-theme-system.ts",
+      "functionName": "applyButtonTokensForTheme",
+      "lineCount": 72,
+      "startLine": 14,
+      "endLine": 85,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-magnetic-hover.ts",
+      "functionName": "useMagneticHover",
+      "lineCount": 72,
+      "startLine": 17,
+      "endLine": 88,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useFocusTrap.ts",
+      "functionName": "useFocusTrap",
+      "lineCount": 72,
+      "startLine": 8,
+      "endLine": 79,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/components/ChatHeader.tsx",
+      "functionName": "ChatHeader",
+      "lineCount": 71,
+      "startLine": 26,
+      "endLine": 96,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-motion-migration.ts",
+      "functionName": "useMotionDiv",
+      "lineCount": 71,
+      "startLine": 22,
+      "endLine": 92,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/advanced-analytics.ts",
+      "functionName": "getUserBehaviorInsights",
+      "lineCount": 71,
+      "startLine": 382,
+      "endLine": 452,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationGroupList.tsx",
+      "functionName": "NotificationGroupList",
+      "lineCount": 70,
+      "startLine": 25,
+      "endLine": 94,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/PremiumButton.tsx",
+      "functionName": "PremiumButton",
+      "lineCount": 70,
+      "startLine": 20,
+      "endLine": 89,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/visuals/PresenceAuroraRing.tsx",
+      "functionName": "PresenceAuroraRing",
+      "lineCount": 70,
+      "startLine": 39,
+      "endLine": 108,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/adoption/use-adoption-marketplace.ts",
+      "functionName": "useAdoptionMarketplace",
+      "lineCount": 70,
+      "startLine": 29,
+      "endLine": 98,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/chat-service.ts",
+      "functionName": "sendMessage",
+      "lineCount": 70,
+      "startLine": 21,
+      "endLine": 90,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/UndoDeleteChip.tsx",
+      "functionName": "UndoDeleteChip",
+      "lineCount": 69,
+      "startLine": 23,
+      "endLine": 91,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-bubble-theme.ts",
+      "functionName": "useBubbleTheme",
+      "lineCount": 69,
+      "startLine": 80,
+      "endLine": 148,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/hooks/useNotificationActions.ts",
+      "functionName": "useNotificationActions",
+      "lineCount": 68,
+      "startLine": 30,
+      "endLine": 97,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/services/content-moderation.ts",
+      "functionName": "detectNSFWMedia",
+      "lineCount": 68,
+      "startLine": 306,
+      "endLine": 373,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/agi_ui_engine/effects/useMoodTheme.tsx",
+      "functionName": "useMoodTheme",
+      "lineCount": 67,
+      "startLine": 30,
+      "endLine": 96,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/media-editor/drop-zone-web.tsx",
+      "functionName": "DropZoneWeb",
+      "lineCount": 67,
+      "startLine": 13,
+      "endLine": 79,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-motion-migration.ts",
+      "functionName": "useRepeatingAnimation",
+      "lineCount": 67,
+      "startLine": 147,
+      "endLine": 213,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/api/use-chat.ts",
+      "functionName": "useVoiceMessages",
+      "lineCount": 67,
+      "startLine": 96,
+      "endLine": 162,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/advanced-features.ts",
+      "functionName": "useBatteryStatus",
+      "lineCount": 67,
+      "startLine": 172,
+      "endLine": 238,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/PremiumNotificationBell.tsx",
+      "functionName": "BellIcon",
+      "lineCount": 66,
+      "startLine": 152,
+      "endLine": 217,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-smart-highlight.ts",
+      "functionName": "useSmartHighlight",
+      "lineCount": 66,
+      "startLine": 38,
+      "endLine": 103,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/trust-utils.ts",
+      "functionName": "generateRatings",
+      "lineCount": 66,
+      "startLine": 79,
+      "endLine": 144,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/QuickActionsMenu.tsx",
+      "functionName": "QuickActionItem",
+      "lineCount": 65,
+      "startLine": 30,
+      "endLine": 94,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-ultra-card-reveal.ts",
+      "functionName": "useUltraCardReveal",
+      "lineCount": 65,
+      "startLine": 25,
+      "endLine": 89,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-message-delivery-transition.ts",
+      "functionName": "useMessageDeliveryTransition",
+      "lineCount": 65,
+      "startLine": 32,
+      "endLine": 96,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/test/pages/PresenceAuroraTestPage.tsx",
+      "functionName": "PresenceAuroraTestPage",
+      "lineCount": 65,
+      "startLine": 9,
+      "endLine": 73,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/call/VideoQualitySettings.tsx",
+      "functionName": "QualityButton",
+      "lineCount": 64,
+      "startLine": 64,
+      "endLine": 127,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/enhanced/UltraButton.tsx",
+      "functionName": "UltraButton",
+      "lineCount": 64,
+      "startLine": 27,
+      "endLine": 90,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/NotificationFilters.tsx",
+      "functionName": "NotificationFilters",
+      "lineCount": 64,
+      "startLine": 26,
+      "endLine": 89,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/domain/business.ts",
+      "functionName": "checkUsageWithinLimits",
+      "lineCount": 64,
+      "startLine": 96,
+      "endLine": 159,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useEntitlements.ts",
+      "functionName": "useEntitlements",
+      "lineCount": 64,
+      "startLine": 6,
+      "endLine": 69,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/agi_ui_engine/effects/use3DTiltEffect.tsx",
+      "functionName": "use3DTiltEffect",
+      "lineCount": 63,
+      "startLine": 41,
+      "endLine": 103,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/notifications/components/EmptyState.tsx",
+      "functionName": "EmptyState",
+      "lineCount": 63,
+      "startLine": 27,
+      "endLine": 89,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/ui/calendar.tsx",
+      "functionName": "Calendar",
+      "lineCount": 63,
+      "startLine": 8,
+      "endLine": 70,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/core/a11y/target-size.ts",
+      "functionName": "validateTargetSize",
+      "lineCount": 63,
+      "startLine": 141,
+      "endLine": 203,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-scale-animation.ts",
+      "functionName": "useScaleAnimation",
+      "lineCount": 63,
+      "startLine": 24,
+      "endLine": 86,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-shimmer.ts",
+      "functionName": "useShimmer",
+      "lineCount": 63,
+      "startLine": 29,
+      "endLine": 91,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/media-editor/use-editor-ui.ts",
+      "functionName": "useGestures",
+      "lineCount": 63,
+      "startLine": 597,
+      "endLine": 659,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-app-state.ts",
+      "functionName": "useAppState",
+      "lineCount": 63,
+      "startLine": 31,
+      "endLine": 93,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-focus-not-obscured.ts",
+      "functionName": "useFocusNotObscured",
+      "lineCount": 63,
+      "startLine": 36,
+      "endLine": 98,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/lib/optimized-matching.ts",
+      "functionName": "_calculateCompatibilityScoreImpl",
+      "lineCount": 63,
+      "startLine": 4,
+      "endLine": 66,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/ErrorFallback.tsx",
+      "functionName": "ErrorFallback",
+      "lineCount": 62,
+      "startLine": 11,
+      "endLine": 72,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/views/discover/hooks/useDiscoverData.ts",
+      "functionName": "useDiscoverData",
+      "lineCount": 62,
+      "startLine": 31,
+      "endLine": 92,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-fade-animation.ts",
+      "functionName": "useFadeAnimation",
+      "lineCount": 62,
+      "startLine": 23,
+      "endLine": 84,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/effects/reanimated/use-parallax-tilt.ts",
+      "functionName": "useParallaxTilt",
+      "lineCount": 62,
+      "startLine": 33,
+      "endLine": 94,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/agi_ui_engine/effects/useDeleteBurst.tsx",
+      "functionName": "useDeleteBurst",
+      "lineCount": 61,
+      "startLine": 37,
+      "endLine": 97,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/EnhancedVisuals.tsx",
+      "functionName": "PulseIndicator",
+      "lineCount": 61,
+      "startLine": 131,
+      "endLine": 191,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/TrustBadges.tsx",
+      "functionName": "TrustBadges",
+      "lineCount": 61,
+      "startLine": 57,
+      "endLine": 117,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/components/chat/StickerPicker.tsx",
+      "functionName": "StickerButton",
+      "lineCount": 61,
+      "startLine": 257,
+      "endLine": 317,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-enhanced-announcements.ts",
+      "functionName": "useEnhancedAnnouncements",
+      "lineCount": 61,
+      "startLine": 41,
+      "endLine": 101,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-swipe-to-reply.ts",
+      "functionName": "useSwipeToReply",
+      "lineCount": 61,
+      "startLine": 30,
+      "endLine": 90,
+      "priority": "medium"
+    },
+    {
+      "file": "/home/ben/Public/PETSPARK/apps/web/src/hooks/usePWA.ts",
+      "functionName": "usePWA",
+      "lineCount": 61,
+      "startLine": 16,
+      "endLine": 76,
+      "priority": "medium"
+    }
+  ],
+  "summary": {
+    "total": 353,
+    "critical": 95,
+    "high": 125,
+    "medium": 133
+  }
+}

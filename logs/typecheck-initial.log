@@ -1,0 +1,8 @@
+
+> petspark-monorepo@0.1.0 typecheck /home/ben/Public/PETSPARK
+> pnpm --filter ./packages/shared typecheck
+
+
+> @petspark/shared@0.0.0 typecheck /home/ben/Public/PETSPARK/packages/shared
+> tsc --noEmit
+

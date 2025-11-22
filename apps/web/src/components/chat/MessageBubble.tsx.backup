@@ -1,0 +1,487 @@
+/**
+ * Message Bubble Component
+ * 
+ * Production-ready chat bubble with proper styling, accessibility, and media support.
+ * Handles long BG strings, emojis, reactions, read receipts, and all content types.
+ */
+
+import { useState, memo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { 
+  Check, 
+  Checks, // Double check icon
+  Clock, 
+  X, 
+  Heart, 
+  Smiley, 
+  ThumbsUp, 
+  ThumbsDown, 
+  Fire, 
+  HandsPraying, 
+  Star,
+  Copy,
+  ArrowUUpLeft, // Reply icon alternative
+  Flag,
+  Trash,
+  Image as ImageIcon,
+  MapPin,
+  Waveform
+} from '@phosphor-icons/react'
+import type { Message, ReactionType } from '@/lib/chat-types'
+import { cn } from '@/lib/utils'
+import { useApp } from '@/contexts/AppContext'
+
+interface MessageBubbleProps {
+  message: Message
+  isOwn: boolean
+  isClusterStart: boolean
+  isClusterEnd: boolean
+  onReact?: (messageId: string, reaction: ReactionType) => void
+  onReply?: (messageId: string) => void
+  onCopy?: (messageId: string) => void
+  onReport?: (messageId: string) => void
+  onDelete?: (messageId: string) => void
+  onRetry?: (messageId: string) => void
+  showTimestamp?: boolean
+}
+
+const REACTIONS: { type: ReactionType; icon: typeof Heart; label: string }[] = [
+  { type: '❤️', icon: Heart, label: 'Love' },
+  { type: '😂', icon: Smiley, label: 'Laugh' },
+  { type: '👍', icon: ThumbsUp, label: 'Like' },
+  { type: '👎', icon: ThumbsDown, label: 'Dislike' },
+  { type: '🔥', icon: Fire, label: 'Fire' },
+  { type: '🙏', icon: HandsPraying, label: 'Pray' },
+  { type: '⭐', icon: Star, label: 'Star' },
+]
+
+function MessageBubble({
+  message,
+  isOwn,
+  isClusterStart,
+  isClusterEnd,
+  onReact,
+  onReply,
+  onCopy,
+  onReport,
+  onDelete,
+  onRetry,
+  showTimestamp = false,
+}: MessageBubbleProps) {
+  const { t } = useApp()
+  const [showReactions, setShowReactions] = useState(false)
+  const [showContextMenu, setShowContextMenu] = useState(false)
+  const [imageError, setImageError] = useState(false)
+
+  const formatTime = (timestamp: string): string => {
+    const date = new Date(timestamp)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const handleLongPress = () => {
+    if (isOwn && message.status === 'sending') return
+    setShowContextMenu(true)
+  }
+
+  const handleReact = (reaction: ReactionType) => {
+    if (onReact) {
+      onReact(message.id, reaction)
+    }
+    setShowReactions(false)
+    setShowContextMenu(false)
+  }
+
+  const handleCopy = () => {
+    if (onCopy) {
+      onCopy(message.id)
+    }
+    setShowContextMenu(false)
+  }
+
+  const handleReply = () => {
+    if (onReply) {
+      onReply(message.id)
+    }
+    setShowContextMenu(false)
+  }
+
+  const handleReport = () => {
+    if (onReport) {
+      onReport(message.id)
+    }
+    setShowContextMenu(false)
+  }
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(message.id)
+    }
+    setShowContextMenu(false)
+  }
+
+  const handleRetry = () => {
+    if (onRetry) {
+      onRetry(message.id)
+    }
+  }
+
+  const getStatusIcon = () => {
+    if (message.status === 'sending') {
+      return <Clock size={12} className="text-muted-foreground" />
+    }
+    if (message.status === 'failed') {
+      return (
+        <button
+          onClick={handleRetry}
+          className="text-destructive hover:text-destructive/80"
+          aria-label="Retry sending"
+        >
+          <X size={12} />
+        </button>
+      )
+    }
+    if (message.status === 'read') {
+      return <Checks size={12} className="text-primary" />
+    }
+    if (message.status === 'delivered') {
+      return <Checks size={12} className="text-muted-foreground" />
+    }
+    return <Check size={12} className="text-muted-foreground" />
+  }
+
+  const bubbleClasses = cn(
+    'relative group px-3 py-2 rounded-2xl shadow-sm max-w-[78%]',
+    'text-sm leading-relaxed wrap-break-word',
+    isOwn
+      ? 'bg-linear-to-br from-primary to-accent text-white rounded-br-sm'
+      : 'bg-card border border-border text-foreground rounded-bl-sm',
+    isClusterEnd && (isOwn ? 'rounded-br-sm' : 'rounded-bl-sm'),
+    message.status === 'failed' && 'opacity-75',
+    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+  )
+
+  return (
+    <div
+      className={cn(
+        'flex items-end gap-2',
+        isOwn ? 'flex-row-reverse' : 'flex-row',
+        isClusterStart && 'mt-2'
+      )}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        handleLongPress()
+      }}
+    >
+      <motion.div
+        className={bubbleClasses}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {/* Message Content */}
+        {message.type === 'text' && (
+          <div className="wrap-break-word whitespace-pre-wrap">
+            {message.content}
+          </div>
+        )}
+
+        {message.type === 'image' && message.metadata?.media && (
+          <div className="relative">
+            {imageError ? (
+              <div className="flex items-center justify-center w-48 h-48 bg-muted rounded-lg">
+                <ImageIcon size={32} className="text-muted-foreground" />
+              </div>
+            ) : (
+              <img
+                src={message.metadata.media.url}
+                alt={message.content || 'Image'}
+                className="max-w-full h-auto rounded-lg cursor-pointer"
+                onError={() => setImageError(true)}
+                onClick={() => {
+                  // Open full-screen image
+                  window.open(message.metadata!.media!.url, '_blank')
+                }}
+                loading="lazy"
+              />
+            )}
+            {message.content && (
+              <p className="mt-2 wrap-break-word whitespace-pre-wrap">{message.content}</p>
+            )}
+          </div>
+        )}
+
+        {message.type === 'video' && message.metadata?.media && (
+          <div className="relative">
+            <video
+              src={message.metadata.media.url}
+              poster={message.metadata.media.thumbnail}
+              controls
+              className="max-w-full h-auto rounded-lg"
+              preload="metadata"
+            />
+            {message.content && (
+              <p className="mt-2 wrap-break-word whitespace-pre-wrap">{message.content}</p>
+            )}
+          </div>
+        )}
+
+        {message.type === 'voice' && message.metadata?.voiceNote && (
+          <div className="flex items-center gap-2 min-w-[200px]">
+            <Waveform size={20} />
+            <div className="flex-1 h-8 bg-muted/50 rounded-full flex items-center gap-1 px-2">
+              {message.metadata.voiceNote.waveform.map((amp, i) => (
+                <div
+                  key={i}
+                  className="bg-primary w-1 rounded-full"
+                  style={{ height: `${amp * 100}%` }}
+                />
+              ))}
+            </div>
+            <span className="text-xs">
+              {Math.floor(message.metadata.voiceNote.duration / 60)}:
+              {String(Math.floor(message.metadata.voiceNote.duration % 60)).padStart(2, '0')}
+            </span>
+          </div>
+        )}
+
+        {message.type === 'location' && message.metadata?.location && (
+          <button
+            className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+            onClick={() => {
+              const { lat, lng } = message.metadata!.location!
+              window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank')
+            }}
+          >
+            <MapPin size={16} />
+            <span className="text-xs">
+              {message.metadata.location.address || `${message.metadata.location.lat}, ${message.metadata.location.lng}`}
+            </span>
+          </button>
+        )}
+
+        {message.type === 'sticker' && (
+          <div className="text-5xl p-2">{message.content}</div>
+        )}
+
+        {/* Reply Preview */}
+        {message.metadata?.replyTo && (
+          <div className={cn(
+            'mt-2 pl-3 border-l-2',
+            isOwn ? 'border-white/30' : 'border-primary/30'
+          )}>
+            <p className="text-xs opacity-70">
+              {t.chat?.replyingTo || 'Replying to'}
+            </p>
+            <p className="text-xs truncate">
+              {/* Reference to original message */}
+            </p>
+          </div>
+        )}
+
+        {/* Metadata Row */}
+        <div className={cn(
+          'flex items-center gap-1 mt-1',
+          isOwn ? 'justify-end' : 'justify-start'
+        )}>
+          {isOwn && (
+            <div className="flex items-center gap-1">
+              {getStatusIcon()}
+            </div>
+          )}
+          {(showTimestamp || isClusterEnd) && (
+            <span className={cn(
+              'text-xs',
+              isOwn ? 'text-white/70' : 'text-muted-foreground'
+            )}>
+              {formatTime(message.createdAt)}
+            </span>
+          )}
+        </div>
+
+        {/* Reactions */}
+        {message.reactions && (() => {
+          // Handle both MessageReaction[] and Record<ReactionType, string[]>
+          if (Array.isArray(message.reactions)) {
+            if (message.reactions.length === 0) return null
+            
+            const groupedReactions = message.reactions.reduce((acc, reaction) => {
+              const emoji = reaction.emoji
+              if (!acc[emoji]) {
+                acc[emoji] = []
+              }
+              const emojiArray = acc[emoji]
+              if (emojiArray) {
+                emojiArray.push(reaction)
+              }
+              return acc
+            }, {} as Record<string, typeof message.reactions>)
+            
+            return (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {Object.entries(groupedReactions).map(([reaction, reactions]) => (
+                  <button
+                    key={reaction}
+                    className={cn(
+                      'px-2 py-0.5 rounded-full text-xs flex items-center gap-1',
+                      isOwn ? 'bg-white/20' : 'bg-muted'
+                    )}
+                    onClick={() => handleReact(reaction as ReactionType)}
+                  >
+                    <span>{reaction}</span>
+                    {reactions.length > 1 && <span>{reactions.length}</span>}
+                  </button>
+                ))}
+              </div>
+            )
+          } else {
+            // Record<ReactionType, string[]>
+            const entries = Object.entries(message.reactions)
+            if (entries.length === 0) return null
+            
+            return (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {entries.map(([emoji, userIds]) => (
+                  <button
+                    key={emoji}
+                    className={cn(
+                      'px-2 py-0.5 rounded-full text-xs flex items-center gap-1',
+                      isOwn ? 'bg-white/20' : 'bg-muted'
+                    )}
+                    onClick={() => handleReact(emoji as ReactionType)}
+                  >
+                    <span>{emoji}</span>
+                    {userIds.length > 1 && <span>{userIds.length}</span>}
+                  </button>
+                ))}
+              </div>
+            )
+          }
+        })()}
+      </motion.div>
+
+      {/* Context Menu */}
+      <AnimatePresence>
+        {showContextMenu && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className={cn(
+              'absolute z-50 bg-card border border-border rounded-lg shadow-lg p-1',
+              'flex flex-col gap-1 min-w-[160px]',
+              isOwn ? 'right-0' : 'left-0'
+            )}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowReactions(true)}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-md text-sm"
+            >
+              <Smiley size={16} />
+              <span>{t.chat?.react || 'React'}</span>
+            </button>
+            {onReply && (
+              <button
+                onClick={handleReply}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-md text-sm"
+              >
+                <ArrowUUpLeft size={16} />
+                <span>{t.chat?.reply || 'Reply'}</span>
+              </button>
+            )}
+            {onCopy && (
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-md text-sm"
+              >
+                <Copy size={16} />
+                <span>{t.chat?.copy || 'Copy'}</span>
+              </button>
+            )}
+            {onReport && !isOwn && (
+              <button
+                onClick={handleReport}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-destructive/10 text-destructive rounded-md text-sm"
+              >
+                <Flag size={16} />
+                <span>{t.chat?.report || 'Report'}</span>
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-3 py-2 hover:bg-destructive/10 text-destructive rounded-md text-sm"
+              >
+                <Trash size={16} />
+                <span>{t.chat?.delete || 'Delete'}</span>
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Reactions Picker */}
+      <AnimatePresence>
+        {showReactions && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            className={cn(
+              'absolute z-50 bg-card border border-border rounded-full shadow-lg p-2',
+              'flex items-center gap-2',
+              isOwn ? 'right-0' : 'left-0',
+              '-top-12'
+            )}
+          >
+            {REACTIONS.map(({ type, label }) => (
+              <button
+                key={type}
+                onClick={() => handleReact(type)}
+                className="p-2 hover:bg-muted rounded-full transition-colors"
+                aria-label={label}
+              >
+                <span className="text-xl">{type}</span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// Memoize MessageBubble to prevent unnecessary re-renders
+export default memo(MessageBubble, (prev, next) => {
+  // Check if reactions have changed (compare length and reference)
+  const prevReactions = prev.message.reactions
+  const nextReactions = next.message.reactions
+  const prevArray = Array.isArray(prevReactions) ? prevReactions : []
+  const nextArray = Array.isArray(nextReactions) ? nextReactions : []
+  const reactionsChanged = prevReactions !== nextReactions && (
+    !prevReactions || !nextReactions ||
+    prevArray.length !== nextArray.length ||
+    prevArray.some((r, i) => {
+      const prevEmoji = 'emoji' in r ? r.emoji : String(r)
+      const nextR = nextArray[i]
+      const nextEmoji = nextR && ('emoji' in nextR ? nextR.emoji : String(nextR))
+      return prevEmoji !== nextEmoji
+    })
+  )
+  
+  return (
+    prev.message.id === next.message.id &&
+    prev.message.status === next.message.status &&
+    prev.message.content === next.message.content &&
+    prev.message.timestamp === next.message.timestamp &&
+    prev.message.createdAt === next.message.createdAt &&
+    !reactionsChanged &&
+    prev.isOwn === next.isOwn &&
+    prev.isClusterStart === next.isClusterStart &&
+    prev.isClusterEnd === next.isClusterEnd &&
+    prev.showTimestamp === next.showTimestamp
+  )
+})
+

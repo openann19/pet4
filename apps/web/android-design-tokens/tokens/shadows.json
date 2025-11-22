@@ -1,0 +1,107 @@
+{
+  "shadows": {
+    "elevation": {
+      "scale": [0, 1, 2, 3, 4, 5, 6, 8, 12, 16, 24],
+      "tokens": {
+        "none": 0,
+        "sm": 1,
+        "md": 2,
+        "lg": 3,
+        "xl": 4,
+        "2xl": 6,
+        "3xl": 8,
+        "4xl": 12,
+        "5xl": 16,
+        "6xl": 24
+      }
+    },
+    "definitions": {
+      "elevation1": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 1 },
+        "shadowOpacity": 0.05,
+        "shadowRadius": 2,
+        "elevation": 1
+      },
+      "elevation2": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 2 },
+        "shadowOpacity": 0.08,
+        "shadowRadius": 4,
+        "elevation": 2
+      },
+      "elevation3": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 4 },
+        "shadowOpacity": 0.1,
+        "shadowRadius": 8,
+        "elevation": 3
+      },
+      "elevation4": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 6 },
+        "shadowOpacity": 0.12,
+        "shadowRadius": 12,
+        "elevation": 4
+      },
+      "elevation6": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 8 },
+        "shadowOpacity": 0.15,
+        "shadowRadius": 16,
+        "elevation": 6
+      },
+      "elevation8": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 12 },
+        "shadowOpacity": 0.18,
+        "shadowRadius": 24,
+        "elevation": 8
+      },
+      "elevation12": {
+        "shadowColor": "#000000",
+        "shadowOffset": { "x": 0, "y": 16 },
+        "shadowOpacity": 0.2,
+        "shadowRadius": 32,
+        "elevation": 12
+      }
+    },
+    "component": {
+      "card": {
+        "default": "elevation2",
+        "elevated": "elevation4",
+        "hover": "elevation3"
+      },
+      "button": {
+        "default": "elevation1",
+        "pressed": "elevation0",
+        "hover": "elevation2"
+      },
+      "sheet": {
+        "modal": "elevation8",
+        "bottom": "elevation6"
+      },
+      "dialog": "elevation12",
+      "floatingActionButton": "elevation6",
+      "appBar": "elevation4"
+    },
+    "glow": {
+      "accent": {
+        "color": "accent.match.500",
+        "radius": 16,
+        "spread": 8,
+        "opacity": 0.3
+      },
+      "primary": {
+        "color": "primary.500",
+        "radius": 12,
+        "spread": 6,
+        "opacity": 0.25
+      }
+    },
+    "performance": {
+      "maxBlurRadius": 32,
+      "note": "Keep shadow blur radii modest on mobile for performance"
+    }
+  }
+}

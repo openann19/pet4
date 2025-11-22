@@ -1,0 +1,110 @@
+[
+  {
+    "path": "apps/mobile/src/screens/AdoptScreen.tsx",
+    "name": "AdoptScreen",
+    "slug": "apps-mobile-src-screens-AdoptScreen-tsx",
+    "testID": "nav-adoptscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/AdoptionScreen.tsx",
+    "name": "AdoptionScreen",
+    "slug": "apps-mobile-src-screens-AdoptionScreen-tsx",
+    "testID": "nav-adoptionscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/ChatScreen.tsx",
+    "name": "ChatScreen",
+    "slug": "apps-mobile-src-screens-ChatScreen-tsx",
+    "testID": "nav-chatscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/CommunityScreen.tsx",
+    "name": "CommunityScreen",
+    "slug": "apps-mobile-src-screens-CommunityScreen-tsx",
+    "testID": "nav-communityscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/EffectsPlaygroundScreen.tsx",
+    "name": "EffectsPlaygroundScreen",
+    "slug": "apps-mobile-src-screens-EffectsPlaygroundScreen-tsx",
+    "testID": "nav-effectsplaygroundscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/FeedScreen.tsx",
+    "name": "FeedScreen",
+    "slug": "apps-mobile-src-screens-FeedScreen-tsx",
+    "testID": "nav-feedscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/HomeScreen.tsx",
+    "name": "HomeScreen",
+    "slug": "apps-mobile-src-screens-HomeScreen-tsx",
+    "testID": "nav-homescreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/MatchesScreen.tsx",
+    "name": "MatchesScreen",
+    "slug": "apps-mobile-src-screens-MatchesScreen-tsx",
+    "testID": "nav-matchesscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/MatchingScreen.tsx",
+    "name": "MatchingScreen",
+    "slug": "apps-mobile-src-screens-MatchingScreen-tsx",
+    "testID": "nav-matchingscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/ProfileScreen.tsx",
+    "name": "ProfileScreen",
+    "slug": "apps-mobile-src-screens-ProfileScreen-tsx",
+    "testID": "nav-profilescreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/SignUpScreen.tsx",
+    "name": "SignUpScreen",
+    "slug": "apps-mobile-src-screens-SignUpScreen-tsx",
+    "testID": "nav-signupscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/AdoptionScreen.test.tsx",
+    "name": "AdoptionScreen.test",
+    "slug": "apps-mobile-src-screens-tests-AdoptionScreen-test-tsx",
+    "testID": "nav-adoptionscreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/CommunityScreen.test.tsx",
+    "name": "CommunityScreen.test",
+    "slug": "apps-mobile-src-screens-tests-CommunityScreen-test-tsx",
+    "testID": "nav-communityscreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/EffectsPlaygroundScreen.test.tsx",
+    "name": "EffectsPlaygroundScreen.test",
+    "slug": "apps-mobile-src-screens-tests-EffectsPlaygroundScreen-test-tsx",
+    "testID": "nav-effectsplaygroundscreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/HomeScreen.test.tsx",
+    "name": "HomeScreen.test",
+    "slug": "apps-mobile-src-screens-tests-HomeScreen-test-tsx",
+    "testID": "nav-homescreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/MatchingScreen.test.tsx",
+    "name": "MatchingScreen.test",
+    "slug": "apps-mobile-src-screens-tests-MatchingScreen-test-tsx",
+    "testID": "nav-matchingscreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/ProfileScreen.test.tsx",
+    "name": "ProfileScreen.test",
+    "slug": "apps-mobile-src-screens-tests-ProfileScreen-test-tsx",
+    "testID": "nav-profilescreen.test"
+  },
+  {
+    "path": "apps/mobile/src/screens/__tests__/SignUpScreen.test.tsx",
+    "name": "SignUpScreen.test",
+    "slug": "apps-mobile-src-screens-tests-SignUpScreen-test-tsx",
+    "testID": "nav-signupscreen.test"
+  }
+]

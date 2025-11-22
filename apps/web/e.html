@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Electric Souls — Deep Ocean</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { height: 100%; }
+    body { margin:0; overflow:hidden; background:#000000; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+    #hud {
+      position: fixed; left: 12px; top: 12px; z-index: 10;
+      padding: 8px 10px; border-radius: 8px;
+      color:#cfe7ff; background: rgba(2,10,20,.3); backdrop-filter: blur(12px);
+      border: 1px solid rgba(160,220,255,.08); font-size: 11px; line-height: 1.5;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      user-select: none;
+      transition: opacity 0.3s ease;
+      max-width: 280px;
+    }
+    #hud.hidden { opacity: 0; pointer-events: none; }
+    #hud h1{margin:0 0 8px; font-size:12px; color:#e8f6ff; letter-spacing:.3px; font-weight:500;}
+    #hud kbd{background:rgba(7,20,32,.6); border:1px solid rgba(160,220,255,.15); padding:1px 5px; border-radius:4px; font-size:10px; font-weight:500;}
+    #hud .section{margin:6px 0; padding-top:6px; border-top:1px solid rgba(160,220,255,.08);}
+    #hud .section:first-child{border-top:none; padding-top:0;}
+    #hud .compact{font-size:10px; line-height:1.4; color:rgba(207,231,255,.7);}
+    #hud #stats{font-size:10px; color:rgba(207,231,255,.6); margin-top:8px; padding-top:8px; border-top:1px solid rgba(160,220,255,.08);}
+  </style>
+</head>
+<body>
+      <div id="hud">
+    <h1>Electric Souls</h1>
+    <div class="compact"><kbd>?</kbd> help · <kbd>Space</kbd> pause · <kbd>R</kbd> reset</div>
+    <div class="section compact" id="controls" style="display:none;">
+      <div><strong>Camera:</strong> Mouse drag/wheel · <kbd>←→↑↓</kbd> move</div>
+      <div><strong>System:</strong> <kbd>T</kbd> auto-rot · <kbd>Q</kbd>/<kbd>E</kbd> rot</div>
+      <div><strong>Effects:</strong> <kbd>V</kbd> vortex · <kbd>X</kbd>/<kbd>Z</kbd> burst · Click/Touch</div>
+      <div><strong>Physics:</strong> <kbd>N</kbd> flow · <kbd>C</kbd> coh · <kbd>S</kbd> sep</div>
+      <div><strong>Visual:</strong> <kbd>G</kbd> glow · <kbd>I</kbd> spin · <kbd>+</kbd>/<kbd>-</kbd> size</div>
+      <div><strong>Enhanced:</strong> <kbd>L</kbd> trails · <kbd>M</kbd> audio · Multi-touch</div>
+      <div><strong>Text:</strong> <kbd>Enter</kbd> text/sequence · <kbd>Esc</kbd> clear · <kbd>Ctrl+A-Z</kbd> letter</div>
+      <div><strong>Sequences:</strong> <kbd>F9</kbd> HELLO · <kbd>F10</kbd> WORLD · <kbd>F11</kbd> PARTICLES</div>
+      <div><strong>Cheats:</strong> <kbd>F1</kbd> god · <kbd>F2</kbd> slowmo · <kbd>F3</kbd> chaos</div>
+      <div><strong>Cheats:</strong> <kbd>F4</kbd> vortex · <kbd>F5</kbd> reset · <kbd>F6</kbd> rainbow</div>
+      <div><strong>Shapes:</strong> <kbd>F7</kbd> sphere · <kbd>F8</kbd> cube</div>
+      <div><strong>Time:</strong> <kbd>0-9</kbd> speed · <kbd>,</kbd>/<kbd>.</kbd> fine</div>
+      <div><strong>Count:</strong> <kbd>[</kbd>/<kbd>]</kbd> particles</div>
+    </div>
+    <div id="stats"></div>
+  </div>
+  <canvas id="c"></canvas>
+
+  <script type="module">
+    // Core libs (pin versions for stability)
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+    import { EffectComposer }   from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/EffectComposer.js';
+    import { RenderPass }       from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/RenderPass.js';
+    import { UnrealBloomPass }  from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+    import { AfterimagePass }   from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/AfterimagePass.js';
+    import { ShaderPass }       from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/ShaderPass.js';
+    import { FXAAShader }       from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/shaders/FXAAShader.js';
+    import { OrbitControls }    from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+    import { createNoise3D }    from 'https://esm.sh/simplex-noise@4.0.1';
+
+    // ---------------- Tunables ----------------
+    const CONFIG = {
+      COUNT: 12000,
+      WORLD: 20.0,
+      CELL: 0.9,
+      NEIGHBOR_RADIUS: 1.2,         // Increased for better flocking
+      MAX_NEIGHBORS: 16,             // More neighbors for smoother behavior
+      MAX_SPEED: 1.1,
+      MAX_FORCE: 2.1,
+      SEEK_WEIGHT: 1.35,
+      COHERE_WEIGHT: 0.55,
+      SEPARATE_WEIGHT: 1.35,
+      ALIGN_WEIGHT: 0.85,            // New: alignment force
+      CURL_WEIGHT: 0.95,
+      CURL_SCALE: 0.42,
+      CURL_TIME: 0.14,
+      TURBULENCE_SCALE: 0.35,        // New: turbulence field
+      TURBULENCE_STRENGTH: 0.4,
+      POINT_SIZE: 3.4,
+      DAMPING: 0.995,
+      BLOOM: { strength: 1.4, radius: 0.8, threshold: 0.0 },
+      AFTERIMAGE_DAMP: 0.94,
+      FOG_DENSITY: 0.055,
+      VORTEX_STRENGTH: 2.5,
+      VORTEX_RADIUS: 8.0,
+      EXPLOSION_FORCE: 15.0,
+      IMPLOSION_FORCE: 12.0,
+      // Enhanced features
+      TRAIL_DECAY: 0.92,
+      TRAIL_WIDTH: 0.15,
+      VOLUMETRIC_LIGHT_INTENSITY: 1.5,
+      VOLUMETRIC_LIGHT_COLOR: 0x0a2a4a,
+      AUDIO_SENSITIVITY: 2.0,
+      AUDIO_SMOOTHING: 0.85
+    };
+
+    // ---------------- Globals ----------------
+    let renderer, scene, camera, composer, controls;
+    let points, geometry, material;
+    let positions, velocities, masses, speeds, colors, rotations, rotationSpeeds, ages;
+    let running = true, enableCohesion = true, enableSeparation = true, enableCurl = true, enableAlignment = true;
+    let pointSize = CONFIG.POINT_SIZE, additiveGlow = true;
+    let enableVortex = false, enableParticleSpin = false, enableTurbulence = true;
+    let autoRotate = false, globalRotationX = 0, globalRotationY = 0;
+    let rotationSpeed = 0.3, timeScale = 1.0;
+    let vortexCenter = new THREE.Vector3(0, 0, 0);
+    let vortexStrength = CONFIG.VORTEX_STRENGTH;
+    let effectCenter = new THREE.Vector3(0, 0, 0);
+    let currentParticleCount = CONFIG.COUNT;
+    let hudVisible = false;
+    
+    // Enhanced features
+    let trailGeometry, trailMaterial, trailsEnabled = true;
+    let trailPositions, trailLength = 8; // Number of trail segments per particle
+    let pointLights = [];
+    let volumetricLightPass;
+    let audioContext, analyser, audioData, audioEnabled = false;
+    let interactionPoints = []; // Multiple interaction points for touch/multi-click
+    let maxInteractionPoints = 10;
+    
+    // Letter/Text formation system
+    let textTargets = []; // Target positions for forming text
+    let letterMode = false;
+    let currentText = '';
+    let textFormationStrength = 2.5;
+    let textScale = 1.0;
+    
+    // Letter sequence system
+    let letterSequence = []; // Array of letters to cycle through
+    let currentLetterIndex = 0;
+    let letterHoldTime = 2.0; // Seconds to hold each letter
+    let letterTransitionTime = 1.5; // Seconds to transition between letters
+    let letterSequenceStartTime = 0;
+    let isLetterSequenceActive = false;
+    let letterSequenceLoop = true; // Loop the sequence
+
+    const clock = new THREE.Clock();
+    const noise3D = createNoise3D();
+    const mouseNDC = new THREE.Vector2(9999, 9999);
+    const target   = new THREE.Vector3();
+    const raycaster = new THREE.Raycaster();
+    const plane = new THREE.Plane(new THREE.Vector3(0,0,1), 0);
+    const buckets = new Map();
+    const neighborList = [];
+
+    // ---------------- Simple 5x7 Bitmap Font ----------------
+    // Each letter is represented as a 5x7 grid (35 bits)
+    const font = {
+      'A': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1],
+      'B': [1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0],
+      'C': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,1, 0,1,1,1,0],
+      'D': [1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0],
+      'E': [1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,0, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1],
+      'F': [1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0],
+      'G': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,0, 1,0,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      'H': [1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1],
+      'I': [1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 1,1,1,1,1],
+      'J': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,0,1, 0,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      'K': [1,0,0,0,1, 1,0,0,1,0, 1,0,1,0,0, 1,1,0,0,0, 1,0,1,0,0, 1,0,0,1,0, 1,0,0,0,1],
+      'L': [1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1],
+      'M': [1,0,0,0,1, 1,1,0,1,1, 1,0,1,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1],
+      'N': [1,0,0,0,1, 1,1,0,0,1, 1,0,1,0,1, 1,0,0,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1],
+      'O': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      'P': [1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0, 1,0,0,0,0, 1,0,0,0,0, 1,0,0,0,0],
+      'Q': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,1,0,1, 1,0,0,1,1, 0,1,1,1,1],
+      'R': [1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,0, 1,0,1,0,0, 1,0,0,1,0, 1,0,0,0,1],
+      'S': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,0, 0,1,1,1,0, 0,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      'T': [1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0],
+      'U': [1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      'V': [1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0],
+      'W': [1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,1,0,1, 1,1,0,1,1, 1,0,0,0,1],
+      'X': [1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,0,1,0, 1,0,0,0,1],
+      'Y': [1,0,0,0,1, 1,0,0,0,1, 0,1,0,1,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0],
+      'Z': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,0,0,0,0, 1,1,1,1,1],
+      '0': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,1,1, 1,0,1,0,1, 1,1,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '1': [0,0,1,0,0, 0,1,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,1,1,1,0],
+      '2': [0,1,1,1,0, 1,0,0,0,1, 0,0,0,0,1, 0,0,1,1,0, 0,1,0,0,0, 1,0,0,0,0, 1,1,1,1,1],
+      '3': [0,1,1,1,0, 1,0,0,0,1, 0,0,0,0,1, 0,0,1,1,0, 0,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '4': [0,0,0,1,0, 0,0,1,1,0, 0,1,0,1,0, 1,0,0,1,0, 1,1,1,1,1, 0,0,0,1,0, 0,0,0,1,0],
+      '5': [1,1,1,1,1, 1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,0, 0,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '6': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,0, 1,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '7': [1,1,1,1,1, 0,0,0,0,1, 0,0,0,1,0, 0,0,1,0,0, 0,1,0,0,0, 1,0,0,0,0, 1,0,0,0,0],
+      '8': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '9': [0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,1, 0,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+      '!': [0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0],
+      '?': [0,1,1,1,0, 1,0,0,0,1, 0,0,0,0,1, 0,0,1,1,0, 0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0],
+      '.': [0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,1,0,0],
+      ' ': [0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0]
+    };
+
+    // ---------------- Fullscreen grade (underwater blue + vignette + subtle chroma) ----------------
+    const UnderwaterShader = {
+      uniforms: {
+        tDiffuse:   { value: null },
+        uTime:      { value: 0 },
+        uTint:      { value: new THREE.Color('#0a1520') }, // Dark blue tint
+        uDepthTint: { value: new THREE.Color('#000510') }, // Very dark blue-black
+        uVignette:  { value: 0.45 },
+        uChromAb:   { value: 0.0005 }, // Minimal chromatic aberration
+        uExposure:  { value: 0.9 } // Darker exposure for black background
+      },
+      vertexShader: /* glsl */`
+        varying vec2 vUv;
+        void main(){ vUv = uv; gl_Position = vec4(position,1.0); }
+      `,
+      fragmentShader: /* glsl */`
+        precision highp float;
+        uniform sampler2D tDiffuse;
+        uniform float uTime, uVignette, uChromAb, uExposure;
+        uniform vec3 uTint, uDepthTint;
+        varying vec2 vUv;
+
+        // simple wavy caustic-ish modulation (screen-space, cheap)
+        float waves(vec2 uv){
+          float t = uTime * 0.4;
+          float w = 0.0;
+          uv *= 2.0;
+          for (int i=0;i<3;i++){
+            float a = sin(uv.x*1.7 + t*1.2) * 0.5 + 0.5;
+            float b = sin(uv.y*1.9 - t*1.1) * 0.5 + 0.5;
+            w += a*b; uv *= 1.6;
+          }
+          return w / 3.0; // 0..1
+        }
+
+        void main(){
+          // slight chromatic aberration
+          vec2 off = (vUv - 0.5) * uChromAb;
+          vec3 col;
+          col.r = texture2D(tDiffuse, vUv + off).r;
+          col.g = texture2D(tDiffuse, vUv).g;
+          col.b = texture2D(tDiffuse, vUv - off).b;
+
+          // tint + depth-ish falloff via vignette
+          float r = length(vUv - 0.5);
+          float vig = smoothstep(0.9, uVignette, r);
+          float wv = waves(vUv);
+          vec3 tint = mix(uTint, uDepthTint, vig);
+          col = col * (0.95 + 0.05 * wv) + tint * 0.08 * (0.6 + 0.4*wv);
+
+          // simple tone lift
+          col = pow(col, vec3(0.95));
+          col *= uExposure;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `
+    };
+
+    // ---------------- Trail Shaders ----------------
+    const trailVert = /* glsl */`
+      attribute vec3 position;
+      attribute vec3 previous;
+      attribute vec3 next;
+      attribute float side;
+      attribute float age;
+      
+      uniform float uTime;
+      uniform float uTrailWidth;
+      uniform mat4 projectionMatrix;
+      uniform mat4 modelViewMatrix;
+      
+      varying vec3 vColor;
+      varying float vAge;
+      varying float vSide;
+      
+      void main() {
+        vec2 aspect = vec2(projectionMatrix[0][0], projectionMatrix[1][1]);
+        vec4 currentView = modelViewMatrix * vec4(position, 1.0);
+        vec4 prevView = modelViewMatrix * vec4(previous, 1.0);
+        vec4 nextView = modelViewMatrix * vec4(next, 1.0);
+        
+        vec2 currentScreen = currentView.xy / currentView.w;
+        vec2 prevScreen = prevView.xy / prevView.w;
+        vec2 nextScreen = nextView.xy / nextView.w;
+        
+        vec2 dir1 = normalize(currentScreen - prevScreen);
+        vec2 dir2 = normalize(nextScreen - currentScreen);
+        vec2 dir = normalize(dir1 + dir2);
+        
+        vec2 normal = vec2(-dir.y, dir.x);
+        normal *= uTrailWidth;
+        normal /= aspect;
+        
+        float dist = length(currentView.xyz);
+        float widthScale = clamp(50.0 / max(1.0, dist), 0.3, 2.0);
+        
+        vec4 pos = currentView;
+        pos.xy += normal * side * widthScale;
+        
+        vColor = vec3(0.08, 0.18, 0.32);
+        vAge = age;
+        vSide = side;
+        
+        gl_Position = projectionMatrix * pos;
+      }
+    `;
+
+    const trailFrag = /* glsl */`
+      precision highp float;
+      varying vec3 vColor;
+      varying float vAge;
+      varying float vSide;
+      
+      uniform float uTime;
+      
+      void main() {
+        float alpha = (1.0 - vAge) * 0.6;
+        float edge = smoothstep(0.5, 1.0, abs(vSide));
+        alpha *= (1.0 - edge * 0.5);
+        
+        vec3 col = vColor * (0.5 + 0.5 * sin(vAge * 10.0 + uTime * 2.0));
+        col += vec3(0.05, 0.12, 0.25) * (1.0 - vAge) * 0.3;
+        
+        gl_FragColor = vec4(col, alpha * 0.8);
+        if (gl_FragColor.a < 0.01) discard;
+      }
+    `;
+
+    // ---------------- Shaders for points (soft discs + animated rim) ----------------
+    const vert = /* glsl */`
+      attribute float speed;
+      attribute float rotation;
+      attribute float age;
+      uniform float uSize, uSizeAtten, uTime, uSpinEnabled;
+      varying vec3  vColor;
+      varying float vSpeed;
+      varying float vRotation;
+      varying float vAge;
+      varying float vDepth;
+
+      void main(){
+        vColor = color;
+        vSpeed = speed;
+        vRotation = rotation;
+        vAge = age;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mv;
+        float dist = -mv.z;
+        vDepth = dist;
+        // Size attenuation with depth + speed modulation
+        float depthScale = clamp(320.0 / max(1.0, dist), 0.5, 3.0);
+        float speedScale = 1.0 + vSpeed * 0.3;
+        float size = uSize * mix(1.0, depthScale, uSizeAtten) * speedScale;
+        gl_PointSize = size;
+      }
+    `;
+
+    const frag = /* glsl */`
+      precision highp float;
+      varying vec3  vColor;
+      varying float vSpeed;
+      varying float vRotation;
+      varying float vAge;
+      varying float vDepth;
+      uniform float uTime;
+      uniform float uGlowStrength;
+      uniform float uSpinEnabled;
+      uniform vec3 uLightPositions[4];
+      uniform float uLightIntensities[4];
+      uniform float uAudioReactivity;
+
+      // Noise function for smoke detail
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
+        return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+      }
+
+      float fbm(vec2 p, int octaves) {
+        float value = 0.0;
+        float amplitude = 0.5;
+        for (int i = 0; i < octaves; i++) {
+          value += amplitude * noise(p);
+          p *= 2.0;
+          amplitude *= 0.5;
+        }
+        return value;
+      }
+
+      void main(){
+        vec2 uv = gl_PointCoord * 2.0 - 1.0;
+        
+        // Apply rotation for vortex effect
+        float angle = vRotation * 0.5; // Subtle rotation
+        float c = cos(angle);
+        float s = sin(angle);
+        vec2 rotatedUv = vec2(
+          uv.x * c - uv.y * s,
+          uv.x * s + uv.y * c
+        );
+        
+        float r2 = dot(uv, uv);
+        
+        // Smoke-like detailed texture using FBM noise
+        vec2 smokeUv = rotatedUv * 3.0 + vec2(vAge * 0.5, uTime * 0.3);
+        float smokeDetail = fbm(smokeUv, 3);
+        smokeDetail = smoothstep(0.3, 0.7, smokeDetail);
+        
+        // Multi-layered smoke appearance with detail
+        float dist = length(uv);
+        float core = smoothstep(1.0, 0.2, dist) * smokeDetail;
+        float inner = smoothstep(0.8, 0.3, dist);
+        float outer = smoothstep(1.0, 0.6, dist);
+        
+        // Vortex spiral pattern
+        float angleUv = atan(uv.y, uv.x);
+        float spiral = sin(angleUv * 3.0 + dist * 4.0 + vAge * 0.5) * 0.5 + 0.5;
+        spiral = smoothstep(0.4, 0.6, spiral);
+        
+        // Combine smoke detail with spiral pattern
+        float alphaMask = mix(inner, core, 0.7);
+        alphaMask *= (0.7 + 0.3 * spiral);
+        alphaMask *= outer;
+        
+        // Depth-based alpha for foggy smoke effect
+        float depthAlpha = smoothstep(120.0, 5.0, vDepth);
+        float alpha = alphaMask * depthAlpha * 0.85; // Slightly transparent for smoke feel
+
+                 // Dark blue smoky color mixing
+         vec3 base = vColor;
+         
+         // Dark blue glow variations (removed green tones)
+         vec3 darkBlue = vec3(0.03, 0.08, 0.2);
+         vec3 deepBlue = vec3(0.05, 0.12, 0.28);
+         vec3 smokyBlue = vec3(0.08, 0.18, 0.32);
+         vec3 brightBlue = vec3(0.12, 0.25, 0.38);
+         
+         // Mix colors based on speed and depth
+         float speedNorm = clamp(vSpeed * 2.0, 0.0, 1.0);
+         float depthNorm = smoothstep(100.0, 5.0, vDepth);
+         
+         vec3 glow1 = mix(darkBlue, deepBlue, speedNorm);
+         vec3 glow2 = mix(smokyBlue, brightBlue, speedNorm * 0.5);
+         vec3 glow = mix(glow1, glow2, sin(vAge * 0.3) * 0.5 + 0.5);
+        
+        // Apply smoke detail to color
+        vec3 col = base * (0.6 + 0.4 * smokeDetail);
+        col = mix(col, glow, 0.4 * spiral);
+        
+        // Add depth-based tinting (darker when far, brighter when close)
+        col = mix(col * 0.7, col, depthNorm);
+        
+        // Enhance with subtle inner glow
+        col += glow * 0.3 * inner * smokeDetail;
+        
+        // Wet floor reflection effect (subtle blue specular highlight)
+        float specular = pow(max(0.0, dot(normalize(vec3(rotatedUv, 0.5)), vec3(0.0, 0.0, 1.0))), 8.0);
+        col += vec3(0.05, 0.12, 0.2) * specular * 0.4;
+        
+        // Volumetric lighting from point lights
+        vec3 worldPos = vec3(0.0); // Approximate from depth
+        float volumetricLight = 0.0;
+        for (int i = 0; i < 4; i++) {
+          vec3 lightDir = uLightPositions[i] - worldPos;
+          float dist = length(lightDir);
+          float intensity = uLightIntensities[i] / (1.0 + dist * dist * 0.1);
+          volumetricLight += intensity * 0.3;
+        }
+        col += vec3(0.05, 0.15, 0.3) * volumetricLight * 0.4;
+        
+        // Audio reactivity - modulate color and size based on audio
+        float audioMod = 1.0 + uAudioReactivity * 0.3;
+        col *= (0.9 + 0.1 * audioMod);
+        alpha *= (0.8 + 0.2 * audioMod);
+
+        gl_FragColor = vec4(col, alpha);
+        if (gl_FragColor.a < 0.005) discard;
+      }
+    `;
+
+    // ---------------- Init ----------------
+    init();
+    animate();
+
+    function init(){
+      const canvas = document.getElementById('c');
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference:'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1; // Reduced exposure for darker, creepier look
+      renderer.autoClear = false;
+      renderer.setClearColor('#000000', 1.0); // Pure black background
+
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2('#000000', CONFIG.FOG_DENSITY * 0.8); // Black fog
+
+      camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 250);
+      camera.position.set(0, 0, 20);
+      scene.add(camera);
+
+      // Orbit controls
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 5;
+      controls.maxDistance = 100;
+      controls.target.set(0, 0, 0);
+      controls.update();
+
+      // Geometry / attributes
+      const n = CONFIG.COUNT;
+      geometry = new THREE.BufferGeometry();
+      positions   = new Float32Array(n * 3);
+      velocities  = new Float32Array(n * 3);
+      masses      = new Float32Array(n);
+      speeds      = new Float32Array(n);
+      colors      = new Float32Array(n * 3);
+      rotations   = new Float32Array(n);
+      rotationSpeeds = new Float32Array(n);
+      ages        = new Float32Array(n);
+
+      const half = CONFIG.WORLD * 0.5;
+      const tmp = new THREE.Color();
+      for (let i=0;i<n;i++){
+        const i3 = i*3;
+        const rx = (Math.random() - 0.5), ry = (Math.random() - 0.5), rz = (Math.random() - 0.5);
+        const mag = Math.max(0.05, Math.random());
+        positions[i3+0] = rx * half * 2.0 * mag;
+        positions[i3+1] = ry * half * 2.0 * mag;
+        positions[i3+2] = rz * half * 2.0 * mag;
+
+        velocities[i3+0] = (Math.random() - 0.5) * 0.15;
+        velocities[i3+1] = (Math.random() - 0.5) * 0.15;
+        velocities[i3+2] = (Math.random() - 0.5) * 0.15;
+
+        masses[i] = 0.8 + Math.random() * 0.6;
+        speeds[i] = 0.0;
+        rotations[i] = Math.random() * Math.PI * 2;
+        rotationSpeeds[i] = (Math.random() - 0.5) * 0.12;
+        ages[i] = Math.random() * Math.PI * 2; // Initial age variation
+
+        // Dark blue gradient with variation (less green, more blue)
+        const hue = 0.52 + 0.12 * (i / n) + (Math.random() - 0.5) * 0.06; // 0.52-0.64 = blue range
+        const sat = 0.7 + Math.random() * 0.25; // Higher saturation for blue intensity
+        const light = 0.18 + Math.random() * 0.15; // Dark blue base (0.18-0.33)
+        tmp.setHSL(hue, sat, light);
+        colors[i3+0] = tmp.r; colors[i3+1] = tmp.g; colors[i3+2] = tmp.b;
+      }
+
+      geometry.setAttribute('position',   new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('color',      new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('speed',      new THREE.BufferAttribute(speeds, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('rotation',   new THREE.BufferAttribute(rotations, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('age',        new THREE.BufferAttribute(ages, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.computeBoundingSphere();
+
+      material = new THREE.ShaderMaterial({
+        vertexShader: vert,
+        fragmentShader: frag,
+        uniforms: {
+          uSize: { value: CONFIG.POINT_SIZE * 1.2 }, // Slightly larger for smoke
+          uSizeAtten: { value: 1.0 },
+          uTime: { value: 0.0 },
+          uGlowStrength: { value: 0.8 }, // Reduced for darker look
+          uSpinEnabled: { value: 1.0 }, // Always enabled for vortex
+          uLightPositions: { value: [
+            new THREE.Vector3(0, 5, 5),
+            new THREE.Vector3(-5, -5, 5),
+            new THREE.Vector3(5, -5, 5),
+            new THREE.Vector3(0, 0, -5)
+          ] },
+          uLightIntensities: { value: [1.0, 0.8, 0.8, 0.6] },
+          uAudioReactivity: { value: 0.0 }
+        },
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.NormalBlending, // Normal blending for smoke
+        vertexColors: true
+      });
+      enableParticleSpin = true; // Enable spin for vortex effect
+
+      points = new THREE.Points(geometry, material);
+      scene.add(points);
+
+      // Initialize trail system
+      initTrails();
+
+      // Initialize volumetric lights
+      initVolumetricLights();
+
+      // Initialize audio reactivity
+      initAudio();
+
+      // Post stack
+      composer = new EffectComposer(renderer);
+      const rp = new RenderPass(scene, camera);
+      composer.addPass(rp);
+
+      const bloom = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        CONFIG.BLOOM.strength * 1.3, // Enhanced bloom
+        CONFIG.BLOOM.radius * 1.2, // Larger radius
+        CONFIG.BLOOM.threshold
+      );
+      composer.addPass(bloom);
+
+      // Afterimage disabled for clear motion
+      // const after = new AfterimagePass(CONFIG.AFTERIMAGE_DAMP);
+      // composer.addPass(after);
+
+      // Dark atmospheric color grade
+      const grade = new ShaderPass(UnderwaterShader);
+      composer.addPass(grade);
+
+      // FXAA last
+      const fxaa = new ShaderPass(FXAAShader);
+      fxaa.material.uniforms['resolution'].value.set(1 / (window.innerWidth * renderer.getPixelRatio()), 1 / (window.innerHeight * renderer.getPixelRatio()));
+      composer.addPass(fxaa);
+
+      // Events
+      window.addEventListener('resize', () => onResize(fxaa), { passive:true });
+      window.addEventListener('pointermove', onPointerMove, { passive:true });
+      window.addEventListener('pointerleave', () => mouseNDC.set(9999, 9999), { passive:true });
+      window.addEventListener('click', onPointerClick, { passive:true });
+      window.addEventListener('keydown', onKeyDown);
+      window.addEventListener('wheel', (e) => {
+        if (!e.ctrlKey && !e.metaKey) return;
+        e.preventDefault();
+        const hud = document.getElementById('hud');
+        if (hud.classList.contains('hidden')) {
+          hud.classList.remove('hidden');
+          hudVisible = true;
+        }
+      }, { passive: false });
+      
+      // Touch events for multiple interaction points
+      renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+      renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: false });
+      renderer.domElement.addEventListener('touchend', onTouchEnd, { passive: false });
+      
+      // Load saved state
+      loadState();
+
+      onResize(fxaa);
+      updateStats(currentParticleCount);
+      // Auto-hide HUD after 3 seconds
+      setTimeout(() => {
+        if (!hudVisible) {
+          document.getElementById('hud').classList.add('hidden');
+        }
+      }, 3000);
+    }
+
+    function initTrails(){
+      const n = currentParticleCount;
+      trailPositions = [];
+      
+      // Initialize trail history for each particle
+      for (let i = 0; i < n; i++) {
+        const trail = [];
+        const i3 = i * 3;
+        for (let j = 0; j < trailLength; j++) {
+          trail.push({
+            x: positions[i3 + 0],
+            y: positions[i3 + 1],
+            z: positions[i3 + 2]
+          });
+        }
+        trailPositions.push(trail);
+      }
+      
+      // Create trail geometry (will be updated dynamically)
+      trailGeometry = new THREE.BufferGeometry();
+      const trailVertCount = n * (trailLength - 1) * 2;
+      const trailPos = new Float32Array(trailVertCount * 3);
+      const trailPrev = new Float32Array(trailVertCount * 3);
+      const trailNext = new Float32Array(trailVertCount * 3);
+      const trailSide = new Float32Array(trailVertCount);
+      const trailAge = new Float32Array(trailVertCount);
+      
+      trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPos, 3).setUsage(THREE.DynamicDrawUsage));
+      trailGeometry.setAttribute('previous', new THREE.BufferAttribute(trailPrev, 3).setUsage(THREE.DynamicDrawUsage));
+      trailGeometry.setAttribute('next', new THREE.BufferAttribute(trailNext, 3).setUsage(THREE.DynamicDrawUsage));
+      trailGeometry.setAttribute('side', new THREE.BufferAttribute(trailSide, 1).setUsage(THREE.DynamicDrawUsage));
+      trailGeometry.setAttribute('age', new THREE.BufferAttribute(trailAge, 1).setUsage(THREE.DynamicDrawUsage));
+      
+      trailMaterial = new THREE.ShaderMaterial({
+        vertexShader: trailVert,
+        fragmentShader: trailFrag,
+        uniforms: {
+          uTime: { value: 0.0 },
+          uTrailWidth: { value: CONFIG.TRAIL_WIDTH }
+        },
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide
+      });
+      
+      const trailMesh = new THREE.Mesh(trailGeometry, trailMaterial);
+      scene.add(trailMesh);
+    }
+
+    function initVolumetricLights(){
+      // Create point lights for volumetric lighting
+      const lightPositions = [
+        new THREE.Vector3(0, 5, 5),
+        new THREE.Vector3(-5, -5, 5),
+        new THREE.Vector3(5, -5, 5),
+        new THREE.Vector3(0, 0, -5)
+      ];
+      
+      for (let i = 0; i < 4; i++) {
+        const light = new THREE.PointLight(CONFIG.VOLUMETRIC_LIGHT_COLOR, CONFIG.VOLUMETRIC_LIGHT_INTENSITY, 30);
+        light.position.copy(lightPositions[i]);
+        light.castShadow = false; // Disable shadows for performance
+        scene.add(light);
+        pointLights.push(light);
+        
+        // Animate lights slowly
+        const offset = i * Math.PI * 0.5;
+        light.userData.offset = offset;
+        light.userData.radius = lightPositions[i].length();
+        light.userData.basePos = lightPositions[i].clone();
+      }
+    }
+
+    function initAudio(){
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = CONFIG.AUDIO_SMOOTHING;
+        audioData = new Uint8Array(analyser.frequencyBinCount);
+        
+        // Create a button or instruction to start audio
+        const startAudio = () => {
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+              const source = audioContext.createMediaStreamSource(stream);
+              source.connect(analyser);
+              audioEnabled = true;
+              updateStats(currentParticleCount);
+            })
+            .catch(err => {
+              console.log('Audio access denied or unavailable');
+              audioEnabled = false;
+            });
+        };
+        
+        // Add keyboard shortcut to enable audio (M key)
+        // Will be handled in onKeyDown
+      } catch (e) {
+        console.log('Web Audio API not supported');
+      }
+    }
+
+    function updateTrails(){
+      if (!trailsEnabled || !trailGeometry) return;
+      
+      const n = currentParticleCount;
+      const trailPos = trailGeometry.attributes.position.array;
+      const trailPrev = trailGeometry.attributes.previous.array;
+      const trailNext = trailGeometry.attributes.next.array;
+      const trailSide = trailGeometry.attributes.side.array;
+      const trailAge = trailGeometry.attributes.age.array;
+      
+      let vertIdx = 0;
+      
+      for (let i = 0; i < n; i++) {
+        const trail = trailPositions[i];
+        const i3 = i * 3;
+        
+        // Add current position to trail
+        trail.unshift({
+          x: positions[i3 + 0],
+          y: positions[i3 + 1],
+          z: positions[i3 + 2]
+        });
+        if (trail.length > trailLength) trail.pop();
+        
+        // Build trail geometry segments
+        for (let j = 0; j < trail.length - 1; j++) {
+          const curr = trail[j];
+          const next = trail[j + 1];
+          const prev = j > 0 ? trail[j - 1] : curr;
+          
+          const age = j / (trail.length - 1);
+          
+          // Two vertices per segment (sides)
+          for (let side = -1; side <= 1; side += 2) {
+            if (vertIdx >= trailPos.length / 3) break;
+            
+            const vIdx = vertIdx * 3;
+            trailPos[vIdx + 0] = curr.x;
+            trailPos[vIdx + 1] = curr.y;
+            trailPos[vIdx + 2] = curr.z;
+            
+            trailPrev[vIdx + 0] = prev.x;
+            trailPrev[vIdx + 1] = prev.y;
+            trailPrev[vIdx + 2] = prev.z;
+            
+            trailNext[vIdx + 0] = next.x;
+            trailNext[vIdx + 1] = next.y;
+            trailNext[vIdx + 2] = next.z;
+            
+            trailSide[vertIdx] = side;
+            trailAge[vertIdx] = age;
+            
+            vertIdx++;
+          }
+        }
+      }
+      
+      // Mark unused vertices as hidden
+      for (let i = vertIdx; i < trailPos.length / 3; i++) {
+        const vIdx = i * 3;
+        trailPos[vIdx + 0] = 0;
+        trailPos[vIdx + 1] = 0;
+        trailPos[vIdx + 2] = -1000; // Hide off-screen
+      }
+      
+      trailGeometry.attributes.position.needsUpdate = true;
+      trailGeometry.attributes.previous.needsUpdate = true;
+      trailGeometry.attributes.next.needsUpdate = true;
+      trailGeometry.attributes.side.needsUpdate = true;
+      trailGeometry.attributes.age.needsUpdate = true;
+    }
+
+    function updateAudio(){
+      if (!audioEnabled || !analyser) {
+        material.uniforms.uAudioReactivity.value = 0.0;
+        return;
+      }
+      
+      analyser.getByteFrequencyData(audioData);
+      
+      // Calculate average and peak frequency
+      let sum = 0;
+      let peak = 0;
+      for (let i = 0; i < audioData.length; i++) {
+        const val = audioData[i] / 255.0;
+        sum += val;
+        peak = Math.max(peak, val);
+      }
+      
+      const avg = sum / audioData.length;
+      const reactivity = (avg * 0.7 + peak * 0.3) * CONFIG.AUDIO_SENSITIVITY;
+      material.uniforms.uAudioReactivity.value = Math.min(1.0, reactivity);
+      
+      // Also modulate particle speed based on audio
+      const audioSpeedMod = 1.0 + reactivity * 0.5;
+      // This will be applied in step() function
+      return audioSpeedMod;
+    }
+
+    // ---------------- Text/Letter Formation Functions ----------------
+    function createText(text) {
+      textTargets = [];
+      currentText = text.toUpperCase();
+      letterMode = true;
+      
+      const charWidth = 6 * textScale;
+      const charHeight = 8 * textScale;
+      const spacing = charWidth * 0.2;
+      const totalWidth = (currentText.length * charWidth) + ((currentText.length - 1) * spacing);
+      const startX = -totalWidth / 2;
+      const startY = charHeight / 2;
+      
+      let xOffset = 0;
+      
+      for (let i = 0; i < currentText.length; i++) {
+        const char = currentText[i];
+        const charData = font[char] || font[' '];
+        
+        if (charData) {
+          for (let row = 0; row < 7; row++) {
+            for (let col = 0; col < 5; col++) {
+              const idx = row * 5 + col;
+              if (charData[idx] === 1) {
+                const x = startX + xOffset + col * textScale;
+                const y = startY - row * textScale;
+                const z = (Math.random() - 0.5) * 0.5; // Slight depth variation
+                textTargets.push(new THREE.Vector3(x, y, z));
+              }
+            }
+          }
+        }
+        
+        xOffset += charWidth + spacing;
+      }
+      
+      // Distribute particles to text targets
+      distributeParticlesToTargets();
+      updateStats(currentParticleCount);
+    }
+
+    function distributeParticlesToTargets() {
+      if (textTargets.length === 0) return;
+      
+      const n = currentParticleCount;
+      
+      // Round-robin distribution: multiple particles can share a target
+      for (let i = 0; i < n; i++) {
+        const i3 = i * 3;
+        const targetIdx = i % textTargets.length;
+        const target = textTargets[targetIdx];
+        
+        // Distribute particles around target with slight random offset
+        positions[i3 + 0] = target.x + (Math.random() - 0.5) * 2.0;
+        positions[i3 + 1] = target.y + (Math.random() - 0.5) * 2.0;
+        positions[i3 + 2] = target.z + (Math.random() - 0.5) * 2.0;
+        
+        // Reset velocity to help formation
+        velocities[i3 + 0] = (Math.random() - 0.5) * 0.1;
+        velocities[i3 + 1] = (Math.random() - 0.5) * 0.1;
+        velocities[i3 + 2] = (Math.random() - 0.5) * 0.1;
+      }
+      
+      geometry.attributes.position.needsUpdate = true;
+      geometry.attributes.speed.needsUpdate = true;
+    }
+
+    function clearText() {
+      textTargets = [];
+      letterMode = false;
+      currentText = '';
+      isLetterSequenceActive = false;
+    }
+
+    // ---------------- Letter Sequence Functions ----------------
+    function startLetterSequence(letters) {
+      // Input can be a string like "HELLO" or array like ["H", "E", "L", "L", "O"]
+      if (typeof letters === 'string') {
+        letterSequence = letters.toUpperCase().split('');
+      } else {
+        letterSequence = letters.map(l => l.toUpperCase());
+      }
+      
+      if (letterSequence.length === 0) return;
+      
+      currentLetterIndex = 0;
+      letterSequenceStartTime = performance.now() * 0.001;
+      isLetterSequenceActive = true;
+      letterMode = true;
+      
+      // Start with first letter
+      createText(letterSequence[0]);
+    }
+
+    function updateLetterSequence(time) {
+      if (!isLetterSequenceActive || letterSequence.length === 0) return;
+      
+      const elapsed = time - letterSequenceStartTime;
+      const cycleTime = letterHoldTime + letterTransitionTime;
+      const cyclePosition = elapsed % cycleTime;
+      
+      // Calculate which letter we should be showing
+      const cycleIndex = Math.floor(elapsed / cycleTime);
+      let targetLetterIndex;
+      
+      if (cyclePosition < letterHoldTime) {
+        // Holding current letter
+        targetLetterIndex = cycleIndex % letterSequence.length;
+      } else {
+        // Transitioning to next letter
+        targetLetterIndex = (cycleIndex + 1) % letterSequence.length;
+        
+        // Smooth transition: blend between current and next
+        const transitionProgress = (cyclePosition - letterHoldTime) / letterTransitionTime;
+        blendToLetter(letterSequence[targetLetterIndex], transitionProgress);
+        return;
+      }
+      
+      // If we need to change letters
+      if (targetLetterIndex !== currentLetterIndex) {
+        currentLetterIndex = targetLetterIndex;
+        createText(letterSequence[targetLetterIndex]);
+      }
+      
+      // Make particles hold position strongly when in hold phase
+      if (cyclePosition < letterHoldTime * 0.9) {
+        // Strong hold - reduce other forces
+        textFormationStrength = 5.0;
+      }
+    }
+
+    function blendToLetter(letter, progress) {
+      // Create target for next letter
+      const nextTextTargets = [];
+      const charData = font[letter] || font[' '];
+      
+      if (charData) {
+        const charWidth = 6 * textScale;
+        const charHeight = 8 * textScale;
+        const startX = -charWidth / 2;
+        const startY = charHeight / 2;
+        
+        for (let row = 0; row < 7; row++) {
+          for (let col = 0; col < 5; col++) {
+            const idx = row * 5 + col;
+            if (charData[idx] === 1) {
+              const x = startX + col * textScale;
+              const y = startY - row * textScale;
+              const z = (Math.random() - 0.5) * 0.5;
+              nextTextTargets.push(new THREE.Vector3(x, y, z));
+            }
+          }
+        }
+      }
+      
+      // Blend current targets with next targets
+      const n = currentParticleCount;
+      for (let i = 0; i < n; i++) {
+        const i3 = i * 3;
+        const targetIdx = i % Math.max(textTargets.length, nextTextTargets.length);
+        
+        let targetX, targetY, targetZ;
+        
+        if (targetIdx < textTargets.length && targetIdx < nextTextTargets.length) {
+          // Blend between current and next
+          const current = textTargets[targetIdx];
+          const next = nextTextTargets[targetIdx];
+          targetX = current.x + (next.x - current.x) * progress;
+          targetY = current.y + (next.y - current.y) * progress;
+          targetZ = current.z + (next.z - current.z) * progress;
+        } else if (targetIdx < nextTextTargets.length) {
+          // New target
+          const next = nextTextTargets[targetIdx];
+          targetX = next.x;
+          targetY = next.y;
+          targetZ = next.z;
+        } else {
+          // Keep current
+          const current = textTargets[targetIdx];
+          targetX = current.x;
+          targetY = current.y;
+          targetZ = current.z;
+        }
+        
+        // Create temporary blended target
+        if (!textTargets[targetIdx]) {
+          textTargets[targetIdx] = new THREE.Vector3();
+        }
+        textTargets[targetIdx].set(targetX, targetY, targetZ);
+      }
+    }
+
+    // ---------------- Cheat Codes / Preset Effects ----------------
+    function cheatCode(code) {
+      switch(code.toLowerCase()) {
+        case 'godmode':
+        case 'god':
+          // Maximum particles, max speed, all effects on
+          addParticles(20000);
+          timeScale = 2.0;
+          enableVortex = true;
+          enableParticleSpin = true;
+          trailsEnabled = true;
+          vortexStrength = 5.0;
+          pointSize = 5.0;
+          material.uniforms.uSize.value = pointSize;
+          break;
+          
+        case 'slowmo':
+          // Slow motion effect
+          timeScale = 0.1;
+          break;
+          
+        case 'chaos':
+          // Chaos mode - random explosions
+          for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+              effectCenter.set(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20
+              );
+              explode();
+            }, i * 100);
+          }
+          break;
+          
+        case 'vortex':
+          // Massive vortex
+          enableVortex = true;
+          vortexStrength = 10.0;
+          vortexCenter.set(0, 0, 0);
+          break;
+          
+        case 'reset':
+          // Full reset
+          resetParticles();
+          clearText();
+          timeScale = 1.0;
+          enableVortex = false;
+          pointSize = CONFIG.POINT_SIZE;
+          material.uniforms.uSize.value = pointSize;
+          break;
+          
+        case 'rainbow':
+          // Cycle through colors
+          const tmp = new THREE.Color();
+          for (let i = 0; i < currentParticleCount; i++) {
+            const i3 = i * 3;
+            const hue = (i / currentParticleCount + performance.now() * 0.001) % 1.0;
+            tmp.setHSL(hue, 0.9, 0.5);
+            colors[i3 + 0] = tmp.r;
+            colors[i3 + 1] = tmp.g;
+            colors[i3 + 2] = tmp.b;
+          }
+          geometry.attributes.color.needsUpdate = true;
+          break;
+          
+        case 'sphere':
+          // Form particles into a sphere
+          textTargets = [];
+          const radius = 8;
+          const particlesPerShell = Math.floor(currentParticleCount / 10);
+          for (let shell = 0; shell < 10; shell++) {
+            const r = (radius * shell) / 10;
+            for (let i = 0; i < particlesPerShell; i++) {
+              const theta = Math.random() * Math.PI * 2;
+              const phi = Math.acos(2 * Math.random() - 1);
+              const x = r * Math.sin(phi) * Math.cos(theta);
+              const y = r * Math.sin(phi) * Math.sin(theta);
+              const z = r * Math.cos(phi);
+              textTargets.push(new THREE.Vector3(x, y, z));
+            }
+          }
+          letterMode = true;
+          distributeParticlesToTargets();
+          break;
+          
+        case 'cube':
+          // Form particles into a cube
+          textTargets = [];
+          const size = 6;
+          const step = 0.3;
+          for (let x = -size; x <= size; x += step) {
+            for (let y = -size; y <= size; y += step) {
+              for (let z = -size; z <= size; z += step) {
+                if (Math.abs(x) > size * 0.8 || Math.abs(y) > size * 0.8 || Math.abs(z) > size * 0.8) {
+                  textTargets.push(new THREE.Vector3(x, y, z));
+                }
+              }
+            }
+          }
+          letterMode = true;
+          distributeParticlesToTargets();
+          break;
+      }
+    }
+
+    function onResize(fxaaPass){
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      composer.setSize(w, h);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      if (fxaaPass){
+        const pr = renderer.getPixelRatio();
+        fxaaPass.material.uniforms['resolution'].value.set(1/(w*pr), 1/(h*pr));
+      }
+    }
+
+    function onPointerMove(e){
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouseNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseNDC.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      raycaster.setFromCamera(mouseNDC, camera);
+      raycaster.ray.intersectPlane(plane, target);
+    }
+
+    function onPointerClick(e){
+      if (e.button === 0) {
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -(((e.clientY - rect.top) / rect.height) * 2 - 1)
+        );
+        raycaster.setFromCamera(ndc, camera);
+        const point = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, point);
+        
+        // Add to interaction points (circular buffer)
+        interactionPoints.push({
+          position: point.clone(),
+          time: performance.now(),
+          strength: 1.0
+        });
+        
+        // Limit number of interaction points
+        if (interactionPoints.length > maxInteractionPoints) {
+          interactionPoints.shift();
+        }
+        
+        // Update effect center (use most recent)
+        effectCenter.copy(point);
+        vortexCenter.copy(effectCenter);
+      }
+    }
+
+    function onTouchStart(e){
+      e.preventDefault();
+      const touches = e.touches;
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        const rect = renderer.domElement.getBoundingClientRect();
+        const ndc = new THREE.Vector2(
+          ((touch.clientX - rect.left) / rect.width) * 2 - 1,
+          -(((touch.clientY - rect.top) / rect.height) * 2 - 1)
+        );
+        raycaster.setFromCamera(ndc, camera);
+        const point = new THREE.Vector3();
+        raycaster.ray.intersectPlane(plane, point);
+        
+        interactionPoints.push({
+          position: point.clone(),
+          time: performance.now(),
+          strength: 1.0,
+          touchId: touch.identifier
+        });
+        
+        if (interactionPoints.length > maxInteractionPoints) {
+          interactionPoints.shift();
+        }
+      }
+    }
+
+    function onTouchMove(e){
+      e.preventDefault();
+      const touches = e.touches;
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        // Update existing interaction point or create new
+        let existing = interactionPoints.find(ip => ip.touchId === touch.identifier);
+        if (existing) {
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = new THREE.Vector2(
+            ((touch.clientX - rect.left) / rect.width) * 2 - 1,
+            -(((touch.clientY - rect.top) / rect.height) * 2 - 1)
+          );
+          raycaster.setFromCamera(ndc, camera);
+          raycaster.ray.intersectPlane(plane, existing.position);
+        }
+      }
+    }
+
+    function onTouchEnd(e){
+      e.preventDefault();
+      // Remove ended touches
+      const endedTouches = e.changedTouches;
+      for (let i = 0; i < endedTouches.length; i++) {
+        const touchId = endedTouches[i].identifier;
+        const index = interactionPoints.findIndex(ip => ip.touchId === touchId);
+        if (index >= 0) {
+          interactionPoints.splice(index, 1);
+        }
+      }
+    }
+
+    function onKeyDown(e){
+      const k = e.key.toLowerCase();
+      const hud = document.getElementById('hud');
+      const controlsDiv = document.getElementById('controls');
+      
+      // HUD toggle
+      if (k === '?' || k === 'h') {
+        hudVisible = !hudVisible;
+        if (hudVisible) {
+          hud.classList.remove('hidden');
+          controlsDiv.style.display = 'block';
+        } else {
+          hud.classList.add('hidden');
+          controlsDiv.style.display = 'none';
+        }
+        return;
+      }
+      
+      if (k === ' ') { running = !running; saveState(); }
+      else if (k === 'r') resetParticles();
+      else if (k === 'n') { enableCurl = !enableCurl; saveState(); }
+      else if (k === 'c') { enableCohesion = !enableCohesion; saveState(); }
+      else if (k === 's') { enableSeparation = !enableSeparation; saveState(); }
+      else if (k === 'a' && !e.shiftKey) { enableAlignment = !enableAlignment; saveState(); }
+      else if (k === '+') { pointSize = Math.min(14, pointSize + 0.5); material.uniforms.uSize.value = pointSize; saveState(); }
+      else if (k === '-') { pointSize = Math.max(1,  pointSize - 0.5); material.uniforms.uSize.value = pointSize; saveState(); }
+      else if (k === 'g') { additiveGlow = !additiveGlow; material.blending = additiveGlow ? THREE.AdditiveBlending : THREE.NormalBlending; material.needsUpdate = true; saveState(); }
+      // Camera controls
+      else if (e.key === 'ArrowUp') { controls.object.position.y += 0.5; controls.update(); }
+      else if (e.key === 'ArrowDown') { controls.object.position.y -= 0.5; controls.update(); }
+      else if (e.key === 'ArrowLeft') { controls.object.position.x -= 0.5; controls.update(); }
+      else if (e.key === 'ArrowRight') { controls.object.position.x += 0.5; controls.update(); }
+      else if (e.key === 'PageUp') { controls.object.position.multiplyScalar(0.95); controls.update(); }
+      else if (e.key === 'PageDown') { controls.object.position.multiplyScalar(1.05); controls.update(); }
+      // Rotation controls
+      else if (k === 'q') { globalRotationY -= 0.1; saveState(); }
+      else if (k === 'e') { globalRotationY += 0.1; saveState(); }
+      else if (k === 'a' && e.shiftKey) { globalRotationX -= 0.1; saveState(); }
+      else if (k === 'd') { globalRotationX += 0.1; saveState(); }
+      else if (k === 't') { autoRotate = !autoRotate; saveState(); }
+      // Particle controls
+      else if (k === ']' && !e.shiftKey) { addParticles(1000); saveState(); }
+      else if (k === '[' && !e.shiftKey) { removeParticles(1000); saveState(); }
+      else if (k === 'i') { enableParticleSpin = !enableParticleSpin; material.uniforms.uSpinEnabled.value = enableParticleSpin ? 1.0 : 0.0; saveState(); }
+      // Speed/time controls
+      else if (k >= '0' && k <= '9') {
+        const idx = parseInt(k);
+        timeScale = idx === 0 ? 0 : (idx / 5.0);
+        saveState();
+      }
+      else if (k === ',') { timeScale = Math.max(0, timeScale - 0.1); saveState(); }
+      else if (k === '.') { timeScale = Math.min(5, timeScale + 0.1); saveState(); }
+      // Effect controls
+      else if (k === 'v') { enableVortex = !enableVortex; saveState(); }
+      else if (k === '<') { vortexStrength = Math.max(0, vortexStrength - 0.5); saveState(); }
+      else if (k === '>') { vortexStrength = Math.min(10, vortexStrength + 0.5); saveState(); }
+      else if (k === 'x') { explode(); saveState(); }
+      else if (k === 'z') { implode(); saveState(); }
+      // Rotation speed
+      else if (k === '[' && e.shiftKey) { rotationSpeed = Math.max(0, rotationSpeed - 0.05); saveState(); }
+      else if (k === ']' && e.shiftKey) { rotationSpeed = Math.min(2, rotationSpeed + 0.05); saveState(); }
+      // Enhanced features
+      else if (k === 'm') { 
+        // Toggle audio reactivity
+        if (audioContext) {
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+          if (!audioEnabled) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then(stream => {
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                audioEnabled = true;
+                updateStats(currentParticleCount);
+                saveState();
+              })
+              .catch(err => {
+                console.log('Audio access denied');
+                audioEnabled = false;
+              });
+          } else {
+            audioEnabled = false;
+            updateStats(currentParticleCount);
+            saveState();
+          }
+        }
+      }
+      else if (k === 'l') { trailsEnabled = !trailsEnabled; saveState(); }
+      // Text/Letter formation
+      else if (k === 'enter' || k === 'return') {
+        // Enter text mode - prompt for text
+        const text = prompt('Enter text to form with particles (A-Z, 0-9, !?.):', 'HELLO');
+        if (text) {
+          // Check if user wants sequence mode (hold letters, then transition)
+          const sequenceMode = confirm('Sequence mode? (Particles will hold each letter, then transition to next)');
+          if (sequenceMode) {
+            startLetterSequence(text);
+          } else {
+            createText(text);
+          }
+          saveState();
+        }
+      }
+      else if (k === 'escape' || k === 'esc') {
+        // Clear text
+        clearText();
+        saveState();
+      }
+      // F9 - Quick sequence: "HELLO"
+      else if (k === 'f9') {
+        startLetterSequence('HELLO');
+      }
+      // F10 - Quick sequence: "WORLD"
+      else if (k === 'f10') {
+        startLetterSequence('WORLD');
+      }
+      // F11 - Quick sequence: "PARTICLES"
+      else if (k === 'f11') {
+        startLetterSequence('PARTICLES');
+      }
+      // Cheat codes - Press F1-F12 or type cheats
+      else if (k === 'f1') { cheatCode('godmode'); }
+      else if (k === 'f2') { cheatCode('slowmo'); }
+      else if (k === 'f3') { cheatCode('chaos'); }
+      else if (k === 'f4') { cheatCode('vortex'); }
+      else if (k === 'f5') { cheatCode('reset'); }
+      else if (k === 'f6') { cheatCode('rainbow'); }
+      else if (k === 'f7') { cheatCode('sphere'); }
+      else if (k === 'f8') { cheatCode('cube'); }
+      // Quick letter shortcuts
+      else if (e.ctrlKey || e.metaKey) {
+        // Ctrl/Cmd + letter for quick text
+        if (k >= 'a' && k <= 'z') {
+          createText(k.toUpperCase());
+        }
+      }
+      // Number shortcuts for quick text
+      else if (k >= '1' && k <= '9' && e.shiftKey) {
+        const numbers = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'];
+        createText(numbers[parseInt(k) - 1]);
+      }
+    }
+    
+    // Cheat code input buffer
+    let cheatBuffer = '';
+    let cheatTimeout = null;
+    
+    // Track cheat code input (type fast to enter cheats)
+    window.addEventListener('keypress', (e) => {
+      const char = e.key.toLowerCase();
+      
+      // Reset buffer after 1 second of no input
+      if (cheatTimeout) clearTimeout(cheatTimeout);
+      cheatTimeout = setTimeout(() => { cheatBuffer = ''; }, 1000);
+      
+      cheatBuffer += char;
+      
+      // Check for cheat codes
+      const cheats = ['godmode', 'slowmo', 'chaos', 'vortex', 'reset', 'rainbow', 'sphere', 'cube'];
+      for (const cheat of cheats) {
+        if (cheatBuffer.includes(cheat)) {
+          cheatCode(cheat);
+          cheatBuffer = '';
+          break;
+        }
+      }
+      
+      // Limit buffer size
+      if (cheatBuffer.length > 20) {
+        cheatBuffer = cheatBuffer.slice(-20);
+      }
+    });
+
+    function resetParticles(){
+      const n = currentParticleCount, half = CONFIG.WORLD * 0.5;
+      for (let i=0;i<n;i++){
+        const i3 = i*3;
+        positions[i3+0] = (Math.random()-0.5) * half * 2;
+        positions[i3+1] = (Math.random()-0.5) * half * 2;
+        positions[i3+2] = (Math.random()-0.5) * half * 2;
+        velocities[i3+0] = (Math.random()-0.5) * 0.15;
+        velocities[i3+1] = (Math.random()-0.5) * 0.15;
+        velocities[i3+2] = (Math.random()-0.5) * 0.15;
+        speeds[i] = 0;
+        rotations[i] = Math.random() * Math.PI * 2;
+        rotationSpeeds[i] = (Math.random() - 0.5) * 0.12;
+        ages[i] = Math.random() * Math.PI * 2;
+        
+        // Reset trail positions
+        if (trailPositions && trailPositions[i]) {
+          trailPositions[i] = [];
+          for (let j = 0; j < trailLength; j++) {
+            trailPositions[i].push({
+              x: positions[i3 + 0],
+              y: positions[i3 + 1],
+              z: positions[i3 + 2]
+            });
+          }
+        }
+      }
+      geometry.attributes.position.needsUpdate = true;
+      geometry.attributes.speed.needsUpdate = true;
+      if (geometry.attributes.rotation) geometry.attributes.rotation.needsUpdate = true;
+      if (geometry.attributes.age) geometry.attributes.age.needsUpdate = true;
+    }
+
+    function addParticles(count){
+      const oldCount = currentParticleCount;
+      const newCount = Math.min(CONFIG.COUNT * 2, oldCount + count);
+      const addCount = newCount - oldCount;
+      if (addCount <= 0) return;
+
+      // Create new larger arrays
+      const newPositions = new Float32Array(newCount * 3);
+      const newVelocities = new Float32Array(newCount * 3);
+      const newMasses = new Float32Array(newCount);
+      const newSpeeds = new Float32Array(newCount);
+      const newColors = new Float32Array(newCount * 3);
+      const newRotations = new Float32Array(newCount);
+      const newRotationSpeeds = new Float32Array(newCount);
+      const newAges = new Float32Array(newCount);
+
+      // Copy old data
+      newPositions.set(positions);
+      newVelocities.set(velocities);
+      newMasses.set(masses);
+      newSpeeds.set(speeds);
+      newColors.set(colors);
+      newRotations.set(rotations);
+      newRotationSpeeds.set(rotationSpeeds);
+      newAges.set(ages);
+
+      // Initialize new particles
+      const half = CONFIG.WORLD * 0.5;
+      const tmp = new THREE.Color();
+      for (let i = oldCount; i < newCount; i++){
+        const i3 = i*3;
+        const rx = (Math.random() - 0.5), ry = (Math.random() - 0.5), rz = (Math.random() - 0.5);
+        const mag = Math.max(0.05, Math.random());
+        newPositions[i3+0] = rx * half * 2.0 * mag;
+        newPositions[i3+1] = ry * half * 2.0 * mag;
+        newPositions[i3+2] = rz * half * 2.0 * mag;
+
+        newVelocities[i3+0] = (Math.random() - 0.5) * 0.15;
+        newVelocities[i3+1] = (Math.random() - 0.5) * 0.15;
+        newVelocities[i3+2] = (Math.random() - 0.5) * 0.15;
+
+        newMasses[i] = 0.8 + Math.random() * 0.6;
+        newSpeeds[i] = 0.0;
+        newRotations[i] = Math.random() * Math.PI * 2;
+        newRotationSpeeds[i] = (Math.random() - 0.5) * 0.12;
+        newAges[i] = Math.random() * Math.PI * 2;
+        const hue = 0.52 + 0.12 * (i / newCount) + (Math.random() - 0.5) * 0.06;
+        const sat = 0.7 + Math.random() * 0.25;
+        const light = 0.18 + Math.random() * 0.15;
+        tmp.setHSL(hue, sat, light);
+        newColors[i3+0] = tmp.r; newColors[i3+1] = tmp.g; newColors[i3+2] = tmp.b;
+      }
+
+      // Replace arrays
+      positions = newPositions;
+      velocities = newVelocities;
+      masses = newMasses;
+      speeds = newSpeeds;
+      colors = newColors;
+      rotations = newRotations;
+      rotationSpeeds = newRotationSpeeds;
+      ages = newAges;
+
+      // Update geometry
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('rotation', new THREE.BufferAttribute(rotations, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('age', new THREE.BufferAttribute(ages, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.computeBoundingSphere();
+
+      currentParticleCount = newCount;
+      
+      // Update trail positions array
+      if (trailPositions) {
+        const oldTrailCount = trailPositions.length;
+        if (newCount > oldTrailCount) {
+          for (let i = oldTrailCount; i < newCount; i++) {
+            const trail = [];
+            const i3 = i * 3;
+            for (let j = 0; j < trailLength; j++) {
+              trail.push({
+                x: positions[i3 + 0],
+                y: positions[i3 + 1],
+                z: positions[i3 + 2]
+              });
+            }
+            trailPositions.push(trail);
+          }
+        }
+      }
+    }
+
+    function removeParticles(count){
+      const newCount = Math.max(1000, currentParticleCount - count);
+      const removeCount = currentParticleCount - newCount;
+      if (removeCount <= 0) return;
+
+      // Create smaller arrays with first N particles
+      const newPositions = new Float32Array(newCount * 3);
+      const newVelocities = new Float32Array(newCount * 3);
+      const newMasses = new Float32Array(newCount);
+      const newSpeeds = new Float32Array(newCount);
+      const newColors = new Float32Array(newCount * 3);
+      const newRotations = new Float32Array(newCount);
+      const newRotationSpeeds = new Float32Array(newCount);
+      const newAges = new Float32Array(newCount);
+
+      for (let i = 0; i < newCount; i++){
+        const i3 = i*3;
+        newPositions[i3+0] = positions[i3+0];
+        newPositions[i3+1] = positions[i3+1];
+        newPositions[i3+2] = positions[i3+2];
+        newVelocities[i3+0] = velocities[i3+0];
+        newVelocities[i3+1] = velocities[i3+1];
+        newVelocities[i3+2] = velocities[i3+2];
+        newMasses[i] = masses[i];
+        newSpeeds[i] = speeds[i];
+        newRotations[i] = rotations[i];
+        newRotationSpeeds[i] = rotationSpeeds[i];
+        newAges[i] = ages[i];
+        newColors[i3+0] = colors[i3+0];
+        newColors[i3+1] = colors[i3+1];
+        newColors[i3+2] = colors[i3+2];
+      }
+
+      // Replace arrays
+      positions = newPositions;
+      velocities = newVelocities;
+      masses = newMasses;
+      speeds = newSpeeds;
+      colors = newColors;
+      rotations = newRotations;
+      rotationSpeeds = newRotationSpeeds;
+      ages = newAges;
+
+      // Update geometry
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('speed', new THREE.BufferAttribute(speeds, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('rotation', new THREE.BufferAttribute(rotations, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('age', new THREE.BufferAttribute(ages, 1).setUsage(THREE.DynamicDrawUsage));
+      geometry.computeBoundingSphere();
+
+      currentParticleCount = newCount;
+      
+      // Update trail positions array
+      if (trailPositions && trailPositions.length > newCount) {
+        trailPositions = trailPositions.slice(0, newCount);
+      }
+    }
+
+    function explode(){
+      const n = currentParticleCount;
+      const center = effectCenter;
+      const force = CONFIG.EXPLOSION_FORCE;
+      for (let i=0; i<n; i++){
+        const i3 = i*3;
+        const dx = positions[i3+0] - center.x;
+        const dy = positions[i3+1] - center.y;
+        const dz = positions[i3+2] - center.z;
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist > 0.001){
+          const f = force / (dist + 0.1);
+          velocities[i3+0] += (dx / dist) * f;
+          velocities[i3+1] += (dy / dist) * f;
+          velocities[i3+2] += (dz / dist) * f;
+        }
+      }
+    }
+
+    function implode(){
+      const n = currentParticleCount;
+      const center = effectCenter;
+      const force = CONFIG.IMPLOSION_FORCE;
+      for (let i=0; i<n; i++){
+        const i3 = i*3;
+        const dx = center.x - positions[i3+0];
+        const dy = center.y - positions[i3+1];
+        const dz = center.z - positions[i3+2];
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist > 0.001){
+          const f = force / (dist + 0.1);
+          velocities[i3+0] += (dx / dist) * f;
+          velocities[i3+1] += (dy / dist) * f;
+          velocities[i3+2] += (dz / dist) * f;
+        }
+      }
+    }
+
+    // ---------------- Spatial hashing ----------------
+    function keyFromCell(cx, cy, cz){ return (cx<<20) ^ (cy<<10) ^ cz; }
+    function buildBuckets(){
+      buckets.clear();
+      const n = currentParticleCount, inv = 1.0 / CONFIG.CELL;
+      for (let i=0;i<n;i++){
+        const i3 = i*3;
+        const cx = (positions[i3+0] * inv) | 0;
+        const cy = (positions[i3+1] * inv) | 0;
+        const cz = (positions[i3+2] * inv) | 0;
+        const key = keyFromCell(cx,cy,cz);
+        let arr = buckets.get(key); if (!arr){ arr = []; buckets.set(key, arr); }
+        arr.push(i);
+      }
+    }
+    function gatherNeighbors(px, py, pz, list){
+      list.length = 0;
+      const inv = 1.0 / CONFIG.CELL;
+      const cx = (px*inv)|0, cy=(py*inv)|0, cz=(pz*inv)|0;
+      for (let dx=-1; dx<=1; dx++)
+      for (let dy=-1; dy<=1; dy++)
+      for (let dz=-1; dz<=1; dz++){
+        const arr = buckets.get(keyFromCell(cx+dx, cy+dy, cz+dz));
+        if (!arr) continue;
+        for (let k=0; k<arr.length; k++){
+          list.push(arr[k]); if (list.length >= CONFIG.MAX_NEIGHBORS) return;
+        }
+      }
+    }
+
+    // ---------------- Advanced noise fields ----------------
+    function curlNoise(x,y,z){
+      const e = 0.00075;
+      const n1 = noise3D(y+e, z,   x);
+      const n2 = noise3D(y-e, z,   x);
+      const n3 = noise3D(z+e, x,   y);
+      const n4 = noise3D(z-e, x,   y);
+      const n5 = noise3D(x+e, y,   z);
+      const n6 = noise3D(x-e, y,   z);
+      const dFy_dz = (n3 - n4)/(2*e);
+      const dFz_dy = (n1 - n2)/(2*e);
+      const dFz_dx = (n5 - n6)/(2*e);
+      const dFx_dz = (noise3D(y, z+e, x) - noise3D(y, z-e, x))/(2*e);
+      const dFx_dy = (noise3D(y+e, z, x) - noise3D(y-e, z, x))/(2*e);
+      const dFy_dx = (noise3D(z, x+e, y) - noise3D(z, x-e, y))/(2*e);
+      const cx = dFz_dy - dFy_dz;
+      const cy = dFx_dz - dFz_dx;
+      const cz = dFy_dx - dFx_dy;
+      return [cx, cy, cz];
+    }
+
+    function turbulenceField(x, y, z, time){
+      const scale = CONFIG.TURBULENCE_SCALE;
+      const t = time * 0.08;
+      const n1 = noise3D(x*scale + t, y*scale, z*scale) * 2 - 1;
+      const n2 = noise3D(x*scale, y*scale + t*1.1, z*scale) * 2 - 1;
+      const n3 = noise3D(x*scale, y*scale, z*scale + t*0.9) * 2 - 1;
+      return [n1 * CONFIG.TURBULENCE_STRENGTH, n2 * CONFIG.TURBULENCE_STRENGTH, n3 * CONFIG.TURBULENCE_STRENGTH];
+    }
+
+    // ---------------- Physics ----------------
+    function limit(vx, vy, vz, max){
+      const m2 = vx*vx + vy*vy + vz*vz;
+      if (m2 > max*max){ const m = Math.sqrt(m2), s = max/m; return [vx*s, vy*s, vz*s]; }
+      return [vx, vy, vz];
+    }
+    function wrap(i3){
+      const half = CONFIG.WORLD * 0.5;
+      for (let a=0;a<3;a++){
+        if (positions[i3+a] < -half) positions[i3+a] += CONFIG.WORLD;
+        else if (positions[i3+a] >  half) positions[i3+a] -= CONFIG.WORLD;
+      }
+    }
+
+    function step(dt, time){
+      buildBuckets();
+      const n = currentParticleCount, rad2 = CONFIG.NEIGHBOR_RADIUS * CONFIG.NEIGHBOR_RADIUS;
+      const t = time * CONFIG.CURL_TIME;
+      
+      // Get audio speed modulation
+      const audioSpeedMod = updateAudio() || 1.0;
+      const effectiveTimeScale = timeScale * audioSpeedMod;
+      const scaledDt = dt * effectiveTimeScale;
+      
+      // Update global rotation
+      if (autoRotate) {
+        globalRotationY += rotationSpeed * dt;
+      }
+      points.rotation.y = globalRotationY;
+      points.rotation.x = globalRotationX;
+
+      // Update interaction points (decay over time)
+      const now = performance.now();
+      for (let i = interactionPoints.length - 1; i >= 0; i--) {
+        const ip = interactionPoints[i];
+        const age = (now - ip.time) / 1000.0; // Age in seconds
+        ip.strength = Math.max(0, 1.0 - age * 0.5); // Decay over 2 seconds
+        if (ip.strength <= 0) {
+          interactionPoints.splice(i, 1);
+        }
+      }
+
+      for (let i=0;i<n;i++){
+        const i3 = i*3;
+        let ax=0, ay=0, az=0;
+        let textForceX=0, textForceY=0, textForceZ=0;
+
+        // Text/Letter formation mode - particles seek letter targets
+        if (letterMode && textTargets.length > 0) {
+          // Each particle is assigned to a target based on its index (modulo)
+          const targetIdx = i % textTargets.length;
+          const target = textTargets[targetIdx];
+          
+          const sx = target.x - positions[i3+0];
+          const sy = target.y - positions[i3+1];
+          const sz = target.z - positions[i3+2];
+          const [lsx, lsy, lsz] = limit(sx, sy, sz, CONFIG.MAX_SPEED);
+          
+          // Use stronger force when in sequence mode (holding letters)
+          const strength = isLetterSequenceActive ? textFormationStrength * 2.0 : textFormationStrength;
+          textForceX = (lsx - velocities[i3+0]) * strength * CONFIG.SEEK_WEIGHT;
+          textForceY = (lsy - velocities[i3+1]) * strength * CONFIG.SEEK_WEIGHT;
+          textForceZ = (lsz - velocities[i3+2]) * strength * CONFIG.SEEK_WEIGHT;
+        }
+        
+        // Only apply other forces if not in letter sequence hold mode
+        if (!isLetterSequenceActive || !letterMode) {
+          // Multiple interaction points seek (weighted by strength)
+          if (interactionPoints.length > 0) {
+            let totalSeekX = 0, totalSeekY = 0, totalSeekZ = 0;
+            let totalWeight = 0;
+            
+            for (const ip of interactionPoints) {
+              const sx = ip.position.x - positions[i3+0];
+              const sy = ip.position.y - positions[i3+1];
+              const sz = ip.position.z - positions[i3+2];
+              const dist = Math.sqrt(sx*sx + sy*sy + sz*sz);
+              const weight = ip.strength / (dist + 0.1);
+              totalSeekX += sx * weight;
+              totalSeekY += sy * weight;
+              totalSeekZ += sz * weight;
+              totalWeight += weight;
+            }
+            
+            if (totalWeight > 0) {
+              totalSeekX /= totalWeight;
+              totalSeekY /= totalWeight;
+              totalSeekZ /= totalWeight;
+              const [lsx, lsy, lsz] = limit(totalSeekX, totalSeekY, totalSeekZ, CONFIG.MAX_SPEED);
+              ax += (lsx - velocities[i3+0]) * CONFIG.SEEK_WEIGHT;
+              ay += (lsy - velocities[i3+1]) * CONFIG.SEEK_WEIGHT;
+              az += (lsz - velocities[i3+2]) * CONFIG.SEEK_WEIGHT;
+            }
+          } else {
+            // Fallback to single mouse target
+            const sx = target.x - positions[i3+0];
+            const sy = target.y - positions[i3+1];
+            const sz = target.z - positions[i3+2];
+            const [lsx, lsy, lsz] = limit(sx, sy, sz, CONFIG.MAX_SPEED);
+            ax += (lsx - velocities[i3+0]) * CONFIG.SEEK_WEIGHT;
+            ay += (lsy - velocities[i3+1]) * CONFIG.SEEK_WEIGHT;
+            az += (lsz - velocities[i3+2]) * CONFIG.SEEK_WEIGHT;
+          }
+        }
+
+        // Add text forces (always applied when in letter mode)
+        ax += textForceX;
+        ay += textForceY;
+        az += textForceZ;
+
+        // Advanced boids: cohesion + separation + alignment
+        if (enableCohesion || enableSeparation || enableAlignment){
+          gatherNeighbors(positions[i3+0], positions[i3+1], positions[i3+2], neighborList);
+          let cx=0, cy=0, cz=0, ccount=0;
+          let sx=0, sy=0, sz=0;
+          let ax_align=0, ay_align=0, az_align=0, alignCount=0;
+          
+          for (let k=0;k<neighborList.length;k++){
+            const j = neighborList[k]; if (j === i) continue;
+            const j3 = j*3;
+            const dx = positions[j3+0] - positions[i3+0];
+            const dy = positions[j3+1] - positions[i3+1];
+            const dz = positions[j3+2] - positions[i3+2];
+            const d2 = dx*dx + dy*dy + dz*dz;
+            if (d2 > 0.0001 && d2 < rad2){
+              if (enableCohesion){ cx += positions[j3+0]; cy += positions[j3+1]; cz += positions[j3+2]; ccount++; }
+              if (enableSeparation){ const inv = 1.0 / d2; sx -= dx*inv; sy -= dy*inv; sz -= dz*inv; }
+              if (enableAlignment){
+                ax_align += velocities[j3+0]; ay_align += velocities[j3+1]; az_align += velocities[j3+2];
+                alignCount++;
+              }
+            }
+          }
+          
+          if (enableCohesion && ccount>0){
+            cx/=ccount; cy/=ccount; cz/=ccount;
+            const tx = cx - positions[i3+0], ty = cy - positions[i3+1], tz = cz - positions[i3+2];
+            const [lsx, lsy, lsz] = limit(tx, ty, tz, CONFIG.MAX_SPEED);
+            ax += (lsx - velocities[i3+0]) * CONFIG.COHERE_WEIGHT;
+            ay += (lsy - velocities[i3+1]) * CONFIG.COHERE_WEIGHT;
+            az += (lsz - velocities[i3+2]) * CONFIG.COHERE_WEIGHT;
+          }
+          
+          if (enableSeparation){
+            const [lsx, lsy, lsz] = limit(sx, sy, sz, CONFIG.MAX_SPEED);
+            ax += (lsx - velocities[i3+0]) * CONFIG.SEPARATE_WEIGHT;
+            ay += (lsy - velocities[i3+1]) * CONFIG.SEPARATE_WEIGHT;
+            az += (lsz - velocities[i3+2]) * CONFIG.SEPARATE_WEIGHT;
+          }
+          
+          if (enableAlignment && alignCount>0){
+            ax_align /= alignCount; ay_align /= alignCount; az_align /= alignCount;
+            const [lsx, lsy, lsz] = limit(ax_align, ay_align, az_align, CONFIG.MAX_SPEED);
+            ax += (lsx - velocities[i3+0]) * CONFIG.ALIGN_WEIGHT;
+            ay += (lsy - velocities[i3+1]) * CONFIG.ALIGN_WEIGHT;
+            az += (lsz - velocities[i3+2]) * CONFIG.ALIGN_WEIGHT;
+          }
+        }
+
+        // Curl-noise ocean flow (smooth, divergence-free)
+        if (enableCurl){
+          const scale = CONFIG.CURL_SCALE;
+          const [cx, cy, cz] = curlNoise(
+            positions[i3+0]*scale, positions[i3+1]*scale, positions[i3+2]*scale + t
+          );
+          ax += cx * CONFIG.CURL_WEIGHT;
+          ay += cy * CONFIG.CURL_WEIGHT;
+          az += cz * CONFIG.CURL_WEIGHT;
+        }
+
+        // Turbulence field for organic motion
+        if (enableTurbulence){
+          const [tx, ty, tz] = turbulenceField(positions[i3+0], positions[i3+1], positions[i3+2], time);
+          ax += tx;
+          ay += ty;
+          az += tz;
+        }
+
+        // Vortex force
+        if (enableVortex){
+          const dx = positions[i3+0] - vortexCenter.x;
+          const dy = positions[i3+1] - vortexCenter.y;
+          const dz = positions[i3+2] - vortexCenter.z;
+          const dist2 = dx*dx + dy*dy + dz*dz;
+          const dist = Math.sqrt(dist2);
+          if (dist > 0.001 && dist < CONFIG.VORTEX_RADIUS){
+            const strength = vortexStrength / (dist + 0.5);
+            // Tangential force (perpendicular to radius)
+            const perpX = -dz;
+            const perpY = dx;
+            const perpZ = dy;
+            const perpLen = Math.sqrt(perpX*perpX + perpY*perpY + perpZ*perpZ);
+            if (perpLen > 0.001){
+              ax += (perpX / perpLen) * strength;
+              ay += (perpY / perpLen) * strength;
+              az += (perpZ / perpLen) * strength;
+            }
+            // Inward spiral component
+            const inStrength = strength * 0.3;
+            ax -= (dx / dist) * inStrength;
+            ay -= (dy / dist) * inStrength;
+            az -= (dz / dist) * inStrength;
+          }
+        }
+
+        // Mass + clamp + integrate (semi-implicit Euler + damping)
+        const invm = 1.0 / masses[i];
+        ax*=invm; ay*=invm; az*=invm;
+        [ax, ay, az] = limit(ax, ay, az, CONFIG.MAX_FORCE);
+
+        velocities[i3+0] = (velocities[i3+0] + ax*scaledDt) * CONFIG.DAMPING;
+        velocities[i3+1] = (velocities[i3+1] + ay*scaledDt) * CONFIG.DAMPING;
+        velocities[i3+2] = (velocities[i3+2] + az*scaledDt) * CONFIG.DAMPING;
+        [velocities[i3+0], velocities[i3+1], velocities[i3+2]] =
+          limit(velocities[i3+0], velocities[i3+1], velocities[i3+2], CONFIG.MAX_SPEED);
+
+        positions[i3+0] += velocities[i3+0] * scaledDt;
+        positions[i3+1] += velocities[i3+1] * scaledDt;
+        positions[i3+2] += velocities[i3+2] * scaledDt;
+
+        const sp = Math.sqrt(velocities[i3+0]**2 + velocities[i3+1]**2 + velocities[i3+2]**2);
+        speeds[i] = sp;
+
+                  // Update particle rotation with speed influence (always on for vortex)
+          const spinRate = rotationSpeeds[i] * (1.0 + sp * 0.5);
+          rotations[i] += spinRate * scaledDt * 12; // Faster spin for vortex effect
+          if (rotations[i] > Math.PI * 2) rotations[i] -= Math.PI * 2;
+          if (rotations[i] < 0) rotations[i] += Math.PI * 2;
+
+        // Update age for temporal effects
+        ages[i] += scaledDt * 0.5;
+
+        wrap(i3);
+      }
+
+      geometry.attributes.position.needsUpdate = true;
+      geometry.attributes.speed.needsUpdate = true;
+      if (geometry.attributes.rotation) geometry.attributes.rotation.needsUpdate = true;
+      if (geometry.attributes.age) geometry.attributes.age.needsUpdate = true;
+    }
+
+    // ---------------- Main loop ----------------
+    function animate(){
+      const dt = Math.min(0.033, clock.getDelta());
+      const t  = performance.now() * 0.001;
+
+      material.uniforms.uTime.value = t;
+      if (trailMaterial) trailMaterial.uniforms.uTime.value = t;
+
+      // Update volumetric lights (animate them)
+      for (let i = 0; i < pointLights.length; i++) {
+        const light = pointLights[i];
+        const basePos = light.userData.basePos;
+        const radius = light.userData.radius;
+        const offset = light.userData.offset;
+        
+        // Slow circular motion
+        light.position.x = basePos.x + Math.sin(t * 0.3 + offset) * 2.0;
+        light.position.y = basePos.y + Math.cos(t * 0.25 + offset) * 2.0;
+        light.position.z = basePos.z + Math.sin(t * 0.2 + offset) * 1.0;
+        
+        // Update material uniforms
+        if (material.uniforms.uLightPositions && material.uniforms.uLightPositions.value[i]) {
+          material.uniforms.uLightPositions.value[i].copy(light.position);
+        }
+      }
+
+      // Update letter sequence if active
+      if (isLetterSequenceActive) {
+        updateLetterSequence(t);
+      }
+
+      if (running) {
+        step(dt, t);
+        updateTrails();
+      }
+
+      // Update orbit controls
+      controls.update();
+
+      renderer.clearColor();
+      renderer.clearDepth();
+      composer.passes[2]?.uniforms && (composer.passes[2].uniforms.uTime.value = t); // grade pass time (afterimage removed)
+      composer.render();
+      updateStats(currentParticleCount);
+
+      requestAnimationFrame(animate);
+    }
+
+    function updateStats(count){
+      const ts = timeScale.toFixed(1);
+      let s = `${count.toLocaleString()} particles · ${ts}x speed`;
+      if (audioEnabled) s += ' · 🔊 audio';
+      if (trailsEnabled) s += ' · ✨ trails';
+      if (isLetterSequenceActive && letterSequence.length > 0) {
+        s += ` · 🔄 SEQ: ${letterSequence.join('')}`;
+      } else if (letterMode && currentText) {
+        s += ` · 📝 "${currentText}"`;
+      }
+      document.getElementById('stats').textContent = s;
+    }
+
+
+
+    function saveState(){
+      try {
+        const state = {
+          running, enableCohesion, enableSeparation, enableCurl, enableAlignment,
+          enableVortex, enableParticleSpin, enableTurbulence,
+          pointSize, additiveGlow, autoRotate, globalRotationX, globalRotationY,
+          rotationSpeed, timeScale, vortexStrength,
+          currentParticleCount: currentParticleCount,
+          trailsEnabled, audioEnabled
+        };
+        localStorage.setItem('particleSystemState', JSON.stringify(state));
+      } catch(e) {
+        // Ignore localStorage errors
+      }
+    }
+
+    function loadState(){
+      try {
+        const saved = localStorage.getItem('particleSystemState');
+        if (saved) {
+          const state = JSON.parse(saved);
+          running = state.running ?? running;
+          enableCohesion = state.enableCohesion ?? enableCohesion;
+          enableSeparation = state.enableSeparation ?? enableSeparation;
+          enableCurl = state.enableCurl ?? enableCurl;
+          enableAlignment = state.enableAlignment ?? enableAlignment;
+          enableVortex = state.enableVortex ?? enableVortex;
+          enableParticleSpin = state.enableParticleSpin ?? enableParticleSpin;
+          enableTurbulence = state.enableTurbulence ?? enableTurbulence;
+          pointSize = state.pointSize ?? pointSize;
+          additiveGlow = state.additiveGlow ?? additiveGlow;
+          autoRotate = state.autoRotate ?? autoRotate;
+          globalRotationX = state.globalRotationX ?? globalRotationX;
+          globalRotationY = state.globalRotationY ?? globalRotationY;
+          rotationSpeed = state.rotationSpeed ?? rotationSpeed;
+          timeScale = state.timeScale ?? timeScale;
+          vortexStrength = state.vortexStrength ?? vortexStrength;
+          trailsEnabled = state.trailsEnabled ?? trailsEnabled;
+          audioEnabled = state.audioEnabled ?? audioEnabled;
+          
+          if (material) {
+            material.uniforms.uSize.value = pointSize;
+            material.uniforms.uSpinEnabled.value = enableParticleSpin ? 1.0 : 0.0;
+            material.blending = additiveGlow ? THREE.AdditiveBlending : THREE.NormalBlending;
+            material.needsUpdate = true;
+          }
+        }
+      } catch(e) {
+        // Ignore localStorage errors
+      }
+    }
+  </script>
+</body>
+</html>

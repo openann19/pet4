@@ -1,0 +1,122 @@
+📋 Audit Report: Sun Nov  9 09:03:53 EET 2025
+⚠️  Found async functions that may lack error handling:
+apps/web/src/components/enhanced/EnhancedButton.tsx:79:      async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:142:    it('should display Personality tab content', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:153:    it('should display Stats tab content', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:207:    it('should call onClose when close button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:226:    it('should call onLike when like button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:243:    it('should call onPass when pass button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:260:    it('should call onChat when chat button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx:356:    it('should be keyboard navigable', async () => {
+apps/web/src/components/enhanced/__tests__/IconButton.test.tsx:54:  it('calls onClick when clicked', async () => {
+apps/web/src/components/enhanced/__tests__/SmartToast.test.tsx:118:  it('calls action onClick when action button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/SmartToast.test.tsx:141:  it('calls onDismiss when dismiss button is clicked', async () => {
+apps/web/src/components/enhanced/__tests__/SmartToast.test.tsx:153:  it('auto-dismisses after duration', async () => {
+apps/web/src/components/enhanced/__tests__/SmartToast.test.tsx:173:  it('uses default duration when not provided', async () => {
+apps/web/src/components/enhanced/__tests__/PremiumButton.test.tsx:50:  it('calls onClick when clicked', async () => {
+apps/web/src/components/admin/LiveStreamManagement.tsx:26:  const loadStreams = async () => {
+apps/web/src/components/admin/LiveStreamManagement.tsx:75:  const handleEndStream = async (streamId: string) => {
+apps/web/src/components/admin/ContentModerationQueue.tsx:71:  const loadQueue = async () => {
+apps/web/src/components/admin/ContentModerationQueue.tsx:194:  const handleApprove = async () => {
+apps/web/src/components/admin/ContentModerationQueue.tsx:243:  const handleReject = async () => {
+apps/web/src/components/admin/ModerationQueue.tsx:48:  const loadQueue = async () => {
+⚠️  Found AbortController usage that may need cleanup:
+apps/web/src/lib/api-client.ts:202:      const controller = new AbortController();
+apps/web/src/lib/api-client.ts:210:          signal: controller.signal,
+apps/web/src/lib/api-client.ts:219:            signal: controller.signal,
+apps/web/src/lib/validated-api-client.ts:101:    const controller = new AbortController();
+apps/web/src/lib/validated-api-client.ts:108:        signal: controller.signal,
+apps/web/src/lib/i18n/hooks/useTranslation.ts:199:  const abortControllerRef = useRef<AbortController | null>(null);
+apps/web/src/lib/i18n/hooks/useTranslation.ts:213:    const abortController = new AbortController();
+⚠️  Found non-null assertions (potential runtime errors):
+apps/web/src/components/ChatRoomsList.tsx:170:                        Say hello! 👋
+apps/web/src/components/ui/context-menu.tsx:108:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+apps/web/src/components/ui/menubar.tsx:89:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+apps/web/src/components/ui/dropdown-menu.tsx:64:        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+apps/web/src/components/ui/sidebar.tsx:458:  'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-data-[sidebar=menu-action]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+apps/web/src/components/views/AdoptionMarketplaceView.tsx:72:    toast.success('Adoption listing created! It will be reviewed by our team.');
+apps/web/src/components/views/CommunityView.tsx:640:                        {t.community?.endOfFeed ?? "You're all caught up! 🎉"}
+apps/web/src/components/views/CommunityView.tsx:728:                    {t.adoption?.endOfList ?? "You've seen all available pets! 🐾"}
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:86:        endOfFeed: "You're all caught up! 🎉",
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:93:        endOfList: "You've seen all available pets! 🐾",
+apps/web/src/components/payments/PricingModal.tsx:45:          description: `Welcome to ${plan.name}! Your features are now unlocked.`,
+apps/web/src/components/notifications/components/NotificationSettings.tsx:43:                ...preferences!.quietHours,
+apps/web/src/components/notifications/components/NotificationGroupList.tsx:55:      timeGroups.get(timeGroup)!.push(group);
+apps/web/src/components/notifications/components/NotificationList.tsx:58:      groups.get(timeGroup)!.push(notification);
+apps/web/src/components/CreatePetDialog.tsx:513:      toast.success('Pet profile created! 🎉', {
+apps/web/src/components/verification/VerificationDialog.tsx:189:        toast.success('Verification approved! 🎉', {
+apps/web/src/components/chat/window/VirtualMessageList.tsx:208:                  isCurrentUser={row.msg!.senderId === currentUserId}
+apps/web/src/components/chat/MessageBubble.tsx:666:                    window.open(message.metadata!.media!.url, '_blank');
+apps/web/src/components/chat/MessageBubble.tsx:716:                const { lat, lng } = message.metadata!.location!;
+apps/web/src/components/EnhancedErrorBoundary.tsx:63:              <h1 className="text-2xl font-bold text-foreground">Oops! Something went wrong</h1>
+apps/web/src/components/adoption/MyApplicationsView.tsx:108:        return 'Congratulations! Your application has been approved. The shelter will contact you to arrange the adoption.';
+apps/web/src/components/error/ErrorBoundary.tsx:76:              <h1 className="text-2xl font-bold text-foreground">Oops! Something went wrong</h1>
+apps/web/src/components/network/OfflineIndicator.tsx:57:            <span>Back online! Syncing your changes...</span>
+apps/web/src/components/MatchCelebration.tsx:246:              It's a Match! 🎉
+apps/web/src/components/PetPhotoAnalyzer.tsx:168:      toast.success('Photo analyzed successfully! 🎉', {
+apps/web/src/components/lost-found/ReportSightingDialog.tsx:102:      toast.success('Sighting reported! The owner will be notified.');
+apps/web/src/components/lost-found/MapLocationPicker.tsx:97:        throw new Error(`HTTP error! status: ${response.status}`);
+⚠️  Found unsafe type assertions:
+apps/web/src/components/admin/MatchingConfigPanel.test.tsx:57:    vi.mocked(matchingAPI.getConfig).mockResolvedValue(null as unknown as MatchingConfig);
+apps/web/src/components/admin/MatchingConfigPanel.test.tsx:78:    vi.mocked(matchingAPI.getConfig).mockResolvedValue(null as unknown as MatchingConfig);
+apps/web/src/components/admin/MatchingConfigPanel.tsx:118:        updatedConfig as unknown as Record<string, unknown>,
+apps/web/src/components/admin/APIConfigView.tsx:305:        config as unknown as Record<string, unknown>,
+apps/web/src/components/admin/BusinessConfigPanel.tsx:101:        config as unknown as Record<string, unknown>,
+apps/web/src/components/notifications/NotificationTabs.test.tsx:39:      }) as any
+apps/web/src/components/media-editor/video-trimmer.tsx:150:    width: undefined as unknown as number,
+apps/web/src/components/community/__tests__/PostComposer.test.tsx:64:} as any;
+apps/web/src/components/community/__tests__/CommentsSheet.test.tsx:159:    vi.mocked(communityService.getComments).mockResolvedValue(mockComments as any);
+apps/web/src/components/community/__tests__/PostCard.test.tsx:81:} as any;
+apps/web/src/components/community/__tests__/AppealDialog.test.tsx:32:} as any;
+apps/web/src/components/community/__tests__/ReportDialog.test.tsx:42:} as any;
+apps/web/src/components/chat/BubbleGestureWrapper.tsx:103:        longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+apps/web/src/components/chat/BubbleGestureWrapper.tsx:143:      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+apps/web/src/components/chat/BubbleGestureWrapper.tsx:231:        longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+apps/web/src/components/chat/WebBubbleWrapper.test.tsx:235:      } as unknown as React.MouseEvent);
+apps/web/src/components/chat/__tests__/TypingIndicator.test.tsx:100:        userName: undefined as unknown as string,
+apps/web/src/components/auth/__tests__/OAuthButtons.test.tsx:46:} as any;
+apps/web/src/components/auth/__tests__/OAuthButtons.test.tsx:89:    delete (window as any).location;
+apps/web/src/components/auth/__tests__/OAuthButtons.test.tsx:90:    (window as any).location = { href: '' };
+apps/web/src/components/auth/__tests__/OAuthButtons.test.tsx:162:    } as any;
+⚠️  Found promises that may need error handling:
+apps/web/src/components/enhanced/EnhancedButton.tsx:57:        typeof (value as Promise<unknown>).then === 'function'
+apps/web/src/components/enhanced/ProgressiveImage.tsx:52:      supportsAVIF().then((avifSupported) => {
+apps/web/src/components/views/DiscoverView.tsx:9:  import('@/components/enhanced/EnhancedPetDetailView').then((m) => ({
+apps/web/src/components/views/ProfileView.tsx:31:  import('@/components/VisualAnalysisDemo').then((module) => ({ default: module.default }))
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:104:    getFeed: vi.fn(() => Promise.resolve({ posts: [], hasMore: false, nextCursor: undefined })),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:105:    getTrendingTags: vi.fn(() => Promise.resolve([])),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:112:      Promise.resolve({ profiles: [], hasMore: false, nextCursor: undefined })
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:119:    getLostAlerts: vi.fn(() => Promise.resolve([])),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:120:    createSighting: vi.fn(() => Promise.resolve({})),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:126:    getFeed: vi.fn(() => Promise.resolve({ posts: [], hasMore: false, nextCursor: undefined })),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:127:    getTrendingTags: vi.fn(() => Promise.resolve([])),
+apps/web/src/components/views/__tests__/CommunityView.test.tsx:134:      Promise.resolve({ profiles: [], hasMore: false, nextCursor: undefined })
+apps/web/src/components/playdate/PlaydateScheduler.tsx:183:        .then(() => toast.success('Location shared!'))
+apps/web/src/components/playdate/PlaydateMap.tsx:33:      .then((location) => {
+apps/web/src/components/DiscoverMapMode.tsx:40:      .then((location) => {
+apps/web/src/components/CreatePetDialog.tsx:45:  import('@/components/PetPhotoAnalyzer').then((module) => ({ default: module.default }))
+apps/web/src/components/media-editor/video-trimmer.tsx:29:    getVideoThumbnails(uri, 8).then((thumbnails) => {
+apps/web/src/components/media-editor/__tests__/video-trimmer.test.tsx:7:  getVideoThumbnails: vi.fn(() => Promise.resolve(['thumb1.jpg', 'thumb2.jpg'])),
+apps/web/src/components/community/PostCard.tsx:245:        .then(() => {
+apps/web/src/components/community/MediaViewer.tsx:397:        .then(() => {
+⚠️  Found event listeners that may need cleanup:
+apps/web/src/components/DismissibleOverlay.tsx:97:      document.addEventListener('keydown', handleEscape);
+apps/web/src/components/DismissibleOverlay.tsx:102:      window.addEventListener('popstate', handleAndroidBack);
+apps/web/src/components/DismissibleOverlay.tsx:106:      document.addEventListener('mousedown', handleOutsideClick);
+apps/web/src/components/DismissibleOverlay.tsx:128:      document.addEventListener('keydown', handleTabKey);
+apps/web/src/components/ChatWindowNew.tsx:259:    window.addEventListener('keydown', handleEscape);
+apps/web/src/components/ui/sidebar.tsx:102:    window.addEventListener('keydown', handleKeyDown);
+apps/web/src/components/demo/PetsDemoPage.tsx:19:  addEventListener('resize', set);
+apps/web/src/components/demo/PetsDemoPage.tsx:20:  addEventListener('orientationchange', set);
+apps/web/src/components/notifications/NotificationTabs.test.tsx:34:        addEventListener: vi.fn(),
+apps/web/src/components/notifications/NotificationTabs.tsx:79:    m.addEventListener?.('change', update);
+apps/web/src/components/notifications/NotificationTabs.tsx:119:    el.addEventListener('pointerdown', onPointerDown);
+apps/web/src/components/notifications/NotificationTabs.tsx:120:    el.addEventListener('pointerup', onPointerUp);
+apps/web/src/components/notifications/NotificationTabs.tsx:294:    c.addEventListener('scroll', onScroll, { passive: true });
+apps/web/src/components/notifications/NotificationTabs.tsx:366:    el.addEventListener('scroll', onScroll, { passive: true });
+apps/web/src/components/media-editor/drop-zone-web.tsx:41:    element.addEventListener('dragover', preventDefault);
+apps/web/src/components/media-editor/drop-zone-web.tsx:42:    element.addEventListener('dragenter', preventDefault);
+apps/web/src/components/media-editor/drop-zone-web.tsx:43:    element.addEventListener('drop', handleDrop);
+apps/web/src/components/swipe/CardStack.tsx:288:          document.addEventListener('mousemove', handleMove);
+apps/web/src/components/swipe/CardStack.tsx:289:          document.addEventListener('mouseup', handleEnd);
+apps/web/src/components/swipe/CardStack.tsx:290:          document.addEventListener('touchmove', handleMove, { passive: false });

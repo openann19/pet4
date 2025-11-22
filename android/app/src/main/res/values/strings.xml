@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PetSpark</string>
+    <string name="sumsub_client_key">CHANGE_ME_IN_PRODUCTION</string>
+</resources>

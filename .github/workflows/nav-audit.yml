@@ -1,0 +1,128 @@
+name: nav-audit
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  web:
+    name: Navigation Audit - Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: cd apps/web && pnpm build
+
+      - name: Install Playwright browsers
+        run: cd apps/web && npx playwright install --with-deps chromium
+
+      - name: Start dev server
+        run: |
+          cd apps/web
+          pnpm dev &
+          sleep 10
+        env:
+          BASE_URL: http://localhost:5173
+
+      - name: Run Playwright navigation test
+        run: |
+          cd apps/web
+          BASE_URL=http://localhost:5173 NAV_MAX_PAGES=800 pnpm exec playwright test e2e/nav/navigation.spec.ts
+        env:
+          BASE_URL: http://localhost:5173
+          NAV_MAX_PAGES: 800
+
+      - name: Run hydration scan
+        run: cd apps/web && pnpm hydrate:scan
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-nav-report
+          path: |
+            apps/web/playwright-report/**
+            apps/web/playwright-report/nav-audit/**
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload navigation test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nav-audit-artifacts
+          path: |
+            apps/web/playwright-report/nav-audit/*.json
+            apps/web/playwright-report/nav-audit/*.html
+          retention-days: 7
+          if-no-files-found: warn
+
+  mobile:
+    name: Navigation Audit - Mobile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Java for Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build Android app
+        run: |
+          cd apps/mobile/android
+          ./gradlew assembleDebug
+        continue-on-error: true
+
+      - name: Run Detox navigation tests
+        run: |
+          cd apps/mobile
+          detox test e2e/nav.e2e.ts --configuration android.emu.debug
+        continue-on-error: true
+        env:
+          DETOX_CONFIGURATION: android.emu.debug
+
+      - name: Upload Detox artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detox-nav-artifacts
+          path: apps/mobile/artifacts/**
+          retention-days: 7
+          if-no-files-found: warn

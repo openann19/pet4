@@ -1,0 +1,64 @@
+Contact: mailto:security@pawfectmatch.com
+Expires: 2026-12-31T23:59:59.000Z
+Encryption: https://pawfectmatch.com/.well-known/pgp-key.txt
+Preferred-Languages: en
+Canonical: https://pawfectmatch.com/.well-known/security.txt
+Policy: https://pawfectmatch.com/security-policy
+
+# Security Policy
+
+We take security seriously. If you discover a security vulnerability, please follow these guidelines:
+
+## Reporting Security Issues
+
+**DO NOT** report security vulnerabilities through public GitHub issues, discussions, or pull requests.
+
+Instead, please report security vulnerabilities to:
+- **Email**: security@pawfectmatch.com
+- **PGP Key**: Available at https://pawfectmatch.com/.well-known/pgp-key.txt
+
+## What to Include
+
+Please include as much information as possible:
+- Type of issue (XSS, SQL injection, authentication bypass, etc.)
+- Affected component (frontend, backend, API, mobile app)
+- File paths and specific source files
+- Location (branch, commit hash, or tag)
+- Reproduction steps
+- Proof-of-concept (if available)
+- Impact assessment
+- Suggested fix (if you have recommendations)
+
+## Response Timeline
+
+- **Acknowledgment**: Within 24 hours
+- **Initial Assessment**: Within 72 hours
+- **Regular Updates**: Every 7 days
+- **Fix Timeline**: Depends on severity
+
+## Severity Levels
+
+- **Critical**: Complete system compromise (24-48 hour fix)
+- **High**: Significant data breach risk (3-7 day fix)
+- **Medium**: Limited data exposure (14-30 day fix)
+- **Low**: Minor information disclosure (30-60 day fix)
+
+## Recognition
+
+We appreciate responsible disclosure and may recognize security researchers who help improve our security.
+
+## Scope
+
+**In Scope**:
+- pawfectmatch.com and subdomains
+- API endpoints
+- Mobile applications
+
+**Out of Scope**:
+- Social engineering attacks
+- Physical attacks
+- Denial of Service (DoS) attacks
+- Issues requiring physical access
+
+Thank you for helping keep PawfectMatch secure!
+

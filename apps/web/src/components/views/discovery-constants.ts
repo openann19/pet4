@@ -1,0 +1,56 @@
+export const ALL_PERSONALITIES = [
+  'playful',
+  'calm',
+  'energetic',
+  'gentle',
+  'social',
+  'independent',
+  'affectionate',
+  'curious',
+  'protective',
+  'loyal',
+  'friendly',
+  'outgoing',
+  'confident',
+  'quiet',
+  'relaxed',
+  'active',
+  'adventurous',
+  'cuddly',
+  'loving',
+  'intelligent',
+] as const;
+
+export const ALL_INTERESTS = [
+  'fetch',
+  'swimming',
+  'hiking',
+  'cuddling',
+  'playing',
+  'training',
+  'running',
+  'walking',
+  'agility',
+  'tricks',
+  'sleeping',
+  'eating',
+  'exploring',
+  'meeting new friends',
+  'car rides',
+  'beach',
+  'park',
+  'toys',
+] as const;
+
+export const ALL_LOOKING_FOR = [
+  'playdate',
+  'walking buddy',
+  'training partner',
+  'best friend',
+  'adventure companion',
+  'cuddle buddy',
+  'active friend',
+  'gentle friend',
+] as const;
+
+export const ALL_SIZES = ['small', 'medium', 'large', 'extra-large'] as const;

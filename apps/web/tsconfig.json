@@ -1,0 +1,60 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@design-system/*": ["./design-system/*"],
+      "@petspark/core": ["../../packages/core/src/index.ts"],
+      "@petspark/core/*": ["../../packages/core/src/*"],
+      "@petspark/chat-core": ["../../packages/chat-core/src/index.ts"],
+      "@petspark/config": ["../../packages/config/src/index.ts"],
+      "@petspark/motion": ["../../packages/motion/src/index.ts"],
+      "@petspark/shared": ["../../packages/shared/src/index.ts"],
+      "@petspark/shared/*": ["../../packages/shared/src/*"],
+      "@petspark/spec-core": ["../../packages/spec-core/src/index.ts"]
+    },
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src",
+    "src/test/utils/test-helpers.tsx",
+    "src/test/vitest.d.ts",
+    "src/types/**/*.d.ts",
+    "*.d.ts",
+    "*.ts",
+    "vite.config.ts",
+    "design-system/**/*.ts",
+    "design-system/**/*.tsx",
+    "scripts/**/*.ts",
+    "../../packages/core/src/**/*.ts",
+    "../../packages/core/src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "coverage",
+    "storybook-static",
+    "android-design-tokens-rn",
+    "e2e",
+    "src/lib/kyc-native.ts",
+    "src/components/ChatWindowNew.tsx",
+    "src/components/media-editor/MediaEditor.tsx",
+    "src/components/media-editor/video-trimmer.tsx",
+    "**/*.stories.tsx",
+    "**/*.stories.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "../../packages/motion/src/recipes/useFloatingParticle.ts",
+    "../../packages/motion/src/recipes/useThreadHighlight.ts",
+    "../../packages/motion/src/recipes/useParallax.ts",
+    "../../packages/motion/src/recipes/useHoverLift.ts",
+    "../../packages/motion/src/recipes/useBubbleEntry.ts"
+  ]
+}

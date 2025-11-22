@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "TypeScript: check",
+      "type": "shell",
+      "command": "pnpm -s exec tsc -p tsconfig.json --noEmit --pretty false",
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "ESLint: repo",
+      "type": "shell",
+      "command": "pnpm -s exec eslint . --ext .js,.cjs,.mjs,.ts,.tsx --format unix --max-warnings=0",
+      "problemMatcher": "$eslint-compact"
+    },
+    {
+      "label": "Stylelint: css",
+      "type": "shell",
+      "command": "pnpm -s exec stylelint \"**/*.{css,scss}\" --allow-empty-input --formatter compact",
+      "problemMatcher": {
+        "owner": "stylelint",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+):\\s+(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "message": 4
+        }
+      }
+    },
+    {
+      "label": "Pyright: python types",
+      "type": "shell",
+      "command": "pnpm -s exec pyright",
+      "problemMatcher": {
+        "owner": "pyright",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+)\\s-\\s(error|warning)\\s([^:]+):\\s(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    },
+    {
+      "label": "Ruff: python lint",
+      "type": "shell",
+      "command": "bash -lc 'command -v ruff >/dev/null 2>&1 && ruff check . || echo \"ruff not installed\"'",
+      "problemMatcher": {
+        "owner": "ruff",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+?):(\\d+):(\\d+):\\s([A-Z]\\d{3})\\s(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "code": 4,
+          "message": 5
+        }
+      }
+    },
+    {
+      "label": "Repo: Analyze (all)",
+      "dependsOn": [
+        "TypeScript: check",
+        "ESLint: repo",
+        "Stylelint: css",
+        "Pyright: python types",
+        "Ruff: python lint"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

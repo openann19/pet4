@@ -1,0 +1,36 @@
+---
+alwaysApply: true
+---
+# 🚨 Production Readiness – CRITICAL ENFORCEMENT RULE 🚨
+
+## Mandatory: Use Canonical Production Readiness Suite
+
+All contributors and reviewers **must strictly adhere** to the PETSPARK production readiness framework, as defined by the following source-of-truth documents:
+
+- `/home/ben/Public/PETSPARK/Productionmap.md`
+- `PRODUCTION_READINESS_INDEX.md`
+- `PRODUCTION_READINESS_EXECUTIVE_SUMMARY.md`
+- `PRODUCTION_READINESS_CHECKLIST.md`
+- `PRODUCTION_COMPLETION_ROADMAP.md`
+- `PRODUCTION_READINESS_DEEP_AUDIT.md`
+
+## Non-Negotiable Requirements
+
+- **Gates, standards, and acceptance criteria are absolutely fixed as specified in the documentation.**
+- **No changes may ship except by following the mapped order and methodology for blockers, fixes, tests, and all readiness phases.**
+- **Definitions of done, roles, time estimates, rollouts, and all verification steps are final and binding.**
+- **No phase skipping, fast-tracking, or estimate editing is allowed outside the published plan.**
+- **Code, infra, env, and deployment audits must use the exact requirements given—no improvisation.**
+
+## Enforcement & Audit
+
+- **Every commit, PR, and deployment _must_ reference and comply with the latest `/home/ben/Public/PETSPARK/Productionmap.md` and its associated documents.**
+- **Deviation from these requirements (including by omission) instantly voids production readiness.**
+- **Exemptions or modifications _must_ be explicitly documented as an amendment in the docs suite and re-approved before implementation.**
+
+## Rationale
+
+This policy locks the project to a single, canonical production playbook—zero deviations permitted. Following this ensures no "interpretation gaps" or process drift—the only route to production is via the ratified PETSPARK documentation suite.
+
+*This rule is immutable. Updates require a formally approved revision to the source documentation. No exceptions.*
+

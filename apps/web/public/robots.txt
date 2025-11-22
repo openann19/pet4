@@ -1,0 +1,25 @@
+# robots.txt for PawfectMatch
+# https://pawfectmatch.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Disallow admin and API endpoints
+Disallow: /admin
+Disallow: /api/
+Disallow: /healthz
+Disallow: /readyz
+
+# Allow important pages
+Allow: /
+Allow: /discover
+Allow: /matches
+Allow: /profile
+Allow: /community
+
+# Sitemap location
+Sitemap: https://pawfectmatch.com/sitemap.xml
+
+# Crawl delay (optional, be respectful)
+Crawl-delay: 1
+

@@ -1,0 +1,98 @@
+import { vi } from 'vitest';
+
+interface FileInit {
+  type?: string;
+  lastModified?: number;
+}
+
+interface MockFileReaderInstance {
+  readAsDataURL: ReturnType<typeof vi.fn>;
+  readAsText: ReturnType<typeof vi.fn>;
+  readAsArrayBuffer: ReturnType<typeof vi.fn>;
+  result: string | ArrayBuffer | null;
+  error: DOMException | null;
+  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  onabort: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  onloadstart: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  onloadend: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  onprogress: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null;
+  abort: ReturnType<typeof vi.fn>;
+  EMPTY: number;
+  LOADING: number;
+  DONE: number;
+  readyState: number;
+}
+
+/**
+ * File API mocks for testing
+ */
+export function setupFileAPIMocks(): void {
+  // Mock File
+  global.File = vi
+    .fn()
+    .mockImplementation((chunks: unknown[], filename: string, options?: FileInit) => ({
+      name: filename,
+      size: chunks.reduce((acc: number, chunk: unknown) => {
+        const chunkLength = (chunk as { length?: number })?.length ?? 0;
+        return acc + chunkLength;
+      }, 0),
+      type: options?.type ?? '',
+      lastModified: Date.now(),
+    })) as typeof File;
+
+  // Mock FileReader aligned with the DOM FileReader shape used in tests
+  class MockFileReaderClass {
+    static readonly EMPTY = 0;
+    static readonly LOADING = 1;
+    static readonly DONE = 2;
+
+    readonly EMPTY = 0;
+    readonly LOADING = 1;
+    readonly DONE = 2;
+
+    readyState: 0 | 1 | 2 = 0;
+
+    result: string | ArrayBuffer | null = null;
+    error: DOMException | null = null;
+
+    onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+    onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+    onabort: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+    onloadstart: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+    onloadend: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+    onprogress: ((this: FileReader, ev: ProgressEvent<FileReader>) => unknown) | null = null;
+
+    readAsDataURL = vi.fn<(blob: Blob) => void>();
+    readAsText = vi.fn<(blob: Blob) => void>();
+    readAsArrayBuffer = vi.fn<(blob: Blob) => void>();
+    readAsBinaryString = vi.fn<(blob: Blob) => void>();
+    abort = vi.fn();
+
+    addEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | AddEventListenerOptions
+    ): void {
+      // No-op in tests
+    }
+
+    removeEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | EventListenerOptions
+    ): void {
+      // No-op in tests
+    }
+
+    dispatchEvent(..._args: Parameters<FileReader['dispatchEvent']>): boolean {
+      // Minimal implementation for tests
+      return true;
+    }
+  }
+
+  const globalWithFileReader = global as Omit<typeof globalThis, 'FileReader'> & {
+    FileReader: typeof MockFileReaderClass;
+  };
+  globalWithFileReader.FileReader = MockFileReaderClass;
+}
