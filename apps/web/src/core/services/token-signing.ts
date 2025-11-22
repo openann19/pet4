@@ -40,13 +40,13 @@ export class TokenSigningError extends Error {
 
 function getConfigFromAdmin(): TokenSigningConfig | null {
   if (typeof window === 'undefined') {
-    return Promise.resolve(null);
+    return null;
   }
 
   try {
     const adminConfigStr = localStorage.getItem('admin-api-config');
     if (!adminConfigStr) {
-      return Promise.resolve(null);
+      return null;
     }
 
     const adminConfig = JSON.parse(adminConfigStr) as APIConfig;
@@ -55,7 +55,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
       !adminConfig.livekit?.apiKey ||
       !adminConfig.livekit?.apiSecret
     ) {
-      return Promise.resolve(null);
+      return null;
     }
 
     return {
@@ -67,7 +67,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.warn('Failed to read admin config', err);
-    return Promise.resolve(null);
+    return null;
   }
 }
 
@@ -77,7 +77,7 @@ function getConfigFromEnv(): TokenSigningConfig | null {
     import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
-    return Promise.resolve(null);
+    return null;
   }
 
   const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL;
@@ -87,7 +87,7 @@ function getConfigFromEnv(): TokenSigningConfig | null {
     apiSecret,
     issuer: import.meta.env.VITE_LIVEKIT_ISSUER ?? 'livekit',
     ...(apiUrl !== undefined && { apiUrl }),
-  } as any;
+  };
 }
 
 function getEffectiveConfig(config?: TokenSigningConfig): TokenSigningConfig | null {

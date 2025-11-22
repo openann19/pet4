@@ -172,7 +172,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
     onDeadClick,
     onScrollMilestone,
     onFormAbandonment,
-    _onError,
+    onError,
     trackMouseMovement = false,
     trackVisibility = false,
     rageClickThreshold = DEFAULT_RAGE_THRESHOLD,

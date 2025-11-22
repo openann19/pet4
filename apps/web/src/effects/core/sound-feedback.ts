@@ -175,7 +175,7 @@ export class SoundFeedbackService {
   /**
    * Get or generate sound buffer
    */
-  private getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
+  private async getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
     // Check cache
     const cached = this.soundCache.get(soundType);
     if (cached) {
@@ -187,7 +187,7 @@ export class SoundFeedbackService {
     }
 
     // Generate sound buffer based on type
-    const buffer = this.generateSound(soundType);
+    const buffer = await this.generateSound(soundType);
     if (buffer) {
       this.soundCache.set(soundType, buffer);
     }

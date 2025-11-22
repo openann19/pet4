@@ -36,13 +36,13 @@ export function editVideo(
     throw new Error('editVideo requires video input');
   }
 
-  return {
+  return Promise.resolve({
     uri: input.uri,
     type: 'video',
     ...(input.width !== undefined && { width: input.width }),
     ...(input.height !== undefined && { height: input.height }),
     ...(input.durationSec !== undefined && { durationSec: input.durationSec }),
-  };
+  });
 }
 
 /**

@@ -90,6 +90,7 @@ class AudioEngineImpl {
       const context = this.createPooledContext();
       this.contextPool.push(context);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -199,7 +200,7 @@ class AudioEngineImpl {
     } = {}
   ): Promise<void> {
     if (!this.audioContext || !this.compressorNode) {
-      return;
+      return Promise.resolve();
     }
 
     const { volume = 1.0, spatial } = options;
@@ -327,6 +328,8 @@ class AudioEngineImpl {
         this.releaseContext(pooledContext);
       }
     }
+    
+    return Promise.resolve();
   }
 
   /**

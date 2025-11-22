@@ -308,7 +308,7 @@ export function useWebRtcCall(options: UseWebRtcCallOptions): UseWebRtcCallResul
   );
 
   const handleIncomingOffer = useCallback<UseWebRtcCallResult['handleIncomingOffer']>(
-    (signal) => {
+    async (signal) => {
       try {
         currentCallIdRef.current = signal.callId;
         remoteUserIdRef.current = signal.fromUserId;

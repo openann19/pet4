@@ -27,7 +27,7 @@ export function useAdoptionProfiles(
 ) {
   return useInfiniteQuery({
     queryKey: [...queryKeys.adoption.listings, filters],
-    queryFn: async ({ _pageParam }) => {
+    queryFn: async ({ pageParam }) => {
       const response = await adoptionAPI.listProfiles({
         ...filters,
         // Add pagination params if needed

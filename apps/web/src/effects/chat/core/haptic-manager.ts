@@ -42,7 +42,7 @@ const Haptics: ExpoHaptics | null = null;
 function loadExpoHaptics(): Promise<ExpoHaptics | null> {
   // On web, expo-haptics is never available
   // Return null immediately without attempting import
-  return null;
+  return Promise.resolve(null);
 }
 
 let custom: CustomHaptics | null = null;
