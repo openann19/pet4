@@ -82,6 +82,7 @@ export class PhotoModerationEventService {
       });
       // Don't throw - events are non-critical
     }
+    return Promise.resolve();
   }
 
   /**
@@ -115,6 +116,7 @@ export class PhotoModerationEventService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to emit batch processed event', err, { batchId });
     }
+    return Promise.resolve();
   }
 
   /**
@@ -140,6 +142,7 @@ export class PhotoModerationEventService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to emit queue stats update', err);
     }
+    return Promise.resolve();
   }
 }
 

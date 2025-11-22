@@ -40,13 +40,13 @@ export class TokenSigningError extends Error {
 
 function getConfigFromAdmin(): TokenSigningConfig | null {
   if (typeof window === 'undefined') {
-    return null;
+    return Promise.resolve(null);
   }
 
   try {
     const adminConfigStr = localStorage.getItem('admin-api-config');
     if (!adminConfigStr) {
-      return null;
+      return Promise.resolve(null);
     }
 
     const adminConfig = JSON.parse(adminConfigStr) as APIConfig;
@@ -55,7 +55,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
       !adminConfig.livekit?.apiKey ||
       !adminConfig.livekit?.apiSecret
     ) {
-      return null;
+      return Promise.resolve(null);
     }
 
     return {
@@ -67,7 +67,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.warn('Failed to read admin config', err);
-    return null;
+    return Promise.resolve(null);
   }
 }
 
@@ -77,7 +77,7 @@ function getConfigFromEnv(): TokenSigningConfig | null {
     import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
-    return null;
+    return Promise.resolve(null);
   }
 
   const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL;
@@ -218,7 +218,7 @@ export function verifyLiveKitToken(
     logger.error('LiveKit configuration missing for token verification', {
       tokenPrefix: token.substring(0, 20),
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   // Server-side implementation would use LiveKit SDK here
@@ -227,7 +227,7 @@ export function verifyLiveKitToken(
     tokenPrefix: token.substring(0, 20),
   });
 
-  return null;
+  return Promise.resolve(null);
 }
 
 /**
@@ -327,7 +327,7 @@ export function compositeStreamToHLS(
     logger.error('LiveKit configuration missing for HLS recording', {
       roomId,
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   logger.info('HLS VOD recording requested', {
@@ -340,5 +340,5 @@ export function compositeStreamToHLS(
     roomId,
   });
 
-  return null;
+  return Promise.resolve(null);
 }

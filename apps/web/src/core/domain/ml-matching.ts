@@ -7,7 +7,7 @@
  * Location: apps/web/src/core/domain/ml-matching.ts
  */
 
-import type { PetProfile, _OwnerPreferences } from './pet-model';
+import type { PetProfile, OwnerPreferences } from './pet-model';
 import type { MatchingWeights } from './matching-config';
 import { calculateMatchScore } from './matching-engine';
 import { createLogger } from '@/lib/logger';

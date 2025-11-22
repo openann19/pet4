@@ -537,5 +537,5 @@ export function checkDuplicateContent(
   fingerprint: string,
   existingFingerprints: Set<string>
 ): Promise<boolean> {
-  return existingFingerprints.has(fingerprint);
+  return Promise.resolve(existingFingerprints.has(fingerprint));
 }

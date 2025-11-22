@@ -313,7 +313,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   className
 }) => {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
-  const currentValue = value !== value ?? internalValue
+  const currentValue = value !== undefined ? value : internalValue
 
   const handleValueChange = useCallback((itemValue: string, checked: boolean) => {
     const newValue = checked
