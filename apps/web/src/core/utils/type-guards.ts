@@ -139,7 +139,7 @@ export function isModerationAction(value: unknown): value is ModerationAction {
 export function isRecordWithOptionalKeys<T extends string>(
   value: unknown,
   requiredKeys: readonly T[],
-  optionalKeys: readonly T[] = []
+  _optionalKeys: readonly T[] = []
 ): value is Partial<Record<T, unknown>> & Record<T, unknown> {
   if (!isRecord(value)) return false;
   return requiredKeys.every((key) => key in value);

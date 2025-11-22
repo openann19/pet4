@@ -10,7 +10,7 @@ import type {
 import {
   springConfigs,
   timingConfigs,
-  type } from '@/effects/reanimated/transitions';
+  _type } from '@/effects/reanimated/transitions';
 
 export interface VariantDefinition {
   opacity?: number;

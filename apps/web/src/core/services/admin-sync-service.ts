@@ -7,7 +7,7 @@
 
 import type { RealtimeClient } from '@/lib/realtime';
 import { createLogger } from '@/lib/logger';
-import type { AdminAction } from '@petspark/shared';
+import type { _AdminAction } from '@petspark/shared';
 
 const logger = createLogger('AdminSyncService');
 

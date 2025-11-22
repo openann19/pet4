@@ -72,7 +72,7 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
 }
 
 function getConfigFromEnv(): TokenSigningConfig | null {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY ?? import.meta.env.LIVEKIT_API_KEY as any;
+  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY ?? import.meta.env.LIVEKIT_API_KEY;
   const apiSecret =
     import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
@@ -80,14 +80,14 @@ function getConfigFromEnv(): TokenSigningConfig | null {
     return null;
   }
 
-  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL as any;
+  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL;
 
   return {
     apiKey,
     apiSecret,
     issuer: import.meta.env.VITE_LIVEKIT_ISSUER ?? 'livekit',
-    ...(apiUrl != = undefined && { apiUrl }), as any;
-  };
+    ...(apiUrl !== undefined && { apiUrl }),
+  } as any;
 }
 
 function getEffectiveConfig(config?: TokenSigningConfig): TokenSigningConfig | null {

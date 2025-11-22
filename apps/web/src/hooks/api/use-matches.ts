@@ -29,7 +29,7 @@ async function fetchMatches(): Promise<Match[]> {
     headers: { 'Content-Type': 'application/json' },
   });
   if (!response.ok) throw new Error('Failed to fetch matches');
-  const data = await response.json() as any;
+  const data = await response.json();
   return Array.isArray(data) ? data : data.items ?? [];
 }
 

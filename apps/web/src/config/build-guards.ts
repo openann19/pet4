@@ -6,7 +6,7 @@
 // Production builds should not use legacy KV mocks - this is enforced via runtime guards below
 
 // Feature flag validation
-const VITE_USE_MOCKS = import.meta.env.VITE_USE_MOCKS as any;
+const VITE_USE_MOCKS = import.meta.env.VITE_USE_MOCKS;
 
 if (VITE_USE_MOCKS === 'true' && import.meta.env.PROD) {
   throw new Error(`

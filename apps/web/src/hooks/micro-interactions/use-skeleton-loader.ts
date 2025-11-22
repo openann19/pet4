@@ -71,7 +71,7 @@ export function useSkeletonLoader(
     index = 0,
   } = options
 
-  const { _visual } = useUIConfig()
+  const { visual: _visual } = useUIConfig()
   const reducedMotion = useReducedMotionSV()
 
   // Animation values

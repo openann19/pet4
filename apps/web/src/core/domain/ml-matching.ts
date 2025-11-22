@@ -7,7 +7,7 @@
  * Location: apps/web/src/core/domain/ml-matching.ts
  */
 
-import type { PetProfile, OwnerPreferences } from './pet-model';
+import type { PetProfile, _OwnerPreferences } from './pet-model';
 import type { MatchingWeights } from './matching-config';
 import { calculateMatchScore } from './matching-engine';
 import { createLogger } from '@/lib/logger';
@@ -309,7 +309,7 @@ export class MLMatchingWeightAdjuster {
     const adjusted: MatchingWeights = { ...baseWeights };
 
     // Calculate total current weight
-    const totalWeight = Object.values(baseWeights).reduce((sum, w) => sum + w, 0) as any;
+    const totalWeight = Object.values(baseWeights).reduce((sum, w) => sum + w, 0);
 
     // Calculate desired weights based on importance
     const desiredWeights: Record<string, number> = {};

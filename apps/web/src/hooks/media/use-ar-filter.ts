@@ -212,7 +212,7 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
     // This is a mock implementation for demonstration
 
     if (!videoRef.current) {
-      return []
+      return Promise.resolve([])
     }
 
     // Mock face detection - center of video
@@ -242,7 +242,7 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
       confidence: 0.95,
     }
 
-    return [mockFace]
+    return Promise.resolve([mockFace])
   }, [])
 
   // Run face detection periodically

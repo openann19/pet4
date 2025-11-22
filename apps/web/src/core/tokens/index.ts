@@ -46,7 +46,7 @@ export const Spacing = {
    * Get spacing value in pixels
    */
   px: (token: keyof typeof import('./dimens').Dimens.spacing): string => {
-    const { Dimens } = require('./dimens') as any;
+    const { Dimens } = require('./dimens');
     return `${Dimens.spacing[token]}px`;
   },
 
@@ -54,7 +54,7 @@ export const Spacing = {
    * Get component spacing
    */
   component: (path: string): string => {
-    const { Dimens } = require('./dimens') as any;
+    const { Dimens } = require('./dimens');
     const parts = path.split('.');
     let value: number | undefined;
     let current: unknown = Dimens.component;
@@ -83,8 +83,8 @@ export const Radius = {
    * Get radius value in pixels
    */
   px: (token: keyof typeof import('./dimens').Dimens.radius): string => {
-    const { Dimens } = require('./dimens') as any;
-    const value = Dimens.radius[token] as any;
+    const { Dimens } = require('./dimens');
+    const value = Dimens.radius[token];
     if (typeof value === 'number') {
       return `${value}px`;
     }

@@ -173,8 +173,8 @@ export default function LostFoundView() {
             setSelectedAlert(null);
           }}
           onSuccess={() => {
-            loadAlerts();
-          void }}
+            void loadAlerts();
+          }}
         />
       </div>
     </PageTransitionWrapper>

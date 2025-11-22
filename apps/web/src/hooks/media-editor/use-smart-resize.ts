@@ -621,7 +621,7 @@ export function useSmartResize() {
         preserveAspectRatio: options.preserveAspectRatio,
       });
 
-      return performanceMonitor.measureOperation('content-aware-scale', () => {
+      return performanceMonitor.measureOperation('content-aware-scale', async () => {
         try {
           setIsProcessing(true);
           setError(null);

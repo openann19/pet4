@@ -295,7 +295,7 @@ export function useFilters() {
         useGPU: options.useGPU !== false,
       });
 
-      return performanceMonitor.measureOperation('apply-filter', () => {
+      return performanceMonitor.measureOperation('apply-filter', async () => {
         try {
           setIsProcessing(true);
           setError(null);

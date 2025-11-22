@@ -173,7 +173,7 @@ export function useKeyboardNavigation(
     focusTrap: focusTrapConfig = { enabled: DEFAULT_FOCUS_TRAP_ENABLED },
     arrowKeys: arrowKeysConfig = { enabled: DEFAULT_ARROW_KEYS_ENABLED },
     onShortcut,
-    showHints = false,
+    _showHints = false,
   } = options
 
   // State
