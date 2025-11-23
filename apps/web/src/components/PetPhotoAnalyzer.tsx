@@ -96,7 +96,7 @@ export default function PetPhotoAnalyzer({ onAnalysisComplete }: PetPhotoAnalyze
 
   const handleFileUpload = (file: File) => {
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+      void toast.error('Please upload an image file');
       return;
     }
 
@@ -106,12 +106,12 @@ export default function PetPhotoAnalyzer({ onAnalysisComplete }: PetPhotoAnalyze
       setPhoto(dataUrl);
       setResult(null);
       setShowResult(false);
-      toast.success('Photo uploaded!', {
-        description: 'Click Analyze to extract pet information',
-      });
+      void toast.success('Photo uploaded!', {
+                description: 'Click Analyze to extract pet information',
+              });
     };
     reader.onerror = () => {
-      toast.error('Failed to read file');
+      void toast.error('Failed to read file');
     };
     reader.readAsDataURL(file);
   };
@@ -130,7 +130,7 @@ export default function PetPhotoAnalyzer({ onAnalysisComplete }: PetPhotoAnalyze
 
   const analyzePhoto = async () => {
     if (!photo) {
-      toast.error('Please upload or capture a photo first');
+      void toast.error('Please upload or capture a photo first');
       return;
     }
 
@@ -185,9 +185,9 @@ Return ONLY valid JSON with this exact structure, nothing else:
       setResult(analysisResult);
       setShowResult(true);
 
-      toast.success('Photo analyzed successfully! 🎉', {
-        description: `Found a ${analysisResult.breed} with ${analysisResult.confidence}% confidence`,
-      });
+      void toast.success('Photo analyzed successfully! 🎉', {
+                description: `Found a ${analysisResult.breed} with ${analysisResult.confidence}% confidence`,
+              });
     } catch (error) {
       const errorInfo = parseLLMError(error);
       logger.error(
@@ -195,10 +195,10 @@ Return ONLY valid JSON with this exact structure, nothing else:
         error instanceof Error ? error : new Error(String(error)),
         { technicalMessage: errorInfo.technicalMessage }
       );
-      toast.error('Failed to analyze photo', {
-        description: errorInfo.userMessage,
-        duration: 6000,
-      });
+      void toast.error('Failed to analyze photo', {
+                description: errorInfo.userMessage,
+                duration: 6000,
+              });
     } finally {
       setAnalyzing(false);
     }
@@ -207,9 +207,9 @@ Return ONLY valid JSON with this exact structure, nothing else:
   const handleAccept = () => {
     if (result) {
       onAnalysisComplete({ ...result, photo });
-      toast.success('Information applied!', {
-        description: 'You can still edit any field before saving',
-      });
+      void toast.success('Information applied!', {
+                description: 'You can still edit any field before saving',
+              });
     }
   };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import {
   MapPin,
   NavigationArrow,
@@ -65,7 +65,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
       if (onSelectPlaydate) {
         onSelectPlaydate(playdate);
       }
-    } catch (error) {
+    } catch {
       // Silently handle state update errors
     }
   };
@@ -85,7 +85,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
       if (typeof window !== 'undefined') {
         window.open(url, '_blank');
       }
-    } catch (error) {
+    } catch {
       // Silently handle window.open errors
     }
   };
@@ -107,7 +107,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         lng: playdate.location.lng,
       });
       return formatDistance(distance);
-    } catch (error) {
+    } catch {
       // Silently handle distance calculation errors
       return null;
     }

@@ -61,7 +61,7 @@ export default function BackendDemo() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load records', err, { action: 'loadRecords', userId: user?.id });
-      toast.error('Failed to load records');
+      void toast.error('Failed to load records');
     } finally {
       setIsLoading(false);
     }
@@ -80,12 +80,12 @@ export default function BackendDemo() {
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim()) {
-      toast.error('Please fill in all fields');
+      void toast.error('Please fill in all fields');
       return;
     }
 
     if (!user) {
-      toast.error('You must be authenticated');
+      void toast.error('You must be authenticated');
       return;
     }
 
@@ -96,7 +96,7 @@ export default function BackendDemo() {
         ownerId: user.id,
       });
 
-      toast.success('Record created successfully');
+      void toast.success('Record created successfully');
       setTitle('');
       setContent('');
       await loadRecords();
@@ -104,20 +104,20 @@ export default function BackendDemo() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to create record', err, { action: 'createRecord', userId: user?.id });
-      toast.error('Failed to create record');
+      void toast.error('Failed to create record');
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await db.delete<DemoRecord>('demo_records', id);
-      toast.success('Record deleted');
+      void toast.success('Record deleted');
       await loadRecords();
       await loadStats();
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to delete record', err, { action: 'deleteRecord', recordId: id });
-      toast.error('Failed to delete record');
+      void toast.error('Failed to delete record');
     }
   };
 
@@ -126,13 +126,13 @@ export default function BackendDemo() {
 
     try {
       const count = await db.deleteMany<DemoRecord>('demo_records', { ownerId: user.id });
-      toast.success(`Deleted ${count} records`);
+      void toast.success(`Deleted ${count} records`);
       await loadRecords();
       await loadStats();
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to clear records', err, { action: 'clearRecords', userId: user?.id });
-      toast.error('Failed to clear records');
+      void toast.error('Failed to clear records');
     }
   };
 

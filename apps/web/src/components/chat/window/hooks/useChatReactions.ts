@@ -23,7 +23,7 @@ export function useChatReactions({ addChatReaction }: UseChatReactionsProps) {
       void addChatReaction(messageId, emoji as ReactionType).catch((error) => {
         const err = normalizeError(error);
         logger.error('ChatWindowNew handleReaction error', err, { messageId, emoji });
-        toast.error('Failed to add reaction. Please try again.');
+        void toast.error('Failed to add reaction. Please try again.');
       });
       setShowReactions(null);
     } catch (error) {

@@ -34,11 +34,10 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-  MotionView,
-  Presence,
+  MotionView
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface MatchesViewProps {
   onNavigateToChat?: () => void;

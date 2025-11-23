@@ -110,7 +110,7 @@ export default function VoiceRecorder({
         });
       }, 1000);
     } catch {
-      toast.error('Unable to access microphone');
+      void toast.error('Unable to access microphone');
       onCancel();
     }
   };

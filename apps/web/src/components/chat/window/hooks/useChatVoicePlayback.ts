@@ -54,7 +54,7 @@ export function useChatVoicePlayback({
               new Error('FileReader returned empty result'),
               { messageId, duration }
             );
-            toast.error('Failed to process voice message. Please try again.');
+            void toast.error('Failed to process voice message. Please try again.');
             setIsRecording(false);
             return;
           }
@@ -80,14 +80,14 @@ export function useChatVoicePlayback({
           setMessages((current: ChatMessage[]) => [...(current ?? []), newMessage]);
           setIsRecording(false);
 
-          toast.success('Voice message sent!', {
-            duration: 1500,
-            position: 'top-center',
-          });
+          void toast.success('Voice message sent!', {
+                        duration: 1500,
+                        position: 'top-center',
+                      });
         } catch (error) {
           const err = normalizeError(error);
           logger.error('ChatWindowNew handleVoiceRecorded onloadend error', err, { messageId });
-          toast.error('Failed to process voice message. Please try again.');
+          void toast.error('Failed to process voice message. Please try again.');
           setIsRecording(false);
         }
       };
@@ -98,7 +98,7 @@ export function useChatVoicePlayback({
           new Error('FileReader failed'),
           { messageId }
         );
-        toast.error('Failed to read voice message. Please try again.');
+        void toast.error('Failed to read voice message. Please try again.');
         setIsRecording(false);
       };
 
@@ -106,17 +106,17 @@ export function useChatVoicePlayback({
     } catch (error) {
       const err = normalizeError(error);
       logger.error('ChatWindowNew handleVoiceRecorded error', err, { duration });
-      toast.error('Failed to record voice message. Please try again.');
+      void toast.error('Failed to record voice message. Please try again.');
       setIsRecording(false);
     }
   };
 
   const handleVoiceCancel = () => {
     setIsRecording(false);
-    toast.info('Recording cancelled', {
-      duration: 1000,
-      position: 'top-center',
-    });
+    void toast.info('Recording cancelled', {
+            duration: 1000,
+            position: 'top-center',
+          });
   };
 
   const toggleVoicePlayback = (messageId: string) => {
@@ -148,14 +148,14 @@ export function useChatVoicePlayback({
       logger.error('ChatWindowNew audio playback error', new Error('Audio playback failed'), {
         messageId,
       });
-      toast.error('Failed to play voice message. Please try again.');
+      void toast.error('Failed to play voice message. Please try again.');
       setPlayingVoice(null);
       audioRef.current = null;
     };
     void audio.play().catch((error) => {
       const err = normalizeError(error);
       logger.error('ChatWindowNew audio.play() error', err, { messageId });
-      toast.error('Failed to play voice message. Please try again.');
+      void toast.error('Failed to play voice message. Please try again.');
       setPlayingVoice(null);
       audioRef.current = null;
     });

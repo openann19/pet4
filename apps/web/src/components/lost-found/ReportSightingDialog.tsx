@@ -66,17 +66,17 @@ export function ReportSightingDialog({
     if (!alert) return;
 
     if (!sightingDate || !sightingTime || !description) {
-      toast.error('Please fill in all required fields');
+      void toast.error('Please fill in all required fields');
       return;
     }
 
     if (!selectedLocation) {
-      toast.error('Please select a location on the map');
+      void toast.error('Please select a location on the map');
       return;
     }
 
     if (!contactInfo) {
-      toast.error('Please provide contact information');
+      void toast.error('Please provide contact information');
       return;
     }
 
@@ -85,7 +85,7 @@ export function ReportSightingDialog({
 
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
       const whenISO = new Date(`${sightingDate}T${sightingTime}`).toISOString();
@@ -100,11 +100,11 @@ export function ReportSightingDialog({
         photos,
         contactMask: maskContactInfo(contactInfo),
         reporterId: user.id,
-        reporterName: user.login || 'Anonymous',
+        reporterName: user.login ?? 'Anonymous',
         reporterAvatar: user.avatarUrl ?? undefined,
       });
 
-      toast.success('Sighting reported! The owner will be notified.');
+      void toast.success('Sighting reported! The owner will be notified.');
       onSuccess();
       onClose();
 
@@ -123,7 +123,7 @@ export function ReportSightingDialog({
         'Failed to report sighting',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error(errorMessage);
+      void toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -147,7 +147,7 @@ export function ReportSightingDialog({
             <div className="p-4 bg-muted rounded-lg">
               <h3 className="font-semibold mb-2">Lost Pet: {alert.petSummary.name}</h3>
               <p className="text-sm text-muted-foreground">
-                {alert.petSummary.species} • {alert.petSummary.breed || 'Unknown breed'}
+                {alert.petSummary.species} • {alert.petSummary.breed ?? 'Unknown breed'}
               </p>
             </div>
 
@@ -253,7 +253,7 @@ export function ReportSightingDialog({
             <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Button onClick={() => void handleSubmit()} disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Sighting Report'}
             </Button>
           </div>

@@ -104,7 +104,7 @@ export default function MapSettingsView() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load map config', err);
-      toast.error('Failed to load map configuration');
+      void toast.error('Failed to load map configuration');
     } finally {
       setLoading(false);
     }
@@ -117,7 +117,7 @@ export default function MapSettingsView() {
   // Save config to backend
   const saveConfig = useCallback(async () => {
     if (!currentUser) {
-      toast.error('User not authenticated');
+      void toast.error('User not authenticated');
       return;
     }
 
@@ -135,11 +135,11 @@ export default function MapSettingsView() {
         },
       };
       await updateMapConfig(config, currentUser.id || 'admin');
-      toast.success('Map configuration saved successfully');
+      void toast.success('Map configuration saved successfully');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save map config', err);
-      toast.error('Failed to save map configuration');
+      void toast.error('Failed to save map configuration');
     } finally {
       setSaving(false);
     }
@@ -163,7 +163,7 @@ export default function MapSettingsView() {
 
   const handleAddCategory = (): void => {
     if (!newCategory.id || !newCategory.name || !newCategory.icon || !newCategory.color) {
-      toast.error('Please fill in all category fields');
+      void toast.error('Please fill in all category fields');
       return;
     }
 
@@ -178,9 +178,9 @@ export default function MapSettingsView() {
     void saveConfig().catch((error) => {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save category', err);
-      toast.error('Failed to save category');
+      void toast.error('Failed to save category');
     });
-    toast.success('Category added successfully');
+    void toast.success('Category added successfully');
   };
 
   const handleDeleteCategory = (categoryId: string): void => {
@@ -192,9 +192,9 @@ export default function MapSettingsView() {
     void saveConfig().catch((error) => {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save after deleting category', err, { categoryId });
-      toast.error('Failed to delete category');
+      void toast.error('Failed to delete category');
     });
-    toast.success('Category deleted');
+    void toast.success('Category deleted');
   };
 
   const handleUpdateCategory = (updatedCategory: PlaceCategory): void => {
@@ -209,9 +209,9 @@ export default function MapSettingsView() {
     void saveConfig().catch((error) => {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save after updating category', err, { categoryId: updatedCategory.id });
-      toast.error('Failed to update category');
+      void toast.error('Failed to update category');
     });
-    toast.success('Category updated');
+    void toast.success('Category updated');
   };
 
   const handleResetToDefaults = (): void => {
@@ -221,14 +221,14 @@ export default function MapSettingsView() {
     void saveConfig().catch((error) => {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save after reset', err);
-      toast.error('Failed to reset settings');
+      void toast.error('Failed to reset settings');
     });
-    toast.success('Settings reset to defaults');
+    void toast.success('Settings reset to defaults');
   };
 
   const handleBroadcastSettings = async (): Promise<void> => {
     if (!currentUser) {
-      toast.error('User not authenticated');
+      void toast.error('User not authenticated');
       return;
     }
 
@@ -250,7 +250,7 @@ export default function MapSettingsView() {
         currentUser.id || 'admin'
       );
 
-      toast.success('Map settings saved and broadcasted successfully');
+      void toast.success('Map settings saved and broadcasted successfully');
 
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
@@ -261,7 +261,7 @@ export default function MapSettingsView() {
       });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      toast.error('Failed to broadcast map settings');
+      void toast.error('Failed to broadcast map settings');
       logger.error('Broadcast error', err, { configType: 'map' });
     } finally {
       setBroadcasting(false);

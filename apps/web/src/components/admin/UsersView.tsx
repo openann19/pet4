@@ -112,7 +112,7 @@ export default function UsersView() {
     );
     setUsers(updatedUsers);
     setDialogOpen(false);
-    toast.success('User suspended');
+    void toast.success('User suspended');
 
     const auditEntry = {
       adminId: 'admin-current',
@@ -131,7 +131,7 @@ export default function UsersView() {
     );
     setUsers(updatedUsers);
     setDialogOpen(false);
-    toast.success('User banned permanently');
+    void toast.success('User banned permanently');
 
     const auditEntry = {
       adminId: 'admin-current',
@@ -150,7 +150,7 @@ export default function UsersView() {
     );
     setUsers(updatedUsers);
     setDialogOpen(false);
-    toast.success('User reactivated');
+    void toast.success('User reactivated');
 
     const auditEntry = {
       adminId: 'admin-current',
@@ -174,7 +174,7 @@ export default function UsersView() {
       });
 
       if (result.success) {
-        toast.success(result.message || 'Password reset successful');
+        void toast.success(result.message || 'Password reset successful');
 
         const auditEntry = {
           adminId: 'admin-current',
@@ -191,7 +191,7 @@ export default function UsersView() {
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      toast.error('Failed to reset password: ' + err.message);
+      void toast.error('Failed to reset password: ' + err.message);
     } finally {
       setResettingPassword(false);
     }
@@ -407,7 +407,7 @@ export default function UsersView() {
                     void handleSuspendUser(selectedUser.id).catch((error) => {
                       const err = error instanceof Error ? error : new Error(String(error));
                       logger.error('Failed to suspend user', err, { userId: selectedUser.id });
-                      toast.error('Failed to suspend user: ' + err.message);
+                      void toast.error('Failed to suspend user: ' + err.message);
                     });
                   }}
                 >
@@ -421,7 +421,7 @@ export default function UsersView() {
                     void handleBanUser(selectedUser.id).catch((error) => {
                       const err = error instanceof Error ? error : new Error(String(error));
                       logger.error('Failed to ban user', err, { userId: selectedUser.id });
-                      toast.error('Failed to ban user: ' + err.message);
+                      void toast.error('Failed to ban user: ' + err.message);
                     });
                   }}
                 >
@@ -438,7 +438,7 @@ export default function UsersView() {
                   void handleReactivateUser(selectedUser.id).catch((error) => {
                     const err = error instanceof Error ? error : new Error(String(error));
                     logger.error('Failed to reactivate user', err, { userId: selectedUser.id });
-                    toast.error('Failed to reactivate user: ' + err.message);
+                    void toast.error('Failed to reactivate user: ' + err.message);
                   });
                 }}
               >
@@ -527,7 +527,7 @@ export default function UsersView() {
                     userId: selectedUser?.id,
                     mode: resetPasswordMode,
                   });
-                  toast.error('Failed to reset password: ' + err.message);
+                  void toast.error('Failed to reset password: ' + err.message);
                 });
               }}
               disabled={

@@ -14,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { PlaydateScheduler } from '@/components/playdates/PlaydateScheduler';
 import { PlaydateMap } from '@/components/playdates/PlaydateMap';
-import { PlaydateCard } from '@/components/playdates/PlaydateCard';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { playdatesClient } from '@petspark/core';
 import type { Playdate, PlaydateLocation } from '@petspark/core';
@@ -62,7 +61,7 @@ export function PlaydatesView(): React.JSX.Element {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load playdates', err);
-      toast.error('Failed to load playdates');
+      void toast.error('Failed to load playdates');
     } finally {
       setIsLoading(false);
     }
@@ -87,11 +86,11 @@ export function PlaydatesView(): React.JSX.Element {
         });
         setPlaydates((prev) => [newPlaydate, ...prev]);
         setShowScheduler(false);
-        toast.success('Playdate scheduled!');
+        void toast.success('Playdate scheduled!');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to schedule playdate', err);
-        toast.error('Failed to schedule playdate');
+        void toast.error('Failed to schedule playdate');
       }
     },
     []
@@ -102,11 +101,11 @@ export function PlaydatesView(): React.JSX.Element {
       try {
         const updated = await playdatesClient.joinPlaydate(playdateId);
         setPlaydates((prev) => prev.map((p) => (p.id === playdateId ? updated : p)));
-        toast.success('Joined playdate!');
+        void toast.success('Joined playdate!');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to join playdate', err);
-        toast.error('Failed to join playdate');
+        void toast.error('Failed to join playdate');
       }
     },
     []
@@ -116,11 +115,11 @@ export function PlaydatesView(): React.JSX.Element {
     async (playdateId: string) => {
       try {
         await playdatesClient.checkIn(playdateId);
-        toast.success('Checked in!');
+        void toast.success('Checked in!');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to check in', err);
-        toast.error('Failed to check in');
+        void toast.error('Failed to check in');
       }
     },
     []
@@ -131,16 +130,16 @@ export function PlaydatesView(): React.JSX.Element {
   );
   const nearbyPlaydates = currentLocation
     ? upcomingPlaydates
-        .map((p) => ({
-          playdate: p,
-          distance: Math.sqrt(
-            Math.pow(p.location.latitude - currentLocation.latitude, 2) +
-              Math.pow(p.location.longitude - currentLocation.longitude, 2)
-          ),
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, 10)
-        .map((item) => item.playdate)
+      .map((p) => ({
+        playdate: p,
+        distance: Math.sqrt(
+          Math.pow(p.location.latitude - currentLocation.latitude, 2) +
+          Math.pow(p.location.longitude - currentLocation.longitude, 2)
+        ),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10)
+      .map((item) => item.playdate)
     : upcomingPlaydates;
 
   return (
@@ -179,11 +178,11 @@ export function PlaydatesView(): React.JSX.Element {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {upcomingPlaydates.map((playdate) => (
-                  <PlaydateCard
+                  <PlaydateListItem
                     key={playdate.id}
                     playdate={playdate}
                     onJoin={() => handleJoin(playdate.id)}
-                    onCheckIn={() => handleCheckIn(playdate.id)}
+                    onCheckIn={() => void handleCheckIn(playdate.id)}
                     isParticipant={playdate.participants.some((p) => p.id === 'current-user-id')}
                   />
                 ))}
@@ -217,4 +216,3 @@ export function PlaydatesView(): React.JSX.Element {
     </PageTransitionWrapper>
   );
 }
-

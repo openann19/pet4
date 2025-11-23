@@ -99,7 +99,7 @@ export function AdoptionListingDetailDialog({
 
   const handleApply = async (): Promise<void> => {
     if (!applicationData.message || !applicationData.homeCheckConsent) {
-      toast.error('Please fill in all required fields');
+      void toast.error('Please fill in all required fields');
       haptics.trigger('error');
       return;
     }
@@ -112,7 +112,7 @@ export function AdoptionListingDetailDialog({
       const user = await userService.user();
 
       if (!user) {
-        toast.error('Authentication required');
+        void toast.error('Authentication required');
         haptics.trigger('error');
         setIsSubmitting(false);
         return;
@@ -142,9 +142,9 @@ export function AdoptionListingDetailDialog({
       });
 
       haptics.trigger('success');
-      toast.success('Application submitted successfully!', {
-        description: 'The owner will review your application and contact you.',
-      });
+      void toast.success('Application submitted successfully!', {
+                description: 'The owner will review your application and contact you.',
+              });
 
       setShowApplicationForm(false);
       setApplicationData({
@@ -172,7 +172,7 @@ export function AdoptionListingDetailDialog({
         error instanceof Error ? error : new Error(String(error))
       );
       haptics.trigger('error');
-      toast.error(errorMessage ?? 'Failed to submit application. Please try again.');
+      void toast.error(errorMessage ?? 'Failed to submit application. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

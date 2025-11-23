@@ -184,7 +184,7 @@ export function ContentModerationQueue() {
         'Failed to load moderation queue',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to load moderation queue');
+      void toast.error('Failed to load moderation queue');
     } finally {
       setLoading(false);
     }
@@ -231,7 +231,7 @@ export function ContentModerationQueue() {
         // NOTE: Review status tracking should be added for live streams
       }
 
-      toast.success('Content approved');
+      void toast.success('Content approved');
       await loadQueue();
       setSelectedItem(null);
       setDecisionText('');
@@ -240,7 +240,7 @@ export function ContentModerationQueue() {
         'Failed to approve content',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to approve content');
+      void toast.error('Failed to approve content');
     } finally {
       setLoading(false);
     }
@@ -273,10 +273,10 @@ export function ContentModerationQueue() {
       } else if (selectedItem.type === 'live-stream') {
         // For live streams, we can't really reject them while they're live
         // But we can note this for review
-        toast.info('Live stream rejection noted for review');
+        void toast.info('Live stream rejection noted for review');
       }
 
-      toast.success('Content rejected');
+      void toast.success('Content rejected');
       await loadQueue();
       setSelectedItem(null);
       setDecisionText('');
@@ -286,7 +286,7 @@ export function ContentModerationQueue() {
         'Failed to reject content',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to reject content');
+      void toast.error('Failed to reject content');
     } finally {
       setLoading(false);
     }

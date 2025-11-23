@@ -72,14 +72,14 @@ export function useMedia(options: UseMediaOptions): UseMediaReturn {
               address: 'Current Location',
             },
           });
-          toast.success('Location shared!');
+          void toast.success('Location shared!');
         },
         () => {
-          toast.error('Unable to access location');
+          void toast.error('Unable to access location');
         }
       );
     } else {
-      toast.error('Geolocation not supported');
+      void toast.error('Geolocation not supported');
     }
   }, [onSendMessage]);
 
@@ -104,7 +104,7 @@ export function useMedia(options: UseMediaOptions): UseMediaReturn {
             },
           },
         });
-        toast.success('Message translated!');
+        void toast.success('Message translated!');
       } catch (error) {
         const { parseLLMError } = await import('@/lib/llm-utils');
         const errorInfo = parseLLMError(error);
@@ -113,10 +113,10 @@ export function useMedia(options: UseMediaOptions): UseMediaReturn {
           error instanceof Error ? error : new Error(String(error)),
           { technicalMessage: errorInfo.technicalMessage }
         );
-        toast.error('Translation failed', {
-          description: errorInfo.userMessage,
-          duration: 5000,
-        });
+        void toast.error('Translation failed', {
+                    description: errorInfo.userMessage,
+                    duration: 5000,
+                  });
       }
     },
     [messages, updateMessage]

@@ -240,12 +240,12 @@ export default function AdvancedChatWindow({
 
       if (confirmed) {
         await blockService.blockUser(currentUserId, otherUserId, 'harassment');
-        toast.success('User blocked successfully');
+        void toast.success('User blocked successfully');
         // Close chat or navigate away
         onBack?.();
       }
     } catch (error) {
-      toast.error('Failed to block user');
+      void toast.error('Failed to block user');
       logger.error('Failed to block user', error);
     }
   }, [room, currentUserId, onBack]);

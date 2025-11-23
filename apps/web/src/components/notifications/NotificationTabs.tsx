@@ -65,7 +65,10 @@ function useLocalStorage<T>(key: string, initial: T) {
     if (!isBrowser) return;
     try {
       window.localStorage.setItem(key, JSON.stringify(val));
-    } catch {}
+    } catch (error) {
+      // Storage access failed - ignore silently
+      void error;
+    }
   }, [key, val]);
   return [val, setVal] as const;
 }
@@ -417,7 +420,7 @@ export function NotificationTabs({
             aria-hidden
             className={cx(
               'absolute bottom-0 h-1 rounded-full w-0 translate-x-0',
-              reducedMotion ? 'transition-none' : 'transition-transform duration-200',                                                                          
+              reducedMotion ? 'transition-none' : 'transition-transform duration-200',
               'bg-[--tabs-indicator,var(--color-blue-500)]'
             )}
           />

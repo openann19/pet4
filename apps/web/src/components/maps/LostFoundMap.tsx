@@ -94,14 +94,14 @@ export default function LostFoundMap({
     setSelectedAlert(marker.data as LostPetAlert);
   };
 
-  const handleReportSighting = async (): Promise<void> => {
+  const handleReportSighting = (): void => {
     if (!selectedAlert || !userLocation || !onReportSighting) return;
 
     haptics.trigger('success');
     onReportSighting(selectedAlert.id, userLocation);
-    toast.success(
-      (t.lostFound as { sightingReported?: string })?.sightingReported ?? 'Sighting reported'
-    );
+    void toast.success(
+            (t.lostFound as { sightingReported?: string })?.sightingReported ?? 'Sighting reported'
+          );
   };
 
   const mapCenter = useMemo((): Location => {
@@ -203,9 +203,9 @@ export default function LostFoundMap({
                 </div>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setSelectedAlert(null)}
               aria-label="Close alert"
             >

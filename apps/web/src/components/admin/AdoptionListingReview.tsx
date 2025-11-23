@@ -99,7 +99,7 @@ export function AdoptionListingReview() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load pending listings', err, { action: 'loadPendingListings' });
-      toast.error('Failed to load listings');
+      void toast.error('Failed to load listings');
     }
   }, []);
 
@@ -116,13 +116,13 @@ export function AdoptionListingReview() {
           throw new Error('User context unavailable');
         }
         await adoptionMarketplaceService.updateListingStatus(listingId, 'active', user.id);
-        toast.success('Listing approved');
+        void toast.success('Listing approved');
         await loadPendingListings();
         setSelectedListing(null);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to approve listing', err, { listingId, action: 'approve' });
-        toast.error('Failed to approve listing');
+        void toast.error('Failed to approve listing');
       } finally {
         setIsProcessing(false);
       }
@@ -133,7 +133,7 @@ export function AdoptionListingReview() {
   const handleReject = useCallback(
     async (listingId: string) => {
       if (!rejectionReason.trim()) {
-        toast.error('Please provide a rejection reason');
+        void toast.error('Please provide a rejection reason');
         return;
       }
 
@@ -149,7 +149,7 @@ export function AdoptionListingReview() {
           user.id,
           rejectionReason
         );
-        toast.success('Listing rejected');
+        void toast.success('Listing rejected');
         await loadPendingListings();
         setSelectedListing(null);
         setRejectionReason('');
@@ -160,7 +160,7 @@ export function AdoptionListingReview() {
           action: 'reject',
           hasReason: !!rejectionReason.trim(),
         });
-        toast.error('Failed to reject listing');
+        void toast.error('Failed to reject listing');
       } finally {
         setIsProcessing(false);
       }

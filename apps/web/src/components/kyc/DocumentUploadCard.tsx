@@ -34,8 +34,8 @@ export function DocumentUploadCard({
   acceptedTypes = ['image/jpeg', 'image/png', 'application/pdf'],
   className,
 }: DocumentUploadCardProps): React.JSX.Element {
-  const [uploading, setUploading] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [_uploading, _setUploading] = useState<string | null>(null);
+  const [_uploadProgress, _setUploadProgress] = useState<Record<string, number>>({});
 
   const handleFileSelect = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,8 +102,8 @@ export function DocumentUploadCard({
               <p className={cn(getTypographyClasses('caption'), 'text-muted-foreground')}>
                 {formatFileSize(file.size)}
               </p>
-              {uploadProgress[file.name] !== undefined && (
-                <Progress value={uploadProgress[file.name]} className="mt-2" />
+              {_uploadProgress[file.name] !== undefined && (
+                <Progress value={_uploadProgress[file.name]} className="mt-2" />
               )}
             </div>
             <Button
@@ -153,4 +153,3 @@ export function DocumentUploadCard({
     </PremiumCard>
   );
 }
-

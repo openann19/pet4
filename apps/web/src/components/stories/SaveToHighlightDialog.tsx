@@ -49,7 +49,7 @@ export default function SaveToHighlightDialog({
 
   const handleSelectHighlight = (highlightId: string) => {
     if (storyAlreadyInHighlight(highlightId)) {
-      toast.error('Story already in this highlight');
+      void toast.error('Story already in this highlight');
       return;
     }
     haptics.trigger('selection');
@@ -73,10 +73,10 @@ export default function SaveToHighlightDialog({
       )
     );
 
-    toast.success('Story saved to highlight!', {
-      duration: 2000,
-      description: 'You can view it anytime in your highlights',
-    });
+    void toast.success('Story saved to highlight!', {
+            duration: 2000,
+            description: 'You can view it anytime in your highlights',
+          });
 
     onSaved?.();
     onOpenChange(false);
@@ -85,7 +85,7 @@ export default function SaveToHighlightDialog({
 
   const handleCreateNew = () => {
     if (!newHighlightTitle.trim()) {
-      toast.error('Please enter a highlight title');
+      void toast.error('Please enter a highlight title');
       return;
     }
 
@@ -102,10 +102,10 @@ export default function SaveToHighlightDialog({
 
     setHighlights((current) => [...(current ?? []), newHighlight]);
 
-    toast.success('Highlight created!', {
-      duration: 2000,
-      description: `"${newHighlightTitle}" has been created with this story`,
-    });
+    void toast.success('Highlight created!', {
+            duration: 2000,
+            description: `"${newHighlightTitle}" has been created with this story`,
+          });
 
     onSaved?.();
     onOpenChange(false);

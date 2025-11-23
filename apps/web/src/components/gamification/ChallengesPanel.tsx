@@ -10,8 +10,8 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Target, Clock, Gift } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Challenge, ChallengeProgress } from '@petspark/core/gamification/types';
-import { gamificationClient } from '@petspark/core/gamification/gamification-client';
+import type { Challenge, ChallengeProgress } from '@petspark/core';
+import { gamificationClient } from '@petspark/core';
 
 interface ChallengesPanelProps {
   userId: string;
@@ -142,4 +142,3 @@ function ChallengeCard({ challenge, userId }: ChallengeCardProps) {
     </MotionView>
   );
 }
-

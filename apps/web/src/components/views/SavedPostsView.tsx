@@ -11,7 +11,7 @@ import { communityService } from '@/lib/community-service';
 import type { Post } from '@/lib/community-types';
 import { createLogger } from '@/lib/logger';
 import { ArrowLeft, BookmarkSimple } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -38,46 +38,7 @@ function _EmptyStateView() {
   );
 }
 
-function PostItemView({
-  post,
-  index,
-  onPostClick,
-  onAuthorClick
-}: {
-  post: Post
-  index: number
-  onPostClick: (postId: string) => void
-  onAuthorClick?: (authorId: string) => void
-}) {
-  const entry = useEntryAnimation({
-    initialY: 20,
-    initialOpacity: 0,
-    delay: index * 50
-  })
-
-  return (
-    <MotionView style={entry.animatedStyle}>
-      <div
-        onClick={() => { onPostClick(post.id); }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onPostClick(post.id);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded"
-        aria-label={`View post: ${post.text?.substring(0, 50) ?? 'Untitled post'}`}
-      >
-        <PostCard
-          post={post}
-          {...(onAuthorClick ? { onAuthorClick } : {})}
-        />
-      </div>
-    </MotionView>
-  );
-}
+// PostItemView function removed - was unused and causing ESLint errors
 
 interface SavedPostsViewProps {
   onBack?: () => void;
@@ -98,7 +59,7 @@ function SavedPostsViewContent({ onBack, onAuthorClick }: SavedPostsViewProps) {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load saved posts', err);
-      toast.error('Failed to load saved posts');
+      void toast.error('Failed to load saved posts');
     } finally {
       setLoading(false);
     }

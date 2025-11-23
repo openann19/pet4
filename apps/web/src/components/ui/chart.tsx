@@ -116,7 +116,7 @@ function ChartTooltipContent({
   payload?: Array<{
     dataKey?: string;
     name?: string;
-    value?: any;
+    value?: number | string | null;
     color?: string;
     payload?: any;
   }>;

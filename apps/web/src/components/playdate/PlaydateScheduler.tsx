@@ -121,7 +121,7 @@ export default function PlaydateScheduler({
 
   const handleCreatePlaydate = useCallback(() => {
     if (!selectedLocation) {
-      toast.error('Please select a location');
+      void toast.error('Please select a location');
       return;
     }
 
@@ -148,7 +148,7 @@ export default function PlaydateScheduler({
 
     setPlaydates((current: Playdate[] | undefined) => [...(current ?? []), newPlaydate]);
     haptics.success();
-    toast.success('Playdate scheduled!', {
+    void toast.success('Playdate scheduled!', {
       description: `Invitation sent for ${format(new Date(playdateDate), 'MMM dd, yyyy')}`,
     });
     setShowCreateForm(false);
@@ -170,7 +170,7 @@ export default function PlaydateScheduler({
 
   const handleShareLocation = useCallback((playdate: Playdate) => {
     if (!playdate.location.lat || !playdate.location.lng) {
-      toast.error('Location coordinates not available');
+      void toast.error('Location coordinates not available');
       return;
     }
 
@@ -185,7 +185,7 @@ export default function PlaydateScheduler({
             url: mapsUrl,
           })
           .then(() => {
-            toast.success('Location shared!');
+            void toast.success('Location shared!');
             haptics.success();
           })
           .catch((error) => {
@@ -195,14 +195,14 @@ export default function PlaydateScheduler({
               logger.error('PlaydateScheduler shareLocation error', err, {
                 playdateId: playdate.id,
               });
-              toast.error('Failed to share location. Please try again.');
+              void toast.error('Failed to share location. Please try again.');
             }
           });
       } else {
         navigator.clipboard
           .writeText(mapsUrl)
           .then(() => {
-            toast.success('Location link copied to clipboard!');
+            void toast.success('Location link copied to clipboard!');
             haptics.success();
           })
           .catch((error) => {
@@ -210,7 +210,7 @@ export default function PlaydateScheduler({
             logger.error('PlaydateScheduler copyToClipboard error', err, {
               playdateId: playdate.id,
             });
-            toast.error('Failed to copy location link. Please try again.');
+            void toast.error('Failed to copy location link. Please try again.');
           });
       }
     } catch (error) {
@@ -218,13 +218,13 @@ export default function PlaydateScheduler({
       logger.error('PlaydateScheduler shareLocation sync error', err, {
         playdateId: playdate.id,
       });
-      toast.error('Failed to share location. Please try again.');
+      void toast.error('Failed to share location. Please try again.');
     }
   }, []);
 
   const handleGetDirections = useCallback((playdate: Playdate) => {
     if (!playdate.location.lat || !playdate.location.lng) {
-      toast.info('Opening location in maps...');
+      void toast.info('Opening location in maps...');
       const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
         playdate.location.address
       )}`;
@@ -247,7 +247,7 @@ export default function PlaydateScheduler({
         )
       );
       haptics.success();
-      toast.success('Playdate confirmed!', { description: 'Both parties have confirmed' });
+      void toast.success('Playdate confirmed!', { description: 'Both parties have confirmed' });
     },
     [setPlaydates]
   );
@@ -262,7 +262,7 @@ export default function PlaydateScheduler({
         )
       );
       haptics.light();
-      toast.info('Playdate cancelled', { description: 'The other party has been notified' });
+      void toast.info('Playdate cancelled', { description: 'The other party has been notified' });
     },
     [setPlaydates]
   );

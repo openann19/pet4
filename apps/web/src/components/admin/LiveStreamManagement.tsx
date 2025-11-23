@@ -62,7 +62,7 @@ export function LiveStreamManagement() {
         'Failed to load streams',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to load streams');
+      void toast.error('Failed to load streams');
     }
   }, []);
 
@@ -78,7 +78,7 @@ export function LiveStreamManagement() {
     async (streamId: string) => {
       try {
         await streamingService.endStream(streamId);
-        toast.success('Stream ended');
+        void toast.success('Stream ended');
         await loadStreams();
         setSelectedStream(null);
       } catch (error) {
@@ -86,7 +86,7 @@ export function LiveStreamManagement() {
           'Failed to end stream',
           error instanceof Error ? error : new Error(String(error))
         );
-        toast.error('Failed to end stream');
+        void toast.error('Failed to end stream');
       }
     },
     [loadStreams]

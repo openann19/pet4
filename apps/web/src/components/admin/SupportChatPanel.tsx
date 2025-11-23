@@ -88,7 +88,7 @@ export default function SupportChatPanel() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load tickets', err);
-      toast.error('Failed to load support tickets');
+      void toast.error('Failed to load support tickets');
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,7 @@ export default function SupportChatPanel() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to send message', err);
-      toast.error('Failed to send message');
+      void toast.error('Failed to send message');
     } finally {
       setSendingMessage(false);
     }
@@ -167,7 +167,7 @@ export default function SupportChatPanel() {
       const updated = await supportApi.updateTicketStatus(selectedTicket.id, status);
       setSelectedTicket(updated);
       setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
-      toast.success(`Ticket ${status}`);
+      void toast.success(`Ticket ${status}`);
 
       await adminApi.createAuditLog({
         adminId: currentUser?.id ?? 'admin',
@@ -179,7 +179,7 @@ export default function SupportChatPanel() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to update status', err);
-      toast.error('Failed to update ticket status');
+      void toast.error('Failed to update ticket status');
     }
   };
 

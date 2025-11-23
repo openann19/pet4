@@ -118,12 +118,12 @@ export function usePullToRefresh(options: UsePullToRefreshOptions): UsePullToRef
       try {
         await onRefresh();
         haptics.success();
-        toast.success('Feed refreshed!');
+        void toast.success('Feed refreshed!');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to refresh feed', err);
         haptics.error();
-        toast.error('Failed to refresh');
+        void toast.error('Failed to refresh');
       } finally {
         setIsRefreshing(false);
       }

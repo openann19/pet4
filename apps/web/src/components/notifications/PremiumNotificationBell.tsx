@@ -93,7 +93,7 @@ export function PremiumNotificationBell(): JSX.Element {
       setIsOpen(true);
       setLastCheckTime(Date.now());
       setHasNewNotification(false);
-      logger.info('Notification bell clicked', { unreadCount, urgentCount });
+      void logger.info('Notification bell clicked', { unreadCount, urgentCount });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to handle notification bell click', err);

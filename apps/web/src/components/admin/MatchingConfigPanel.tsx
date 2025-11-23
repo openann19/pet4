@@ -57,7 +57,7 @@ export function MatchingConfigPanel() {
         setConfig(defaultConfig);
       }
     } catch (error) {
-      toast.error('Failed to load configuration');
+      void toast.error('Failed to load configuration');
       logger.error(
         'Failed to load configuration',
         error instanceof Error ? error : new Error(String(error))
@@ -85,9 +85,9 @@ export function MatchingConfigPanel() {
 
       const updatedConfig = await matchingAPI.updateConfig(updateData);
       setConfig(updatedConfig);
-      toast.success('Configuration saved successfully');
+      void toast.success('Configuration saved successfully');
     } catch (error) {
-      toast.error('Failed to save configuration');
+      void toast.error('Failed to save configuration');
       logger.error(
         'Failed to save configuration',
         error instanceof Error ? error : new Error(String(error))
@@ -120,7 +120,7 @@ export function MatchingConfigPanel() {
         currentUser.id || 'admin'
       );
 
-      toast.success('Configuration saved and broadcasted successfully');
+      void toast.success('Configuration saved and broadcasted successfully');
 
       // Log audit entry
       await adminApi.createAuditLog({
@@ -131,7 +131,7 @@ export function MatchingConfigPanel() {
         details: JSON.stringify({ configType: 'matching' }),
       });
     } catch (error) {
-      toast.error('Failed to save and broadcast configuration');
+      void toast.error('Failed to save and broadcast configuration');
       logger.error(
         'Failed to save and broadcast configuration',
         error instanceof Error ? error : new Error(String(error))
@@ -406,7 +406,7 @@ export function MatchingConfigPanel() {
             void handleSave().catch((error) => {
               const err = error instanceof Error ? error : new Error(String(error));
               logger.error('Failed to save config', err, { action: 'handleSave' });
-              toast.error('Failed to save configuration');
+              void toast.error('Failed to save configuration');
             });
           }}
           disabled={!isWeightValid || saving || broadcasting}
@@ -433,7 +433,7 @@ export function MatchingConfigPanel() {
               logger.error('Failed to save and broadcast config', err, {
                 action: 'handleSaveAndBroadcast',
               });
-              toast.error('Failed to save and broadcast configuration');
+              void toast.error('Failed to save and broadcast configuration');
             });
           }}
           disabled={!isWeightValid || saving || broadcasting}
@@ -458,7 +458,7 @@ export function MatchingConfigPanel() {
             void loadConfig().catch((error) => {
               const err = error instanceof Error ? error : new Error(String(error));
               logger.error('Failed to load config', err, { action: 'loadConfig' });
-              toast.error('Failed to load configuration');
+              void toast.error('Failed to load configuration');
             });
           }}
           disabled={saving || broadcasting}

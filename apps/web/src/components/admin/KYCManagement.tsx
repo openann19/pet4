@@ -52,7 +52,7 @@ export function KYCManagement() {
         )
       );
     } catch {
-      toast.error('Failed to load KYC sessions');
+      void toast.error('Failed to load KYC sessions');
     }
   };
 
@@ -162,11 +162,11 @@ export function KYCManagement() {
         decision: 'verified',
         actorUserId: user.id,
       });
-      toast.success('KYC session verified!');
+      void toast.success('KYC session verified!');
       await loadSessions();
       setSelectedSession(null);
     } catch {
-      toast.error('Failed to verify session');
+      void toast.error('Failed to verify session');
     } finally {
       setLoading(false);
     }
@@ -187,13 +187,13 @@ export function KYCManagement() {
         actorUserId: user.id,
         reason: rejectText,
       });
-      toast.success('KYC session rejected');
+      void toast.success('KYC session rejected');
       await loadSessions();
       setSelectedSession(null);
       setRejectText('');
       setRejectReason('blurry_document');
     } catch {
-      toast.error('Failed to reject session');
+      void toast.error('Failed to reject session');
     } finally {
       setLoading(false);
     }

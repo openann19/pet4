@@ -33,21 +33,18 @@ import {
 import {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
-  interpolate,
-  Extrapolation,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { OfflineIndicator } from '@/components/network/OfflineIndicator';
 import { useNetworkStatus } from '@/hooks/use-network-status';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useFeedManagement, useInfiniteScroll } from '@/components/community/features/feed';
 import { VirtualList, VirtualGrid } from '@/components/virtual';
@@ -534,12 +531,12 @@ function CommunityViewContent(): JSX.Element {
                       await feedManagement.refreshFeed();
                       await trendingTags.loadTrendingTags();
                       haptics.success();
-                      toast.success(t.community?.refreshed ?? 'Feed refreshed!');
+                      void toast.success(t.community?.refreshed ?? 'Feed refreshed!');
                     } catch (error) {
                       const err = error instanceof Error ? error : new Error(String(error));
                       logger.error('Failed to refresh feed', err);
                       haptics.error();
-                      toast.error(t.community?.refreshError ?? 'Failed to refresh');
+                      void toast.error(t.community?.refreshError ?? 'Failed to refresh');
                     }
                   }}
                   aria-label="Refresh feed"
@@ -763,7 +760,7 @@ function CommunityViewContent(): JSX.Element {
                       const { userService } = await import('@/lib/user-service');
                       const currentUser = await userService.user();
                       if (!currentUser) {
-                        toast.error('You must be logged in to report sightings');
+                        void toast.error('You must be logged in to report sightings');
                         return;
                       }
                       await lostFoundAPI.createSighting({
@@ -782,11 +779,11 @@ function CommunityViewContent(): JSX.Element {
                             : 'Anonymous',
                         ...(currentUser.avatarUrl && { reporterAvatar: currentUser.avatarUrl }),
                       });
-                      toast.success(t.lostFound?.sightingSubmitted ?? 'Sighting reported');
+                      void toast.success(t.lostFound?.sightingSubmitted ?? 'Sighting reported');
                     } catch (error) {
                       const err = error instanceof Error ? error : new Error(String(error));
                       logger.error('Failed to report sighting', err);
-                      toast.error('Failed to report sighting');
+                      void toast.error('Failed to report sighting');
                     }
                   })();
                 }}

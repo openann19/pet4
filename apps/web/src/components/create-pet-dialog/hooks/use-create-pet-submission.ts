@@ -16,7 +16,7 @@ export function useCreatePetSubmission(
     const { name, breed, age, photo, location } = formState;
 
     if (!name || !breed || !age || !photo || !location) {
-      toast.error('Please complete all required fields');
+      void toast.error('Please complete all required fields');
       return;
     }
 
@@ -48,15 +48,15 @@ export function useCreatePetSubmission(
         (current ?? []).map((p) => (p.id === editingPet.id ? petData : p))
       );
 
-      toast.success('Pet profile updated!', {
-        description: `${name}'s profile has been updated successfully.`,
-      });
+      void toast.success('Pet profile updated!', {
+                description: `${name}'s profile has been updated successfully.`,
+              });
     } else {
       void setUserPets((current) => [...(current ?? []), petData]);
       void setAllPets((current) => [...(current ?? []), petData]);
-      toast.success('Pet profile created! 🎉', {
-        description: `${name} is ready to find perfect companions!`,
-      });
+      void toast.success('Pet profile created! 🎉', {
+                description: `${name} is ready to find perfect companions!`,
+              });
     }
 
     onClose?.();

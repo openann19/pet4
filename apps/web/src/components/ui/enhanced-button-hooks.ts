@@ -8,7 +8,6 @@ import {
   withTiming,
   withRepeat,
   interpolate,
-  type Transition,
 } from '@petspark/motion';
 import { type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
@@ -32,12 +31,10 @@ export function useGlowAnimation(
       return { opacity: 0, backgroundColor: resolvedGlowColor };
     }
 
-    const opacity = interpolate(
-      glowProgress.get(),
-      [0, 0.5, 1],
-      [0.3, 0.6, 0.3],
-      { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-    );
+    const opacity = interpolate(glowProgress.get(), [0, 0.5, 1], [0.3, 0.6, 0.3], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
 
     return {
       opacity: glowOpacity.get() * opacity,
@@ -113,4 +110,3 @@ export function useResolvedGlowColor(
 
   return glowColor ?? glowColors[variant] ?? glowColors.default;
 }
-

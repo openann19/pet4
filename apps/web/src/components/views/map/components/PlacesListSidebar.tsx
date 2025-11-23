@@ -7,7 +7,7 @@ import { useApp } from '@/contexts/AppContext';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { formatDistance } from '@/lib/maps/utils';
 import { haptics } from '@/lib/haptics';
-import type { Place, MapMarker } from '@/lib/maps/types';
+import type { Place } from '@/lib/maps/types';
 
 export interface PlacesListSidebarProps {
   isVisible: boolean;

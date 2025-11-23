@@ -50,12 +50,12 @@ export default function ContentView() {
   };
 
   const handleApprovePet = () => {
-    toast.success('Pet profile approved');
+    void toast.success('Pet profile approved');
     setDialogOpen(false);
   };
 
   const handleRemovePet = () => {
-    toast.success('Pet profile removed');
+    void toast.success('Pet profile removed');
     setDialogOpen(false);
   };
 

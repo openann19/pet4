@@ -105,7 +105,7 @@ export default function CommunityManagement() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load posts', err, { action: 'loadPosts' });
-      toast.error('Failed to load posts');
+      void toast.error('Failed to load posts');
     } finally {
       setIsLoading(false);
     }
@@ -159,9 +159,9 @@ export default function CommunityManagement() {
       }).catch((error) => {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to hide post', err, { postId });
-        toast.error('Failed to hide post');
+        void toast.error('Failed to hide post');
       });
-      toast.success('Post hidden from feed');
+      void toast.success('Post hidden from feed');
     },
     [setHiddenPosts]
   );
@@ -171,9 +171,9 @@ export default function CommunityManagement() {
       void setHiddenPosts((prev) => (prev ?? []).filter((id) => id !== postId)).catch((error) => {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to unhide post', err, { postId });
-        toast.error('Failed to restore post');
+        void toast.error('Failed to restore post');
       });
-      toast.success('Post restored to feed');
+      void toast.success('Post restored to feed');
     },
     [setHiddenPosts]
   );
@@ -185,20 +185,20 @@ export default function CommunityManagement() {
 
     const postId = selectedPost._id ?? selectedPost.id;
     if (!postId) {
-      toast.error('Invalid post ID');
+      void toast.error('Invalid post ID');
       return;
     }
 
     try {
       await communityService.deletePost(postId);
-      toast.success('Post deleted successfully');
+      void toast.success('Post deleted successfully');
       setShowDeleteDialog(false);
       setSelectedPost(null);
       await loadPosts();
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to delete post', err, { postId, action: 'deletePost' });
-      toast.error('Failed to delete post');
+      void toast.error('Failed to delete post');
     }
   }, [selectedPost, loadPosts]);
 

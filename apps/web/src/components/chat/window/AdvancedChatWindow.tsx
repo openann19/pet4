@@ -214,7 +214,7 @@ export default function AdvancedChatWindow({
           onToggleAwayMode={() => void setAwayMode(!awayMode)}
           onBlockUser={() => {
             // TODO: Implement block user functionality
-            toast.info('Block user functionality not yet implemented');
+            void toast.info('Block user functionality not yet implemented');
           }}
         />
       </ChatErrorBoundary>

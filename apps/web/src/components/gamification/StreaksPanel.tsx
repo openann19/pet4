@@ -10,9 +10,8 @@ import { useState, useEffect } from 'react';
 import { MotionView } from '@petspark/motion';
 import { Flame, TrendingUp } from 'lucide-react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import type { Streak } from '@petspark/core/gamification/types';
-import { gamificationClient } from '@petspark/core/gamification/gamification-client';
-import { getStreakEmoji } from '@petspark/core/gamification/streaks';
+import type { Streak } from '@petspark/core';
+import { gamificationClient, getStreakEmoji } from '@petspark/core';
 
 interface StreaksPanelProps {
   userId: string;
@@ -87,7 +86,7 @@ function StreakCard({ streak }: StreakCardProps) {
     playdates: 'Playdates Streak',
     profile_updates: 'Profile Updates Streak',
   };
-  
+
   const streakType = streak.type;
 
   return (
@@ -121,4 +120,3 @@ function StreakCard({ streak }: StreakCardProps) {
     </MotionView>
   );
 }
-

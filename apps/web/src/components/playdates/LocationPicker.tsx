@@ -111,7 +111,7 @@ export function LocationPicker({
         />
         <Button
           type="button"
-          onClick={handleSearch}
+          onClick={() => void handleSearch()}
           disabled={isSearching || !searchQuery.trim()}
           size="icon"
         >
@@ -159,4 +159,3 @@ export function LocationPicker({
     </div>
   );
 }
-

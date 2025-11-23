@@ -40,15 +40,15 @@ export function useChatInput({ sendChatMessage, handleTypingMessageSend }: UseCh
       handleTypingMessageSend();
 
       if (type === 'text') {
-        toast.success('Message sent!', {
-          duration: 1500,
-          position: 'top-center',
-        });
+        void toast.success('Message sent!', {
+                    duration: 1500,
+                    position: 'top-center',
+                  });
       }
     } catch (error) {
       const err = normalizeError(error);
       logger.error('ChatWindowNew handleSendMessage error', err, { content, type });
-      toast.error('Failed to send message. Please try again.');
+      void toast.error('Failed to send message. Please try again.');
     }
   };
 

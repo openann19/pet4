@@ -61,7 +61,7 @@ export function useSignUpFormHandlers({
     if (!ageVerified) {
       setShowAgeGate(true);
     } else {
-      toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
+      void toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
       onSuccess();
     }
   };

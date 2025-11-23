@@ -103,7 +103,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
               logger.error('Failed to save match', err, { petId: currentPet.id });
             });
             onMatch(match);
-            toast.success("It's a Match!");
+            void toast.success("It's a Match!");
           }
         }
 
@@ -112,7 +112,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Swipe failed', err, { petId: currentPet.id, action });
-        toast.error('Failed to process swipe. Please try again.');
+        void toast.error('Failed to process swipe. Please try again.');
       }
     },
     [

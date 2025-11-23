@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { Plus, MapPin } from '@phosphor-icons/react';
-import { MotionView } from '@petspark/motion';
+// import { MotionView } from '@petspark/motion'; // Unused
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import type { LostAlert } from '@/lib/lost-found-types';
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
@@ -44,7 +44,7 @@ export default function LostFoundView() {
   }, [loadAlerts, getUserLocation]);
 
   const handleToggleFavorite = (alertId: string) => {
-    setFavorites((currentFavorites) => {
+    void setFavorites((currentFavorites) => {
       const current = Array.isArray(currentFavorites) ? currentFavorites : [];
       if (current.includes(alertId)) {
         return current.filter((id) => id !== alertId);
@@ -161,8 +161,8 @@ export default function LostFoundView() {
           open={showCreateDialog}
           onClose={() => setShowCreateDialog(false)}
           onSuccess={() => {
-            loadAlerts();
-            toast.success('Lost pet alert created successfully!');
+            void loadAlerts();
+            void toast.success('Lost pet alert created successfully!');
           }}
         />
 
@@ -174,7 +174,7 @@ export default function LostFoundView() {
             setSelectedAlert(null);
           }}
           onSuccess={() => {
-            loadAlerts();
+            void loadAlerts();
           }}
         />
       </div>

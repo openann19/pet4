@@ -25,7 +25,6 @@ export interface MessageBubbleProps {
 
 export interface ReactionOption {
   type: ReactionType;
-  icon: typeof import('@phosphor-icons/react').Heart;
+  icon: React.ComponentType;
   label: string;
 }
-

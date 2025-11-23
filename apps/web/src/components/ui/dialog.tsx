@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type ComponentProps } from 'react';
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import {
@@ -120,26 +120,26 @@ function DialogContent({
           {...props}
         >
           {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            className={cn(
-              'absolute rounded-full opacity-70 min-w-[44px] min-h-[44px]',
-              'ring-offset-background',
-              'transition-opacity duration-200',
-              'hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-              'focus-visible:outline-none disabled:pointer-events-none',
-              'text-muted-foreground hover:text-foreground bg-muted/20 backdrop-blur-sm',
-              '[&_svg]:pointer-events-none [&_svg]:shrink-0',
-              "[&_svg:not([class*='size-'])]:size-4",
-              getSpacingClassesFromConfig({ marginY: 'lg', marginX: 'lg', padding: 'xs' })
-            )}
-            onClick={handleClose}
-            {...getAriaButtonAttributes({ label: 'Close dialog' })}
-          >
-            <X aria-hidden="true" />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
-        )}
+          {showCloseButton && (
+            <DialogPrimitive.Close
+              className={cn(
+                'absolute rounded-full opacity-70 min-w-[44px] min-h-[44px]',
+                'ring-offset-background',
+                'transition-opacity duration-200',
+                'hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                'focus-visible:outline-none disabled:pointer-events-none',
+                'text-muted-foreground hover:text-foreground bg-muted/20 backdrop-blur-sm',
+                '[&_svg]:pointer-events-none [&_svg]:shrink-0',
+                "[&_svg:not([class*='size-'])]:size-4",
+                getSpacingClassesFromConfig({ marginY: 'lg', marginX: 'lg', padding: 'xs' })
+              )}
+              onClick={handleClose}
+              {...getAriaButtonAttributes({ label: 'Close dialog' })}
+            >
+              <X aria-hidden="true" />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
+          )}
         </DialogPrimitive.Content>
       </MotionView>
     </DialogPortal>

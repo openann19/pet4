@@ -89,10 +89,10 @@ export function useMessageManagement(
 
       void setMessages((current) => [...(current ?? []), newMessage]);
 
-      toast.success('Message sent!', {
-        duration: 1500,
-        position: 'top-center',
-      });
+      void toast.success('Message sent!', {
+                  duration: 1500,
+                  position: 'top-center',
+                });
     },
     [room.id, currentUserId, currentUserName, currentUserAvatar, _setMessages]
   );

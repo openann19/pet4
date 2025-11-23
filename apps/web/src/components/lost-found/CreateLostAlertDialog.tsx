@@ -156,7 +156,7 @@ export function CreateLostAlertDialog({
 
   const handleSubmit = useCallback(async (): Promise<void> => {
     if (!isFormValid) {
-      toast.error('Please fill in all required fields');
+      void toast.error('Please fill in all required fields');
       return;
     }
 
@@ -166,7 +166,7 @@ export function CreateLostAlertDialog({
       const { userService } = await import('@/lib/user-service');
       const user = await userService.user();
       if (!user) {
-        toast.error('Please log in to create a lost alert');
+        void toast.error('Please log in to create a lost alert');
         return;
       }
 
@@ -203,14 +203,14 @@ export function CreateLostAlertDialog({
         ...(locationDescription ? { description: locationDescription } : {}),
       });
 
-      toast.success('Lost pet alert created successfully!');
+      void toast.success('Lost pet alert created successfully!');
       logger.info('Lost alert created', { petName, species, userId: user.id });
       onSuccess();
       onClose();
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to create lost alert', err, { petName, species });
-      toast.error('Failed to create alert. Please try again.');
+      void toast.error('Failed to create alert. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -238,7 +238,7 @@ export function CreateLostAlertDialog({
   ]);
 
   const submitButtonAnimation = useBounceOnTap({
-    onPress: handleSubmit,
+    onPress: () => void handleSubmit(),
     hapticFeedback: true,
   });
 

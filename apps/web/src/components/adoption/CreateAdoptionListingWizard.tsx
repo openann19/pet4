@@ -142,7 +142,7 @@ export function CreateAdoptionListingWizard({
         !formData.locationCity ||
         !formData.reasonForAdoption
       ) {
-        toast.error('Please fill in all required fields');
+        void toast.error('Please fill in all required fields');
         return;
       }
 
@@ -157,7 +157,7 @@ export function CreateAdoptionListingWizard({
         ownerName: user.displayName ?? user.login ?? 'Guest User',
       });
 
-      toast.success('Adoption listing submitted for review!');
+      void toast.success('Adoption listing submitted for review!');
       onSuccess();
       onClose();
     } catch (error) {
@@ -165,7 +165,7 @@ export function CreateAdoptionListingWizard({
         'Failed to create listing',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to create listing. Please try again.');
+      void toast.error('Failed to create listing. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

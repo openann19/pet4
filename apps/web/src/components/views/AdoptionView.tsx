@@ -105,7 +105,7 @@ export default function AdoptionView() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load listings', err, { action: 'loadListings' });
-      toast.error('Failed to load adoption listings');
+      void toast.error('Failed to load adoption listings');
     } finally {
       setLoading(false);
     }

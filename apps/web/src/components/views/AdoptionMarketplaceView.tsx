@@ -53,7 +53,7 @@ export default function AdoptionMarketplaceView() {
 
   const handleListingCreated = () => {
     setShowCreateDialog(false);
-    toast.success('Adoption listing created! It will be reviewed by our team.');
+    void toast.success('Adoption listing created! It will be reviewed by our team.');
     void loadListings();
   };
 
@@ -357,7 +357,7 @@ export default function AdoptionMarketplaceView() {
           onApplicationSubmitted={() => {
             // fix: no-floating-promises → explicitly mark we ignore the Promise
             void loadListings();
-            toast.success('Application submitted successfully!');
+            void toast.success('Application submitted successfully!');
           }}
         />
 

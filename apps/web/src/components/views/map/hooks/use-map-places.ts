@@ -88,10 +88,10 @@ export function useMapPlaces(userLocation: Location | null, radiusKm: number): U
     setSavedPlaces((current) => {
       const currentPlaces = current ?? [];
       if (currentPlaces.includes(placeId)) {
-        toast.info(t.map?.placeRemoved ?? 'Place removed from saved');
+        void toast.info(t.map?.placeRemoved ?? 'Place removed from saved');
         return currentPlaces.filter((id) => id !== placeId);
       } else {
-        toast.success(t.map?.placeSaved ?? 'Place saved');
+        void toast.success(t.map?.placeSaved ?? 'Place saved');
         return [...currentPlaces, placeId];
       }
     });

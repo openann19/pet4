@@ -1,7 +1,7 @@
 import { MotionView } from '@petspark/motion';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { haptics } from '@/lib/haptics';
-import type { Place, MapMarker } from '@/lib/maps/types';
+import type { Place } from '@/lib/maps/types';
 
 export interface MapMarkersProps {
   places: Place[];

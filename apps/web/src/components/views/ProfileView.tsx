@@ -152,9 +152,9 @@ export default function ProfileView() {
 
   const handleThemePresetChange = (preset: ThemePreset) => {
     setThemePreset(preset)
-    toast.success('Theme updated', {
-      description: 'Your theme has been updated successfully'
-    })
+    void toast.success('Theme updated', {
+            description: 'Your theme has been updated successfully'
+          })
   }
 
   if (!Array.isArray(userPets) || userPets.length === 0) {

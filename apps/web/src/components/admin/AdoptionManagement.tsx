@@ -214,7 +214,7 @@ export default function AdoptionManagement(): JSX.Element {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to delete profile', err, { profileId: selectedProfile._id });
-      toast.error('Failed to delete adoption profile. Please try again.');
+      void toast.error('Failed to delete adoption profile. Please try again.');
     } finally {
       setIsDeleting(false);
     }

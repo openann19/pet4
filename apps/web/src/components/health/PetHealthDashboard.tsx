@@ -134,10 +134,10 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
     >
       <div
         className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${reminder.completed
-            ? 'bg-green-100 dark:bg-green-900/20'
-            : isOverdue
-              ? 'bg-red-100 dark:bg-red-900/20'
-              : 'bg-yellow-100 dark:bg-yellow-900/20'
+          ? 'bg-green-100 dark:bg-green-900/20'
+          : isOverdue
+            ? 'bg-red-100 dark:bg-red-900/20'
+            : 'bg-yellow-100 dark:bg-yellow-900/20'
           }`}
       >
         {reminder.completed ? (
@@ -259,9 +259,9 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to generate health summary', err, { petId: pet.id });
-      toast.error('Failed to load health summary', {
-        description: 'Please try again later',
-      });
+      void toast.error('Failed to load health summary', {
+                description: 'Please try again later',
+              });
     }
   }, [vaccinations, healthRecords, reminders, pet.id]);
 
@@ -317,15 +317,15 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         clinic: 'Happy Paws Veterinary',
         createdAt: new Date().toISOString(),
       };
-      setVaccinations((current): VaccinationRecord[] => [...(current ?? []), newVaccination]);
-      toast.success('Vaccination added', {
+      void setVaccinations((current): VaccinationRecord[] => [...(current ?? []), newVaccination]);
+      void toast.success('Vaccination added', {
         description: 'Vaccination record created successfully',
       });
-      logger.info('Vaccination added', { petId: pet.id, vaccinationId: newVaccination.id });
+      void logger.info('Vaccination added', { petId: pet.id, vaccinationId: newVaccination.id });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to add vaccination', err, { petId: pet.id });
-      toast.error('Failed to add vaccination', { description: 'Please try again' });
+      void logger.error('Failed to add vaccination', err, { petId: pet.id });
+      void toast.error('Failed to add vaccination', { description: 'Please try again' });
     }
   }, [pet.id, setVaccinations]);
 
@@ -341,15 +341,15 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setHealthRecords((current): HealthRecord[] => [...(current ?? []), newRecord]);
-      toast.success('Health record added', {
+      void setHealthRecords((current): HealthRecord[] => [...(current ?? []), newRecord]);
+      void toast.success('Health record added', {
         description: 'Health record created successfully',
       });
-      logger.info('Health record added', { petId: pet.id, recordId: newRecord.id });
+      void logger.info('Health record added', { petId: pet.id, recordId: newRecord.id });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to add health record', err, { petId: pet.id });
-      toast.error('Failed to add health record', { description: 'Please try again' });
+      void toast.error('Failed to add health record', { description: 'Please try again' });
     }
   }, [pet.id, setHealthRecords]);
 
@@ -365,20 +365,20 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         notificationsSent: 0,
         createdAt: new Date().toISOString(),
       };
-      setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
-      toast.success('Reminder added', { description: 'Reminder created successfully' });
-      logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
+      void setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
+      void toast.success('Reminder added', { description: 'Reminder created successfully' });
+      void logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to add reminder', err, { petId: pet.id });
-      toast.error('Failed to add reminder', { description: 'Please try again' });
+      void toast.error('Failed to add reminder', { description: 'Please try again' });
     }
   }, [pet.id, setReminders]);
 
   const handleCompleteReminder = useCallback(
     (reminderId: string): void => {
       try {
-        setReminders((current): VetReminder[] =>
+        void setReminders((current): VetReminder[] =>
           (current ?? []).map(
             (r): VetReminder =>
               r.id === reminderId
@@ -386,12 +386,12 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
                 : r
           )
         );
-        toast.success('Reminder completed', { description: 'Reminder marked as complete' });
-        logger.info('Reminder completed', { petId: pet.id, reminderId });
+        void toast.success('Reminder completed', { description: 'Reminder marked as complete' });
+        void logger.info('Reminder completed', { petId: pet.id, reminderId });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to complete reminder', err, { petId: pet.id, reminderId });
-        toast.error('Failed to complete reminder', { description: 'Please try again' });
+        void toast.error('Failed to complete reminder', { description: 'Please try again' });
       }
     },
     [pet.id, setReminders]

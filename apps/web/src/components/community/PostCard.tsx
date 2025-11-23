@@ -178,7 +178,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
     try {
       const spark = window.spark;
       if (!spark) {
-        toast.error('User service not available');
+        void toast.error('User service not available');
         return;
       }
       const user = await spark.user();
@@ -204,7 +204,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
         'Failed to toggle reaction',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to react to post');
+      void toast.error('Failed to react to post');
     }
   }, [post.id, logger]);
 
@@ -215,16 +215,16 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
       if (isSaved) {
         await communityService.unsavePost(post.id);
         setIsSaved(false);
-        toast.success(t.community?.unsaved ?? 'Post removed from saved');
+        void toast.success(t.community?.unsaved ?? 'Post removed from saved');
       } else {
         await communityService.savePost(post.id);
         setIsSaved(true);
-        toast.success(t.community?.saved ?? 'Post saved');
+        void toast.success(t.community?.saved ?? 'Post saved');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('PostCard handleSave error', err, { postId: post.id, isSaved });
-      toast.error('Failed to save post. Please try again.');
+      void toast.error('Failed to save post. Please try again.');
     }
   }, [isSaved, post.id, t, logger]);
 
@@ -244,7 +244,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
           if (error instanceof Error && error.name !== 'AbortError') {
             const err = error instanceof Error ? error : new Error(String(error));
             logger.error('PostCard handleShare navigator.share error', err, { postId: post.id });
-            toast.error('Failed to share post. Please try again.');
+            void toast.error('Failed to share post. Please try again.');
           }
         }
       } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -252,20 +252,20 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
           await navigator.clipboard.writeText(
             `${window.location.origin}/community/post/${post.id}`
           );
-          toast.success(t.community?.linkCopied ?? 'Link copied to clipboard');
+          void toast.success(t.community?.linkCopied ?? 'Link copied to clipboard');
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('PostCard handleShare clipboard.writeText error', err, { postId: post.id });
-          toast.error('Failed to copy link. Please try again.');
+          void toast.error('Failed to copy link. Please try again.');
         }
       } else {
         logger.warn('PostCard handleShare navigator.share and navigator.clipboard not available');
-        toast.error('Sharing is not supported in this browser.');
+        void toast.error('Sharing is not supported in this browser.');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('PostCard handleShare error', err, { postId: post.id });
-      toast.error('Failed to share post. Please try again.');
+      void toast.error('Failed to share post. Please try again.');
     }
   }, [post.authorName, post.text, post.id, t, logger]);
 
@@ -633,7 +633,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
             resourceId={post.id}
             resourceName={`Post by ${post.authorName}`}
             onReported={() => {
-              toast.success('Report submitted. Thank you for helping keep our community safe.');
+              void toast.success('Report submitted. Thank you for helping keep our community safe.');
             }}
           />
         </Card>

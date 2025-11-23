@@ -103,7 +103,7 @@ export default function CreateStoryDialog({
 
   const handleCreate = async () => {
     if (!mediaPreview) {
-      toast.error('Please select a photo or video');
+      void toast.error('Please select a photo or video');
       return;
     }
 
@@ -145,14 +145,14 @@ export default function CreateStoryDialog({
 
       onStoryCreated(newStory);
 
-      toast.success('Story created!', {
-        description: 'Your story is now live for 24 hours',
-        duration: 3000,
-      });
+      void toast.success('Story created!', {
+                description: 'Your story is now live for 24 hours',
+                duration: 3000,
+              });
 
       handleClose();
     } catch (error) {
-      toast.error('Failed to create story');
+      void toast.error('Failed to create story');
     } finally {
       setIsProcessing(false);
     }

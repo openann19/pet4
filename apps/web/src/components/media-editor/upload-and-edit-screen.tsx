@@ -99,7 +99,7 @@ export function UploadAndEditScreen({
     [onDone]
   );
 
-  const handleDrop = useCallback(async (file: File) => {
+  const handleDrop = useCallback((file: File) => {
     const url = URL.createObjectURL(file);
 
     if (file.type.startsWith('image/')) {
@@ -141,7 +141,7 @@ export function UploadAndEditScreen({
 
       {!media ? (
         <div style={styles.row}>
-          <Button label="Upload Photo/Video" onPress={doPick} />
+          <Button label="Upload Photo/Video" onPress={() => void doPick()} />
         </div>
       ) : media.type === 'image' ? (
         <div style={styles.editorWrap}>
@@ -151,8 +151,8 @@ export function UploadAndEditScreen({
             {...(onCancel ? { onCancel } : {})}
           />
           <div style={styles.actions}>
-            <Button label={busy ? 'Processing…' : 'Export'} onPress={runExport} disabled={busy} />
-            <Button label="Replace" variant="secondary" onPress={handleReplace} />
+            <Button label={busy ? 'Processing…' : 'Export'} onPress={() => void runExport()} disabled={busy} />
+            <Button label="Replace" variant="secondary" onPress={() => void handleReplace()} />
           </div>
         </div>
       ) : (
@@ -164,8 +164,8 @@ export function UploadAndEditScreen({
             onChange={onTrimChange}
           />
           <div style={styles.actions}>
-            <Button label={busy ? 'Transcoding…' : 'Export'} onPress={runExport} disabled={busy} />
-            <Button label="Replace" variant="secondary" onPress={handleReplace} />
+            <Button label={busy ? 'Transcoding…' : 'Export'} onPress={() => void runExport()} disabled={busy} />
+            <Button label="Replace" variant="secondary" onPress={() => void handleReplace()} />
           </div>
         </div>
       )}

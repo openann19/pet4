@@ -83,7 +83,7 @@ export default function SettingsView() {
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error))
         logger.error('Failed to load system config', err)
-        toast.error('Failed to load system configuration')
+        void toast.error('Failed to load system configuration')
       } finally {
         setLoading(false)
       }
@@ -94,7 +94,7 @@ export default function SettingsView() {
   // Save config to backend
   const saveConfig = useCallback(async () => {
     if (!currentUser) {
-      toast.error('User not authenticated')
+      void toast.error('User not authenticated')
       return
     }
 
@@ -108,12 +108,12 @@ export default function SettingsView() {
         moderationEnabled: true,
       }
       await adminApi.updateSystemConfig(config as unknown as Record<string, unknown>, currentUser.id || 'admin')
-      toast.success('System configuration saved successfully')
+      void toast.success('System configuration saved successfully')
       logger.info('System config saved', { featureFlags, systemSettings })
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to save system config', err)
-      toast.error('Failed to save system configuration')
+      void toast.error('Failed to save system configuration')
     } finally {
       setSaving(false)
     }
@@ -128,12 +128,12 @@ export default function SettingsView() {
         const err = error instanceof Error ? error : new Error(String(error))
         logger.error('Failed to save after feature flag change', err, { key, value })
       })
-      toast.success(`Feature ${value ? 'enabled' : 'disabled'}`)
+      void toast.success(`Feature ${value ? 'enabled' : 'disabled'}`)
       logger.info('Feature flag updated', { key, value })
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to update feature flag', err, { key, value })
-      toast.error('Failed to update feature flag')
+      void toast.error('Failed to update feature flag')
     }
   }, [saveConfig])
 
@@ -146,18 +146,18 @@ export default function SettingsView() {
         const err = error instanceof Error ? error : new Error(String(error))
         logger.error('Failed to save after system setting change', err, { key, value })
       })
-      toast.success('Setting updated')
+      void toast.success('Setting updated')
       logger.info('System setting updated', { key, value })
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to update system setting', err, { key, value })
-      toast.error('Failed to update system setting')
+      void toast.error('Failed to update system setting')
     }
   }, [saveConfig])
 
   const handleBroadcast = useCallback(async (): Promise<void> => {
     if (!currentUser) {
-      toast.error('User not authenticated')
+      void toast.error('User not authenticated')
       return
     }
 
@@ -188,11 +188,11 @@ export default function SettingsView() {
         details: JSON.stringify({ configType: 'system' }),
       })
 
-      toast.success('System configuration saved and broadcasted successfully')
+      void toast.success('System configuration saved and broadcasted successfully')
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to broadcast system config', err)
-      toast.error('Failed to broadcast system configuration')
+      void toast.error('Failed to broadcast system configuration')
     } finally {
       setSaving(false)
     }

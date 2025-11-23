@@ -84,7 +84,7 @@ export function ReportDialog({
 
   const handleSubmit = async () => {
     if (!selectedReason) {
-      toast.error('Please select a reason for reporting');
+      void toast.error('Please select a reason for reporting');
       return;
     }
 
@@ -94,7 +94,7 @@ export function ReportDialog({
     try {
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
       const reportData: Parameters<typeof communityAPI.reportContent>[0] = {
@@ -109,14 +109,14 @@ export function ReportDialog({
       }
       await communityAPI.reportContent(reportData);
 
-      toast.success('Report submitted successfully. Our team will review it.', {
-        duration: 3000,
-      });
+      void toast.success('Report submitted successfully. Our team will review it.', {
+                duration: 3000,
+              });
 
       onReported?.();
       handleClose();
     } catch {
-      toast.error('Failed to submit report. Please try again.');
+      void toast.error('Failed to submit report. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

@@ -41,17 +41,17 @@ export default function HighlightViewer({
     setHighlights((current) =>
       (current ?? []).map((h) => (h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h))
     );
-    toast.success(highlight.isPinned ? 'Unpinned' : 'Pinned', {
-      duration: 1500,
-    });
+    void toast.success(highlight.isPinned ? 'Unpinned' : 'Pinned', {
+            duration: 1500,
+          });
   };
 
   const handleDelete = () => {
     haptics.trigger('warning');
     setHighlights((current) => (current ?? []).filter((h) => h.id !== highlight.id));
-    toast.success('Highlight deleted', {
-      duration: 2000,
-    });
+    void toast.success('Highlight deleted', {
+            duration: 2000,
+          });
     onClose();
   };
 

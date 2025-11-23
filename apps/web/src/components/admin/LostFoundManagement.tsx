@@ -27,7 +27,7 @@ export function LostFoundManagement() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
-      toast.error('Failed to load alerts');
+      void toast.error('Failed to load alerts');
     }
   }, []);
 
@@ -39,13 +39,13 @@ export function LostFoundManagement() {
     async (alertId: string) => {
       try {
         await lostFoundService.updateAlertStatus(alertId, 'archived');
-        toast.success('Alert archived');
+        void toast.success('Alert archived');
         await loadAlerts();
         setSelectedAlert(null);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId });
-        toast.error('Failed to archive alert');
+        void toast.error('Failed to archive alert');
       }
     },
     [loadAlerts]

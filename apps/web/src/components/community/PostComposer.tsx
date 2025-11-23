@@ -144,7 +144,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
     if (!file) return;
 
     if (images.length >= MAX_IMAGES) {
-      toast.error(t.community?.maxImagesReached || `Maximum ${MAX_IMAGES} images allowed`);
+      void toast.error(t.community?.maxImagesReached || `Maximum ${MAX_IMAGES} images allowed`);
       haptics.error();
       return;
     }
@@ -168,12 +168,12 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       setImages((prev) => [...prev, result.url]);
       haptics.selection();
-      toast.success(t.community?.imageAdded || 'Image added');
+      void toast.success(t.community?.imageAdded || 'Image added');
       setShowMediaOptions(false);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to upload image', err);
-      toast.error(err.message || 'Failed to upload image');
+      void toast.error(err.message || 'Failed to upload image');
       haptics.error();
     } finally {
       setIsUploadingImage(false);
@@ -190,14 +190,14 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
     if (!file) return;
 
     if (!file.type.startsWith('video/')) {
-      toast.error('Please select a valid video file');
+      void toast.error('Please select a valid video file');
       haptics.error();
       return;
     }
 
     const sizeMB = file.size / (1024 * 1024);
     if (sizeMB > MAX_VIDEO_SIZE_MB * 2) {
-      toast.error(`Video file is too large. Maximum size is ${MAX_VIDEO_SIZE_MB * 2}MB`);
+      void toast.error(`Video file is too large. Maximum size is ${MAX_VIDEO_SIZE_MB * 2}MB`);
       haptics.error();
       return;
     }
@@ -209,7 +209,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       const metadata = await VideoCompressor.getVideoMetadata(file);
 
       if (metadata.duration > MAX_VIDEO_DURATION) {
-        toast.error(`Video must be less than ${MAX_VIDEO_DURATION} seconds`);
+        void toast.error(`Video must be less than ${MAX_VIDEO_DURATION} seconds`);
         haptics.error();
         setVideoState((prev) => ({ ...prev, isCompressing: false, error: 'Video too long' }));
         return;
@@ -250,7 +250,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       const originalSize = VideoCompressor.formatFileSize(file.size);
       const compressedSize = VideoCompressor.formatFileSize(compressedBlob.size);
-      toast.success(`Video compressed: ${originalSize} → ${compressedSize}`);
+      void toast.success(`Video compressed: ${originalSize} → ${compressedSize}`);
       haptics.success();
       setShowMediaOptions(false);
     } catch (error) {
@@ -265,7 +265,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
         compressionProgress: null,
         error: error instanceof Error ? error.message : 'Failed to process video',
       });
-      toast.error('Failed to process video');
+      void toast.error('Failed to process video');
       haptics.error();
     }
   };
@@ -306,7 +306,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
   const handleAddTag = () => {
     if (!tagInput.trim()) return;
     if (tags.length >= 10) {
-      toast.error(t.community?.maxTagsReached || 'Maximum 10 tags allowed');
+      void toast.error(t.community?.maxTagsReached || 'Maximum 10 tags allowed');
       return;
     }
 
@@ -332,12 +332,12 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
 
       // All posts require manual admin approval
-      toast.info('Your post has been submitted and will be visible once approved by an administrator.');
+      void toast.info('Your post has been submitted and will be visible once approved by an administrator.');
 
       const postData: Parameters<typeof communityAPI.createPost>[0] = {
         authorId: user.id,
@@ -363,7 +363,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       await communityAPI.createPost(postData);
 
       haptics.success();
-      toast.success(t.community?.postCreated || 'Post created successfully!');
+      void toast.success(t.community?.postCreated || 'Post created successfully!');
 
       setText('');
       setImages([]);
@@ -379,7 +379,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       onOpenChange(false);
     } catch (error) {
       haptics.error();
-      toast.error(t.community?.postFailed || 'Failed to create post');
+      void toast.error(t.community?.postFailed || 'Failed to create post');
       logger.error('Post creation failed', error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSubmitting(false);

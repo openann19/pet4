@@ -47,7 +47,7 @@ export default function ChatModerationPanel() {
       );
     } catch (error) {
       logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)));
-      toast.error('Failed to load reports');
+      void toast.error('Failed to load reports');
     } finally {
       setLoading(false);
     }
@@ -71,12 +71,12 @@ export default function ChatModerationPanel() {
 
       setReports((prev) => prev.map((r) => (r.id === selectedReport.id ? updatedReport : r)));
 
-      toast.success(`Action taken: ${action}`);
+      void toast.success(`Action taken: ${action}`);
       setSelectedReport(null);
       setAction('no_action');
     } catch (error) {
       logger.error('Review error', error instanceof Error ? error : new Error(String(error)));
-      toast.error('Failed to review report');
+      void toast.error('Failed to review report');
     } finally {
       setActionInFlight(false);
     }

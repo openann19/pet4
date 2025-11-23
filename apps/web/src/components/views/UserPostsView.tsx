@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Post } from '@/lib/community-types';
 import { createLogger } from '@/lib/logger';
 import { ArrowLeft, User } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -146,7 +146,7 @@ function UserPostsViewContent({
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to load user posts', err, { userId });
-        toast.error('Failed to load posts');
+        void toast.error('Failed to load posts');
       } finally {
         setLoading(false);
         loadingRef.current = false;

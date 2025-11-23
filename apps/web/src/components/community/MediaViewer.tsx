@@ -356,7 +356,7 @@ export function MediaViewer({
     try {
       const currentMedia = media[currentIndex];
       if (!currentMedia) {
-        toast.error(t.community?.mediaNotAvailable || 'Media not available');
+        void toast.error(t.community?.mediaNotAvailable || 'Media not available');
         return;
       }
       const isVideo = currentMedia.type === 'video';
@@ -372,10 +372,10 @@ export function MediaViewer({
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(downloadUrl);
-      toast.success(t.community?.downloaded || `${isVideo ? 'Video' : 'Image'} downloaded`);
+      void toast.success(t.community?.downloaded || `${isVideo ? 'Video' : 'Image'} downloaded`);
     } catch (error) {
       logger.error('Failed to download', error instanceof Error ? error : new Error(String(error)));
-      toast.error(t.community?.downloadError || 'Failed to download');
+      void toast.error(t.community?.downloadError || 'Failed to download');
     }
   }, [currentIndex, media, t, logger]);
 
@@ -383,7 +383,7 @@ export function MediaViewer({
     haptics.selection();
     const currentMedia = media[currentIndex];
     if (!currentMedia) {
-      toast.error(t.community?.mediaNotAvailable || 'Media not available');
+      void toast.error(t.community?.mediaNotAvailable || 'Media not available');
       return;
     }
     const isVideo = currentMedia.type === 'video';
@@ -402,7 +402,7 @@ export function MediaViewer({
       void navigator.clipboard
         .writeText(url)
         .then(() => {
-          toast.success(t.community?.linkCopied || 'Link copied to clipboard');
+          void toast.success(t.community?.linkCopied || 'Link copied to clipboard');
         })
         .catch(() => {
           // Clipboard write failed - silently fail

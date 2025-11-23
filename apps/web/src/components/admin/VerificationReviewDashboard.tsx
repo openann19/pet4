@@ -55,7 +55,7 @@ export function VerificationReviewDashboard(): JSX.Element {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load verification requests', err);
-      toast.error('Failed to load verification requests');
+      void toast.error('Failed to load verification requests');
     } finally {
       setInitialLoading(false);
     }
@@ -156,9 +156,9 @@ export function VerificationReviewDashboard(): JSX.Element {
       );
 
       haptics.success();
-      toast.success('Verification Approved!', {
-        description: 'Pet verification has been approved',
-      });
+      void toast.success('Verification Approved!', {
+                description: 'Pet verification has been approved',
+              });
 
       setSelectedRequest(null);
       setReviewNotes('');
@@ -167,7 +167,7 @@ export function VerificationReviewDashboard(): JSX.Element {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to approve verification', err);
       haptics.error();
-      toast.error('Failed to approve verification');
+      void toast.error('Failed to approve verification');
     } finally {
       setLoading(false);
     }
@@ -175,7 +175,7 @@ export function VerificationReviewDashboard(): JSX.Element {
 
   const handleReject = async () => {
     if (!selectedRequest || !rejectionReason) {
-      toast.error('Please provide a rejection reason');
+      void toast.error('Please provide a rejection reason');
       return;
     }
 
@@ -197,9 +197,9 @@ export function VerificationReviewDashboard(): JSX.Element {
       );
 
       haptics.trigger('heavy');
-      toast.error('Verification Rejected', {
-        description: 'User has been notified of the rejection reason',
-      });
+      void toast.error('Verification Rejected', {
+                description: 'User has been notified of the rejection reason',
+              });
 
       setSelectedRequest(null);
       setReviewNotes('');
@@ -209,7 +209,7 @@ export function VerificationReviewDashboard(): JSX.Element {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to reject verification', err);
       haptics.error();
-      toast.error('Failed to reject verification');
+      void toast.error('Failed to reject verification');
     } finally {
       setLoading(false);
     }

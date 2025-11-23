@@ -77,7 +77,7 @@ export function PhotoModerationQueueAdmin() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load records', err);
-      toast.error('Failed to load moderation queue');
+      void toast.error('Failed to load moderation queue');
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ export function PhotoModerationQueueAdmin() {
         reason: decisionReason,
       });
 
-      toast.success(t.photoModeration.photoApproved);
+      void toast.success(t.photoModeration.photoApproved);
       await loadRecords();
       await loadStats();
       setSelectedRecord(null);
@@ -143,7 +143,7 @@ export function PhotoModerationQueueAdmin() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to approve photo', err);
-      toast.error('Failed to approve photo');
+      void toast.error('Failed to approve photo');
     } finally {
       setLoading(false);
     }
@@ -151,7 +151,7 @@ export function PhotoModerationQueueAdmin() {
 
   const handleReject = async () => {
     if (!selectedRecord || !decisionReason.trim()) {
-      toast.error('Please provide a rejection reason');
+      void toast.error('Please provide a rejection reason');
       return;
     }
 
@@ -171,7 +171,7 @@ export function PhotoModerationQueueAdmin() {
         reason: decisionReason,
       });
 
-      toast.success(t.photoModeration.photoRejected);
+      void toast.success(t.photoModeration.photoRejected);
       await loadRecords();
       await loadStats();
       setSelectedRecord(null);
@@ -179,7 +179,7 @@ export function PhotoModerationQueueAdmin() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to reject photo', err);
-      toast.error('Failed to reject photo');
+      void toast.error('Failed to reject photo');
     } finally {
       setLoading(false);
     }
@@ -203,7 +203,7 @@ export function PhotoModerationQueueAdmin() {
         reason: decisionReason || 'Quarantined by moderator',
       });
 
-      toast.success(t.photoModeration.photoQuarantined);
+      void toast.success(t.photoModeration.photoQuarantined);
       await loadRecords();
       await loadStats();
       setSelectedRecord(null);
@@ -211,7 +211,7 @@ export function PhotoModerationQueueAdmin() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to quarantine photo', err);
-      toast.error('Failed to quarantine photo');
+      void toast.error('Failed to quarantine photo');
     } finally {
       setLoading(false);
     }
@@ -235,7 +235,7 @@ export function PhotoModerationQueueAdmin() {
         reason: decisionReason || 'Released from quarantine',
       });
 
-      toast.success('Photo released from quarantine');
+      void toast.success('Photo released from quarantine');
       await loadRecords();
       await loadStats();
       setSelectedRecord(null);
@@ -243,7 +243,7 @@ export function PhotoModerationQueueAdmin() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to release from quarantine', err);
-      toast.error('Failed to release from quarantine');
+      void toast.error('Failed to release from quarantine');
     } finally {
       setLoading(false);
     }

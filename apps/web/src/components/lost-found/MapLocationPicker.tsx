@@ -79,8 +79,9 @@ export function MapLocationPicker({
           setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('Geolocation error', err);
+          const errorMessage = error instanceof Error ? error.message : 'Geolocation failed';
+          const errorCode = typeof error === 'object' && error && 'code' in error ? (error as { code: number }).code : undefined;
+          logger.error('Geolocation error', new Error(errorMessage), { context: 'initial-location', errorCode });
         }
       );
     }
@@ -97,10 +98,10 @@ export function MapLocationPicker({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as { display_name?: string };
       setAddress(data.display_name ?? 'Address not found');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = error instanceof Error ? error : new Error(typeof error === 'string' ? error : 'Failed to fetch address');
       logger.error('Failed to fetch address', err, { lat, lon });
       setAddress('Unable to fetch address');
     } finally {
@@ -120,8 +121,9 @@ export function MapLocationPicker({
           setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('Geolocation error', err);
+          const errorMessage = error instanceof Error ? error.message : 'Geolocation failed';
+          const errorCode = typeof error === 'object' && error && 'code' in error ? (error as { code: number }).code : undefined;
+          logger.error('Geolocation error', new Error(errorMessage), { context: 'use-current-location', errorCode });
         }
       );
     }

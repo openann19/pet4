@@ -7,7 +7,6 @@
 'use client';
 
 import { Check } from 'lucide-react';
-import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { cn } from '@/lib/utils';
 import { getTypographyClasses } from '@/lib/typography';
 import type { VerificationLevel } from './VerificationDialog';
@@ -24,25 +23,25 @@ const LEVELS: {
   description: string;
   features: string[];
 }[] = [
-  {
-    id: 'basic',
-    name: 'Basic',
-    description: 'Photo ID verification',
-    features: ['Photo ID required'],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    description: 'Photo ID + Address verification',
-    features: ['Photo ID', 'Proof of address'],
-  },
-  {
-    id: 'vip',
-    name: 'VIP',
-    description: 'Full identity verification',
-    features: ['Photo ID', 'Proof of address', 'Additional documents'],
-  },
-];
+    {
+      id: 'basic',
+      name: 'Basic',
+      description: 'Photo ID verification',
+      features: ['Photo ID required'],
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      description: 'Photo ID + Address verification',
+      features: ['Photo ID', 'Proof of address'],
+    },
+    {
+      id: 'vip',
+      name: 'VIP',
+      description: 'Full identity verification',
+      features: ['Photo ID', 'Proof of address', 'Additional documents'],
+    },
+  ];
 
 export function VerificationLevelSelector({
   selectedLevel,
@@ -99,4 +98,3 @@ export function VerificationLevelSelector({
     </div>
   );
 }
-

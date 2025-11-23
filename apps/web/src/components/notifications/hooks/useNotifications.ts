@@ -4,7 +4,7 @@
  * Manages notification data, filtering, and grouping
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import type {
   PremiumNotification,
@@ -14,7 +14,7 @@ import type {
 } from '../types';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('useNotifications');
+const _logger = createLogger('useNotifications');
 
 export interface UseNotificationsOptions {
   preferences: NotificationPreferences | null;

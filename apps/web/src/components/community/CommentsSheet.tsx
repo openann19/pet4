@@ -51,7 +51,7 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
       setComments(response)
     } catch (error) {
       logger.error('Failed to load comments', error instanceof Error ? error : new Error(String(error)))
-      toast.error(t.community?.commentsLoadError ?? 'Failed to load comments')
+      void toast.error(t.community?.commentsLoadError ?? 'Failed to load comments')
     } finally {
       setLoading(false)
     }
@@ -113,14 +113,14 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
       setReplyingTo(null)
 
       haptics.success()
-      toast.success(t.community?.commentPosted ?? 'Comment posted!')
+      void toast.success(t.community?.commentPosted ?? 'Comment posted!')
 
       window.setTimeout(() => {
         scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
       }, 120)
     } catch (error) {
       logger.error('Failed to post comment', error instanceof Error ? error : new Error(String(error)))
-      toast.error(t.community?.commentError ?? 'Failed to post comment')
+      void toast.error(t.community?.commentError ?? 'Failed to post comment')
       haptics.error()
     } finally {
       setSubmitting(false)

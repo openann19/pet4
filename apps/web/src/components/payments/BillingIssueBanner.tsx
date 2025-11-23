@@ -14,7 +14,7 @@ export function BillingIssueBanner() {
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
-    checkBillingIssues();
+    void checkBillingIssues();
   }, []);
 
   const checkBillingIssues = async () => {
@@ -36,10 +36,10 @@ export function BillingIssueBanner() {
     setRetrying(true);
     try {
       await PaymentsService.resolveBillingIssue(issue.id);
-      toast.success('Payment updated successfully');
+      void toast.success('Payment updated successfully');
       setIssue(null);
     } catch {
-      toast.error('Failed to update payment method');
+      void toast.error('Failed to update payment method');
     } finally {
       setRetrying(false);
     }
@@ -89,7 +89,7 @@ export function BillingIssueBanner() {
               size="sm"
               variant="outline"
               className="bg-background"
-              onClick={handleRetry}
+              onClick={() => void handleRetry()}
               disabled={retrying}
             >
               <CreditCard className="h-4 w-4 mr-2" />

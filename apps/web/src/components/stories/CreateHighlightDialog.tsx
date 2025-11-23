@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { Plus, Check } from '@phosphor-icons/react';
 import {
   Dialog,
@@ -75,17 +75,17 @@ export default function CreateHighlightDialog({
   const handleSetCover = (story: Story) => {
     haptics.trigger('light');
     setCoverImageUrl(story.thumbnailUrl ?? story.mediaUrl);
-    toast.success('Cover image set', { duration: 1500 });
+    void toast.success('Cover image set', { duration: 1500 });
   };
 
   const handleSave = () => {
     if (!title.trim()) {
-      toast.error('Please enter a title');
+      void toast.error('Please enter a title');
       return;
     }
 
     if (selectedStories.size === 0) {
-      toast.error('Please select at least one story');
+      void toast.error('Please select at least one story');
       return;
     }
 
@@ -108,7 +108,7 @@ export default function CreateHighlightDialog({
             : h
         )
       );
-      toast.success('Highlight updated!');
+      void toast.success('Highlight updated!');
     } else {
       const newHighlight = createStoryHighlight(
         currentUser?.id ?? 'user-1',
@@ -119,7 +119,7 @@ export default function CreateHighlightDialog({
       );
 
       setHighlights((current) => [...(current ?? []), newHighlight]);
-      toast.success('Highlight created!');
+      void toast.success('Highlight created!');
     }
 
     onOpenChange(false);

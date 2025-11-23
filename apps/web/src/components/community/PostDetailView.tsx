@@ -102,13 +102,13 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
             setIsSaved(false);
           });
       } else {
-        toast.error('Post not found');
+        void toast.error('Post not found');
         onOpenChange(false);
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load post', err, { postId });
-      toast.error('Failed to load post');
+      void toast.error('Failed to load post');
       onOpenChange(false);
     } finally {
       setLoading(false);
@@ -141,7 +141,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
     try {
       const user = await userService.user();
       if (!user) {
-        toast.error('You must be logged in to react');
+        void toast.error('You must be logged in to react');
         return;
       }
 
@@ -164,7 +164,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to toggle reaction', err);
-      toast.error('Failed to react to post');
+      void toast.error('Failed to react to post');
     }
   };
 
@@ -177,16 +177,16 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       if (isSaved) {
         await communityService.unsavePost(post.id);
         setIsSaved(false);
-        toast.success(t.community?.unsaved ?? 'Post removed from saved');
+        void toast.success(t.community?.unsaved ?? 'Post removed from saved');
       } else {
         await communityService.savePost(post.id);
         setIsSaved(true);
-        toast.success(t.community?.saved ?? 'Post saved');
+        void toast.success(t.community?.saved ?? 'Post saved');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save post', err);
-      toast.error('Failed to save post');
+      void toast.error('Failed to save post');
     }
   };
 
@@ -204,7 +204,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copied to clipboard');
+        void toast.success('Link copied to clipboard');
       }
     } catch {
       // User cancelled share
@@ -218,7 +218,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
     try {
       const user = await userService.user();
       if (!user) {
-        toast.error('You must be logged in to comment');
+        void toast.error('You must be logged in to comment');
         return;
       }
 
@@ -242,7 +242,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to submit comment', err);
-      toast.error('Failed to submit comment');
+      void toast.error('Failed to submit comment');
     } finally {
       setSubmittingComment(false);
     }
@@ -537,7 +537,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
           resourceId={post.id}
           resourceName={`Post by ${String(post.authorName ?? '')}`}
           onReported={() => {
-            toast.success('Report submitted. Thank you for helping keep our community safe.');
+            void toast.success('Report submitted. Thank you for helping keep our community safe.');
           }}
         />
       )}

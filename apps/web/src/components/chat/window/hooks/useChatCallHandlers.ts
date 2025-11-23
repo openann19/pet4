@@ -30,18 +30,18 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
           (error) => {
             const err = normalizeError(error);
             logger.error('ChatWindowNew handleVoiceCall error', err, { petId, petName });
-            toast.error('Failed to start voice call. Please try again.');
+            void toast.error('Failed to start voice call. Please try again.');
           }
         );
-        toast.info('Starting voice call...');
+        void toast.info('Starting voice call...');
       } else {
         logger.warn('ChatWindowNew handleVoiceCall missing petId or petName', { petId, petName });
-        toast.error('Unable to start call. Pet information is missing.');
+        void toast.error('Unable to start call. Pet information is missing.');
       }
     } catch (error) {
       const err = normalizeError(error);
       logger.error('ChatWindowNew handleVoiceCall sync error', err);
-      toast.error('Failed to start voice call. Please try again.');
+      void toast.error('Failed to start voice call. Please try again.');
     }
   };
 
@@ -55,18 +55,18 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
           (error) => {
             const err = normalizeError(error);
             logger.error('ChatWindowNew handleVideoCall error', err, { petId, petName });
-            toast.error('Failed to start video call. Please try again.');
+            void toast.error('Failed to start video call. Please try again.');
           }
         );
-        toast.info('Starting video call...');
+        void toast.info('Starting video call...');
       } else {
         logger.warn('ChatWindowNew handleVideoCall missing petId or petName', { petId, petName });
-        toast.error('Unable to start call. Pet information is missing.');
+        void toast.error('Unable to start call. Pet information is missing.');
       }
     } catch (error) {
       const err = normalizeError(error);
       logger.error('ChatWindowNew handleVideoCall sync error', err);
-      toast.error('Failed to start video call. Please try again.');
+      void toast.error('Failed to start video call. Please try again.');
     }
   };
 

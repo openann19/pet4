@@ -215,7 +215,7 @@ export default function SavedSearchesManager({
   const handleSaveCurrentSearch = useCallback(async (): Promise<void> => {
     try {
       if (!searchName.trim()) {
-        toast.error('Please enter a name for this search');
+        void toast.error('Please enter a name for this search');
         return;
       }
 
@@ -232,14 +232,14 @@ export default function SavedSearchesManager({
 
       await setSavedSearches((current) => [...(current ?? []), newSearch]);
       triggerHaptic('success');
-      toast.success('Search saved!', { description: `"${searchName}" has been saved` });
+      void toast.success('Search saved!', { description: `"${searchName}" has been saved` });
       logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name });
       setSearchName('');
       setShowSaveForm(false);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to save search', err, { searchName });
-      toast.error('Failed to save search');
+      void toast.error('Failed to save search');
       triggerHaptic('error');
     }
   }, [searchName, currentPreferences, setSavedSearches]);
@@ -248,7 +248,7 @@ export default function SavedSearchesManager({
     async (id: string): Promise<void> => {
       try {
         if (!searchName.trim()) {
-          toast.error('Please enter a name');
+          void toast.error('Please enter a name');
           return;
         }
 
@@ -265,14 +265,14 @@ export default function SavedSearchesManager({
           )
         );
         triggerHaptic('light');
-        toast.success('Search updated');
+        void toast.success('Search updated');
         logger.info('Search updated', { searchId: id, searchName: searchName.trim() });
         setEditingId(null);
         setSearchName('');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to update search', err, { searchId: id, searchName });
-        toast.error('Failed to update search');
+        void toast.error('Failed to update search');
         triggerHaptic('error');
       }
     },
@@ -291,7 +291,7 @@ export default function SavedSearchesManager({
         );
         onApplySearch(search.preferences);
         triggerHaptic('selection');
-        toast.success('Search applied', { description: `Filters updated to "${search.name}"` });
+        void toast.success('Search applied', { description: `Filters updated to "${search.name}"` });
         logger.info('Search applied', { searchId: search.id, searchName: search.name });
         onClose();
       } catch (error) {
@@ -300,7 +300,7 @@ export default function SavedSearchesManager({
           searchId: search.id,
           searchName: search.name,
         });
-        toast.error('Failed to apply search');
+        void toast.error('Failed to apply search');
         triggerHaptic('error');
       }
     },
@@ -329,12 +329,12 @@ export default function SavedSearchesManager({
       try {
         await setSavedSearches((current) => (current ?? []).filter((s) => s.id !== id));
         triggerHaptic('light');
-        toast.info('Search deleted', { description: `"${name}" has been removed` });
+        void toast.info('Search deleted', { description: `"${name}" has been removed` });
         logger.info('Search deleted', { searchId: id, searchName: name });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to delete search', err, { searchId: id, searchName: name });
-        toast.error('Failed to delete search');
+        void toast.error('Failed to delete search');
         triggerHaptic('error');
       }
     },

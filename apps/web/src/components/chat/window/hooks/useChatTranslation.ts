@@ -44,12 +44,12 @@ export function useChatTranslation({ messages, setMessages }: UseChatTranslation
         )
       );
 
-      toast.success('Message translated!');
+      void toast.success('Message translated!');
     } catch (e) {
       const info = parseLLMError(e);
       const err = e instanceof Error ? e : new Error(String(e));
       logger.error('Translation failed', err, { technicalMessage: info.technicalMessage });
-      toast.error('Translation failed', { description: info.userMessage, duration: 5000 });
+      void toast.error('Translation failed', { description: info.userMessage, duration: 5000 });
     }
   };
 

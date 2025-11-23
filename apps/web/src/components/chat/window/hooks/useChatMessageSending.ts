@@ -111,7 +111,7 @@ export function useChatMessageSending({
 
     inputRef.current?.focus();
 
-    toast.success('Message sent!', { duration: 1500, position: 'top-center' });
+    void toast.success('Message sent!', { duration: 1500, position: 'top-center' });
 
     if (type === 'sticker' || type === 'pet-card') {
       setConfettiSeed((s) => s + 1);

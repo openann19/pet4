@@ -33,7 +33,7 @@ export function useSignUpSubmission(onSuccess: () => void) {
 
       analytics.track('user_signed_up', { email: data.email, method: 'email' });
 
-      toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
+      void toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
       haptics.trigger('success');
 
       onSuccess();
@@ -41,7 +41,7 @@ export function useSignUpSubmission(onSuccess: () => void) {
       const err = error as APIError | Error;
       logger.error('Sign up error', err instanceof Error ? err : new Error(err.message || 'Unknown error'));
       const errorMessage = 'message' in err ? err.message : (err as APIError).message || t.auth?.signUpError || 'Failed to create account. Please try again.';
-      toast.error(errorMessage);
+      void toast.error(errorMessage);
       haptics.trigger('error');
     } finally {
       setIsLoading(false);

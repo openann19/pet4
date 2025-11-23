@@ -23,7 +23,7 @@ export type VerificationLevel = 'basic' | 'premium' | 'vip';
 export interface VerificationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onVerify: (level: VerificationLevel, documents: File[]) => void;
+  onVerify: (level: VerificationLevel, documents: File[]) => void | Promise<void>;
 }
 
 export function VerificationDialog({
@@ -92,7 +92,7 @@ export function VerificationDialog({
             </Button>
             <Button
               type="button"
-              onClick={handleVerify}
+              onClick={() => void handleVerify()}
               disabled={documents.length === 0 || isSubmitting}
               className="flex-1"
             >
@@ -104,4 +104,3 @@ export function VerificationDialog({
     </Dialog>
   );
 }
-

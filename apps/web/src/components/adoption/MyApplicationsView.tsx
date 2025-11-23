@@ -50,7 +50,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
       setIsLoading(true);
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
       const userApps = await adoptionService.getUserApplications(user.id);

@@ -16,9 +16,7 @@ export function filterAlerts({
   let list = alerts;
 
   if (activeTab === 'favorites') {
-    list = list.filter(
-      (a) => Array.isArray(favorites) && favorites.includes(a.id)
-    );
+    list = list.filter((a) => Array.isArray(favorites) && favorites.includes(a.id));
   }
 
   if (searchQuery) {
@@ -32,9 +30,5 @@ export function filterAlerts({
     );
   }
 
-  return list.sort(
-    (a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
-

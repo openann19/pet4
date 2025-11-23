@@ -68,25 +68,25 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
   const handleStartVerification = () => {
     const request = VerificationService.createVerificationRequest(petId, userId, selectedLevel);
     setCurrentRequest(request);
-    toast.success('Verification process started!', {
-      description: `Selected ${selectedLevel} verification level`,
-    });
+    void toast.success('Verification process started!', {
+            description: `Selected ${selectedLevel} verification level`,
+          });
   };
 
   const handleDocumentUpload = async (file: File, documentType: DocumentType) => {
     if (!activeRequest) return;
 
     if (!VerificationService.validateFileSize(file)) {
-      toast.error('File too large', {
-        description: 'Maximum file size is 10MB',
-      });
+      void toast.error('File too large', {
+                description: 'Maximum file size is 10MB',
+              });
       return;
     }
 
     if (!VerificationService.validateFileType(file)) {
-      toast.error('Invalid file type', {
-        description: 'Only JPG, PNG, WEBP, and PDF files are allowed',
-      });
+      void toast.error('Invalid file type', {
+                description: 'Only JPG, PNG, WEBP, and PDF files are allowed',
+              });
       return;
     }
 
@@ -107,13 +107,13 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
         [petId]: updatedRequest,
       }));
 
-      toast.success('Document uploaded!', {
-        description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`,
-      });
+      void toast.success('Document uploaded!', {
+                description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`,
+              });
     } catch {
-      toast.error('Upload failed', {
-        description: 'Failed to upload document. Please try again.',
-      });
+      void toast.error('Upload failed', {
+                description: 'Failed to upload document. Please try again.',
+              });
     }
   };
 
@@ -136,16 +136,16 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       [petId]: updatedRequest,
     }));
 
-    toast.success('Document removed');
+    void toast.success('Document removed');
   };
 
   const handleSubmitForReview = () => {
     if (!activeRequest) return;
 
     if (completionPercentage < 100) {
-      toast.error('Incomplete submission', {
-        description: 'Please upload all required documents before submitting',
-      });
+      void toast.error('Incomplete submission', {
+                description: 'Please upload all required documents before submitting',
+              });
       return;
     }
 
@@ -160,13 +160,13 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
         [petId]: submittedRequest,
       }));
 
-      toast.success('Submitted for review!', {
-        description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`,
-      });
+      void toast.success('Submitted for review!', {
+                description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`,
+              });
     } catch {
-      toast.error('Submission failed', {
-        description: 'Failed to submit verification request. Please try again.',
-      });
+      void toast.error('Submission failed', {
+                description: 'Failed to submit verification request. Please try again.',
+              });
     } finally {
       setIsSubmitting(false);
     }
@@ -187,13 +187,13 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       }));
 
       if (isTruthy(approve)) {
-        toast.success('Verification approved! 🎉', {
-          description: `Your pet has been verified with a trust score of ${reviewedRequest.trustScore}/100`,
-        });
+        void toast.success('Verification approved! 🎉', {
+                    description: `Your pet has been verified with a trust score of ${reviewedRequest.trustScore}/100`,
+                  });
       } else {
-        toast.error('Verification requires attention', {
-          description: reviewedRequest.reviewNotes ?? 'Please review and resubmit documents',
-        });
+        void toast.error('Verification requires attention', {
+                    description: reviewedRequest.reviewNotes ?? 'Please review and resubmit documents',
+                  });
       }
     } finally {
       setIsSimulatingReview(false);

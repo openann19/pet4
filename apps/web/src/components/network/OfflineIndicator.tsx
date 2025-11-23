@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { WifiHigh, WifiSlash } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export function OfflineIndicator(): JSX.Element | null {
   const [isOnline, setIsOnline] = useState(navigator.onLine);

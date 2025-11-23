@@ -40,19 +40,19 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
 
       await PaymentsService.createSubscription(user.id, plan.id, 'web', { billingCycle });
 
-      toast.success(
-        plan.trialDays ? `${plan.trialDays}-day trial started!` : 'Subscription activated!',
-        {
-          description: `Welcome to ${plan.name}! Your features are now unlocked.`,
-        }
-      );
+      void toast.success(
+                plan.trialDays ? `${plan.trialDays}-day trial started!` : 'Subscription activated!',
+                {
+                  description: `Welcome to ${plan.name}! Your features are now unlocked.`,
+                }
+              );
 
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
-      toast.error('Subscription failed', {
-        description: error instanceof Error ? error.message : 'Please try again',
-      });
+      void toast.error('Subscription failed', {
+                description: error instanceof Error ? error.message : 'Please try again',
+              });
     } finally {
       setLoading(false);
       setSelectedPlan(null);
@@ -182,7 +182,7 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                 <Button
                   className="w-full"
                   variant={isPopular ? 'default' : 'outline'}
-                  onClick={() => handleSubscribe(plan)}
+                  onClick={() => void handleSubscribe(plan)}
                   disabled={loading || plan.tier === 'free'}
                   size="lg"
                 >

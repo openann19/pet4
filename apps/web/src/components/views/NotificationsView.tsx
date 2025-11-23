@@ -183,7 +183,7 @@ export default function NotificationsView({
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load notifications', err);
-      toast.error('Failed to load notifications');
+      void toast.error('Failed to load notifications');
     } finally {
       setLoading(false);
     }
@@ -212,7 +212,7 @@ export default function NotificationsView({
       const unreadIds = filteredNotifications.filter((n) => !n.read).map((n) => n.id);
       await Promise.all(unreadIds.map((id) => communityService.markNotificationRead(id)));
       setNotifications(notifications.map((n) => ({ ...n, read: true })));
-      toast.success('All notifications marked as read');
+      void toast.success('All notifications marked as read');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to mark all as read', err);

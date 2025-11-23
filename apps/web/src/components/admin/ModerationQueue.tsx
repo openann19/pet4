@@ -70,7 +70,7 @@ export function ModerationQueue() {
         'Failed to load moderation queue',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to load moderation queue');
+      void toast.error('Failed to load moderation queue');
     }
   }, []);
 
@@ -102,12 +102,12 @@ export function ModerationQueue() {
       const user = await userService.user();
       if (!user) throw new Error('Not authenticated');
       await moderationService.takeTask(selectedTask.id, user.id);
-      toast.success('Task assigned to you');
+      void toast.success('Task assigned to you');
       await loadQueue();
       setSelectedTask(null);
       setDetailPhoto(null);
     } catch {
-      toast.error('Failed to take task');
+      void toast.error('Failed to take task');
     } finally {
       setLoading(false);
     }
@@ -130,13 +130,13 @@ export function ModerationQueue() {
         user.id,
         moderatorName
       );
-      toast.success('Photo approved!');
+      void toast.success('Photo approved!');
       await loadQueue();
       setSelectedTask(null);
       setDetailPhoto(null);
       setDecisionText('');
     } catch {
-      toast.error('Failed to approve photo');
+      void toast.error('Failed to approve photo');
     } finally {
       setLoading(false);
     }
@@ -159,14 +159,14 @@ export function ModerationQueue() {
         user.id,
         moderatorName
       );
-      toast.success('Photo rejected');
+      void toast.success('Photo rejected');
       await loadQueue();
       setSelectedTask(null);
       setDetailPhoto(null);
       setDecisionText('');
       setDecisionReason('other');
     } catch {
-      toast.error('Failed to reject photo');
+      void toast.error('Failed to reject photo');
     } finally {
       setLoading(false);
     }
@@ -189,13 +189,13 @@ export function ModerationQueue() {
         user.id,
         moderatorName
       );
-      toast.success('Photo held for KYC');
+      void toast.success('Photo held for KYC');
       await loadQueue();
       setSelectedTask(null);
       setDetailPhoto(null);
       setDecisionText('');
     } catch {
-      toast.error('Failed to hold photo');
+      void toast.error('Failed to hold photo');
     } finally {
       setLoading(false);
     }

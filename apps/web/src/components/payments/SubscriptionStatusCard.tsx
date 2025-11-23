@@ -21,14 +21,14 @@ export function SubscriptionStatusCard() {
   const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
-    loadSubscriptionData();
+    void loadSubscriptionData();
   }, []);
 
   const loadSubscriptionData = async () => {
     try {
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
       const [sub, ent] = await Promise.all([
@@ -59,12 +59,12 @@ export function SubscriptionStatusCard() {
     setCanceling(true);
     try {
       await PaymentsService.cancelSubscription(subscription.id, false);
-      toast.success('Subscription canceled', {
-        description: 'Your benefits will remain active until the end of your billing period.',
-      });
+      void toast.success('Subscription canceled', {
+                description: 'Your benefits will remain active until the end of your billing period.',
+              });
       await loadSubscriptionData();
     } catch {
-      toast.error('Failed to cancel subscription');
+      void toast.error('Failed to cancel subscription');
     } finally {
       setCanceling(false);
     }
@@ -188,7 +188,7 @@ export function SubscriptionStatusCard() {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={handleCancelSubscription}
+                    onClick={() => void handleCancelSubscription()}
                     disabled={canceling}
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
@@ -278,7 +278,7 @@ export function SubscriptionStatusCard() {
       <PricingModal
         open={pricingModalOpen}
         onOpenChange={setPricingModalOpen}
-        onSuccess={loadSubscriptionData}
+        onSuccess={() => void loadSubscriptionData()}
       />
     </>
   );

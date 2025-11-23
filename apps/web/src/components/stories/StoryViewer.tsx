@@ -31,7 +31,7 @@ import {
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
 import * as Reanimated from '@petspark/motion';
-import { interpolate, Extrapolation, MotionView, type MotionStyle } from '@petspark/motion';
+import { MotionView, type MotionStyle } from '@petspark/motion';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SaveToHighlightDialog from './SaveToHighlightDialog';
@@ -291,10 +291,10 @@ export default function StoryViewer({
         onStoryUpdate?.(updatedStory);
       }
 
-      toast.success(`Reacted with ${emoji}`, {
-        duration: 1500,
-        position: 'top-center',
-      });
+      void toast.success(`Reacted with ${emoji}`, {
+                  duration: 1500,
+                  position: 'top-center',
+                });
 
       setShowReactions(false);
     },
@@ -315,10 +315,10 @@ export default function StoryViewer({
     haptics.trigger('light');
     trackInteraction('reply');
 
-    toast.success('Reply sent!', {
-      duration: 2000,
-      position: 'top-center',
-    });
+    void toast.success('Reply sent!', {
+            duration: 2000,
+            position: 'top-center',
+          });
 
     setReplyText('');
   }, [replyText, trackInteraction]);
@@ -347,7 +347,7 @@ export default function StoryViewer({
         void navigator.clipboard.writeText(
           `${window.location.origin}/stories/${currentStory.id}`
         );
-        toast.success('Link copied to clipboard');
+        void toast.success('Link copied to clipboard');
       }
     }
   }, [currentStory, trackInteraction]);

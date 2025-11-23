@@ -94,7 +94,7 @@ export function AdoptionApplicationDialog({
     e.preventDefault();
 
     if (!formData.applicantName || !formData.applicantEmail || !formData.reason) {
-      toast.error(t.adoption?.fillRequired ?? 'Please fill in all required fields');
+      void toast.error(t.adoption?.fillRequired ?? 'Please fill in all required fields');
       haptics.trigger('error');
       return;
     }
@@ -105,7 +105,7 @@ export function AdoptionApplicationDialog({
 
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
 
@@ -116,11 +116,11 @@ export function AdoptionApplicationDialog({
       });
 
       haptics.trigger('success');
-      toast.success(t.adoption?.applicationSubmitted ?? 'Application Submitted!', {
-        description:
-          t.adoption?.applicationSubmittedDesc ??
-          'The shelter will review your application and contact you soon.',
-      });
+      void toast.success(t.adoption?.applicationSubmitted ?? 'Application Submitted!', {
+                description:
+                  t.adoption?.applicationSubmittedDesc ??
+                  'The shelter will review your application and contact you soon.',
+              });
 
       setFormData({
         applicantName: '',
@@ -143,9 +143,9 @@ export function AdoptionApplicationDialog({
         error instanceof Error ? error : new Error(String(error))
       );
       haptics.trigger('error');
-      toast.error(
-        t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.'
-      );
+      void toast.error(
+                t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.'
+              );
     } finally {
       setIsSubmitting(false);
     }

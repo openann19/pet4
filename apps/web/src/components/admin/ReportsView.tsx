@@ -134,7 +134,7 @@ export default function ReportsView() {
         'Failed to load reports',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to load reports. Please try again.');
+      void toast.error('Failed to load reports. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -156,7 +156,7 @@ export default function ReportsView() {
     }
 
     if (!resolution.trim()) {
-      toast.error('Please provide resolution details');
+      void toast.error('Please provide resolution details');
       return;
     }
 
@@ -184,7 +184,7 @@ export default function ReportsView() {
       setDialogOpen(false);
       setResolution('');
       setActionType('dismiss');
-      toast.success('Report resolved successfully');
+      void toast.success('Report resolved successfully');
 
       // Log audit entry
       try {
@@ -212,7 +212,7 @@ export default function ReportsView() {
         'Failed to resolve report',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to resolve report. Please try again.');
+      void toast.error('Failed to resolve report. Please try again.');
     } finally {
       setActionInFlight(false);
     }
@@ -233,7 +233,7 @@ export default function ReportsView() {
       setDialogOpen(false);
       setResolution('');
       setActionType('dismiss');
-      toast.success('Report dismissed');
+      void toast.success('Report dismissed');
 
       // Log audit entry
       try {
@@ -260,7 +260,7 @@ export default function ReportsView() {
         'Failed to dismiss report',
         error instanceof Error ? error : new Error(String(error))
       );
-      toast.error('Failed to dismiss report. Please try again.');
+      void toast.error('Failed to dismiss report. Please try again.');
     } finally {
       setActionInFlight(false);
     }

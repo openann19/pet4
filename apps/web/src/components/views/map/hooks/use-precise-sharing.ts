@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { toast } from 'sonner';
 import { useApp } from '@/contexts/AppContext';
@@ -22,7 +22,7 @@ export function usePreciseSharing(): UsePreciseSharingReturn {
       if (now > preciseSharingUntil) {
         setPreciseSharingEnabled(false);
         setPreciseSharingUntil(null);
-        toast.info(t.map?.precisionExpired ?? 'Precise location sharing ended');
+        void toast.info(t.map?.precisionExpired ?? 'Precise location sharing ended');
       }
     }
   }, [preciseSharingEnabled, preciseSharingUntil, setPreciseSharingEnabled, setPreciseSharingUntil, t]);
@@ -32,14 +32,14 @@ export function usePreciseSharing(): UsePreciseSharingReturn {
     const until = Date.now() + 60 * 60 * 1000;
     setPreciseSharingEnabled(true);
     setPreciseSharingUntil(until);
-    toast.success(t.map?.precisionEnabled ?? 'Precise location enabled for 60 minutes');
+    void toast.success(t.map?.precisionEnabled ?? 'Precise location enabled for 60 minutes');
   };
 
   const handleDisablePreciseSharing = (): void => {
     haptics.trigger('light');
     setPreciseSharingEnabled(false);
     setPreciseSharingUntil(null);
-    toast.info(t.map?.precisionDisabled ?? 'Precise location disabled');
+    void toast.info(t.map?.precisionDisabled ?? 'Precise location disabled');
   };
 
   return {

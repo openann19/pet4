@@ -60,9 +60,9 @@ export default function GenerateProfilesButton({
       });
 
       haptics.trigger('success');
-      toast.success('Profiles Generated!', {
-        description: `${newPets.length} new pet profiles added to discovery`,
-      });
+      void toast.success('Profiles Generated!', {
+                description: `${newPets.length} new pet profiles added to discovery`,
+              });
     } catch (error) {
       const logger = createLogger('GenerateProfilesButton');
       logger.error(
@@ -70,9 +70,9 @@ export default function GenerateProfilesButton({
         error instanceof Error ? error : new Error(String(error))
       );
       haptics.trigger('error');
-      toast.error('Error', {
-        description: 'Failed to generate new profiles. Please try again.',
-      });
+      void toast.error('Error', {
+                description: 'Failed to generate new profiles. Please try again.',
+              });
     } finally {
       setIsGenerating(false);
     }

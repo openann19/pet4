@@ -350,7 +350,7 @@ export default function AdoptionApplicationReview() {
           'Failed to load applications',
           error instanceof Error ? error : new Error(String(error))
         );
-        toast.error('Failed to load applications');
+        void toast.error('Failed to load applications');
       } finally {
         setLoading(false);
       }
@@ -460,12 +460,12 @@ export default function AdoptionApplicationReview() {
       }
 
       haptics.trigger('success');
-      toast.success(reviewAction === 'approve' ? 'Application Approved!' : 'Application Rejected', {
-        description:
-          reviewAction === 'approve'
-            ? `${selectedApplication.applicantName} has been approved to adopt ${selectedApplication.profile?.petName ?? 'this pet'}.`
-            : `Application from ${selectedApplication.applicantName} has been rejected.`,
-      });
+      void toast.success(reviewAction === 'approve' ? 'Application Approved!' : 'Application Rejected', {
+                description:
+                  reviewAction === 'approve'
+                    ? `${selectedApplication.applicantName} has been approved to adopt ${selectedApplication.profile?.petName ?? 'this pet'}.`
+                    : `Application from ${selectedApplication.applicantName} has been rejected.`,
+              });
 
       setShowReviewDialog(false);
       setSelectedApplication(null);
@@ -477,7 +477,7 @@ export default function AdoptionApplicationReview() {
         error instanceof Error ? error : new Error(String(error))
       );
       haptics.trigger('error');
-      toast.error('Failed to submit review. Please try again.');
+      void toast.error('Failed to submit review. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

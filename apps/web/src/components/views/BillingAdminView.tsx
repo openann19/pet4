@@ -6,11 +6,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+
 import { SubscriptionAdminPanel } from '@/components/payments/SubscriptionAdminPanel';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { getTypographyClasses } from '@/lib/typography';
-import { PremiumCard } from '@/components/enhanced/PremiumCard';
 
 export function BillingAdminView(): React.JSX.Element {
   return (
@@ -28,4 +27,3 @@ export function BillingAdminView(): React.JSX.Element {
     </PageTransitionWrapper>
   );
 }
-

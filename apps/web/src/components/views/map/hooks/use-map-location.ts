@@ -32,14 +32,14 @@ export function useMapLocation(): UseMapLocationReturn {
       const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
       setCoarseLocation(coarse);
       setLocationPermission('granted');
-      toast.success(t.map?.locationEnabled ?? 'Location enabled');
+      void toast.success(t.map?.locationEnabled ?? 'Location enabled');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Location error', err, { action: 'getUserLocation' });
       setLocationPermission('denied');
       setUserLocation(DEFAULT_LOCATION);
       setCoarseLocation(DEFAULT_LOCATION);
-      toast.error(t.map?.locationDenied ?? 'Location access denied. Using default location.');
+      void toast.error(t.map?.locationDenied ?? 'Location access denied. Using default location.');
     } finally {
       setIsLocating(false);
     }

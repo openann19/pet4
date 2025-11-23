@@ -46,7 +46,7 @@ export function AppealDialog({
 
   const handleSubmit = async () => {
     if (appealText.trim().length < 50) {
-      toast.error('Please provide more details (at least 50 characters)');
+      void toast.error('Please provide more details (at least 50 characters)');
       return;
     }
 
@@ -56,7 +56,7 @@ export function AppealDialog({
     try {
       const user = await userService.user();
       if (!user) {
-        toast.error('User not authenticated');
+        void toast.error('User not authenticated');
         return;
       }
 
@@ -69,14 +69,14 @@ export function AppealDialog({
         reportId
       );
 
-      toast.success('Appeal submitted successfully. Our team will review it within 24-48 hours.', {
-        duration: 4000,
-      });
+      void toast.success('Appeal submitted successfully. Our team will review it within 24-48 hours.', {
+                duration: 4000,
+              });
 
       onAppealed?.();
       handleClose();
     } catch {
-      toast.error('Failed to submit appeal. Please try again.');
+      void toast.error('Failed to submit appeal. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
