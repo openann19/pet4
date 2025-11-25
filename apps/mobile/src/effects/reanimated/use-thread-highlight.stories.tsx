@@ -19,7 +19,7 @@ interface MessageProps {
 }
 
 function MessageComponent({ text, isThread = false, color = '#4F46E5' }: MessageProps) {
-  const { style, highlight, unhighlight, toggle, isHighlighted } = useThreadHighlight({
+  const { style, toggle, isHighlighted } = useThreadHighlight({
     highlightColor: color,
     glowRadius: 8,
     enablePulse: isThread,

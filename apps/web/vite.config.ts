@@ -627,17 +627,25 @@ export default defineConfig(async (): Promise<VitestConfig> => {
               if (id.includes('react-router')) {
                 return 'react-vendor';
               }
-              // UI libraries
+              // UI libraries - split Radix into its own chunk
               if (id.includes('@radix-ui')) {
                 return 'ui-vendor';
               }
-              // Icons
+              // Icons - separate chunk for icon libraries
               if (id.includes('@phosphor-icons') || id.includes('lucide-react')) {
                 return 'icons-vendor';
               }
               // Query library
               if (id.includes('@tanstack/react-query')) {
                 return 'query-vendor';
+              }
+              // Animation libraries - split Framer Motion
+              if (id.includes('framer-motion')) {
+                return 'animation-vendor';
+              }
+              // Form libraries
+              if (id.includes('react-hook-form') || id.includes('@hookform')) {
+                return 'form-vendor';
               }
               // Utils - combine common utilities
               if (
@@ -649,8 +657,10 @@ export default defineConfig(async (): Promise<VitestConfig> => {
               ) {
                 return 'utils-vendor';
               }
-              // Map libraries - let Vite handle dynamic imports automatically
-              // Removed manual chunk to allow proper code-splitting
+              // Map libraries - separate chunk for lazy loading
+              if (id.includes('maplibre') || id.includes('mapbox')) {
+                return 'map-vendor';
+              }
               // ML/TensorFlow - separate chunk for lazy loading
               if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models')) {
                 return 'ml-vendor';
@@ -658,6 +668,14 @@ export default defineConfig(async (): Promise<VitestConfig> => {
               // Three.js - separate chunk for 3D features
               if (id.includes('three')) {
                 return 'three-vendor';
+              }
+              // Crypto/Security libraries
+              if (id.includes('crypto') || id.includes('argon2') || id.includes('bcrypt')) {
+                return 'crypto-vendor';
+              }
+              // Media/Video libraries
+              if (id.includes('hls.js') || id.includes('video') || id.includes('media')) {
+                return 'media-vendor';
               }
               // Other vendor code
               return 'vendor';

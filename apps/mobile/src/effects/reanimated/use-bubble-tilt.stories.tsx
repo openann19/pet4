@@ -6,7 +6,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import Animated from 'react-native-reanimated'
-import { GestureDetector, Gesture } from 'react-native-gesture-handler'
+import { GestureDetector } from 'react-native-gesture-handler'
 import { useBubbleTilt } from './use-bubble-tilt'
 
 const { width } = Dimensions.get('window')

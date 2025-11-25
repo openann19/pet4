@@ -34,7 +34,7 @@ function WaveAnimationDemo() {
     enabled: enabled && direction === 'vertical',
   })
 
-  const { createWaveStyle, progress } = useMultiWave(3)
+  const { createWaveStyle } = useMultiWave(3)
 
   return (
     <View style={styles.container}>
