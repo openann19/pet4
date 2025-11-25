@@ -60,9 +60,7 @@ describe('useMessageHandling', () => {
     const setMessages = vi
       .fn((updater: (prev: ChatMessage[] | undefined) => ChatMessage[]) => {
         updatedMessages = updater(initialMessages);
-      })
-      // Cast to match React Dispatch<SetStateAction<ChatMessage[]>>
-      as unknown as Dispatch<SetStateAction<ChatMessage[]>>;
+      }) as Dispatch<SetStateAction<ChatMessage[]>>;
 
     const enqueue = vi.fn();
     const typingSend = vi.fn();

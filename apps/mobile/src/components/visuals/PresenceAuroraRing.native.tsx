@@ -8,12 +8,7 @@
 
 import React, { useMemo } from 'react';
 import { View, StyleSheet, type ViewStyle } from 'react-native';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withRepeat,
-} from 'react-native-reanimated';
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withRepeat } from '@petspark/motion';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 

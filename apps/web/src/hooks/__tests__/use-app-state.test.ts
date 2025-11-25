@@ -2,15 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 import { useAppState } from '../use-app-state';
+import { createLogger } from '@/lib/logger';
 
 // Mock dependencies
 vi.mock('@/hooks/use-storage');
 vi.mock('@/contexts/AuthContext');
-vi.mock('@/lib/logger');
 
 const mockUseStorage = vi.hoisted(() => vi.fn());
 const mockUseAuth = vi.hoisted(() => vi.fn());
-const mockCreateLogger = vi.hoisted(() => vi.fn());
 
 vi.mock('@/hooks/use-storage', () => ({
   useStorage: mockUseStorage,
@@ -20,19 +19,12 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: mockUseAuth,
 }));
 
-vi.mock('@/lib/logger', () => ({
-  createLogger: mockCreateLogger,
-}));
-
 describe('useAppState', () => {
   const mockSetHasSeenWelcome = vi.fn();
-  const mockLogger = {
-    error: vi.fn(),
-  };
+  const mockLogger = createLogger('test');
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockCreateLogger.mockReturnValue(mockLogger);
     mockSetHasSeenWelcome.mockResolvedValue(undefined);
   });
 

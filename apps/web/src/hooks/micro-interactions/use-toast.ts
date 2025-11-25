@@ -20,7 +20,6 @@ import {
   useSharedValue,
   withSpring,
   withTiming,
-  withDelay,
   type SharedValue,
 } from '@petspark/motion';
 import { createLogger } from '@/lib/logger';

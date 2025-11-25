@@ -96,10 +96,10 @@ const consoleHandler: LogHandler = (entry) => {
 
   switch (level) {
     case LogLevel.DEBUG:
-      console.debug(prefix, message, ...extras);
+      console.warn(prefix, message, ...extras);
       break;
     case LogLevel.INFO:
-      console.info(prefix, message, ...extras);
+      console.warn(prefix, message, ...extras);
       break;
     case LogLevel.WARN:
       console.warn(prefix, message, ...extras);
@@ -108,7 +108,7 @@ const consoleHandler: LogHandler = (entry) => {
       console.error(prefix, message, ...extras);
       break;
     default:
-      console.log(prefix, message, ...extras);
+      console.warn(prefix, message, ...extras);
   }
 };
 

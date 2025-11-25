@@ -138,7 +138,7 @@ const announcementQueue = new AnnouncementQueue();
 export function announceEnhanced(announcement: EnhancedAnnouncement): void {
   const announcementWithTimestamp: EnhancedAnnouncement = {
     ...announcement,
-    timestamp: announcement.timestamp || Date.now(),
+    timestamp: announcement.timestamp ?? Date.now(),
   };
 
   announcementQueue.add(announcementWithTimestamp);
@@ -175,7 +175,11 @@ export function announceActionCompletion(action: string, result?: string, contex
 /**
  * Announce error
  */
-export function announceError(error: string, context?: string, nextSteps?: readonly string[]): void {
+export function announceError(
+  error: string,
+  context?: string,
+  nextSteps?: readonly string[]
+): void {
   announceEnhanced({
     message: `Error: ${error}`,
     priority: 'assertive',
@@ -187,7 +191,11 @@ export function announceError(error: string, context?: string, nextSteps?: reado
 /**
  * Announce success
  */
-export function announceSuccess(message: string, context?: string, nextSteps?: readonly string[]): void {
+export function announceSuccess(
+  message: string,
+  context?: string,
+  nextSteps?: readonly string[]
+): void {
   announceEnhanced({
     message: `Success: ${message}`,
     priority: 'polite',

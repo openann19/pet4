@@ -127,7 +127,8 @@ export const LENIENT_PERFORMANCE_BUDGET: PerformanceBudgetConfig = {
  */
 export function getPerformanceBudget(): PerformanceBudgetConfig {
   const isProduction = import.meta.env.PROD;
-  const budgetMode = import.meta.env.VITE_PERFORMANCE_BUDGET_MODE || 'default';
+  const budgetMode =
+    (import.meta.env.VITE_PERFORMANCE_BUDGET_MODE as string | undefined) ?? 'default';
 
   if (budgetMode === 'strict') {
     return STRICT_PERFORMANCE_BUDGET;

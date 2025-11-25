@@ -11,8 +11,8 @@ import {
 import {
   springConfigs,
   timingConfigs,
-  type SpringConfig,
-  type TimingConfig,
+  // Unused: type SpringConfig,
+  // Unused: type TimingConfig,
 } from '@/effects/reanimated/transitions';
 
 export interface VariantDefinition {

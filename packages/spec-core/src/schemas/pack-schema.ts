@@ -1,10 +1,12 @@
 import { z } from 'zod'
 
+const PACK_ID_REGEX = /^[a-z0-9-]+(\.[a-z0-9-]+)*$/
+
 /**
  * Pack metadata schema
  */
 export const PackMetadataSchema = z.object({
-  packId: z.string().min(1),
+  packId: z.string().regex(PACK_ID_REGEX, 'Invalid pack ID format'),
   version: z.string().regex(/^\d+\.\d+\.\d+$/),
   name: z.string().min(1),
   description: z.string().optional(),
@@ -23,7 +25,7 @@ export type PackMetadata = z.infer<typeof PackMetadataSchema>
  * Pack dependency schema
  */
 export const PackDependencySchema = z.object({
-  packId: z.string().min(1),
+  packId: z.string().regex(PACK_ID_REGEX, 'Invalid pack ID format'),
   version: z.string().regex(/^\d+\.\d+\.\d+$/),
   source: z.enum(['local', 'remote', 'registry']).optional(),
   url: z.string().url().optional(),

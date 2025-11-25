@@ -23,15 +23,7 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  Layout,
-  FadeInRight,
-  FadeOutLeft,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, Layout, FadeInRight, FadeOutLeft } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import type { AdoptionListingFilters } from '@/hooks/api/use-adoption-marketplace'
@@ -103,12 +95,12 @@ function formatFilterValue(key: keyof AdoptionListingFilters, value: unknown): s
 // Convert filters object to array of filter chips
 function filtersToChips(filters: AdoptionListingFilters): FilterChip[] {
   const chips: FilterChip[] = []
-  
+
   Object.entries(filters).forEach(([key, value]) => {
     const filterKey = key as keyof AdoptionListingFilters
-    
+
     if (value === undefined || value === null) return
-    
+
     if (Array.isArray(value)) {
       if (value.length === 0) return
       // For arrays, create one chip for the entire array
@@ -134,7 +126,7 @@ function filtersToChips(filters: AdoptionListingFilters): FilterChip[] {
       })
     }
   })
-  
+
   return chips
 }
 
@@ -146,26 +138,26 @@ function FilterChipComponent({
   readonly onRemove: (filterKey: keyof AdoptionListingFilters, value?: string | number) => void
 }): React.JSX.Element {
   const scale = useSharedValue(1)
-  
+
   const handlePress = useCallback(() => {
     logger.debug('Filter chip removed', { filterKey: chip.filterKey, value: chip.value })
-    
+
     // Animate press
     scale.value = withSpring(0.9, { damping: 10, stiffness: 400 })
     setTimeout(() => {
       scale.value = withSpring(1, { damping: 15, stiffness: 300 })
     }, 100)
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    
+
     onRemove(chip.filterKey, chip.value)
   }, [chip.filterKey, chip.value, onRemove, scale])
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }), [scale])
-  
+
   return (
     <AnimatedPressable
       entering={FadeInRight.duration(300)}
@@ -192,21 +184,21 @@ export function FilterChips({
   onClearAll,
 }: FilterChipsProps): React.JSX.Element | null {
   const chips = filtersToChips(filters)
-  
+
   const handleClearAll = useCallback(() => {
     logger.debug('All filters cleared', { chipCount: chips.length })
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     onClearAll()
   }, [chips.length, onClearAll])
-  
+
   // Don't render if no active filters
   if (chips.length === 0) {
     return null
   }
-  
+
   return (
     <Animated.View
       entering={FadeInRight.duration(400)}
@@ -226,7 +218,7 @@ export function FilterChips({
             onRemove={onRemoveFilter}
           />
         ))}
-        
+
         {/* Clear All Button */}
         {chips.length > 1 && (
           <Animated.View

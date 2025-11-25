@@ -2,13 +2,7 @@ import { colors } from '@mobile/theme/colors'
 import * as Haptics from 'expo-haptics'
 import React, { useEffect } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Animated, {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from '@petspark/motion'
 import type { Notification } from './types'
 
 interface NotificationToastProps {

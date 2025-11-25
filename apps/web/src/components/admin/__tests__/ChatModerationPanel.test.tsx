@@ -6,6 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
+import React from 'react';
 import userEvent from '@testing-library/user-event';
 import ChatModerationPanel from '../ChatModerationPanel';
 import { adminModerationApi } from '@/lib/api/admin';
@@ -26,33 +27,27 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('@petspark/motion', () => {
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+
   const MotionView = ({
     children,
-    className,
-    onClick,
+    ...props
   }: {
-    children: React.ReactNode;
-    className?: string;
-    onClick?: () => void;
-  }) => (
-    <div className={className} onClick={onClick}>
-      {children}
-    </div>
-  );
+    children?: React.ReactNode;
+    [key: string]: unknown;
+  }) => React.createElement('div', props, children);
 
   const motion = {
-    button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-      <button type={props.type ?? 'button'} {...props}>
-        {children}
-      </button>
-    ),
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-      <div {...props}>{children}</div>
-    ),
+    ...(actual.motion ?? {}),
+    button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) =>
+      React.createElement('button', { type: props.type ?? 'button', ...props }, children),
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) =>
+      React.createElement('div', props, children),
   };
 
   return {
+    ...actual,
     MotionView,
     motion,
   };

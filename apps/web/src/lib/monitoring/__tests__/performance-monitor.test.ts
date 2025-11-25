@@ -66,15 +66,14 @@ const createObserverInstance = (callback: PerformanceObserverCallback): MockObse
   return instance;
 };
 
-const MockPerformanceObserver = vi
-  .fn((callback: PerformanceObserverCallback) => createObserverInstance(callback))
-  .mockName('MockPerformanceObserver') as unknown as typeof PerformanceObserver;
+const MockPerformanceObserver = vi.fn().mockImplementation((callback: PerformanceObserverCallback) => {
+  return createObserverInstance(callback);
+});
 
 vi.stubGlobal('PerformanceObserver', MockPerformanceObserver);
 
 const resetObserverInstances = (): void => {
   observerInstances.length = 0;
-  (MockPerformanceObserver as unknown as vi.Mock).mockClear();
 };
 
 const getObserverInstances = (): readonly MockObserverInstance[] => observerInstances;
@@ -92,7 +91,7 @@ const emitObserverEntries = (entryType: string, entries: PerformanceEntry[]): vo
     getEntries: () => entries,
     getEntriesByName: () => entries,
     getEntriesByType: () => entries,
-  };
+  } as PerformanceObserverEntryList;
 
   observer.callback(list);
 };
@@ -121,6 +120,7 @@ describe('PerformanceMonitor', () => {
     // Mock window
     Object.defineProperty(global, 'window', {
       value: {
+        PerformanceObserver: MockPerformanceObserver,
         performance: mockPerformance,
         addEventListener: vi.fn(),
       },
@@ -175,17 +175,25 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle LCP observer error', () => {
-      MockPerformanceObserver.mockImplementationOnce((callback: PerformanceObserverCallback) => {
-        const instance = createObserverInstance(callback);
-        instance.observe.mockImplementation(() => {
-          throw new Error('Not supported');
-        });
-        return instance;
-      });
+      const OriginalObserver = MockPerformanceObserver;
+      const MockObserverWithErrors = class {
+        constructor(callback: PerformanceObserverCallback) {
+          const instance = createObserverInstance(callback);
+          instance.observe.mockImplementation(() => {
+            throw new Error('Not supported');
+          });
+          return instance;
+        }
+      };
+
+      vi.stubGlobal('PerformanceObserver', MockObserverWithErrors);
 
       expect(() => {
         performanceMonitor.init();
       }).not.toThrow();
+
+      // Restore original mock
+      vi.stubGlobal('PerformanceObserver', OriginalObserver);
     });
   });
 
@@ -193,8 +201,7 @@ describe('PerformanceMonitor', () => {
     it('should observe FID', () => {
       performanceMonitor.init();
 
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
+      const observerCalls = getObserverInstances();
       expect(observerCalls.length).toBeGreaterThan(0);
     });
 
@@ -209,15 +216,7 @@ describe('PerformanceMonitor', () => {
       ];
 
       // Find FID observer callback
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      const fidCallback = observerCalls.find(
-        (call) => call[0] && typeof call[0] === 'function'
-      )?.[0] as (list: { getEntries: () => PerformanceEntry[] }) => void;
-
-      if (fidCallback) {
-        fidCallback({ getEntries: () => entries });
-      }
+      emitObserverEntries('first-input', entries);
 
       const summary = performanceMonitor.getSummary();
       expect(summary.totalMetrics).toBeGreaterThanOrEqual(0);
@@ -228,8 +227,7 @@ describe('PerformanceMonitor', () => {
     it('should observe CLS', () => {
       performanceMonitor.init();
 
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
+      const observerCalls = getObserverInstances();
       expect(observerCalls.length).toBeGreaterThan(0);
     });
 
@@ -247,16 +245,8 @@ describe('PerformanceMonitor', () => {
         } as PerformanceEntry & { value: number; hadRecentInput: boolean },
       ];
 
-      // Find CLS observer callback
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      const clsCallback = observerCalls.find(
-        (call) => call[0] && typeof call[0] === 'function'
-      )?.[0] as (list: { getEntries: () => PerformanceEntry[] }) => void;
-
-      if (clsCallback) {
-        clsCallback({ getEntries: () => entries });
-      }
+      // Find CLS observer and emit entries
+      emitObserverEntries('layout-shift', entries);
 
       const summary = performanceMonitor.getSummary();
       expect(summary.totalMetrics).toBeGreaterThanOrEqual(0);
@@ -267,9 +257,8 @@ describe('PerformanceMonitor', () => {
     it('should observe resource entries', () => {
       performanceMonitor.init();
 
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      expect(observerCalls.length).toBeGreaterThan(0);
+      const instances = getObserverInstances();
+      expect(instances.length).toBeGreaterThan(0);
     });
 
     it('should record slow resource loads', () => {
@@ -285,15 +274,7 @@ describe('PerformanceMonitor', () => {
       ];
 
       // Find resource observer callback
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      const resourceCallback = observerCalls.find(
-        (call) => call[0] && typeof call[0] === 'function'
-      )?.[0] as (list: { getEntries: () => PerformanceEntry[] }) => void;
-
-      if (resourceCallback) {
-        resourceCallback({ getEntries: () => entries });
-      }
+      emitObserverEntries('resource', entries);
 
       const summary = performanceMonitor.getSummary();
       expect(summary.totalMetrics).toBeGreaterThanOrEqual(0);
@@ -312,15 +293,7 @@ describe('PerformanceMonitor', () => {
       ];
 
       // Find resource observer callback
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      const resourceCallback = observerCalls.find(
-        (call) => call[0] && typeof call[0] === 'function'
-      )?.[0] as (list: { getEntries: () => PerformanceEntry[] }) => void;
-
-      if (resourceCallback) {
-        resourceCallback({ getEntries: () => entries });
-      }
+      emitObserverEntries('resource', entries);
 
       const summary = performanceMonitor.getSummary();
       expect(summary.totalMetrics).toBeGreaterThanOrEqual(0);
@@ -331,8 +304,7 @@ describe('PerformanceMonitor', () => {
     it('should observe user timing marks and measures', () => {
       performanceMonitor.init();
 
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
+      const observerCalls = getObserverInstances();
       expect(observerCalls.length).toBeGreaterThan(0);
     });
 
@@ -347,16 +319,8 @@ describe('PerformanceMonitor', () => {
         } as PerformanceEntry,
       ];
 
-      // Find user timing observer callback
-      const observerCalls = (MockPerformanceObserver as unknown as { mock: { calls: unknown[][] } })
-        .mock.calls;
-      const timingCallback = observerCalls.find(
-        (call) => call[0] && typeof call[0] === 'function'
-      )?.[0] as (list: { getEntries: () => PerformanceEntry[] }) => void;
-
-      if (timingCallback) {
-        timingCallback({ getEntries: () => entries });
-      }
+      // Emit user timing entries
+      emitObserverEntries('measure', entries);
 
       const summary = performanceMonitor.getSummary();
       expect(summary.totalMetrics).toBeGreaterThanOrEqual(0);
@@ -606,10 +570,8 @@ describe('PerformanceMonitor', () => {
       performanceMonitor.cleanup();
 
       // Observers should be disconnected
-      const observerCalls = (
-        MockPerformanceObserver as unknown as { mock: { instances: MockPerformanceObserver[] } }
-      ).mock.instances;
-      observerCalls.forEach((observer) => {
+      const observers = getObserverInstances();
+      observers.forEach((observer) => {
         expect(observer.disconnect).toHaveBeenCalled();
       });
     });

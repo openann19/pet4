@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom';
+import { memo } from 'react';
 import { Navigation } from './Navigation';
 import { Sidebar } from './Sidebar';
 import { MobileNavigation } from './MobileNavigation';
 
-export function MainLayout() {
+export const MainLayout = memo(function MainLayout() {
   return (
     <div className="flex h-screen bg-background">
       {/* Desktop Sidebar */}
@@ -30,4 +31,4 @@ export function MainLayout() {
       </div>
     </div>
   );
-}
+});

@@ -23,13 +23,7 @@ import {
   StyleSheet,
   type TextInputProps,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  interpolateColor,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSpring, interpolateColor } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import { colors } from '@mobile/theme/colors'

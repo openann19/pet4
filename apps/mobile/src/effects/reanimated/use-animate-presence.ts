@@ -4,16 +4,10 @@
  */
 
 import { useEffect, useState, useRef } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  type SharedValue
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring, type SharedValue } from '@petspark/motion'
 import { springConfigs, timingConfigs } from './transitions'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseAnimatePresenceOptions {
   isVisible: boolean
@@ -209,4 +203,3 @@ export function useAnimatePresence(
     shouldRender
   }
 }
-

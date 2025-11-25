@@ -6,7 +6,7 @@
 
 import { createLogger } from './logger'
 import { telemetry } from './telemetry'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('performance-budget')
 

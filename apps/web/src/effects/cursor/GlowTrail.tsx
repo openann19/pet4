@@ -12,8 +12,8 @@ import { useUIConfig } from "@/hooks/use-ui-config";
  * Respects reduced motion preferences
  */
 export default function GlowTrail() {
-    const _uiConfig = useUIConfig();
-    const r = useRef<HTMLDivElement>(null);
+  const _uiConfig = useUIConfig();
+  const r = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const { enableGlowTrail } = useFeatureFlags();
 
@@ -22,7 +22,7 @@ export default function GlowTrail() {
       return;
     }
 
-    const el = r.current!;
+    const _el = r.current!;
     const pts: { x: number; y: number; el: HTMLDivElement }[] = [];
     const pool: HTMLDivElement[] = [];
 

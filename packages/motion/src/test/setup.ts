@@ -22,6 +22,7 @@ vi.mock('react-native-reanimated', () => {
       exp: (t: number) => Math.pow(2, 10 * (t - 1)),
       cubic: (t: number) => t * t * t,
       linear: (t: number) => t,
+      elastic: (_bounciness: number) => (t: number) => t,
     },
   }
 })

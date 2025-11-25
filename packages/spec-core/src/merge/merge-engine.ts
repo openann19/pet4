@@ -18,7 +18,18 @@ export function computePackHash(pack: Pack): string {
  * Compute SHA-256 hash of merged spec
  */
 export function computeMergedSpecHash(spec: MergedSpec): string {
-  const content = JSON.stringify(spec, Object.keys(spec).sort())
+  const normalized = JSON.parse(JSON.stringify(spec)) as MergedSpec
+  normalized.mergedAt = 'normalized'
+  if (normalized.metadata) {
+    if ('mergeDuration' in normalized.metadata) {
+      normalized.metadata.mergeDuration = 0
+    }
+    if ('hash' in normalized.metadata) {
+      delete normalized.metadata.hash
+    }
+  }
+
+  const content = JSON.stringify(normalized, Object.keys(normalized).sort())
   return createHash('sha256').update(content, 'utf8').digest('hex')
 }
 

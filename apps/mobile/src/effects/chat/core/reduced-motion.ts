@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 
-import { useSharedValue, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, type SharedValue } from '@petspark/motion'
 import { importOptional } from '@/utils/optional-imports'
 
 // Optional RN import (lazy/try-catch for web)

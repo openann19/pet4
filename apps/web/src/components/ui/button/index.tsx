@@ -57,11 +57,6 @@ export interface ButtonProps
   readonly rightIcon?: React.ReactNode;
   readonly loadingIcon?: React.ReactNode;
 
-  // Accessibility
-  readonly ariaLabel?: string;
-  readonly ariaDescribedBy?: string;
-  readonly role?: string;
-
   // Animation
   readonly disableAnimation?: boolean;
   readonly animationDuration?: number;
@@ -136,9 +131,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       leftIcon,
       rightIcon,
       loadingIcon,
-      ariaLabel,
-      ariaDescribedBy,
-      role,
       variant = 'primary',
       size = 'md',
       disabled = false,
@@ -153,7 +145,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       confirmMessage = 'Are you sure?',
       className,
       onClick,
-      ...props
+      ...restProps
     }: ButtonProps, ref: React.Ref<HTMLButtonElement>) => {
     // const theme = useTheme() // TODO: Use when theme hook is available
 
@@ -236,6 +228,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       </>
     )
 
+    const {
+      role,
+      type,
+      ['aria-label']: ariaLabelProp,
+      ['aria-describedby']: ariaDescribedByProp,
+      ...domProps
+    } = restProps as typeof restProps & {
+      role?: string
+      type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type']
+      'aria-label'?: string
+      'aria-describedby'?: string
+    }
+
+    const computedAriaLabel =
+      ariaLabelProp ?? (isIconOnly && typeof children === 'string' ? children : undefined)
+
     // Motion props for animation
     const motionProps: HTMLMotionProps<'button'> = disableAnimation ? {} : {
       whileTap: buttonAnimations.tap,
@@ -245,11 +253,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Accessibility props
     const accessibilityProps = {
-      'aria-label': ariaLabel ?? (isIconOnly && typeof children === 'string' ? children : undefined),
-      'aria-describedby': ariaDescribedBy,
+      role,
+      'aria-label': computedAriaLabel,
+      'aria-describedby': ariaDescribedByProp,
       'aria-disabled': loading || disabled,
       'aria-busy': loading,
-      role
+      type: type ?? 'button',
+      ...domProps,
     }
 
     // Use motion.button only when animations are enabled to avoid prop conflicts
@@ -262,8 +272,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           onClick={handleClick}
           title={tooltip}
           data-tracking-id={trackingId}
+          data-slot="button"
           {...accessibilityProps}
-          {...props}
         >
           {buttonContent}
         </button>
@@ -280,6 +290,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         title={tooltip}
         data-tracking-id={trackingId}
+        data-slot="button"
         {...accessibilityProps}
         {...motionProps}
       >

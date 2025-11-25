@@ -3,11 +3,11 @@
  * Momentum-based scrolling with decay physics for mobile
  */
 
-import { useSharedValue, useAnimatedStyle, withDecay, cancelAnimation, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withDecay, cancelAnimation, type SharedValue } from '@petspark/motion'
 import { useCallback, useState, useRef } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseKineticScrollOptions {
   damping?: number
@@ -79,10 +79,10 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
       return
     }
 
-    const decayConfig = clamp !== undefined 
+    const decayConfig = clamp !== undefined
       ? { velocity: velocity.value, deceleration: damping, rubberBandEffect: true as const, clamp }
       : { velocity: velocity.value, deceleration: damping }
-    
+
     offset.value = withDecay(decayConfig)
   }, [isDragging, damping, clamp, velocity, offset, enabled, isReducedMotion])
 
@@ -118,4 +118,3 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
     reset,
   }
 }
-

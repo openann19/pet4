@@ -144,14 +144,15 @@ export function useSwipeStats(): UseQueryResult<
   },
   Error
 > {
-  const { data: swipeHistory = [] } = useSwipeHistory();
+  const { data: swipeHistory } = useSwipeHistory();
 
   return useQuery({
     queryKey: queryKeys.swipes.stats,
     queryFn: () => {
-      const totalSwipes = swipeHistory.length;
-      const likes = swipeHistory.filter((s) => s.action === 'like').length;
-      const passes = swipeHistory.filter((s) => s.action === 'pass').length;
+      const history = swipeHistory ?? [];
+      const totalSwipes = history.length;
+      const likes = history.filter((s) => s.action === 'like').length;
+      const passes = history.filter((s) => s.action === 'pass').length;
       const successRate = likes > 0 ? Math.round((likes / totalSwipes) * 100) : 0;
 
       return {
@@ -161,7 +162,7 @@ export function useSwipeStats(): UseQueryResult<
         successRate,
       };
     },
-    enabled: !!swipeHistory,
+    enabled: swipeHistory !== undefined,
   });
 }
 

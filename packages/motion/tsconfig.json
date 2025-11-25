@@ -9,6 +9,7 @@
     "lib": ["ES2022"],
     "jsx": "react-jsx",
     "types": ["react"],
+    "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types", "./src/types"]
   },
   "include": ["src/**/*", "src/types/**/*.d.ts", "types/**/*.d.ts"],

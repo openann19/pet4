@@ -1,26 +1,17 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { hashPassword, verifyPassword, generatePasswordResetToken } from '../password-utils';
 
 // Mock the logger
-const mockLogger = {
-  error: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  debug: vi.fn(),
-};
-
 vi.mock('../logger', () => ({
-  log: mockLogger,
+  log: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
 }));
 
-// Mock crypto API
-const mockCrypto = {
-  getRandomValues: vi.fn(),
-  subtle: {
-    importKey: vi.fn(),
-    deriveBits: vi.fn(),
-  },
-};
+// Import after setting up the global crypto mock
+import { hashPassword, verifyPassword, generatePasswordResetToken } from '../password-utils';
 
 // Store original crypto
 const originalCrypto = global.crypto;
@@ -28,7 +19,13 @@ const originalCrypto = global.crypto;
 describe('password-utils', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    global.crypto = mockCrypto as any;
+    // Reset global crypto mock between tests
+    const mockCrypto = (global as any).crypto;
+    if (mockCrypto) {
+      mockCrypto.getRandomValues.mockClear();
+      mockCrypto.subtle.importKey.mockClear();
+      mockCrypto.subtle.deriveBits.mockClear();
+    }
   });
 
   afterEach(() => {
@@ -37,6 +34,9 @@ describe('password-utils', () => {
 
   describe('hashPassword', () => {
     it('should hash password with generated salt', async () => {
+      // Always use global crypto mock to avoid reference mismatch
+      const mockCrypto = (global as any).crypto;
+
       // Mock salt generation
       const mockSalt = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
       mockCrypto.getRandomValues.mockReturnValue(mockSalt);
@@ -55,22 +55,23 @@ describe('password-utils', () => {
 
       const result = await hashPassword('test-password');
 
-      expect(mockCrypto.getRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
-      expect(mockCrypto.subtle.importKey).toHaveBeenCalledWith(
+      // Assert on the same global mock instance that the code uses
+      expect((global as any).crypto.getRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
+      expect((global as any).crypto.subtle.importKey).toHaveBeenCalledWith(
         'raw',
         expect.any(Uint8Array),
         'PBKDF2',
         false,
         ['deriveBits']
       );
-      expect(mockCrypto.subtle.deriveBits).toHaveBeenCalledWith(
+      expect((global as any).crypto.subtle.deriveBits).toHaveBeenCalledWith(
         {
           name: 'PBKDF2',
           salt: mockSalt,
           iterations: 100000,
           hash: 'SHA-256',
         },
-        expect.any(CryptoKey),
+        expect.any(Object),
         256
       );
       expect(result).toHaveProperty('hash');

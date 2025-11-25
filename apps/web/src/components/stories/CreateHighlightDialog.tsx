@@ -60,7 +60,7 @@ export default function CreateHighlightDialog({
   }, [selectedStories, userStories, coverImageUrl]);
 
   const handleToggleStory = (storyId: string) => {
-    haptics.trigger('selection');
+    void haptics.trigger('selection');
     setSelectedStories((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(storyId)) {
@@ -73,7 +73,7 @@ export default function CreateHighlightDialog({
   };
 
   const handleSetCover = (story: Story) => {
-    haptics.trigger('light');
+    void haptics.trigger('light');
     setCoverImageUrl(story.thumbnailUrl ?? story.mediaUrl);
     void toast.success('Cover image set', { duration: 1500 });
   };
@@ -89,7 +89,7 @@ export default function CreateHighlightDialog({
       return;
     }
 
-    haptics.trigger('success');
+    void haptics.trigger('success');
 
     const selectedStoryObjects = userStories.filter((s) => selectedStories.has(s.id));
     const firstPet = userPets?.[0];
@@ -181,7 +181,7 @@ export default function CreateHighlightDialog({
                       >
                         <button
                           onClick={() => { handleToggleStory(story.id); }}
-                          className={`aspect-[9/16] rounded-2xl overflow-hidden relative group w-full border-2 transition-all ${String(isSelected
+                          className={`aspect-9/16 rounded-2xl overflow-hidden relative group w-full border-2 transition-all ${String(isSelected
                             ? 'border-primary shadow-lg'
                             : 'border-transparent hover:border-border')
                             }`}
@@ -241,7 +241,7 @@ export default function CreateHighlightDialog({
           <Button
             onClick={handleSave}
             disabled={!title.trim() || selectedStories.size === 0}
-            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+            className="bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
           >
             <Plus size={18} weight="bold" className="mr-2" />
             {existingHighlight ? 'Update' : 'Create'} Highlight

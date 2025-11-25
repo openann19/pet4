@@ -6,14 +6,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  interpolate,
-  Extrapolation,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolate, Extrapolation } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { PremiumModal } from '@/components/enhanced/overlays/PremiumModal'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'

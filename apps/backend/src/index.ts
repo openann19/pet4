@@ -5,6 +5,8 @@
  * Integrated with PostgreSQL, JWT authentication, rate limiting, audit logging, and monitoring.
  */
 
+import 'dotenv/config'
+
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -214,13 +216,19 @@ if (pool && adminConfigService && configHistoryService && adminAuditLogger) {
     adminAuditLogger,
   })
 
+  // Performance monitoring routes
+  const performanceRouter = (await import('./routes/admin/performance')).default
+
   // Admin config routes with authentication
   app.use('/api/v1', authenticateJWT, adminConfigRouter)
 
   // Admin routes (analytics, audit logs) with authentication
   app.use('/api/v1', authenticateJWT, adminRouter)
 
-  logger.info('Admin routes registered')
+  // Performance monitoring routes with authentication
+  app.use('/api/admin', authenticateJWT, performanceRouter)
+
+  logger.info('Admin routes registered (including performance monitoring)')
 } else {
   logger.warn('Admin routes disabled (PostgreSQL not configured)')
 }

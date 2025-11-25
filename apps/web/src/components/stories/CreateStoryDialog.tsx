@@ -41,7 +41,7 @@ export default function CreateStoryDialog({
   userAvatar,
   onStoryCreated,
 }: CreateStoryDialogProps) {
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [_mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string>('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
   const [caption, setCaption] = useState('');
@@ -61,7 +61,7 @@ export default function CreateStoryDialog({
     return firstFilter;
   });
   const [filterIntensity, setFilterIntensity] = useState(1);
-  const [selectedMusic, setSelectedMusic] = useState(() => {
+  const [selectedMusic, _setSelectedMusic] = useState(() => {
     const firstMusic = STORY_MUSIC_TRACKS[0];
     if (!firstMusic) {
       throw new Error('STORY_MUSIC_TRACKS array is empty');
@@ -101,7 +101,7 @@ export default function CreateStoryDialog({
     setMediaPreview('');
   };
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!mediaPreview) {
       void toast.error('Please select a photo or video');
       return;
@@ -146,12 +146,12 @@ export default function CreateStoryDialog({
       onStoryCreated(newStory);
 
       void toast.success('Story created!', {
-                description: 'Your story is now live for 24 hours',
-                duration: 3000,
-              });
+        description: 'Your story is now live for 24 hours',
+        duration: 3000,
+      });
 
       handleClose();
-    } catch (error) {
+    } catch {
       void toast.error('Failed to create story');
     } finally {
       setIsProcessing(false);

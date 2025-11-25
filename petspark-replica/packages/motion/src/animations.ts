@@ -2,21 +2,22 @@
  * Core animation utilities and presets for PETSPARK
  */
 
-import { Transition } from 'framer-motion';
-import type { 
-  AnimationVariants, 
-  AnimationPreset, 
-  AnimationDuration, 
+import type { Transition } from 'framer-motion'
+import type {
+  AnimationVariants,
+  AnimationPreset,
+  AnimationDuration,
   AnimationEasing,
-  CompleteAnimation 
-} from './types';
+  CompleteAnimation,
+  Variant,
+} from './types'
 
 // Duration presets
 export const DURATIONS = {
   fast: 150,
   normal: 300,
   slow: 500,
-} as const satisfies Record<AnimationDuration, number>;
+} as const satisfies Record<AnimationDuration, number>
 
 // Easing presets
 export const EASINGS = {
@@ -31,7 +32,7 @@ export const EASINGS = {
   backOut: [0.175, 0.885, 0.32, 1.275],
   backInOut: [0.68, -0.55, 0.265, 1.55],
   anticipate: [0, 0, 0.2, 1],
-} as const satisfies Record<AnimationEasing, number[]>;
+} as const satisfies Record<AnimationEasing, number[]>
 
 // Common transitions
 export const TRANSITIONS = {
@@ -62,7 +63,7 @@ export const TRANSITIONS = {
     stiffness: 400,
     damping: 10,
   },
-} as const;
+} as const
 
 // Fade animations
 export const fadeVariants: AnimationVariants = {
@@ -71,7 +72,7 @@ export const fadeVariants: AnimationVariants = {
   hover: { opacity: 0.8 },
   tap: { opacity: 0.6 },
   disabled: { opacity: 0.5 },
-};
+}
 
 // Scale animations
 export const scaleVariants: AnimationVariants = {
@@ -80,7 +81,7 @@ export const scaleVariants: AnimationVariants = {
   hover: { scale: 1.05 },
   tap: { scale: 0.95 },
   disabled: { scale: 0.9, opacity: 0.5 },
-};
+}
 
 // Slide animations
 export const slideVariants: AnimationVariants = {
@@ -89,7 +90,7 @@ export const slideVariants: AnimationVariants = {
   hover: { y: -2 },
   tap: { y: 2 },
   disabled: { opacity: 0.5, y: 0 },
-};
+}
 
 // Slide from left
 export const slideLeftVariants: AnimationVariants = {
@@ -98,7 +99,7 @@ export const slideLeftVariants: AnimationVariants = {
   hover: { x: -2 },
   tap: { x: 2 },
   disabled: { opacity: 0.5, x: 0 },
-};
+}
 
 // Slide from right
 export const slideRightVariants: AnimationVariants = {
@@ -107,7 +108,7 @@ export const slideRightVariants: AnimationVariants = {
   hover: { x: 2 },
   tap: { x: -2 },
   disabled: { opacity: 0.5, x: 0 },
-};
+}
 
 // Drawer animations
 export const drawerVariants: AnimationVariants = {
@@ -115,7 +116,7 @@ export const drawerVariants: AnimationVariants = {
   visible: { x: 0 },
   hover: { x: -4 },
   disabled: { x: '100%' },
-};
+}
 
 // Modal animations
 export const modalVariants: AnimationVariants = {
@@ -124,32 +125,32 @@ export const modalVariants: AnimationVariants = {
   hover: { scale: 1.02 },
   tap: { scale: 0.98 },
   disabled: { opacity: 0.5, scale: 0.9 },
-};
+}
 
 // Card animations
 export const cardVariants: AnimationVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.9 },
   visible: { opacity: 1, y: 0, scale: 1 },
-  hover: { 
+  hover: {
     y: -8,
     scale: 1.02,
     boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
   },
   tap: { scale: 0.98 },
   disabled: { opacity: 0.5, scale: 0.9 },
-};
+}
 
 // Button animations
 export const buttonVariants: AnimationVariants = {
   hidden: { opacity: 0, scale: 0.8 },
   visible: { opacity: 1, scale: 1 },
-  hover: { 
+  hover: {
     scale: 1.05,
     boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
   },
   tap: { scale: 0.95 },
   disabled: { opacity: 0.5, scale: 0.9 },
-};
+}
 
 // List animations (staggered)
 export const listVariants: AnimationVariants = {
@@ -161,7 +162,7 @@ export const listVariants: AnimationVariants = {
       delayChildren: 0.2,
     },
   },
-};
+}
 
 export const listItemVariants: AnimationVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -169,7 +170,7 @@ export const listItemVariants: AnimationVariants = {
   hover: { x: 4 },
   tap: { scale: 0.98 },
   disabled: { opacity: 0.5 },
-};
+}
 
 // Tab animations
 export const tabVariants: AnimationVariants = {
@@ -178,12 +179,12 @@ export const tabVariants: AnimationVariants = {
   hover: { y: -2 },
   tap: { scale: 0.95 },
   disabled: { opacity: 0.5 },
-};
+}
 
 // Loading animations
 export const loadingVariants: AnimationVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
     transition: {
       repeat: Infinity,
@@ -191,24 +192,24 @@ export const loadingVariants: AnimationVariants = {
       duration: 1,
     },
   },
-};
+}
 
 // Pulse animations
 export const pulseVariants: AnimationVariants = {
   hidden: { opacity: 1 },
-  visible: { 
+  visible: {
     opacity: [1, 0.5, 1],
     transition: {
       repeat: Infinity,
       duration: 2,
     },
   },
-};
+}
 
 // Bounce animations
 export const bounceVariants: AnimationVariants = {
   hidden: { y: 0 },
-  visible: { 
+  visible: {
     y: [0, -10, 0],
     transition: {
       repeat: Infinity,
@@ -216,12 +217,12 @@ export const bounceVariants: AnimationVariants = {
       ease: 'easeInOut',
     },
   },
-};
+}
 
 // Shake animations
 export const shakeVariants: AnimationVariants = {
   hidden: { x: 0 },
-  visible: { 
+  visible: {
     x: [0, -5, 5, -5, 5, 0],
     transition: {
       repeat: Infinity,
@@ -229,7 +230,7 @@ export const shakeVariants: AnimationVariants = {
       repeatDelay: 2,
     },
   },
-};
+}
 
 // Animation presets collection
 export const ANIMATION_PRESETS: Record<string, AnimationPreset> = {
@@ -313,40 +314,40 @@ export const ANIMATION_PRESETS: Record<string, AnimationPreset> = {
     variants: shakeVariants,
     transition: TRANSITIONS.default,
   },
-};
+}
 
 // Helper functions
 export function createCustomAnimation(
   hidden: CompleteAnimation,
   visible: CompleteAnimation,
   options?: {
-    hover?: CompleteAnimation;
-    tap?: CompleteAnimation;
-    disabled?: CompleteAnimation;
-    transition?: Transition;
+    hover?: CompleteAnimation
+    tap?: CompleteAnimation
+    disabled?: CompleteAnimation
+    transition?: Transition
   }
 ): AnimationVariants {
   const variants: AnimationVariants = {
-    hidden,
-    visible,
-  };
+    hidden: hidden as Variant,
+    visible: visible as Variant,
+  }
 
-  if (options?.hover) variants.hover = options.hover;
-  if (options?.tap) variants.tap = options.tap;
-  if (options?.disabled) variants.disabled = options.disabled;
+  if (options?.hover) variants.hover = options.hover as Variant
+  if (options?.tap) variants.tap = options.tap as Variant
+  if (options?.disabled) variants.disabled = options.disabled as Variant
 
-  return variants;
+  return variants
 }
 
 export function getAnimationPreset(name: keyof typeof ANIMATION_PRESETS): AnimationPreset {
-  return ANIMATION_PRESETS[name];
+  return ANIMATION_PRESETS[name]!
 }
 
 export function getTransition(
   type: keyof typeof TRANSITIONS,
   custom?: Partial<Transition>
 ): Transition {
-  return { ...TRANSITIONS[type], ...custom };
+  return { ...TRANSITIONS[type], ...custom }
 }
 
 export function staggeredAnimation(
@@ -362,5 +363,5 @@ export function staggeredAnimation(
         delayChildren: 0,
       },
     },
-  };
+  }
 }

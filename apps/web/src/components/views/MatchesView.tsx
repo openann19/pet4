@@ -24,7 +24,6 @@ import {
   Sparkle,
   VideoCamera,
 } from '@phosphor-icons/react';
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import {
@@ -60,9 +59,9 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   const [playdatePet, setPlaydatePet] = useState<(Pet & { match: Match }) | null>(null);
 
   const { activeCall, initiateCall, endCall, toggleMute, toggleVideo } = useCall(
-    selectedPet?.id || 'room',
-    userPet?.id || 'user',
-    userPet?.name || 'You',
+    selectedPet?.id ?? 'room',
+    userPet?.id ?? 'user',
+    userPet?.name ?? 'You',
     userPet?.photo
   );
 
@@ -80,7 +79,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   }, []);
 
   const handlePetVideoCall = useCallback((pet: Pet & { match: Match }) => {
-    initiateCall(pet.id, pet.name, pet.photo, 'video');
+    void initiateCall(pet.id, pet.name, pet.photo, 'video');
   }, [initiateCall]);
 
   const handleStartChat = useCallback(() => {
@@ -95,13 +94,10 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   const emptyPulseOpacity = useSharedValue(0.5);
   const emptyTextOpacity = useSharedValue(0);
   const emptyTextY = useSharedValue(20);
-
-  // Interactive element hooks
-  const cardHover = useHoverLift();
+  const innerHeartScale = useSharedValue(1);
 
   // Presence hooks
   const emptyStatePresence = useAnimatePresence({ isVisible: matchedPets.length === 0 && !isLoading });
-  const selectedPetPresence = useAnimatePresence({ isVisible: !!selectedPet });
 
   // Initialize empty state animations
   useEffect(() => {
@@ -122,8 +118,27 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         -1,
         false
       );
+
+      innerHeartScale.value = withRepeat(
+        withSequence(
+          withTiming(1.2, { duration: 750 }),
+          withTiming(1, { duration: 750 })
+        ),
+        -1,
+        true
+      );
     }
-  }, [matchedPets.length, isLoading]);
+  }, [
+    matchedPets.length,
+    isLoading,
+    emptyHeartScale,
+    emptyHeartRotate,
+    emptyTextOpacity,
+    emptyTextY,
+    emptyPulseScale,
+    emptyPulseOpacity,
+    innerHeartScale,
+  ]);
 
   const emptyHeartStyle = useAnimatedStyle(() => ({
     transform: `scale(${emptyHeartScale.value}) rotate(${emptyHeartRotate.value}deg)`,
@@ -139,6 +154,10 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     transform: [{ translateY: emptyTextY.value }],
   })) as AnimatedStyle;
 
+  const innerHeartStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: innerHeartScale.value }],
+  })) as AnimatedStyle;
+
   if (isLoading) {
     return null;
   }
@@ -150,31 +169,14 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           {emptyStatePresence.shouldRender && (
             <MotionView
               style={emptyHeartStyle}
-              className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
+              className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
-              <MotionView
-                style={
-                  useAnimatedStyle(() => ({
-                    transform: [
-                      {
-                        scale: withRepeat(
-                          withSequence(
-                            withTiming(1.2, { duration: 750 }),
-                            withTiming(1, { duration: 750 })
-                          ),
-                          -1,
-                          true
-                        ) as any,
-                      },
-                    ],
-                  })) as AnimatedStyle
-                }
-              >
+              <MotionView style={innerHeartStyle}>
                 <Heart size={48} className="text-primary" />
               </MotionView>
               <MotionView
                 style={emptyPulseStyle}
-                className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
+                className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"
               />
             </MotionView>
           )}
@@ -208,7 +210,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
               <MotionView>
                 <Button
                   onClick={handleStartChat}
-                  className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
+                  className="bg-linear-to-r from-primary to-accent hover:shadow-xl transition-all"
                   size="lg"
                 >
                   <ChatCircle size={20} weight="fill" className="mr-2" />
@@ -289,11 +291,11 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                 userPet={userPet}
                 onClose={() => setPlaydatePet(null)}
                 onStartVideoCall={() => {
-                  initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
+                  void initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
                   setPlaydatePet(null);
                 }}
                 onStartVoiceCall={() => {
-                  initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
+                  void initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
                   setPlaydatePet(null);
                 }}
               />
@@ -354,13 +356,13 @@ function MatchCard({
         tabIndex={0}
         aria-label={`View match details for ${pet.name}`}
       >
-        <MotionView className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <MotionView className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         <div className="relative h-64 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
           <img src={pet.photo} alt={pet.name} className="w-full h-full object-cover" />
-          <MotionView className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <MotionView className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
           <MotionView className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl">
-            <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
               {pet.match.compatibilityScore}%
             </span>
           </MotionView>
@@ -387,7 +389,7 @@ function MatchCard({
           </MotionView>
         </div>
 
-        <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
+        <div className="p-5 bg-linear-to-br from-white/40 to-white/20 backdrop-blur-md">
           <div className="flex items-start justify-between mb-2 gap-2">
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-bold truncate">{pet.name}</h3>
@@ -447,7 +449,7 @@ function MatchCardActions({
         }}
         role="button"
         tabIndex={0}
-        className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
+        className="w-10 h-10 rounded-full bg-linear-to-br from-secondary to-primary flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
         aria-label="Schedule playdate"
       >
         <Calendar size={18} weight="fill" className="text-white" aria-hidden="true" />
@@ -468,7 +470,7 @@ function MatchCardActions({
         }}
         role="button"
         tabIndex={0}
-        className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
+        className="w-10 h-10 rounded-full bg-linear-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
         aria-label="Start video call"
       >
         <VideoCamera size={18} weight="fill" className="text-white" aria-hidden="true" />
@@ -490,7 +492,7 @@ function MatchCardActions({
           }}
           role="button"
           tabIndex={0}
-          className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
+          className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
           aria-label="Start chat"
         >
           <ChatCircle size={18} weight="fill" className="text-white" aria-hidden="true" />

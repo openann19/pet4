@@ -1,15 +1,6 @@
 import { useEffect, useMemo, useCallback } from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  withDelay,
-  FadeIn,
-  FadeOut,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withDelay, FadeIn, FadeOut } from '@petspark/motion'
 // TypingUser type definition for mobile
 interface TypingUser {
   userId: string

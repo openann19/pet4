@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { logger, LogLevel, createLogger, log } from '../logger'
+import { Logger, logger, LogLevel, createLogger, log } from '../logger'
 import type { LogEntry } from '../logger'
 
 describe('Logger', () => {
@@ -485,4 +485,3 @@ describe('Logger', () => {
     })
   })
 })
-

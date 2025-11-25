@@ -10,7 +10,7 @@ import {
   type MotionValue,
   type AnimationPlaybackControls,
 } from 'framer-motion'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import type { Transition } from 'framer-motion'
 import type { CSSProperties } from 'react'
 import {
@@ -405,7 +405,7 @@ export function withDelay(
 /**
  * withDecay - Decay animation (not directly supported in Framer Motion, use timing as fallback)
  */
-export function withDecay(config?: { velocity?: number; deceleration?: number }): {
+export function withDecay(_config?: { velocity?: number; deceleration?: number }): {
   target: number
   transition: Transition
 } {

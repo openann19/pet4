@@ -11,12 +11,7 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useAnimatedStyle, useSharedValue, withSpring, withTiming } from '@petspark/motion'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import type { IconProps } from 'react-native-vector-icons/Icon'
 

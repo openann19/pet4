@@ -75,7 +75,7 @@ export function useAuth(): {
     user,
     isLoading,
     error,
-    isAuthenticated: enhancedAuth.isAuthenticated(),
+    isAuthenticated: user !== null || enhancedAuth.isAuthenticated(),
     hasRole: (role: string): boolean => enhancedAuth.hasRole(role as UserRole),
     isOwner: enhancedAuth.isOwner.bind(enhancedAuth),
     updateProfile,

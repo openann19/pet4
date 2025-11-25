@@ -1,5 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 /**
  * Feature Flags Configuration
  *
@@ -27,10 +25,11 @@ const defaultFlags: FeatureFlags = {
  */
 export function getFeatureFlags(): FeatureFlags {
   // In production, could fetch from remote config
-  if (typeof window !== 'undefined' && '__FEATURE_FLAGS__' in window) {
+  if (typeof window !== 'undefined' && window) {
     const windowWithFlags = window as Window & { __FEATURE_FLAGS__?: Partial<FeatureFlags> };
-    if (windowWithFlags.__FEATURE_FLAGS__) {
-      return { ...defaultFlags, ...windowWithFlags.__FEATURE_FLAGS__ };
+    const runtimeFlags = windowWithFlags?.__FEATURE_FLAGS__;
+    if (runtimeFlags) {
+      return { ...defaultFlags, ...runtimeFlags };
     }
   }
 

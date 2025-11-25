@@ -16,7 +16,7 @@ import PetDetailDialog from '@/components/PetDetailDialog';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { calculateCompatibility } from '@/lib/matching';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
-import MapLibreMap from '@/components/maps/MapLibreMap';
+import LazyMapLibreMap from '@/components/maps/LazyMapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 
 interface DiscoverMapModeProps {
@@ -164,7 +164,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
 
   return (
     <div className="relative h-[calc(100vh-14rem)] max-h-175 bg-background rounded-2xl overflow-hidden border border-border shadow-xl">
-      <MapLibreMap
+      <LazyMapLibreMap
         center={mapCenter}
         zoom={12}
         markers={mapMarkers}

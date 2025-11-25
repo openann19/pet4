@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import InteractiveMap, { type MapMarker } from './InteractiveMap';
+import LazyInteractiveMap, { type MapMarker } from './LazyInteractiveMap';
 import type { Location } from '@/lib/maps/types';
 
 vi.mock('react-leaflet', () => ({
@@ -25,7 +25,7 @@ vi.mock('leaflet', () => ({
   },
 }));
 
-describe('InteractiveMap', () => {
+describe('LazyInteractiveMap', () => {
   const defaultCenter: Location = { lat: 40.7128, lng: -74.006 };
 
   beforeEach(() => {
@@ -33,12 +33,12 @@ describe('InteractiveMap', () => {
   });
 
   it('renders map container', () => {
-    render(<InteractiveMap center={defaultCenter} />);
+    render(<LazyInteractiveMap center={defaultCenter} />);
     expect(screen.getByTestId('map-container')).toBeInTheDocument();
   });
 
   it('renders tile layer', () => {
-    render(<InteractiveMap center={defaultCenter} />);
+    render(<LazyInteractiveMap center={defaultCenter} />);
     expect(screen.getByTestId('tile-layer')).toBeInTheDocument();
   });
 
@@ -56,7 +56,7 @@ describe('InteractiveMap', () => {
       },
     ];
 
-    render(<InteractiveMap center={defaultCenter} markers={markers} />);
+    render(<LazyInteractiveMap center={defaultCenter} markers={markers} />);
     expect(screen.getByTestId('marker-40.7128--74.006')).toBeInTheDocument();
     expect(screen.getByTestId('marker-40.7589--73.9851')).toBeInTheDocument();
   });
@@ -76,13 +76,13 @@ describe('InteractiveMap', () => {
     ];
 
     const { container } = render(
-      <InteractiveMap center={defaultCenter} markers={markers} clusterMarkers />
+      <LazyInteractiveMap center={defaultCenter} markers={markers} clusterMarkers />
     );
     expect(container).toBeInTheDocument();
   });
 
   it('applies custom height', () => {
-    const { container } = render(<InteractiveMap center={defaultCenter} height="500px" />);
+    const { container } = render(<LazyInteractiveMap center={defaultCenter} height="500px" />);
     const mapDiv = container.querySelector('.relative');
     expect(mapDiv).toHaveStyle({ height: '500px' });
   });

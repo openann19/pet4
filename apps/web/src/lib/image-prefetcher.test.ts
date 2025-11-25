@@ -5,19 +5,28 @@ describe('ImagePrefetcher', () => {
   beforeEach(() => {
     imagePrefetcher.clearCache();
     vi.clearAllMocks();
+    // Reset MockImage instances between tests
+    const MockImageClass = (global as any).Image;
+    if (MockImageClass && MockImageClass.instances) {
+      MockImageClass.instances = [];
+    }
   });
 
   describe('prefetch', () => {
     it('should prefetch an image successfully', async () => {
       const url = 'https://example.com/image.jpg';
-      const img = new Image();
-      vi.spyOn(window, 'Image').mockImplementation(() => img);
 
       const resultPromise = imagePrefetcher.prefetch(url);
 
+      // Simulate successful image loading by triggering the global Image mock's onload
       setTimeout(() => {
-        Object.defineProperty(img, 'complete', { value: true, writable: true });
-        img.onload?.({} as Event);
+        // The imagePrefetcher creates its own Image instance, we just need to trigger its callback
+        const MockImageClass = (global as any).Image;
+        const img = MockImageClass.instances[MockImageClass.instances.length - 1]; // Get the most recent Image instance
+        if (img) {
+          Object.defineProperty(img, 'complete', { value: true, writable: true });
+          img.onload?.({} as Event);
+        }
       }, 10);
 
       const result = await resultPromise;
@@ -27,13 +36,16 @@ describe('ImagePrefetcher', () => {
 
     it('should handle prefetch errors', async () => {
       const url = 'https://example.com/invalid.jpg';
-      const img = new Image();
-      vi.spyOn(window, 'Image').mockImplementation(() => img);
 
       const resultPromise = imagePrefetcher.prefetch(url);
 
       setTimeout(() => {
-        img.onerror?.({} as Event);
+        // Get the most recent Image instance and trigger its onerror callback
+        const MockImageClass = (global as any).Image;
+        const img = MockImageClass.instances[MockImageClass.instances.length - 1];
+        if (img) {
+          img.onerror?.({} as Event);
+        }
       }, 10);
 
       const result = await resultPromise;
@@ -44,14 +56,17 @@ describe('ImagePrefetcher', () => {
 
     it('should cache prefetched images', async () => {
       const url = 'https://example.com/image.jpg';
-      const img = new Image();
-      vi.spyOn(window, 'Image').mockImplementation(() => img);
 
       const resultPromise1 = imagePrefetcher.prefetch(url);
 
       setTimeout(() => {
-        Object.defineProperty(img, 'complete', { value: true, writable: true });
-        img.onload?.({} as Event);
+        // Get the most recent Image instance and trigger its onload callback
+        const MockImageClass = (global as any).Image;
+        const img = MockImageClass.instances[MockImageClass.instances.length - 1];
+        if (img) {
+          Object.defineProperty(img, 'complete', { value: true, writable: true });
+          img.onload?.({} as Event);
+        }
       }, 10);
 
       await resultPromise1;
@@ -64,8 +79,6 @@ describe('ImagePrefetcher', () => {
 
     it('should handle timeout', async () => {
       const url = 'https://example.com/slow.jpg';
-      const img = new Image();
-      vi.spyOn(window, 'Image').mockImplementation(() => img);
 
       const options: ImagePrefetchOptions = { timeout: 100 };
       const resultPromise = imagePrefetcher.prefetch(url, options);
@@ -80,7 +93,19 @@ describe('ImagePrefetcher', () => {
     it('should prefetch multiple images', async () => {
       const urls = ['https://example.com/image1.jpg', 'https://example.com/image2.jpg'];
 
-      const results = await imagePrefetcher.prefetchBatch(urls);
+      const resultPromise = imagePrefetcher.prefetchBatch(urls);
+
+      // Simulate successful image loading for all images in the batch
+      setTimeout(() => {
+        const MockImageClass = (global as any).Image;
+        // Trigger onload for all Image instances created by the batch
+        MockImageClass.instances.forEach((img: any) => {
+          Object.defineProperty(img, 'complete', { value: true, writable: true });
+          img.onload?.({} as Event);
+        });
+      }, 10);
+
+      const results = await resultPromise;
       expect(results).toHaveLength(2);
       expect(results.every((r: { url: string }) => r.url !== undefined)).toBe(true);
     });

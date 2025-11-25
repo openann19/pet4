@@ -18,9 +18,9 @@ import {
 } from '@shopify/react-native-skia'
 import React, { useMemo, useState } from 'react'
 import type { SharedValue } from 'react-native-reanimated'
-import { useAnimatedReaction } from 'react-native-reanimated'
+import { useAnimatedReaction } from '@petspark/motion'
 import { createLogger } from '../../../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('ribbon-shader')
 

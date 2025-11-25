@@ -8,7 +8,10 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { PerformanceBudget } from '../performance-budget';
 import type { RuntimeMetrics } from '../performance-budget';
 import { DEFAULT_PERFORMANCE_BUDGET } from '../performance-budget.config';
-import { createRuntimeMetrics, createTestPerformanceBudgetConfig } from '@/test/utils/runtime-test-helpers';
+import {
+  createRuntimeMetrics,
+  createTestPerformanceBudgetConfig,
+} from '@/test/utils/runtime-test-helpers';
 
 describe('PerformanceBudget Runtime Tests', () => {
   let budget: PerformanceBudget;
@@ -35,12 +38,7 @@ describe('PerformanceBudget Runtime Tests', () => {
     });
 
     it('should handle undefined optional metrics', () => {
-      const metrics: RuntimeMetrics = {
-        fps: undefined,
-        frameTime: undefined,
-        memory: undefined,
-        jsExecutionTime: undefined,
-      };
+      const metrics: RuntimeMetrics = {};
 
       const violations = budget.checkRuntime(metrics);
 
@@ -51,9 +49,7 @@ describe('PerformanceBudget Runtime Tests', () => {
     it('should handle partial metrics', () => {
       const metrics: RuntimeMetrics = {
         fps: 60,
-        frameTime: undefined,
         memory: 50,
-        jsExecutionTime: undefined,
       };
 
       const violations = budget.checkRuntime(metrics);

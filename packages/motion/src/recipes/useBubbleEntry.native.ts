@@ -1,7 +1,7 @@
 /**
  * useBubbleEntry
  * Shared animation hook for staggered message/bubble entry animations
- * 
+ *
  * @packageDocumentation
  * @category Animation Hooks
  * @subcategory Chat Effects
@@ -9,10 +9,15 @@
 
 import { useCallback, useEffect, useMemo } from 'react'
 import { useSharedValue, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
-import { createSpringAnimation, createTimingAnimation, createDelayedAnimation, stopAnimation } from '../core/animations'
+import {
+  createSpringAnimation,
+  createTimingAnimation,
+  createDelayedAnimation,
+  stopAnimation,
+} from '../core/animations'
 import { useReducedMotion } from '../core/hooks'
 import type { BaseAnimationConfig } from '../core/types'
-import { isTruthy, isDefined } from '../utils/guards';
+import { isTruthy } from '../utils/guards'
 
 export interface UseBubbleEntryOptions extends BaseAnimationConfig {
   /**
@@ -157,13 +162,11 @@ const defaultConfig = {
   springConfig: {
     damping: 15,
     stiffness: 200,
-    mass: 1
-  }
+    mass: 1,
+  },
 } as const
 
-export function useBubbleEntry(
-  options: UseBubbleEntryOptions = {}
-): UseBubbleEntryReturn {
+export function useBubbleEntry(options: UseBubbleEntryOptions = {}): UseBubbleEntryReturn {
   const config = useMemo<ResolvedBubbleEntryConfig>(() => {
     const springOverrides = options.springConfig ?? {}
 
@@ -183,7 +186,7 @@ export function useBubbleEntry(
         damping: springOverrides.damping ?? defaultConfig.springConfig.damping,
         stiffness: springOverrides.stiffness ?? defaultConfig.springConfig.stiffness,
         mass: springOverrides.mass ?? defaultConfig.springConfig.mass,
-      }
+      },
     }
   }, [
     options.autoTrigger,
@@ -196,7 +199,7 @@ export function useBubbleEntry(
     options.index,
     options.initialOpacity,
     options.initialScale,
-  options.springConfig,
+    options.springConfig,
     options.staggerDelay,
   ])
   const isReducedMotion = useReducedMotion()
@@ -275,18 +278,18 @@ export function useBubbleEntry(
       // Full spring animations
       const springConfigWithDelay = {
         ...config.springConfig,
-        reducedMotion: false
+        reducedMotion: false,
       }
 
       // Position animation
       translateX.value = createDelayedAnimation(0, staggeredDelay, {
         type: 'spring',
-        springConfig: springConfigWithDelay
+        springConfig: springConfigWithDelay,
       })
 
       translateY.value = createDelayedAnimation(0, staggeredDelay, {
         type: 'spring',
-        springConfig: springConfigWithDelay
+        springConfig: springConfigWithDelay,
       })
 
       // Scale animation with bounce
@@ -298,39 +301,34 @@ export function useBubbleEntry(
             type: 'spring',
             springConfig: {
               ...springConfigWithDelay,
-              stiffness: config.springConfig.stiffness
-            }
+              stiffness: config.springConfig.stiffness,
+            },
           }
         )
 
         // Settle back to final scale
-        setTimeout(() => {
-          if (isTruthy(isVisible.value)) {
-            scale.value = createSpringAnimation(config.finalScale, springConfigWithDelay)
-          }
-        }, staggeredDelay + (config.entryDuration * 0.6))
-      } else {
-        scale.value = createDelayedAnimation(
-          config.finalScale,
-          staggeredDelay,
-          {
-            type: 'spring',
-            springConfig: springConfigWithDelay
-          }
+        setTimeout(
+          () => {
+            if (isTruthy(isVisible.value)) {
+              scale.value = createSpringAnimation(config.finalScale, springConfigWithDelay)
+            }
+          },
+          staggeredDelay + config.entryDuration * 0.6
         )
+      } else {
+        scale.value = createDelayedAnimation(config.finalScale, staggeredDelay, {
+          type: 'spring',
+          springConfig: springConfigWithDelay,
+        })
       }
 
       // Opacity animation (faster)
-      opacity.value = createDelayedAnimation(
-        config.finalOpacity,
-        staggeredDelay,
-        {
-          type: 'timing',
-          duration: config.entryDuration * 0.5,
-          reducedMotion: false,
-          timingConfig: {}
-        }
-      )
+      opacity.value = createDelayedAnimation(config.finalOpacity, staggeredDelay, {
+        type: 'timing',
+        duration: config.entryDuration * 0.5,
+        reducedMotion: false,
+        timingConfig: {},
+      })
 
       // Mark animation as complete
       setTimeout(() => {
@@ -368,13 +366,13 @@ export function useBubbleEntry(
       // Animated exit
       const exitTimingConfig = {
         duration: config.entryDuration * 0.5,
-        reducedMotion: false
+        reducedMotion: false,
       }
 
       opacity.value = createTimingAnimation(0, exitTimingConfig)
       scale.value = createSpringAnimation(config.initialScale, {
         ...config.springConfig,
-        reducedMotion: false
+        reducedMotion: false,
       })
 
       setTimeout(() => {
@@ -396,10 +394,10 @@ export function useBubbleEntry(
   // Create animated style
   const style = useAnimatedStyle(() => {
     const transforms: Array<{ [key: string]: number | string }> = []
-    if (translateX.value !== 0) transforms.push({ translateX: translateX.value })                                                                               
-    if (translateY.value !== 0) transforms.push({ translateY: translateY.value })                                                                               
+    if (translateX.value !== 0) transforms.push({ translateX: translateX.value })
+    if (translateY.value !== 0) transforms.push({ translateY: translateY.value })
     if (scale.value !== 1) transforms.push({ scale: scale.value })
-    
+
     return {
       transform: transforms,
       opacity: opacity.value,
@@ -409,7 +407,7 @@ export function useBubbleEntry(
   // Initialize and auto-trigger
   useEffect(() => {
     reset()
-    
+
     if (isTruthy(config.autoTrigger)) {
       // Small delay to ensure component is mounted
       const timeout = setTimeout(() => {

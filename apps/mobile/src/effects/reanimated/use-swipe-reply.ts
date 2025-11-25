@@ -3,21 +3,13 @@
  * Swipe-to-reply gesture for mobile using react-native-gesture-handler
  */
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  interpolate,
-  Extrapolation,
-  type SharedValue
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolate, Extrapolation, type SharedValue } from '@petspark/motion'
 import { useCallback } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
 import { haptic } from '@petspark/motion'
 import { springConfigs, timingConfigs } from './transitions'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseSwipeReplyOptions {
   onReply?: () => void
@@ -172,4 +164,3 @@ export function useSwipeReply(
     reset
   }
 }
-

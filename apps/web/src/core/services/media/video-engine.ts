@@ -25,7 +25,7 @@ export type VideoFrameCleanup = () => void;
  * @param options - Edit options
  * @returns Edited media
  */
-export async function editVideo(
+export function editVideo(
   input: MediaInput,
   _operations: VideoOperation[],
   _options: EditOptions = {}
@@ -33,16 +33,16 @@ export async function editVideo(
   // Video editing is not yet implemented
   // For now, return the input as-is
   if (input.type !== 'video') {
-    throw new Error('editVideo requires video input');
+    return Promise.reject(new Error('editVideo requires video input'));
   }
 
-  return {
+  return Promise.resolve({
     uri: input.uri,
     type: 'video',
     ...(input.width !== undefined && { width: input.width }),
     ...(input.height !== undefined && { height: input.height }),
     ...(input.durationSec !== undefined && { durationSec: input.durationSec }),
-  };
+  });
 }
 
 /**

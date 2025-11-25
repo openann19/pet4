@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, memo } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
@@ -30,11 +30,11 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = memo(forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild: _asChild = false, ...props }, ref) => {
     return (
       <button
@@ -44,8 +44,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       />
     );
   }
-);
+));
 
-Button.displayName = 'Button';
+Button.displayName = 'MemoizedButton';
 
 export { Button, buttonVariants };

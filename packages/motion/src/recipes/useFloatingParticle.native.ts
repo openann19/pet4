@@ -1,21 +1,21 @@
 /**
  * useFloatingParticle
  * Shared animation hook for creating floating particle effects
- * 
+ *
  * @packageDocumentation
  * @category Animation Hooks
  * @subcategory Particles
  */
 
 import { useCallback, useEffect, useMemo } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
 
 // Type helper for transform arrays to avoid React Native type strictness
-type TransformArray = any[]
+type TransformArray = Array<{ translateX?: number; translateY?: number; scale?: number }>
 import type { ParticleBaseConfig } from '../core/types'
 import { createSpringAnimation, createTimingAnimation, stopAnimation } from '../core/animations'
-import { useReducedMotion } from '../core/hooks'
-import { isTruthy, isDefined } from '../utils/guards';
+import { useReducedMotionSV } from '../reduced-motion'
+import { isTruthy } from '../utils/guards';
 
 export interface UseFloatingParticleOptions extends ParticleBaseConfig {
   /**
@@ -173,7 +173,7 @@ export function useFloatingParticle(
     options.spread,
     options.velocity,
   ])
-  const isReducedMotion = useReducedMotion()
+  const isReducedMotion = useReducedMotionSV()
 
   // Position values
   const x: SharedValue<number> = useSharedValue<number>(0)

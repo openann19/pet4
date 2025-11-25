@@ -4,11 +4,117 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
     <title>PawfectMatch - AI-Powered Pet Companion Matching</title>
+    <meta name="title" content="PawfectMatch - AI-Powered Pet Companion Matching" />
+    <meta name="description" content="Connect with pet lovers, find perfect matches for your furry friends, and build lasting pet friendships. AI-powered matching for dogs, cats, and more." />
+    <meta name="keywords" content="pet matching, pet social network, dog matching, cat matching, pet friends, pet companion, pet dating, pet meetup" />
+    <meta name="author" content="PawfectMatch" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pawfectmatch.com/" />
+    <meta property="og:title" content="PawfectMatch - AI-Powered Pet Companion Matching" />
+    <meta property="og:description" content="Connect with pet lovers, find perfect matches for your furry friends, and build lasting pet friendships." />
+    <meta property="og:image" content="https://pawfectmatch.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="PawfectMatch" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://pawfectmatch.com/" />
+    <meta name="twitter:title" content="PawfectMatch - AI-Powered Pet Companion Matching" />
+    <meta name="twitter:description" content="Connect with pet lovers, find perfect matches for your furry friends, and build lasting pet friendships." />
+    <meta name="twitter:image" content="https://pawfectmatch.com/twitter-image.jpg" />
+    <meta name="twitter:creator" content="@pawfectmatch" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PawfectMatch" />
+    <meta name="application-name" content="PawfectMatch" />
+    <meta name="msapplication-TileColor" content="#6366f1" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pawfectmatch.com/" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    
+    <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.pawfectmatch.com">
+    <link rel="dns-prefetch" href="https://api.pawfectmatch.com">
+    
+    <!-- Stylesheets -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PawfectMatch",
+      "description": "AI-Powered Pet Companion Matching Platform",
+      "url": "https://pawfectmatch.com",
+      "applicationCategory": "SocialNetworkApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1250"
+      }
+    }
+    </script>
     <script>
+      // Polyfill for react-native-reanimated on web
+      // Fixes "Cannot read properties of undefined (reading 'JEST_WORKER_ID')" error
+      // This MUST run before any module scripts load
+      (function() {
+        // Ensure process exists
+        if (typeof process === 'undefined') {
+          // eslint-disable-next-line no-global-assign
+          process = {};
+        }
+        
+        // Ensure process.env exists
+        if (!process.env) {
+          process.env = {};
+        }
+        
+        // Ensure JEST_WORKER_ID exists (even if undefined) to prevent errors
+        if (!('JEST_WORKER_ID' in process.env)) {
+          process.env.JEST_WORKER_ID = undefined;
+        }
+        
+        // Also set it on window.process.env for compatibility
+        if (typeof window !== 'undefined') {
+          window.process = process;
+          if (!window.process.env) {
+            window.process.env = {};
+          }
+          if (!('JEST_WORKER_ID' in window.process.env)) {
+            window.process.env.JEST_WORKER_ID = undefined;
+          }
+        }
+      })();
+      
       // Polyfill for CommonJS exports/module (fallback only - Vite should handle transformation)
       if (typeof exports === 'undefined') {
         window.exports = {};
@@ -114,21 +220,17 @@
         }
       })();
     </script>
-  <script type="module" crossorigin src="/assets/index-BUV2g3LC.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/utils-vendor-7mYxNw04.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-B2U5onNE.js">
-  <link rel="modulepreload" crossorigin href="/assets/ui-vendor-CttiZxwU.js">
-  <link rel="modulepreload" crossorigin href="/assets/react-vendor-atdIga2R.js">
-  <link rel="modulepreload" crossorigin href="/assets/feature-adoption-C919WvgL.js">
-  <link rel="modulepreload" crossorigin href="/assets/feature-community-DxZ7YsOF.js">
-  <link rel="modulepreload" crossorigin href="/assets/feature-admin-g8AIjMAb.js">
-  <link rel="modulepreload" crossorigin href="/assets/view-AdoptionView.tsx-BJlxubb2.js">
-  <link rel="modulepreload" crossorigin href="/assets/view-CommunityView.tsx-CD5NUxZ2.js">
-  <link rel="modulepreload" crossorigin href="/assets/feature-chat-CPR2_-OR.js">
-  <link rel="modulepreload" crossorigin href="/assets/feature-stories-DX9BRjll.js">
-  <link rel="modulepreload" crossorigin href="/assets/view-ProfileView.tsx-CUP3xfdt.js">
-  <link rel="modulepreload" crossorigin href="/assets/view-ChatView.tsx-DI-Ea8ls.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-G8Tn-Kel.css">
+  <script type="module" crossorigin src="/assets/index-Bn-snsxT.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/utils-vendor-C7mRQGAU.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-DMpShjOM.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-vendor-DG083FVs.js">
+  <link rel="modulepreload" crossorigin href="/assets/react-vendor-B5Qt8ygm.js">
+  <link rel="modulepreload" crossorigin href="/assets/view-AdoptionView.tsx-BUlrmGgb.js">
+  <link rel="modulepreload" crossorigin href="/assets/view-ChatView.tsx-BK23b5GE.js">
+  <link rel="modulepreload" crossorigin href="/assets/view-CommunityView.tsx-Cvh0x-wI.js">
+  <link rel="modulepreload" crossorigin href="/assets/view-MatchesView.tsx-kLLJUWEw.js">
+  <link rel="stylesheet" crossorigin href="/assets/vendor-B1CfjdFi.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-CTJjWOYI.css">
 </head>
 
 <body>

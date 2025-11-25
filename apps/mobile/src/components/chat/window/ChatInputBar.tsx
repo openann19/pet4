@@ -7,13 +7,7 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { View, TextInput, Pressable, StyleSheet, ScrollView, Modal, Text } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withSequence, withTiming } from '@petspark/motion'
 import { haptics } from '@/lib/haptics'
 import { TemplatePanel } from './TemplatePanel'
 import type { ChatMessage, MessageTemplate, SmartSuggestion } from '@/lib/chat-types'

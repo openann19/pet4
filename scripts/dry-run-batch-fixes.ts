@@ -33,7 +33,7 @@ import fg from 'fast-glob'
 import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { Project, SyntaxKind, Node, SourceFile, Identifier } from 'ts-morph'
+import { Project, SyntaxKind, SourceFile } from 'ts-morph'
 
 interface Options {
   apply: boolean
@@ -113,7 +113,7 @@ function removeUnusedImports(sf: SourceFile): boolean {
   let changed = false
   const imports = sf.getImportDeclarations()
   for (const imp of imports) {
-    const moduleName = imp.getModuleSpecifierValue()
+    const _moduleName = imp.getModuleSpecifierValue()
     const named = imp.getNamedImports()
     if (!named.length) continue
     // Determine usage of each identifier

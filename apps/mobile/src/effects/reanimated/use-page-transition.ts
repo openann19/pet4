@@ -1,7 +1,7 @@
-import { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming, withDelay } from '@petspark/motion'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UsePageTransitionOptions {
   isVisible: boolean

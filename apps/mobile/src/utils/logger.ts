@@ -94,7 +94,7 @@ export function registerGlobalLogHandler(handler: LogHandler): void {
   globalHandlers.add(handler)
 }
 
-class Logger {
+export class Logger {
   private level: LogLevel
   private handlers: Set<LogHandler> = new Set()
   private context: string = ''

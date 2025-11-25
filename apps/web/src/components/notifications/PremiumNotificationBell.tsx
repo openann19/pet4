@@ -82,21 +82,21 @@ export function PremiumNotificationBell(): JSX.Element {
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to check for new notifications', err);
+      void logger.error('Failed to check for new notifications', err);
     }
     return undefined;
   }, [allNotifications.length, lastCheckTime, isOpen, allNotifications]);
 
   const handleClick = useCallback((): void => {
     try {
-      haptics.medium();
+      void haptics.medium();
       setIsOpen(true);
       setLastCheckTime(Date.now());
       setHasNewNotification(false);
       void logger.info('Notification bell clicked', { unreadCount, urgentCount });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to handle notification bell click', err);
+      void logger.error('Failed to handle notification bell click', err);
     }
   }, [setLastCheckTime, unreadCount, urgentCount]);
 

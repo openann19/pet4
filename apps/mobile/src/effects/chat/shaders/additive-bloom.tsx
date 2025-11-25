@@ -9,8 +9,8 @@
 
 import { Canvas, Group, Paint, Rect, Skia } from '@shopify/react-native-skia'
 import React, { useMemo, useState } from 'react'
-import type { SharedValue } from 'react-native-reanimated'
-import { useAnimatedReaction } from 'react-native-reanimated'
+import type { SharedValue } from '@petspark/motion'
+import { useAnimatedReaction } from '@petspark/motion'
 
 /**
  * Draws a circular additive glow. Cheap and pretty.

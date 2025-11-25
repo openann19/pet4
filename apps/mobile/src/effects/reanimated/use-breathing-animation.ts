@@ -3,18 +3,10 @@
  * Gentle, organic breathing effect for ambient UI elements
  */
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  interpolate,
-  Easing,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Easing } from '@petspark/motion'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseBreathingAnimationOptions {
   minScale?: number

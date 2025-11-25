@@ -2,7 +2,7 @@ import { matchingAPI } from '@/api/matching-api';
 import type { MatchingConfig } from '@/core/domain/matching-config';
 import { DEFAULT_HARD_GATES, DEFAULT_MATCHING_WEIGHTS } from '@/core/domain/matching-config';
 import { screen, waitFor } from '@testing-library/dom';
-import { render } from '@testing-library/react';
+import { render } from '@/test/utils/test-wrapper';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MatchingConfigPanel } from './MatchingConfigPanel';

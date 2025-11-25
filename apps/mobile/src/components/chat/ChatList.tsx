@@ -14,13 +14,7 @@ import { FlashList } from '@shopify/flash-list'
 import React, { useCallback, useRef, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import Animated, {
-  FadeIn,
-  FadeOut,
-  Layout,
-  useAnimatedStyle,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Animated, FadeIn, FadeOut, Layout, useAnimatedStyle, type SharedValue } from '@petspark/motion'
 import { useLiquidDots } from '../../effects/chat/typing/use-liquid-dots'
 import { MessageBubble, type Message } from './MessageBubble'
 import { isTruthy } from '../../utils/shared';

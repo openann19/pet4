@@ -241,7 +241,7 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
         }}
         onPressIn={animation.handlePressIn}
         onPressOut={animation.handlePressOut}
-        style={[styles.item, selected && styles.itemActive]}
+        style={Object.assign({}, styles.item, selected && styles.itemActive)}
         accessibilityRole="tab"
         accessibilityState={{ selected }}
         accessibilityLabel={item.label}
@@ -255,14 +255,14 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
         {/* Icon */}
         {item.icon && (
           <Animated.Text
-            style={[{ fontSize: 24 }, animation.iconStyle, { opacity: selected ? 1 : 0.7 }]}
+            style={Object.assign({}, { fontSize: 24 }, animation.iconStyle, { opacity: selected ? 1 : 0.7 })}
           >
             {item.icon}
           </Animated.Text>
         )}
 
         {/* Label */}
-        <Text style={[styles.label, selected && styles.labelActive]} numberOfLines={1}>
+        <Text style={Object.assign({}, styles.label, selected && styles.labelActive)} numberOfLines={1}>
           {item.label}
         </Text>
 

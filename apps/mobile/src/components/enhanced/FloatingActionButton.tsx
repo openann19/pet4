@@ -7,16 +7,7 @@
 import React, { useEffect, useCallback } from 'react'
 import type { ViewStyle, StyleProp } from 'react-native'
 import { TouchableOpacity, Text, StyleSheet, Platform } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withRepeat,
-  withTiming,
-  withSequence,
-  withDelay,
-  Easing,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withRepeat, withTiming, withSequence, withDelay, Easing } from '@petspark/motion'
 import { AccessibilityInfo } from 'react-native'
 import * as Haptics from 'expo-haptics'
 import { isTruthy } from '@petspark/shared';

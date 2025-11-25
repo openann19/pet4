@@ -11,19 +11,11 @@
  */
 
 import { useCallback, useMemo } from 'react'
-import {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Easing, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming, type SharedValue } from '@petspark/motion'
 import { triggerHaptic } from '../core/haptic-manager'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Spring configuration for emoji lift

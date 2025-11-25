@@ -17,7 +17,7 @@ import {
   calculateDistance,
   formatDistance,
 } from '@/lib/maps/utils';
-import MapLibreMap from '@/components/maps/MapLibreMap';
+import LazyMapLibreMap from '@/components/maps/LazyMapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 import { forwardGeocode } from '@/lib/maps/geocoding';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
@@ -193,7 +193,7 @@ export default function VenuePicker({
           <div className="flex-1 relative">
             {userLocation && (
               <>
-                <MapLibreMap
+                <LazyMapLibreMap
                   center={mapCenter}
                   zoom={selectedVenue ? 15 : 13}
                   markers={mapMarkers}

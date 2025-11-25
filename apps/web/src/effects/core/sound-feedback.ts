@@ -119,7 +119,8 @@ export class SoundFeedbackService {
     }
 
     // Cooldown check
-    const now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+    const now =
+      typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
     if (now - this.lastPlayTime < this.cooldownMs) {
       return;
     }
@@ -175,15 +176,15 @@ export class SoundFeedbackService {
   /**
    * Get or generate sound buffer
    */
-  private async getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
+  private getSoundBuffer(soundType: SoundType): Promise<AudioBuffer | null> {
     // Check cache
     const cached = this.soundCache.get(soundType);
     if (cached) {
-      return cached;
+      return Promise.resolve(cached);
     }
 
     if (!this.audioContext) {
-      return null;
+      return Promise.resolve(null);
     }
 
     // Generate sound buffer based on type
@@ -192,7 +193,7 @@ export class SoundFeedbackService {
       this.soundCache.set(soundType, buffer);
     }
 
-    return buffer;
+    return Promise.resolve(buffer);
   }
 
   /**
@@ -301,7 +302,12 @@ export class SoundFeedbackService {
   /**
    * Generate click sound
    */
-  private generateClick(data: Float32Array, sampleRate: number, duration: number, frequency: number): void {
+  private generateClick(
+    data: Float32Array,
+    sampleRate: number,
+    duration: number,
+    frequency: number
+  ): void {
     const frameCount = data.length;
     for (let i = 0; i < frameCount; i++) {
       const t = i / sampleRate;
@@ -409,7 +415,7 @@ export class SoundFeedbackService {
   /**
    * Generate pop sound
    */
-  private generatePop(data: Float32Array, sampleRate: number, duration: number): void {
+  private generatePop(data: Float32Array, sampleRate: number, _duration: number): void {
     const frameCount = data.length;
     const frequency = 600;
 
@@ -438,7 +444,7 @@ export class SoundFeedbackService {
   /**
    * Generate buzz sound
    */
-  private generateBuzz(data: Float32Array, sampleRate: number, duration: number): void {
+  private generateBuzz(data: Float32Array, sampleRate: number, _duration: number): void {
     const frameCount = data.length;
     const frequency = 100;
 
@@ -521,6 +527,9 @@ export function getSoundFeedbackService(): SoundFeedbackService {
 /**
  * Play sound (convenience function)
  */
-export async function playSound(soundType: SoundType, options: { haptic?: boolean } = {}): Promise<void> {
+export async function playSound(
+  soundType: SoundType,
+  options: { haptic?: boolean } = {}
+): Promise<void> {
   return getSoundFeedbackService().play(soundType, options);
 }

@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useTimestampReveal } from './use-timestamp-reveal'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export default {
   title: 'Mobile/Animation Hooks/useTimestampReveal',
@@ -231,4 +231,3 @@ const styles = StyleSheet.create({
 })
 
 export { TimestampRevealDemo }
-

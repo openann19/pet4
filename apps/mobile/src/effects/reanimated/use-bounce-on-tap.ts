@@ -1,4 +1,4 @@
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import { useCallback } from 'react'
 
 export interface UseBounceOnTapOptions {

@@ -1,15 +1,9 @@
 import { useCallback } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, type SharedValue } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseHoverAnimationOptions {
   scale?: number

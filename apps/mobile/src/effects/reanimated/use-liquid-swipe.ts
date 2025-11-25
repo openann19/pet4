@@ -3,12 +3,12 @@
  * Liquid swipe animation with elastic bounce and momentum for mobile
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, withDecay, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withDecay, type SharedValue } from '@petspark/motion'
 import { useCallback, useState, useRef } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
 import { haptic } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseLiquidSwipeOptions {
   threshold?: number
@@ -74,7 +74,7 @@ export function useLiquidSwipe(options: UseLiquidSwipeOptions = {}) {
     if (Math.abs(currentTranslateX) > threshold || Math.abs(velocityX) > 500) {
       // Swipe complete
       const direction = currentTranslateX > 0 ? 1 : -1
-      
+
       if (isTruthy(hapticFeedback)) {
         haptic.medium()
       }
@@ -139,4 +139,3 @@ export function useLiquidSwipe(options: UseLiquidSwipeOptions = {}) {
     reset,
   }
 }
-

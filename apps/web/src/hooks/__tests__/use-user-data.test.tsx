@@ -17,6 +17,7 @@ import {
   type SwipeAction,
   type Playdate,
 } from '../use-user-data';
+import { APIClient } from '@/lib/api-client';
 
 // Quiet logger
 vi.mock('@/lib/logger', () => ({
@@ -28,23 +29,63 @@ vi.mock('@/lib/logger', () => ({
   }),
 }));
 
+vi.mock('@/lib/api-client', () => ({
+  APIClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}));
+
+const createTestClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, gcTime: Number.POSITIVE_INFINITY },
+      mutations: { retry: false },
+    },
+  });
+
 const makeWrapper = (client?: QueryClient) => {
-  const queryClient =
-    client ??
-    new QueryClient({
-      defaultOptions: {
-        queries: { retry: false, gcTime: 0 },
-        mutations: { retry: false },
-      },
-    });
+  const queryClient = client ?? createTestClient();
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
 
 describe('use-user-data hooks', () => {
+  const mockAPIClient = vi.mocked(APIClient);
+
   beforeEach(() => {
     vi.clearAllMocks();
+    mockAPIClient.get.mockReset();
+    mockAPIClient.post.mockReset();
+
+    mockAPIClient.get.mockImplementation(async (path: string) => {
+      if (path === '/swipes/history') {
+        return { data: [], status: 200 };
+      }
+      return { data: [], status: 200 };
+    });
+
+    mockAPIClient.post.mockImplementation(async (path: string, payload: unknown) => {
+      if (path === '/swipes') {
+        const swipe = {
+          ...(payload as Omit<SwipeAction, 'id' | 'timestamp'>),
+          id: `swipe-${Date.now()}`,
+          timestamp: new Date().toISOString(),
+        };
+        return { data: swipe, status: 200 };
+      }
+      if (path === '/playdates') {
+        return {
+          data: {
+            ...(payload as Omit<Playdate, 'id'>),
+            id: `playdate-${Date.now()}`,
+          },
+          status: 200,
+        };
+      }
+      return { data: payload, status: 200 };
+    });
   });
 
   describe('useUserPets', () => {
@@ -94,7 +135,7 @@ describe('use-user-data hooks', () => {
     });
 
     it('computes stats from provided history', async () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       client.setQueryData<SwipeAction[]>(['swipes', 'history'], [
         { id: '1', petId: 'p1', targetPetId: 'p2', action: 'like', timestamp: '2024-01-01' },
         { id: '2', petId: 'p1', targetPetId: 'p3', action: 'like', timestamp: '2024-01-02' },
@@ -120,7 +161,7 @@ describe('use-user-data hooks', () => {
 
   describe('useSwipeMutation', () => {
     it('performs swipe mutation', async () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       const wrapper = makeWrapper(client);
       const { result } = renderHook(() => useSwipeMutation(), { wrapper });
 
@@ -159,7 +200,7 @@ describe('use-user-data hooks', () => {
     });
 
     it('invalidates related queries on success', async () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       const invalidateSpy = vi.spyOn(client, 'invalidateQueries');
       const wrapper = makeWrapper(client);
       const { result } = renderHook(() => useSwipeMutation(), { wrapper });
@@ -174,7 +215,7 @@ describe('use-user-data hooks', () => {
 
   describe('useCreatePlaydateMutation', () => {
     it('creates a playdate', async () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       const wrapper = makeWrapper(client);
       const { result } = renderHook(() => useCreatePlaydateMutation(), { wrapper });
 
@@ -196,7 +237,7 @@ describe('use-user-data hooks', () => {
 
   describe('useActiveMatchesCount', () => {
     it('returns 0 when no matches', () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       client.setQueryData<Match[]>(['matches', 'list'], []);
       const wrapper = makeWrapper(client);
       const { result } = renderHook(() => useActiveMatchesCount(), { wrapper });
@@ -204,7 +245,7 @@ describe('use-user-data hooks', () => {
     });
 
     it('counts active matches', () => {
-      const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+      const client = createTestClient();
       client.setQueryData<Match[]>(['matches', 'list'], [
         { id: '1', petId: 'p1', matchedPetId: 'p2', status: 'active', createdAt: '2024-01-01' },
         { id: '2', petId: 'p1', matchedPetId: 'p3', status: 'active', createdAt: '2024-01-02' },

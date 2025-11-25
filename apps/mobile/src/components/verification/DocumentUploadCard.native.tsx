@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Animated } from '@petspark/motion';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';

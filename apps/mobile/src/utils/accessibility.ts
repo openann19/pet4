@@ -7,7 +7,7 @@
 import type { AccessibilityProps } from 'react-native'
 import { Platform } from 'react-native'
 import { createLogger } from './logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('accessibility')
 

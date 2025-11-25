@@ -76,7 +76,7 @@ export function useCallSession(
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isCameraOff, setIsCameraOff] = useState<boolean>(false);
   // Type-safe: VideoQuality is a string union type, '720p' is a valid literal
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+   
   const [videoQuality, setVideoQualityState] = useState<VideoQuality>('720p');
 
   const callIdRef = useRef<string | null>(null);
@@ -287,7 +287,7 @@ export function useCallSession(
     isMuted,
     isCameraOff,
     // Type-safe: videoQuality is VideoQuality from useState above
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+     
     videoQuality,
     startCall,
     acceptCall,

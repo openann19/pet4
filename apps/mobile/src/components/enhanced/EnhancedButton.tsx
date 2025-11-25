@@ -20,13 +20,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from '@petspark/motion'
 
 const AnimatedView = Animated.createAnimatedComponent(View)
 

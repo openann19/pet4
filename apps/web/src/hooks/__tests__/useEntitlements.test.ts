@@ -58,10 +58,8 @@ describe('useEntitlements', () => {
   it('returns entitlements when loaded', async () => {
     const { result } = renderHook(() => useEntitlements());
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
     expect(result.current.entitlements).toEqual(mockEntitlements);

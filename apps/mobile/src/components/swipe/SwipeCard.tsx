@@ -7,14 +7,7 @@ import * as Haptics from 'expo-haptics'
 import React, { memo, useCallback } from 'react'
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, Extrapolation, interpolate, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from '@petspark/motion'
 import type { PetProfile } from '../../types/pet'
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')

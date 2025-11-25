@@ -55,11 +55,11 @@ export function RefreshControl({
   })
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={Object.assign({}, styles.container, animatedStyle)}>
       <Animated.View style={indicatorAnimatedStyle}>
         <ActivityIndicator size="small" color={colors.accent} />
       </Animated.View>
-      <Animated.View style={[styles.textContainer, textAnimatedStyle]}>
+      <Animated.View style={Object.assign({}, styles.textContainer, textAnimatedStyle)}>
         <Text style={styles.text}>Pull to refresh</Text>
       </Animated.View>
     </Animated.View>

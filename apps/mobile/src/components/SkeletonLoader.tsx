@@ -44,7 +44,8 @@ export function SkeletonLoader({
 
   return (
     <Animated.View
-      style={[
+      style={Object.assign(
+        {},
         styles.skeleton,
         width !== undefined ? { width } : undefined,
         {
@@ -52,8 +53,8 @@ export function SkeletonLoader({
           borderRadius,
         },
         style,
-        animatedStyle,
-      ]}
+        animatedStyle
+      )}
     />
   )
 }

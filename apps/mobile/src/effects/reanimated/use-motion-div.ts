@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay } from '@petspark/motion'
 import { springConfigs, timingConfigs } from './transitions'
 import { useHoverLift } from './use-hover-lift'
 import { useBounceOnTap } from './use-bounce-on-tap'

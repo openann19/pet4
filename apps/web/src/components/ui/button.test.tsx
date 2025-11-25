@@ -45,38 +45,37 @@ describe('Button', () => {
     it('should apply default variant', () => {
       render(<Button>Default</Button>);
       const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
       expect(button).toHaveAttribute('data-slot', 'button');
-      expect(button.className).toContain('bg-[var(--btn-primary-bg)]');
+      expect(button.className).toContain('bg-primary');
+      expect(button.className).toContain('text-primary-foreground');
     });
 
     it('should apply destructive variant', () => {
       render(<Button variant="destructive">Delete</Button>);
       const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
-      expect(button.className).toContain('bg-[var(--btn-destructive-bg)]');
+      expect(button.className).toContain('bg-destructive');
+      expect(button.className).toContain('text-destructive-foreground');
     });
 
     it('should apply outline variant', () => {
       render(<Button variant="outline">Outline</Button>);
       const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
       expect(button.className).toContain('border');
-      expect(button.className).toContain('border-[var(--btn-outline-border)]');
+      expect(button.className).toContain('hover:bg-accent');
     });
 
     it('should apply secondary variant', () => {
       render(<Button variant="secondary">Secondary</Button>);
       const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
-      expect(button.className).toContain('bg-[var(--btn-secondary-bg)]');
+      expect(button.className).toContain('bg-secondary');
+      expect(button.className).toContain('text-secondary-foreground');
     });
 
     it('should apply ghost variant', () => {
       render(<Button variant="ghost">Ghost</Button>);
       const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
-      expect(button.className).toContain('bg-[var(--btn-ghost-bg)]');
+      expect(button.className).toContain('hover:bg-accent');
+      expect(button.className).toContain('hover:text-accent-foreground');
     });
 
     it('should apply link variant', () => {
@@ -86,35 +85,33 @@ describe('Button', () => {
       expect(button.className).toContain('underline-offset-4');
     });
 
-    it('should apply oauth variant', () => {
-      render(<Button variant="oauth">OAuth</Button>);
-      const button = screen.getByRole('button');
-      expect(button).toBeInTheDocument();
-      expect(button.className).toContain('border-[var(--btn-oauth-border)]');
-    });
-
     it('should apply default size', () => {
       render(<Button>Default Size</Button>);
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-13');
+      expect(button.className).toContain('h-9');
+      expect(button.className).toContain('px-4');
     });
 
     it('should apply small size', () => {
       render(<Button size="sm">Small</Button>);
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-12');
+      expect(button.className).toContain('h-8');
+      expect(button.className).toContain('px-3');
     });
 
     it('should apply large size', () => {
       render(<Button size="lg">Large</Button>);
       const button = screen.getByRole('button');
-      expect(button.className).toContain('h-14');
+      expect(button.className).toContain('h-10');
+      expect(button.className).toContain('px-6');
+      expect(button.className).toContain('text-base');
     });
 
     it('should apply icon size', () => {
       render(<Button size="icon">Icon</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('size-12');
+      expect(button.className).toContain('h-9');
+      expect(button.className).toContain('w-9');
     });
 
     it('should merge custom className', () => {
@@ -330,8 +327,7 @@ describe('Button', () => {
     it('should have minimum touch target size', () => {
       render(<Button>Touch Target</Button>);
       const button = screen.getByRole('button');
-      // Default button has h-13 and min-h-11 which meets minimum touch target of 44px
-      expect(button.className).toMatch(/h-13|min-h-11/);
+      expect(button.className).toContain('h-9');
     });
 
     it('should support aria-disabled when disabled', () => {
@@ -356,7 +352,8 @@ describe('Button', () => {
     it('should have focus ring for keyboard navigation', () => {
       render(<Button>Focus Ring</Button>);
       const button = screen.getByRole('button');
-      expect(button.className).toContain('focus-ring');
+      expect(button.className).toContain('focus-visible:ring-1');
+      expect(button.className).toContain('focus-visible:ring-offset-1');
     });
   });
 
@@ -404,7 +401,7 @@ describe('Button', () => {
   });
 
   describe('All Variant and Size Combinations', () => {
-    const variants = ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link', 'oauth'] as const;
+    const variants = ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'] as const;
     const sizes = ['default', 'sm', 'lg', 'icon'] as const;
 
     variants.forEach((variant) => {

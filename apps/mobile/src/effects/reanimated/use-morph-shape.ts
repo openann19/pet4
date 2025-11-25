@@ -16,7 +16,7 @@ export interface UseMorphShapeOptions {
   }[]
 }
 
-export function useMorphShape(options: UseMorphShapeOptions = {}) {
+export function useMorphShape(options: UseMorphShapeOptions = {}): { animatedStyle: AnimatedStyle; morphTo: (shapeIndex: number) => void; cycleShape: () => void; currentShape: number } {
   const {
     duration = 400,
     shapes = [
@@ -39,7 +39,7 @@ export function useMorphShape(options: UseMorphShapeOptions = {}) {
         easing: Easing.bezier(0.4, 0, 0.2, 1),
       })
     },
-    [shapes.length, duration]
+    [shapes.length, duration, currentShape, progress]
   )
 
   const cycleShape = useCallback(() => {

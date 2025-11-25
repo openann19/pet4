@@ -57,7 +57,12 @@ export interface PerformanceBudgets {
 export interface PerformanceBudgetConfig {
   readonly budgets: PerformanceBudgets;
   readonly onBudgetExceeded?: (metric: string, value: number, budget: number) => void;
-  readonly onBudgetWarning?: (metric: string, value: number, budget: number, percentage: number) => void;
+  readonly onBudgetWarning?: (
+    metric: string,
+    value: number,
+    budget: number,
+    percentage: number
+  ) => void;
   readonly warningThreshold?: number; // 0-1, default 0.8 (80%)
   readonly enableAutoTracking?: boolean;
 }
@@ -146,8 +151,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
       const navigationStart = timing.navigationStart;
 
       if (timing.domContentLoadedEventEnd) {
-        metrics.domContentLoaded =
-          timing.domContentLoadedEventEnd - navigationStart;
+        metrics.domContentLoaded = timing.domContentLoadedEventEnd - navigationStart;
       }
 
       if (timing.loadEventEnd) {
@@ -173,7 +177,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
     let requestCount = 0;
 
     for (const resource of resources) {
-      totalSize += resource.transferSize || 0;
+      totalSize += resource.transferSize ?? 0;
       requestCount++;
     }
 
@@ -251,9 +255,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
 
     // Calculate health score
     const health =
-      totalBudgets > 0
-        ? Math.round(((totalBudgets - violatedBudgets) / totalBudgets) * 100)
-        : 100;
+      totalBudgets > 0 ? Math.round(((totalBudgets - violatedBudgets) / totalBudgets) * 100) : 100;
 
     // Add to history
     metricsHistoryRef.current.push(metrics);
@@ -268,13 +270,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
       budgetHealth: health,
       lastCheck: Date.now(),
     });
-  }, [
-    budgets,
-    collectMetrics,
-    warningThreshold,
-    onBudgetExceeded,
-    onBudgetWarning,
-  ]);
+  }, [budgets, collectMetrics, warningThreshold, onBudgetExceeded, onBudgetWarning]);
 
   // ============================================================================
   // Web Vitals Tracking
@@ -284,9 +280,13 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
     // Largest Contentful Paint (LCP)
     const lcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1] as PerformancePaintTiming & { renderTime?: number; loadTime?: number };
+      const lastEntry = entries[entries.length - 1] as PerformancePaintTiming & {
+        renderTime?: number;
+        loadTime?: number;
+      };
       if (lastEntry) {
-        webVitalsRef.current.lcp = lastEntry.renderTime || lastEntry.loadTime || lastEntry.startTime;
+        webVitalsRef.current.lcp =
+          lastEntry.renderTime ?? lastEntry.loadTime ?? lastEntry.startTime;
       }
     });
 
@@ -315,9 +315,12 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
-        const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number };
+        const layoutShift = entry as PerformanceEntry & {
+          hadRecentInput?: boolean;
+          value?: number;
+        };
         if (!layoutShift.hadRecentInput) {
-          clsValue += layoutShift.value || 0;
+          clsValue += layoutShift.value ?? 0;
           webVitalsRef.current.cls = clsValue;
         }
       }
@@ -374,14 +377,11 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
     [state.isWithinBudget, state.metrics, budgets]
   );
 
-  const getMetricHistory = useCallback(
-    (metric: string): readonly number[] => {
-      return metricsHistoryRef.current
-        .map((m) => m[metric])
-        .filter((v): v is number => v !== undefined);
-    },
-    []
-  );
+  const getMetricHistory = useCallback((metric: string): readonly number[] => {
+    return metricsHistoryRef.current
+      .map((m) => m[metric])
+      .filter((v): v is number => v !== undefined);
+  }, []);
 
   const getTrend = useCallback(
     (metric: string): 'improving' | 'stable' | 'degrading' => {

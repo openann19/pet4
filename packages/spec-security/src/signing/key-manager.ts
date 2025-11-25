@@ -11,14 +11,14 @@ export interface KeyPair {
 /**
  * Generate a new ED25519 key pair
  */
-export async function generateKeyPair(): Promise<KeyPair> {
+export function generateKeyPair(): Promise<KeyPair> {
   const privateKey = ed.utils.randomPrivateKey()
-  const publicKey = await ed.getPublicKey(privateKey)
+  const publicKey = ed.getPublicKey(privateKey)
 
-  return {
+  return Promise.resolve({
     privateKey,
     publicKey,
-  }
+  })
 }
 
 /**
@@ -52,22 +52,22 @@ export function decodePublicKey(publicKeyBase64: string): Uint8Array {
 /**
  * Load key pair from environment variables or generate new one
  */
-export async function loadKeyPair(): Promise<KeyPair | undefined> {
+export function loadKeyPair(): Promise<KeyPair | undefined> {
   const privateKeyBase64 = process.env.SPEC_SIGNING_PRIVATE_KEY
   const publicKeyBase64 = process.env.SPEC_SIGNING_PUBLIC_KEY
 
   if (!privateKeyBase64 || !publicKeyBase64) {
-    return undefined
+    return Promise.resolve(undefined)
   }
 
   try {
     const privateKey = decodePrivateKey(privateKeyBase64)
     const publicKey = decodePublicKey(publicKeyBase64)
 
-    return {
+    return Promise.resolve({
       privateKey,
       publicKey,
-    }
+    })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     throw new Error(`Failed to load key pair: ${err.message}`)
@@ -77,11 +77,11 @@ export async function loadKeyPair(): Promise<KeyPair | undefined> {
 /**
  * Validate key pair
  */
-export async function validateKeyPair(keyPair: KeyPair): Promise<boolean> {
+export function validateKeyPair(keyPair: KeyPair): Promise<boolean> {
   try {
-    const derivedPublicKey = await ed.getPublicKey(keyPair.privateKey)
-    return Buffer.from(derivedPublicKey).equals(Buffer.from(keyPair.publicKey))
+    const derivedPublicKey = ed.getPublicKey(keyPair.privateKey)
+    return Promise.resolve(Buffer.from(derivedPublicKey).equals(Buffer.from(keyPair.publicKey)))
   } catch {
-    return false
+    return Promise.resolve(false)
   }
 }

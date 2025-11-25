@@ -7,13 +7,7 @@
 import React, { useEffect } from 'react'
 import type { ViewStyle, StyleProp } from 'react-native'
 import { StyleSheet, View, AccessibilityInfo } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from '@petspark/motion'
 import { isTruthy } from '@petspark/shared';
 
 export interface SpinnerProps {

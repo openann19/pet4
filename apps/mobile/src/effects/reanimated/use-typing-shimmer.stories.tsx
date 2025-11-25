@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useTypingShimmer } from './use-typing-shimmer'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export default {
   title: 'Mobile/Animation Hooks/useTypingShimmer',
@@ -256,4 +256,3 @@ const styles = StyleSheet.create({
 })
 
 export { TypingShimmerDemo }
-

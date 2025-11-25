@@ -4,16 +4,11 @@
  */
 
 import { useEffect, useRef } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  type SharedValue
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, type SharedValue } from '@petspark/motion'
 import type { LayoutChangeEvent } from 'react-native'
 import { springConfigs } from './transitions'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseLayoutAnimationOptions {
   enabled?: boolean
@@ -114,4 +109,3 @@ export function useLayoutAnimation(
     onLayout
   }
 }
-

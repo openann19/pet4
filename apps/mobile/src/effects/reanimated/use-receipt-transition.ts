@@ -1,12 +1,4 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withTiming,
-  withDelay,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withSequence, withTiming, withDelay, type SharedValue } from '@petspark/motion'
 import { useCallback, useEffect } from 'react'
 import type { MessageStatus } from '@mobile/lib/chat-types'
 import { springConfigs, timingConfigs } from './transitions'

@@ -1,13 +1,4 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-  interpolate,
-  Extrapolation,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence, interpolate, Extrapolation, type SharedValue } from '@petspark/motion'
 import { useCallback, useRef } from 'react'
 import * as Haptics from 'expo-haptics'
 import { springConfigs, timingConfigs } from './transitions'

@@ -1,12 +1,6 @@
 import React, { useEffect } from 'react'
 import { View, Text, StyleSheet, type ViewStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withRepeat,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat } from '@petspark/motion'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
 import { isTruthy } from '@petspark/shared';
 

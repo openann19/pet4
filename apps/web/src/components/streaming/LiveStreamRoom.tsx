@@ -32,13 +32,13 @@ export function LiveStreamRoom({
   onEndStream,
   className,
 }: LiveStreamRoomProps): React.JSX.Element {
-  const [viewerCount, setViewerCount] = useState(0);
+  const [viewerCount, _setViewerCount] = useState(0);
   const [isLive, setIsLive] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
-  const { addStream, state } = useWebRTC({
+  const { addStream, state: _state } = useWebRTC({
     onRemoteStream: (stream) => {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;

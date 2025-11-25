@@ -114,20 +114,20 @@ const CallContext = createContext<CallContextValue | undefined>(undefined);
 
 function useIncomingOfferListener(
   userId: string | undefined,
-  signalingClient: { onSignal: (h: (s: CallSignal) => void) => () => void },
-  handleIncomingOffer: (signal: CallOfferSignal) => Promise<void>,
+  signalingClient: { onSignal: (h: (s: CallSignal) => Promise<void>) => () => void },
+  handleIncomingOffer: (signal: CallOfferSignal) => void,
   setIncomingOffer: (s: CallOfferSignal | null) => void
 ): void {
   useEffect(() => {
     if (!userId) return;
-    const unsubscribe = signalingClient.onSignal((signal) => {
+    const unsubscribe = signalingClient.onSignal(async (signal) => {
       if (signal.type !== 'call-offer' || signal.toUserId !== userId) return;
       logger.debug('Incoming call offer received', {
         fromUserId: signal.fromUserId,
         callId: signal.callId,
       });
       setIncomingOffer(signal);
-      void handleIncomingOffer(signal);
+      handleIncomingOffer(signal);
     });
     return () => unsubscribe();
   }, [handleIncomingOffer, signalingClient, setIncomingOffer, userId]);

@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
-import { isTruthy } from '@petspark/shared';
 
 export interface PremiumToggleProps {
   checked?: boolean
@@ -90,7 +89,7 @@ export function PremiumToggle({
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityState={{ checked }}
-        accessibilityLabel={label || 'Toggle'}
+        accessibilityLabel={label ?? 'Toggle'}
       >
         <Animated.View
           style={[
@@ -123,7 +122,7 @@ export function PremiumToggle({
         </Animated.View>
       </TouchableOpacity>
 
-      {(label || description) && (
+      {(label ?? description) && (
         <View style={styles.labelContainer}>
           {label && <Text style={[styles.label, disabled && styles.labelDisabled]}>{label}</Text>}
           {description && (

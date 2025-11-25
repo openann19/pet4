@@ -9,11 +9,7 @@ import {
   type MediaErrorContext,
 } from '@/lib/media-errors';
 import { getPerformanceMonitor } from '@/lib/performance-monitor';
-import {
-  FILTER_PRESETS,
-  getPresetsByCategory,
-  getPresetById,
-} from './filter-presets';
+import { FILTER_PRESETS, getPresetsByCategory, getPresetById } from './filter-presets';
 import { FILTER_FRAGMENT_SHADER } from './filter-shaders';
 import {
   applyBrightness,
@@ -95,8 +91,6 @@ export interface LUT {
   readonly data: Float32Array;
 }
 
-
-
 // ============================================================================
 // Hook Implementation
 // ============================================================================
@@ -109,12 +103,11 @@ export function useFilters() {
   const webglManagerRef = useRef<WebGLContextManager | null>(null);
   const lutCacheRef = useRef<Map<string, LUT>>(new Map());
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Canvas-based Filters (CPU)
   // ============================================================================
-
 
   // ============================================================================
   // WebGL-based Filters (GPU)
@@ -151,10 +144,7 @@ export function useFilters() {
   }, []);
 
   const applyFilterGPU = useCallback(
-    (
-      source: HTMLImageElement | HTMLCanvasElement,
-      params: FilterParams
-    ): HTMLCanvasElement => {
+    (source: HTMLImageElement | HTMLCanvasElement, params: FilterParams): HTMLCanvasElement => {
       try {
         const webglManager = initializeWebGL();
         const gl = webglManager.getGL();
@@ -193,11 +183,7 @@ export function useFilters() {
 
         const texCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]),
-          gl.STATIC_DRAW
-        );
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 1, 1, 1, 0, 0, 1, 0]), gl.STATIC_DRAW);
 
         // Set attributes
         const positionLocation = shaderProgram.attributes.get('a_position');
@@ -295,21 +281,28 @@ export function useFilters() {
         useGPU: options.useGPU !== false,
       });
 
-      return performanceMonitor.measureOperation('apply-filter', async () => {
+      return await performanceMonitor.measureOperation('apply-filter', async () => {
         try {
           setIsProcessing(true);
           setError(null);
+
+          // Allow UI to update
+          await new Promise((resolve) => setTimeout(resolve, 0));
 
           const params = 'params' in preset ? preset.params : preset;
 
           // Apply intensity to params
           const adjustedParams: FilterParams = {
             ...params,
-            brightness: params.brightness !== undefined ? params.brightness * options.intensity : undefined,
-            contrast: params.contrast !== undefined ? params.contrast * options.intensity : undefined,
-            saturation: params.saturation !== undefined ? params.saturation * options.intensity : undefined,
+            brightness:
+              params.brightness !== undefined ? params.brightness * options.intensity : undefined,
+            contrast:
+              params.contrast !== undefined ? params.contrast * options.intensity : undefined,
+            saturation:
+              params.saturation !== undefined ? params.saturation * options.intensity : undefined,
             grain: params.grain !== undefined ? params.grain * options.intensity : undefined,
-            vignette: params.vignette !== undefined ? params.vignette * options.intensity : undefined,
+            vignette:
+              params.vignette !== undefined ? params.vignette * options.intensity : undefined,
           };
 
           // Try GPU first if enabled (default)
@@ -413,42 +406,39 @@ export function useFilters() {
   // LUT Processing
   // ============================================================================
 
-  const loadLUT = useCallback(
-    async (url: string): Promise<LUT> => {
-      const cached = lutCacheRef.current.get(url);
-      if (cached) {
-        return cached;
+  const loadLUT = useCallback(async (url: string): Promise<LUT> => {
+    const cached = lutCacheRef.current.get(url);
+    if (cached) {
+      return cached;
+    }
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorContext = createErrorContext('load-lut', { url });
+        throw new LUTError(`Failed to load LUT: ${response.statusText}`, errorContext, false);
       }
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          const errorContext = createErrorContext('load-lut', { url });
-          throw new LUTError(`Failed to load LUT: ${response.statusText}`, errorContext, false);
-        }
+      const _arrayBuffer = await response.arrayBuffer();
+      // Parse LUT file (simplified - actual implementation would parse .cube or .3dl format)
+      // For now, create a placeholder LUT
+      const lut: LUT = {
+        size: 32,
+        data: new Float32Array(32 * 32 * 32 * 3),
+      };
 
-        const arrayBuffer = await response.arrayBuffer();
-        // Parse LUT file (simplified - actual implementation would parse .cube or .3dl format)
-        // For now, create a placeholder LUT
-        const lut: LUT = {
-          size: 32,
-          data: new Float32Array(32 * 32 * 32 * 3),
-        };
+      lutCacheRef.current.set(url, lut);
+      logger.info('LUT loaded', { url, size: lut.size });
 
-        lutCacheRef.current.set(url, lut);
-        logger.info('LUT loaded', { url, size: lut.size });
-
-        return lut;
-      } catch (err) {
-        const errorContext = createErrorContext('load-lut', {
-          url,
-          error: err instanceof Error ? err.message : String(err),
-        });
-        throw new LUTError('Failed to load LUT', errorContext, false);
-      }
-    },
-    []
-  );
+      return lut;
+    } catch (err) {
+      const errorContext = createErrorContext('load-lut', {
+        url,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      throw new LUTError('Failed to load LUT', errorContext, false);
+    }
+  }, []);
 
   // ============================================================================
   // Cleanup

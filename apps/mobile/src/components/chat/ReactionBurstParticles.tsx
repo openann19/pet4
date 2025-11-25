@@ -9,14 +9,7 @@
 
 import React, { useEffect, useRef, useMemo, useCallback } from 'react'
 import { View, StyleSheet } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  withDelay,
-  Easing,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSpring, withDelay, Easing } from '@petspark/motion'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng'
 

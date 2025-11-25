@@ -241,13 +241,13 @@ class PerformanceMonitorImpl {
 
   // Custom Performance Marks
   mark(name: string): void {
-    if ('performance' in window && 'mark' in performance) {
+    if ('performance' in window && performance && 'mark' in performance) {
       performance.mark(name);
     }
   }
 
   measure(name: string, startMark: string, endMark?: string): void {
-    if ('performance' in window && 'measure' in performance) {
+    if ('performance' in window && performance && 'measure' in performance) {
       try {
         if (endMark !== undefined) {
           performance.measure(name, startMark, endMark);

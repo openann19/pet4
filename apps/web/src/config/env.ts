@@ -64,8 +64,6 @@ if (!parsed.success) {
 
 type Env = z.infer<typeof schema>;
 
-export type Environment = Env;
-
 // Use parsed result if successful, otherwise use defaults in development
 export const env = parsed.success
   ? parsed.data
@@ -78,9 +76,15 @@ export const env = parsed.success
       VITE_APP_VERSION: '0.0.0',
       VITE_ENVIRONMENT: 'development',
     });
-export const ENV = env;
 
 export const flags = {
   mocks: env.VITE_USE_MOCKS === 'true',
   maps: Boolean(env.VITE_ENABLE_MAPS),
 } as const;
+
+export type Environment = Env & { flags: typeof flags };
+
+export const ENV: Environment = {
+  ...env,
+  flags,
+};

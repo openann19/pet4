@@ -1,12 +1,6 @@
 'use client'
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  withDelay,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring, withDelay } from '@petspark/motion'
 import { useEffect } from 'react'
 import { springConfigs } from '@/effects/reanimated/transitions'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'

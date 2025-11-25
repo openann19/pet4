@@ -3,7 +3,8 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { forwardRef, ReactNode } from 'react';
+import { forwardRef } from 'react';
+import type { ReactNode } from 'react';
 import { PETSPARK_PRESETS } from './presets';
 import type { AnimationVariants, MotionProps as CustomMotionProps } from './types';
 
@@ -20,7 +21,7 @@ export interface AnimatedCardProps extends CustomMotionProps {
 export const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
   ({ children, className, preset = 'petCard', variants, whileHover = true, whileTap = true, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <motion.div
         ref={ref}
@@ -28,8 +29,8 @@ export const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         variants={animationVariants}
         initial="hidden"
         animate="visible"
-        whileHover={whileHover ? 'hover' : undefined}
-        whileTap={whileTap ? 'tap' : undefined}
+        {...(whileHover && { whileHover: 'hover' })}
+        {...(whileTap && { whileTap: 'tap' })}
         {...props}
       >
         {children}
@@ -53,7 +54,7 @@ export interface AnimatedButtonProps extends CustomMotionProps {
 export const AnimatedButton = forwardRef<HTMLButtonElement, AnimatedButtonProps>(
   ({ children, className, preset = 'button', variants, disabled = false, onPress, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <motion.button
         ref={ref}
@@ -61,8 +62,8 @@ export const AnimatedButton = forwardRef<HTMLButtonElement, AnimatedButtonProps>
         variants={animationVariants}
         initial="hidden"
         animate="visible"
-        whileHover={disabled ? undefined : 'hover'}
-        whileTap={disabled ? undefined : 'tap'}
+        {...(!disabled && { whileHover: 'hover' })}
+        {...(!disabled && { whileTap: 'tap' })}
         disabled={disabled}
         onClick={onPress}
         {...props}
@@ -88,7 +89,7 @@ export interface AnimatedModalProps extends CustomMotionProps {
 export const AnimatedModal = forwardRef<HTMLDivElement, AnimatedModalProps>(
   ({ children, className, isOpen, preset = 'modal', variants, onClose, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <AnimatePresence>
         {isOpen && (
@@ -98,7 +99,7 @@ export const AnimatedModal = forwardRef<HTMLDivElement, AnimatedModalProps>(
             variants={animationVariants}
             initial="hidden"
             animate="visible"
-            exit="hidden"
+            {...(true && { exit: 'hidden' })}
             onClick={onClose}
             {...props}
           >
@@ -124,7 +125,7 @@ export interface AnimatedListProps extends CustomMotionProps {
 export const AnimatedList = forwardRef<HTMLDivElement, AnimatedListProps>(
   ({ children, className, preset = 'list', variants, staggerDelay = 0.1, ...props }, ref) => {
     let animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     // Add stagger to list variants
     if (animationVariants?.visible && typeof animationVariants.visible === 'object') {
       animationVariants = {
@@ -138,7 +139,7 @@ export const AnimatedList = forwardRef<HTMLDivElement, AnimatedListProps>(
         },
       };
     }
-    
+
     return (
       <motion.div
         ref={ref}
@@ -167,7 +168,7 @@ export interface AnimatedListItemProps extends CustomMotionProps {
 export const AnimatedListItem = forwardRef<HTMLDivElement, AnimatedListItemProps>(
   ({ children, className, preset = 'listItem', variants, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <motion.div
         ref={ref}
@@ -197,14 +198,14 @@ export interface AnimatedAvatarProps extends CustomMotionProps {
 export const AnimatedAvatar = forwardRef<HTMLDivElement, AnimatedAvatarProps>(
   ({ children, className, preset = 'avatar', variants, size = 'md', ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     const sizeClasses = {
       sm: 'w-8 h-8',
       md: 'w-12 h-12',
       lg: 'w-16 h-16',
       xl: 'w-20 h-20',
     };
-    
+
     return (
       <motion.div
         ref={ref}
@@ -212,8 +213,8 @@ export const AnimatedAvatar = forwardRef<HTMLDivElement, AnimatedAvatarProps>(
         variants={animationVariants}
         initial="hidden"
         animate="visible"
-        whileHover="hover"
-        whileTap="tap"
+        {...({ whileHover: 'hover' })}
+        {...({ whileTap: 'tap' })}
         {...props}
       >
         {children}
@@ -236,7 +237,7 @@ export interface AnimatedBadgeProps extends CustomMotionProps {
 export const AnimatedBadge = forwardRef<HTMLSpanElement, AnimatedBadgeProps>(
   ({ children, className, preset = 'badge', variants, pulse = false, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <motion.span
         ref={ref}
@@ -244,8 +245,8 @@ export const AnimatedBadge = forwardRef<HTMLSpanElement, AnimatedBadgeProps>(
         variants={animationVariants}
         initial="hidden"
         animate={pulse ? 'pulse' : 'visible'}
-        whileHover="hover"
-        whileTap="tap"
+        {...({ whileHover: 'hover' })}
+        {...({ whileTap: 'tap' })}
         {...props}
       >
         {children}
@@ -269,7 +270,7 @@ export interface AnimatedNotificationProps extends CustomMotionProps {
 export const AnimatedNotification = forwardRef<HTMLDivElement, AnimatedNotificationProps>(
   ({ children, className, isVisible, preset = 'notification', variants, onClose, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <AnimatePresence>
         {isVisible && (
@@ -279,7 +280,7 @@ export const AnimatedNotification = forwardRef<HTMLDivElement, AnimatedNotificat
             variants={animationVariants}
             initial="hidden"
             animate="visible"
-            exit="hidden"
+            {...(true && { exit: 'hidden' })}
             onClick={onClose}
             {...props}
           >
@@ -305,7 +306,7 @@ export interface AnimatedSkeletonProps extends CustomMotionProps {
 export const AnimatedSkeleton = forwardRef<HTMLDivElement, AnimatedSkeletonProps>(
   ({ className, preset = 'skeleton', variants, width, height, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
-    
+
     return (
       <motion.div
         ref={ref}

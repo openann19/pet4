@@ -1,10 +1,14 @@
 /**
  * WebSocket Integration Tests
- * 
+ *
  * Tests WebSocket connection, authentication, and event handling
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
+// Unmock websocket-manager to prevent mock pollution from other test files
+vi.unmock('../websocket-manager')
+
 import { WebSocketManager } from '../websocket-manager'
 import { RealtimeClient } from '../realtime'
 import { getRealtimeEvents } from '../realtime-events'
@@ -91,7 +95,7 @@ describe('WebSocket Integration Tests', () => {
   describe('Connection Management', () => {
     it('should connect with access token', () => {
       wsManager.connect('test-token')
-      
+
       // Wait for connection
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -103,7 +107,7 @@ describe('WebSocket Integration Tests', () => {
 
     it('should include token in WebSocket URL', () => {
       wsManager.connect('test-token-123')
-      
+
       // Wait for connection
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -115,7 +119,7 @@ describe('WebSocket Integration Tests', () => {
 
     it('should handle connection errors', () => {
       wsManager.connect('test-token')
-      
+
       // Connection should attempt (errors handled internally)
       expect(wsManager.getState()).not.toBe('disconnected')
     })
@@ -123,10 +127,10 @@ describe('WebSocket Integration Tests', () => {
     it('should disconnect and allow reconnect', () => {
       wsManager.connect('test-token')
       wsManager.disconnect()
-      
+
       // Should be able to connect again
       wsManager.connect('test-token')
-      
+
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           expect(wsManager.getState()).toBe('connected')
@@ -139,7 +143,7 @@ describe('WebSocket Integration Tests', () => {
   describe('Authentication', () => {
     it('should handle authentication errors', () => {
       wsManager.connect('test-token')
-      
+
       // Auth errors are handled internally by WebSocketManager
       // Close codes 4001-4003 trigger token refresh
       return new Promise<void>((resolve) => {
@@ -152,7 +156,7 @@ describe('WebSocket Integration Tests', () => {
 
     it('should use access token for connection', () => {
       wsManager.connect('test-token')
-      
+
       // Token should be used in connection
       expect(wsManager.getState()).not.toBe('disconnected')
     })
@@ -161,11 +165,11 @@ describe('WebSocket Integration Tests', () => {
   describe('Message Handling', () => {
     it('should send messages through WebSocket', () => {
       wsManager.connect('test-token')
-      
+
       const sendSpy = vi.spyOn(MockWebSocket.prototype, 'send')
-      
+
       wsManager.send('/chat', 'message_send', { messageId: 'msg-123', content: 'Hello' })
-      
+
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           // Message should be sent after connection
@@ -179,7 +183,7 @@ describe('WebSocket Integration Tests', () => {
 
     it('should queue messages when disconnected', () => {
       wsManager.send('/chat', 'message_send', { messageId: 'msg-123', content: 'Hello' })
-      
+
       // Message should be queued
       expect(wsManager.getState()).not.toBe('connected')
     })
@@ -187,10 +191,10 @@ describe('WebSocket Integration Tests', () => {
     it('should flush queued messages on reconnect', () => {
       // Queue message while disconnected
       wsManager.send('/chat', 'message_send', { messageId: 'msg-123', content: 'Hello' })
-      
+
       // Connect and flush
       wsManager.connect('test-token')
-      
+
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           // Messages should be sent
@@ -205,16 +209,16 @@ describe('WebSocket Integration Tests', () => {
     it('should register event listeners', () => {
       const handler = vi.fn()
       const unsubscribe = wsManager.on('chat:message_send', handler)
-      
+
       expect(typeof unsubscribe).toBe('function')
     })
 
     it('should call event handlers on message', () => {
       wsManager.connect('test-token')
-      
+
       const handler = vi.fn()
       wsManager.on('chat:message_send', handler)
-      
+
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           // In a real scenario, messages would come from WebSocket
@@ -228,9 +232,9 @@ describe('WebSocket Integration Tests', () => {
     it('should remove event listeners on unsubscribe', () => {
       const handler = vi.fn()
       const unsubscribe = wsManager.on('chat:message_send', handler)
-      
+
       unsubscribe()
-      
+
       // Handler should be removed
       expect(typeof unsubscribe).toBe('function')
     })
@@ -239,19 +243,19 @@ describe('WebSocket Integration Tests', () => {
   describe('RealtimeClient Integration', () => {
     it('should connect realtime client', () => {
       realtime.setAccessToken('test-token')
-      
+
       // Realtime client should be configured
       expect(realtime).toBeDefined()
     })
 
     it('should handle realtime events', () => {
       realtime.setAccessToken('test-token')
-      
+
       const events = getRealtimeEvents()
       const handler = vi.fn()
-      
+
       events.onChatMessage(handler)
-      
+
       return new Promise<void>((resolve) => {
         setTimeout(() => {
           // Verify event handler is registered
@@ -262,4 +266,3 @@ describe('WebSocket Integration Tests', () => {
     })
   })
 })
-

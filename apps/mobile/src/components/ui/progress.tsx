@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import type { ComponentProps } from 'react'
 

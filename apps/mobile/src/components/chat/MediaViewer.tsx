@@ -11,7 +11,7 @@
 
 import React, { useCallback, useEffect } from 'react'
 import { Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated'
+import { Animated, FadeIn, FadeOut, useAnimatedStyle } from '@petspark/motion'
 import { useGlassMorphZoom } from '../../effects/chat/media/use-glass-morph-zoom'
 import { useStickerPhysics } from '../../effects/chat/media/use-sticker-physics'
 import { ChromaticAberrationFX } from '../../effects/chat/shaders/chromatic-aberration'

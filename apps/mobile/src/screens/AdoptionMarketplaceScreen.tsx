@@ -10,7 +10,7 @@
 import React, { useState, useCallback } from 'react'
 import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeInUp, FadeInDown, FadeOutLeft } from 'react-native-reanimated'
+import { Animated, FadeInUp, FadeInDown, FadeOutLeft } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import { RouteErrorBoundary } from '@mobile/components/RouteErrorBoundary'

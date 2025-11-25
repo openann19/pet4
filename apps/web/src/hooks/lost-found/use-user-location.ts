@@ -6,7 +6,7 @@ const logger = createLogger('useUserLocation');
 
 interface UseUserLocationReturn {
   userLocation: { lat: number; lon: number } | null;
-  getUserLocation: () => Promise<void>;
+  getUserLocation: () => void;
 }
 
 export function useUserLocation(): UseUserLocationReturn {
@@ -15,7 +15,7 @@ export function useUserLocation(): UseUserLocationReturn {
     lon: number;
   } | null>(null);
 
-  const getUserLocation = useCallback(async () => {
+  const getUserLocation = useCallback(() => {
     try {
       if (isTruthy(navigator.geolocation)) {
         navigator.geolocation.getCurrentPosition(
@@ -43,4 +43,3 @@ export function useUserLocation(): UseUserLocationReturn {
     getUserLocation,
   };
 }
-

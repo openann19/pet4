@@ -21,12 +21,12 @@ model User {
   emailVerified Boolean  @default(false) @map("email_verified")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  
+
   // Profile
   profile       UserProfile?
   pets          Pet[]
   refreshTokens RefreshToken[]
-  
+
   @@map("users")
 }
 
@@ -41,9 +41,9 @@ model UserProfile {
   preferences Json?  // User preferences
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("user_profiles")
 }
 
@@ -53,9 +53,9 @@ model RefreshToken {
   token     String   @unique
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
-  
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
   @@index([token])
   @@map("refresh_tokens")
@@ -76,13 +76,14 @@ model Pet {
   size        String?  // small, medium, large
   description String?
   photos      Photo[]
-  matches     Match[]  @relation("MatchedPets")
+  matchesAsPet1 Match[] @relation("MatchPet1")
+  matchesAsPet2 Match[] @relation("MatchPet2")
   blockedPets BlockedPet[] @relation("BlockerPet")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  
+
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  
+
   @@index([ownerId])
   @@map("pets")
 }
@@ -101,9 +102,9 @@ model Photo {
   moderationTask ModerationTask?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  
+
   pet Pet? @relation(fields: [petId], references: [id], onDelete: Cascade)
-  
+
   @@index([petId])
   @@index([status])
   @@map("photos")
@@ -118,9 +119,9 @@ model ModerationTask {
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
-  
+
   @@index([status])
   @@map("moderation_tasks")
 }
@@ -137,10 +138,10 @@ model Match {
   status    String   @default("pending") // pending, matched, rejected
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
-  pet1 Pet @relation("MatchedPets", fields: [pet1Id], references: [id])
-  pet2 Pet @relation("MatchedPets", fields: [pet2Id], references: [id])
-  
+
+  pet1 Pet @relation("MatchPet1", fields: [pet1Id], references: [id])
+  pet2 Pet @relation("MatchPet2", fields: [pet2Id], references: [id])
+
   @@unique([pet1Id, pet2Id])
   @@index([pet1Id])
   @@index([pet2Id])
@@ -159,9 +160,9 @@ model Conversation {
   lastMessageAt DateTime? @map("last_message_at")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   messages  Message[]
-  
+
   @@index([userId1])
   @@index([userId2])
   @@map("conversations")
@@ -175,9 +176,9 @@ model Message {
   read           Boolean  @default(false)
   readAt         DateTime? @map("read_at")
   createdAt      DateTime @default(now()) @map("created_at")
-  
+
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  
+
   @@index([conversationId])
   @@index([senderId])
   @@map("messages")
@@ -197,7 +198,7 @@ model Notification {
   read      Boolean  @default(false)
   readAt    DateTime? @map("read_at")
   createdAt DateTime @default(now()) @map("created_at")
-  
+
   @@index([userId])
   @@index([read])
   @@map("notifications")
@@ -217,9 +218,9 @@ model AdoptionListing {
   status      String   @default("active") // active, pending, adopted, closed
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  
+
   applications AdoptionApplication[]
-  
+
   @@index([ownerId])
   @@index([status])
   @@map("adoption_listings")
@@ -233,9 +234,9 @@ model AdoptionApplication {
   status    String   @default("pending") // pending, approved, rejected
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   listing AdoptionListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  
+
   @@index([listingId])
   @@index([applicantId])
   @@map("adoption_applications")
@@ -253,9 +254,9 @@ model CommunityPost {
   likes     Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   comments  CommunityComment[]
-  
+
   @@index([authorId])
   @@index([createdAt])
   @@map("community_posts")
@@ -268,9 +269,9 @@ model CommunityComment {
   content   String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   post CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
+
   @@index([postId])
   @@index([authorId])
   @@map("community_comments")
@@ -285,9 +286,9 @@ model BlockedPet {
   blockerPetId String   @map("blocker_pet_id")
   blockedPetId String   @map("blocked_pet_id")
   createdAt    DateTime @default(now()) @map("created_at")
-  
+
   blockerPet Pet @relation("BlockerPet", fields: [blockerPetId], references: [id], onDelete: Cascade)
-  
+
   @@unique([blockerPetId, blockedPetId])
   @@index([blockerPetId])
   @@map("blocked_pets")
@@ -306,7 +307,7 @@ model Subscription {
   currentPeriodEnd DateTime? @map("current_period_end")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  
+
   @@index([userId])
   @@map("subscriptions")
 }
@@ -323,7 +324,7 @@ model KYCVerification {
   notes     String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   @@index([userId])
   @@index([status])
   @@map("kyc_verifications")
@@ -345,7 +346,7 @@ model LostFoundAlert {
   views     Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   @@index([ownerId])
   @@index([status])
   @@index([type])
@@ -365,7 +366,7 @@ model LiveStream {
   viewerCount Int    @default(0) @map("viewer_count")
   startedAt DateTime @default(now()) @map("started_at")
   endedAt   DateTime? @map("ended_at")
-  
+
   @@index([hostId])
   @@index([status])
   @@map("live_streams")
@@ -385,7 +386,7 @@ model AuditLog {
   ipAddress String?  @map("ip_address")
   userAgent String?  @map("user_agent")
   createdAt DateTime @default(now()) @map("created_at")
-  
+
   @@index([userId])
   @@index([action])
   @@index([createdAt])
@@ -402,7 +403,7 @@ model UserQuota {
   limits    Json     // { pets: number, photos: number, matches: number, messages: number }
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   @@index([userId])
   @@map("user_quotas")
 }
@@ -418,11 +419,10 @@ model Event {
   userId    String?  @map("user_id")
   petId     String?  @map("pet_id")
   createdAt DateTime @default(now()) @map("created_at")
-  
+
   @@index([type])
   @@index([userId])
   @@index([petId])
   @@index([createdAt])
   @@map("events")
 }
-

@@ -1,5 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 /**
  * Logger utility for structured logging throughout the application
  * Provides different log levels and integration with analytics/monitoring

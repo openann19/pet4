@@ -3,9 +3,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import type { ComponentProps, ReactNode } from 'react';
 import userEvent from '@testing-library/user-event';
 import AgeGateModal from '@/components/auth/AgeGateModal';
 import type { AgeVerification } from '@/lib/kyc-types';
+import { UIProvider } from '@/contexts/UIContext';
 
 // Mock dependencies
 const mockTranslations = {
@@ -72,12 +74,7 @@ vi.mock('@/hooks/use-storage', () => ({
   }),
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
-}));
+
 
 describe('AgeGateModal', () => {
   const mockOnVerified = vi.fn();
@@ -87,14 +84,27 @@ describe('AgeGateModal', () => {
     vi.clearAllMocks();
   });
 
+  const renderWithUI = (props: Partial<ComponentProps<typeof AgeGateModal>> = {}) => {
+    return render(
+      <UIProvider>
+        <AgeGateModal
+          open={true}
+          onVerified={mockOnVerified}
+          onClose={mockOnClose}
+          {...props}
+        />
+      </UIProvider>
+    );
+  };
+
   it('should not render when closed', () => {
-    render(<AgeGateModal open={false} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI({ open: false });
 
     expect(screen.queryByText(/enter your birth date/i)).not.toBeInTheDocument();
   });
 
   it('should render when open', () => {
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     expect(screen.getByText(/enter your birth date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/birth date/i)).toBeInTheDocument();
@@ -103,7 +113,7 @@ describe('AgeGateModal', () => {
 
   it('should show error when birth date is not provided', async () => {
     const user = userEvent.setup();
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     const verifyButton = screen.getByRole('button', { name: /verify age/i });
     await user.click(verifyButton);
@@ -115,7 +125,7 @@ describe('AgeGateModal', () => {
 
   it('should show error when user is too young', async () => {
     const user = userEvent.setup();
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     // Set birth date to 5 years ago (too young)
     const birthDateInput = screen.getByLabelText(/birth date/i);
@@ -145,7 +155,7 @@ describe('AgeGateModal', () => {
       verifiedAt: new Date().toISOString(),
     } as AgeVerification);
 
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     // Set birth date to 20 years ago (old enough)
     const birthDateInput = screen.getByLabelText(/birth date/i);
@@ -175,7 +185,7 @@ describe('AgeGateModal', () => {
       country: 'US',
     } as AgeVerification);
 
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     const birthDateInput = screen.getByLabelText(/birth date/i);
     const countryInput = screen.getByLabelText(/country/i);
@@ -201,7 +211,7 @@ describe('AgeGateModal', () => {
     const { recordAgeVerification } = await import('@/lib/kyc-service');
     vi.mocked(recordAgeVerification).mockRejectedValue(new Error('Verification failed'));
 
-    render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
+    renderWithUI();
 
     const birthDateInput = screen.getByLabelText(/birth date/i);
     const twentyYearsAgo = new Date();
@@ -229,4 +239,26 @@ describe('AgeGateModal', () => {
 
     expect(mockOnClose).toHaveBeenCalled();
   });
+});
+vi.mock('@petspark/motion', () => {
+  const MotionComponent = ({
+    children,
+    ...props
+  }: { children?: ReactNode } & React.HTMLAttributes<HTMLDivElement>) => (
+    <div {...props}>{children}</div>
+  );
+
+  return {
+    MotionView: MotionComponent,
+    Presence: ({ children }: { children?: ReactNode }) => <>{children}</>,
+    motion: {
+      div: MotionComponent,
+      button: MotionComponent,
+      span: MotionComponent,
+    },
+    Animated: {
+      View: MotionComponent,
+      Text: MotionComponent,
+    },
+  };
 });

@@ -60,7 +60,12 @@ function FeatureBadge({ feature, index, onRemove }: FeatureBadgeProps): JSX.Elem
       <Badge variant="secondary" className="gap-1">
         {feature}
         <MotionView style={removeButtonAnimation.animatedStyle}>
-          <button onClick={removeButtonAnimation.handlePress} type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+          <button
+            onClick={removeButtonAnimation.handlePress}
+            type="button"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)"
+            aria-label={`Remove feature ${feature}`}
+          >
             <X size={12} />
           </button>
         </MotionView>
@@ -273,7 +278,7 @@ export function CreateLostAlertDialog({
                     value={species}
                     onValueChange={(v): void => setSpecies(v as typeof species)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="species">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -309,7 +314,7 @@ export function CreateLostAlertDialog({
               <div className="space-y-2">
                 <Label htmlFor="size">Size</Label>
                 <Select value={size} onValueChange={(v): void => setSize(v as typeof size)}>
-                  <SelectTrigger>
+                  <SelectTrigger id="size">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -423,7 +428,7 @@ export function CreateLostAlertDialog({
                   value={radiusM.toString()}
                   onValueChange={(v): void => setRadiusM(parseInt(v, 10))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="radiusM">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

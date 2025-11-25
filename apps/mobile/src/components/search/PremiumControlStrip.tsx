@@ -20,16 +20,7 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  FadeInUp,
-  FadeOutDown,
-  SlideInDown,
-  SlideOutDown,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, FadeInUp, SlideInDown, SlideOutDown } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import { colors } from '@/theme/colors'
@@ -103,10 +94,10 @@ function SortModal({
 }): React.JSX.Element {
   const handleSortSelect = useCallback((sort: SortOption) => {
     logger.debug('Sort option selected', { sort })
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     onSortSelect(sort)
     onClose()
   }, [onSortSelect, onClose])
@@ -131,13 +122,13 @@ function SortModal({
           style={styles.modalContent}
         >
           <View style={styles.modalHandle} />
-          
+
           <Text style={styles.modalTitle}>Sort by</Text>
-          
+
           <View style={styles.sortOptions}>
             {SORT_OPTIONS.map((option) => {
               const isSelected = option.value === currentSort
-              
+
               return (
                 <Pressable
                   key={option.value}
@@ -154,7 +145,7 @@ function SortModal({
                   <View style={styles.sortOptionIcon}>
                     <Text style={styles.sortOptionIconText}>{option.icon}</Text>
                   </View>
-                  
+
                   <View style={styles.sortOptionContent}>
                     <Text style={[
                       styles.sortOptionLabel,
@@ -166,7 +157,7 @@ function SortModal({
                       {option.description}
                     </Text>
                   </View>
-                  
+
                   {isSelected && (
                     <View style={styles.sortOptionCheck}>
                       <Text style={styles.sortOptionCheckIcon}>✓</Text>
@@ -191,36 +182,36 @@ export function PremiumControlStrip({
 }: PremiumControlStripProps): React.JSX.Element {
   const [showSortModal, setShowSortModal] = useState(false)
   const sortButtonScale = useSharedValue(1)
-  
+
   const currentSortOption = SORT_OPTIONS.find(option => option.value === currentSort) ?? SORT_OPTIONS[0]!
-  
+
   const handleSortPress = useCallback(() => {
     logger.debug('Sort button pressed', { currentSort })
-    
+
     // Animate button press
     sortButtonScale.value = withSpring(0.95, { damping: 10, stiffness: 400 })
     setTimeout(() => {
       sortButtonScale.value = withSpring(1, { damping: 15, stiffness: 300 })
     }, 100)
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    
+
     setShowSortModal(true)
   }, [currentSort, sortButtonScale])
-  
+
   const handleSortModalClose = useCallback(() => {
     setShowSortModal(false)
   }, [])
-  
+
   const handleSortChange = useCallback((sort: SortOption) => {
     onSortChange(sort)
   }, [onSortChange])
-  
+
   const sortButtonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: sortButtonScale.value }],
   }), [sortButtonScale])
-  
+
   return (
     <>
       <Animated.View
@@ -236,7 +227,7 @@ export function PremiumControlStrip({
             <Text style={styles.countSubtext}>within your area</Text>
           )}
         </View>
-        
+
         {/* Sort Button */}
         <AnimatedPressable
           style={[styles.sortButton, sortButtonAnimatedStyle]}
@@ -254,7 +245,7 @@ export function PremiumControlStrip({
           <Text style={styles.sortArrow}>▼</Text>
         </AnimatedPressable>
       </Animated.View>
-      
+
       {/* Sort Modal */}
       <SortModal
         visible={showSortModal}

@@ -70,10 +70,10 @@ const HAPTIC_PATTERNS: Record<string, number[]> = {
   error: [50, 10, 50, 10, 50],
 };
 
-const ANIMATION_DURATION = 200; // ms
+const _ANIMATION_DURATION = 200; // ms
 const VELOCITY_THRESHOLD = 0.5;
 const MOMENTUM_DECAY = 0.95;
-const SNAP_THRESHOLD = 0.1;
+const _SNAP_THRESHOLD = 0.1;
 
 // ============================================================================
 // Haptic Feedback
@@ -99,16 +99,19 @@ export function useUndoRedo<T>(initialState: T, maxHistory = 50) {
     future: [],
   });
 
-  const set = useCallback((newValue: T) => {
-    setState(prev => ({
-      past: [...prev.past, prev.present].slice(-maxHistory),
-      present: newValue,
-      future: [],
-    }));
-  }, [maxHistory]);
+  const set = useCallback(
+    (newValue: T) => {
+      setState((prev) => ({
+        past: [...prev.past, prev.present].slice(-maxHistory),
+        present: newValue,
+        future: [],
+      }));
+    },
+    [maxHistory]
+  );
 
   const undo = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       if (prev.past.length === 0) return prev;
 
       const previous = prev.past[prev.past.length - 1];
@@ -123,7 +126,7 @@ export function useUndoRedo<T>(initialState: T, maxHistory = 50) {
   }, []);
 
   const redo = useCallback(() => {
-    setState(prev => {
+    setState((prev) => {
       if (prev.future.length === 0) return prev;
 
       const next = prev.future[0];
@@ -164,18 +167,16 @@ export function useUndoRedo<T>(initialState: T, maxHistory = 50) {
 // Keyboard Shortcuts Hook
 // ============================================================================
 
-export function useKeyboardShortcuts(
-  shortcuts: readonly KeyboardShortcut[],
-  enabled = true
-) {
+export function useKeyboardShortcuts(shortcuts: readonly KeyboardShortcut[], enabled = true) {
   useEffect(() => {
     if (!enabled) return undefined;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      shortcuts.forEach(shortcut => {
+      shortcuts.forEach((shortcut) => {
         const modifiersMatch =
-          (!shortcut.modifiers || shortcut.modifiers.length === 0) ||
-          shortcut.modifiers.every(modifier => {
+          !shortcut.modifiers ||
+          shortcut.modifiers.length === 0 ||
+          shortcut.modifiers.every((modifier) => {
             switch (modifier) {
               case 'ctrl':
                 return event.ctrlKey;
@@ -237,7 +238,7 @@ export function useAdvancedSlider(props: SliderProps) {
 
   const normalizeValue = useCallback(
     (value: number): number => {
-      const range = max - min;
+      const _range = max - min;
       const normalized = Math.max(min, Math.min(max, value));
 
       if (step) {
@@ -301,7 +302,7 @@ export function useAdvancedSlider(props: SliderProps) {
       event.preventDefault();
       const newValue = getValueFromPosition(event.clientX, event.clientY);
 
-      setSliderState(prev => ({
+      setSliderState((prev) => ({
         ...prev,
         isDragging: true,
         value: newValue,
@@ -329,12 +330,12 @@ export function useAdvancedSlider(props: SliderProps) {
       const newValue = getValueFromPosition(event.clientX, event.clientY);
       const now = Date.now();
 
-      setSliderState(prev => ({
+      setSliderState((prev) => ({
         ...prev,
         value: newValue,
       }));
 
-      setGesture(prev => {
+      setGesture((prev) => {
         if (!prev) return null;
 
         const dt = (now - prev.lastMoveTime) / 1000;
@@ -350,13 +351,20 @@ export function useAdvancedSlider(props: SliderProps) {
       triggerHapticIfNeeded(newValue);
       onChange(newValue);
     },
-    [sliderState.isDragging, sliderState.value, props.disabled, getValueFromPosition, triggerHapticIfNeeded, onChange]
+    [
+      sliderState.isDragging,
+      sliderState.value,
+      props.disabled,
+      getValueFromPosition,
+      triggerHapticIfNeeded,
+      onChange,
+    ]
   );
 
   const handleMouseUp = useCallback(() => {
     if (!sliderState.isDragging) return;
 
-    setSliderState(prev => ({
+    setSliderState((prev) => ({
       ...prev,
       isDragging: false,
     }));
@@ -402,7 +410,7 @@ export function useAdvancedSlider(props: SliderProps) {
 
       const newValue = getValueFromPosition(touch.clientX, touch.clientY);
 
-      setSliderState(prev => ({
+      setSliderState((prev) => ({
         ...prev,
         isDragging: true,
         value: newValue,
@@ -429,7 +437,7 @@ export function useAdvancedSlider(props: SliderProps) {
       if (!sliderState.isDragging || props.disabled) return;
 
       const touch = Array.from(event.touches).find(
-        t => t.identifier === sliderState.touchIdentifier
+        (t) => t.identifier === sliderState.touchIdentifier
       );
 
       if (!touch) return;
@@ -437,12 +445,12 @@ export function useAdvancedSlider(props: SliderProps) {
       const newValue = getValueFromPosition(touch.clientX, touch.clientY);
       const now = Date.now();
 
-      setSliderState(prev => ({
+      setSliderState((prev) => ({
         ...prev,
         value: newValue,
       }));
 
-      setGesture(prev => {
+      setGesture((prev) => {
         if (!prev) return null;
 
         const dt = (now - prev.lastMoveTime) / 1000;
@@ -458,13 +466,21 @@ export function useAdvancedSlider(props: SliderProps) {
       triggerHapticIfNeeded(newValue);
       onChange(newValue);
     },
-    [sliderState.isDragging, sliderState.value, sliderState.touchIdentifier, props.disabled, getValueFromPosition, triggerHapticIfNeeded, onChange]
+    [
+      sliderState.isDragging,
+      sliderState.value,
+      sliderState.touchIdentifier,
+      props.disabled,
+      getValueFromPosition,
+      triggerHapticIfNeeded,
+      onChange,
+    ]
   );
 
   const handleTouchEnd = useCallback(() => {
     if (!sliderState.isDragging) return;
 
-    setSliderState(prev => ({
+    setSliderState((prev) => ({
       ...prev,
       isDragging: false,
       touchIdentifier: null,
@@ -515,11 +531,21 @@ export function useAdvancedSlider(props: SliderProps) {
           return;
       }
 
-      setSliderState(prev => ({ ...prev, value: newValue }));
+      setSliderState((prev) => ({ ...prev, value: newValue }));
       triggerHapticIfNeeded(newValue);
       onChange(newValue);
     },
-    [props.disabled, sliderState.isFocused, sliderState.value, step, min, max, normalizeValue, triggerHapticIfNeeded, onChange]
+    [
+      props.disabled,
+      sliderState.isFocused,
+      sliderState.value,
+      step,
+      min,
+      max,
+      normalizeValue,
+      triggerHapticIfNeeded,
+      onChange,
+    ]
   );
 
   // ============================================================================
@@ -563,7 +589,7 @@ export function useAdvancedSlider(props: SliderProps) {
 
   useEffect(() => {
     if (!sliderState.isDragging) {
-      setSliderState(prev => ({ ...prev, value: propValue }));
+      setSliderState((prev) => ({ ...prev, value: propValue }));
     }
   }, [propValue, sliderState.isDragging]);
 
@@ -574,10 +600,10 @@ export function useAdvancedSlider(props: SliderProps) {
       onMouseDown: handleMouseDown,
       onTouchStart: handleTouchStart,
       onKeyDown: handleKeyDown,
-      onFocus: () => setSliderState(prev => ({ ...prev, isFocused: true })),
-      onBlur: () => setSliderState(prev => ({ ...prev, isFocused: false })),
-      onMouseEnter: () => setSliderState(prev => ({ ...prev, isHovered: true })),
-      onMouseLeave: () => setSliderState(prev => ({ ...prev, isHovered: false })),
+      onFocus: () => setSliderState((prev) => ({ ...prev, isFocused: true })),
+      onBlur: () => setSliderState((prev) => ({ ...prev, isFocused: false })),
+      onMouseEnter: () => setSliderState((prev) => ({ ...prev, isHovered: true })),
+      onMouseLeave: () => setSliderState((prev) => ({ ...prev, isHovered: false })),
     },
     percentage: ((sliderState.value - min) / (max - min)) * 100,
   };

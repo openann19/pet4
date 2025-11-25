@@ -13,7 +13,7 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native'
-import Animated, { useSharedValue } from 'react-native-reanimated'
+import { Animated, useSharedValue } from '@petspark/motion'
 import {
   useReduceMotion,
   ShimmerOverlay,

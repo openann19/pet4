@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, type ViewProps } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import type { AnimatedStyle as ReanimatedAnimatedStyle } from 'react-native-reanimated'
 
 /**

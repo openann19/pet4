@@ -10,18 +10,9 @@
  */
 
 import { useEffect } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withRepeat,
-  withTiming,
-  withSequence,
-  Easing,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withTiming, withSequence, Easing, type SharedValue } from '@petspark/motion'
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Spring configuration for entry

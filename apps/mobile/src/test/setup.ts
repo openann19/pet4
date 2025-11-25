@@ -1,5 +1,23 @@
+import { createRequire } from 'node:module'
+import { vi } from 'vitest'
+
+const require = createRequire(import.meta.url)
+
+const jestGlobal = {
+  mock: vi.mock.bind(vi),
+  fn: vi.fn.bind(vi),
+  spyOn: vi.spyOn.bind(vi),
+  clearAllMocks: vi.clearAllMocks.bind(vi),
+  useFakeTimers: vi.useFakeTimers.bind(vi),
+  useRealTimers: vi.useRealTimers.bind(vi),
+  advanceTimersByTime: vi.advanceTimersByTime.bind(vi),
+  runAllTimers: vi.runAllTimers.bind(vi),
+  setSystemTime: vi.setSystemTime.bind(vi),
+}
+;(globalThis as Record<string, unknown>).jest = jestGlobal
+
 // Testing library - use actual implementation
-// Cleanup after each test is handled by Jest automatically
+// Cleanup after each test is handled by Vitest automatically
 
 // Set globals/env expected by app code
 Object.defineProperty(global, '__DEV__', {
@@ -11,9 +29,9 @@ process.env['EXPO_PUBLIC_API_URL'] = process.env['EXPO_PUBLIC_API_URL'] ?? ''
 process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] = process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] ?? ''
 
 // Help surface early syntax errors with clearer stacks during environment boot
-// Jest will handle these errors in its test environment
+// Vitest will handle these errors in its test environment
 process.on('uncaughtException', err => {
-  // Jest will handle these errors in its test environment
+  // Vitest will handle these errors in its test environment
   // Only log if we're not in a test environment (shouldn't happen in tests)
   if (typeof process !== 'undefined' && process.env['NODE_ENV'] !== 'test') {
     // In non-test environments, these should be handled by the application
@@ -29,7 +47,7 @@ process.on('unhandledRejection', reason => {
 })
 
 // Mock React Native modules
-jest.mock('react-native', () => {
+vi.mock('react-native', () => {
   const React = require('react')
   const MockComponent = (props: any) => React.createElement('View', props)
 
@@ -37,7 +55,7 @@ jest.mock('react-native', () => {
     Platform: {
       OS: 'ios',
       Version: '14.0',
-      select: jest.fn((obj: Record<string, unknown>) => obj['ios'] || obj['default']),
+      select: vi.fn((obj: Record<string, unknown>) => obj['ios'] || obj['default']),
     },
     View: MockComponent,
     Text: MockComponent,
@@ -57,47 +75,47 @@ jest.mock('react-native', () => {
     },
     Dimensions: {
       get: () => ({ width: 375, height: 812 }),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     },
     Animated: {
-      Value: jest.fn((value) => ({ _value: value })),
+      Value: vi.fn((value) => ({ _value: value })),
       View: MockComponent,
       Text: MockComponent,
-      timing: jest.fn((): { start: () => void } => ({ start: jest.fn() })),
-      spring: jest.fn((): { start: () => void } => ({ start: jest.fn() })),
-      sequence: jest.fn((animations) => ({ start: jest.fn() })),
-      parallel: jest.fn((animations) => ({ start: jest.fn() })),
-      loop: jest.fn((animation) => ({ start: jest.fn() })),
+      timing: vi.fn((): { start: () => void } => ({ start: vi.fn() })),
+      spring: vi.fn((): { start: () => void } => ({ start: vi.fn() })),
+      sequence: vi.fn((animations) => ({ start: vi.fn() })),
+      parallel: vi.fn((animations) => ({ start: vi.fn() })),
+      loop: vi.fn((animation) => ({ start: vi.fn() })),
     },
     Easing: {
-      linear: jest.fn(),
-      ease: jest.fn(),
-      quad: jest.fn(),
-      cubic: jest.fn(),
+      linear: vi.fn(),
+      ease: vi.fn(),
+      quad: vi.fn(),
+      cubic: vi.fn(),
     },
     AppState: {
       currentState: 'active',
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     },
     Keyboard: {
-      dismiss: jest.fn(),
-      addListener: jest.fn(() => ({ remove: jest.fn() })),
-      removeListener: jest.fn(),
+      dismiss: vi.fn(),
+      addListener: vi.fn(() => ({ remove: vi.fn() })),
+      removeListener: vi.fn(),
     },
     NativeModules: {},
-    NativeEventEmitter: jest.fn(() => ({
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
+    NativeEventEmitter: vi.fn(() => ({
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
     })),
   }
 })
 
 // Mock expo-haptics
-jest.mock('expo-haptics', () => ({
-  impactAsync: jest.fn().mockResolvedValue(null),
-  selectionAsync: jest.fn().mockResolvedValue(null),
+vi.mock('expo-haptics', () => ({
+  impactAsync: vi.fn().mockResolvedValue(null),
+  selectionAsync: vi.fn().mockResolvedValue(null),
   ImpactFeedbackStyle: {
     Light: 'light',
     Medium: 'medium',
@@ -106,14 +124,13 @@ jest.mock('expo-haptics', () => ({
 }))
 
 // Mock react-native-safe-area-context
-jest.mock('react-native-safe-area-context', () => ({
+vi.mock('react-native-safe-area-context', () => ({
   SafeAreaView: ({ children }: { children: React.ReactNode }) => children,
   SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }))
 
-// Mock react-native-reanimated
-jest.mock('react-native-reanimated', () => {
+const createReanimatedMock = () => {
   const createMockSharedValue = (initial: number) => {
     let val = initial
     return {
@@ -132,9 +149,10 @@ jest.mock('react-native-reanimated', () => {
     }
   }
 
-  const Reanimated = {
+  return {
     default: {
       call: () => {},
+      createAnimatedComponent: <T>(component: T) => component,
     },
     useSharedValue: (initial: number) => createMockSharedValue(initial),
     useAnimatedStyle: (fn: () => Record<string, unknown>) => {
@@ -159,28 +177,72 @@ jest.mock('react-native-reanimated', () => {
       in: (e: (t: number) => number) => e,
       out: (e: (t: number) => number) => e,
       inOut: (e: (t: number) => number) => e,
+      elastic: (_bounciness: number) => (t: number) => t,
       bezier: () => (t: number) => t,
     },
-    FadeIn: {},
-    FadeOut: {},
-    Layout: {},
+    FadeIn: {
+      duration: () => ({}),
+    },
+    FadeOut: {
+      duration: () => ({}),
+    },
+    Layout: {
+      springify: () => ({}),
+    },
   }
-  return Reanimated
-})
+}
+
+// Mock react-native-reanimated
+vi.mock('react-native-reanimated', () => createReanimatedMock())
+vi.mock('react-native-reanimated/mock', () => createReanimatedMock())
+
+vi.mock('expo-modules-core', () => ({
+  requireNativeModule: () => ({}),
+  NativeModulesProxy: {},
+  EventEmitter: class {
+    addListener() {
+      return { remove: () => {} }
+    }
+    removeAllListeners() {}
+  },
+}))
+
+vi.mock('expo-constants', () => ({
+  default: {
+    expoConfig: {},
+    manifest: {},
+    linkingUri: 'https://example.com/',
+    platform: { ios: { model: 'Vitest' }, android: { model: 'Vitest' } },
+  },
+}))
+
+vi.mock('expo-secure-store', () => ({
+  getItemAsync: vi.fn().mockResolvedValue(null),
+  setItemAsync: vi.fn().mockResolvedValue(undefined),
+  deleteItemAsync: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('expo-notifications', () => ({
+  getDevicePushTokenAsync: vi.fn().mockResolvedValue({ data: 'mock-token' }),
+  setNotificationHandler: vi.fn(),
+  addNotificationReceivedListener: vi.fn(() => ({ remove: () => {} })),
+  addNotificationResponseReceivedListener: vi.fn(() => ({ remove: () => {} })),
+  removeNotificationSubscription: vi.fn(),
+}))
 
 // Mock react-native-gesture-handler
-jest.mock('react-native-gesture-handler', () => ({
+vi.mock('react-native-gesture-handler', () => ({
   Gesture: {
     Pan: () => ({
-      onChange: jest.fn(() => ({ onChange: jest.fn() })),
+      onChange: vi.fn(() => ({ onChange: vi.fn() })),
     }),
     Pinch: () => ({
-      onChange: jest.fn(() => ({ onChange: jest.fn() })),
+      onChange: vi.fn(() => ({ onChange: vi.fn() })),
     }),
-    Simultaneous: jest.fn((...args: unknown[]) => args),
+    Simultaneous: vi.fn((...args: unknown[]) => args),
   },
   GestureDetector: ({ children }: { children: React.ReactNode }) => children,
 }))
 
 // Note: reduced-motion files need to be mocked in individual test files if needed
-// Jest handles module resolution differently than Vitest
+// Vitest handles module resolution differently than Jest

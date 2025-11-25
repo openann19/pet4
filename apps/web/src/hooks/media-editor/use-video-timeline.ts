@@ -2,10 +2,8 @@ import { useCallback, useState, useRef, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
 import { getWorkerPool } from '@/lib/worker-pool';
 import {
-  VideoTimelineError,
   VideoFrameError,
   WaveformError,
-  VideoExportError,
   createErrorContext,
   type MediaErrorContext,
 } from '@/lib/media-errors';
@@ -130,18 +128,18 @@ export interface VideoFrame {
 // ============================================================================
 
 const DEFAULT_TRACK_HEIGHT = 80;
-const MIN_TRACK_HEIGHT = 40;
-const MAX_TRACK_HEIGHT = 200;
+const _MIN_TRACK_HEIGHT = 40;
+const _MAX_TRACK_HEIGHT = 200;
 const DEFAULT_ZOOM = 100; // Pixels per second
 const MIN_ZOOM = 10;
 const MAX_ZOOM = 1000;
-const SNAP_THRESHOLD = 5; // Pixels
+const _SNAP_THRESHOLD = 5; // Pixels
 const WAVEFORM_SAMPLES = 1000;
 const THUMBNAIL_INTERVAL = 1; // Generate thumbnail every N seconds
 const MAX_UNDO_HISTORY = 50;
 
 // Supported transition types with their implementations
-const TRANSITION_TYPES = [
+const _TRANSITION_TYPES = [
   'fade',
   'dissolve',
   'wipe-left',
@@ -182,17 +180,17 @@ export function useVideoTimeline() {
     gridSize: 1,
   });
 
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [isProcessing, _setIsProcessing] = useState(false);
+  const [error, _setError] = useState<Error | null>(null);
 
-  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const _timelineRef = useRef<HTMLDivElement | null>(null);
   const playbackTimerRef = useRef<number | null>(null);
   const undoStackRef = useRef<TimelineState[]>([]);
   const redoStackRef = useRef<TimelineState[]>([]);
   const waveformCacheRef = useRef<Map<string, AudioWaveform>>(new Map());
   const thumbnailCacheRef = useRef<Map<string, VideoFrame[]>>(new Map());
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Audio Waveform Generation
@@ -467,377 +465,389 @@ export function useVideoTimeline() {
   // Track Management
   // ============================================================================
 
-  const addTrack = useCallback((type: TimelineTrack['type'], name?: string) => {
-    saveToHistory();
+  const addTrack = useCallback(
+    (type: TimelineTrack['type'], name?: string) => {
+      saveToHistory();
 
-    const newTrack: TimelineTrack = {
-      id: `track-${Date.now()}-${Math.random()}`,
-      type,
-      name: name ?? `${type} Track ${state.tracks.length + 1}`,
-      clips: [],
-      locked: false,
-      visible: true,
-      height: DEFAULT_TRACK_HEIGHT,
-    };
+      const newTrack: TimelineTrack = {
+        id: `track-${Date.now()}-${Math.random()}`,
+        type,
+        name: name ?? `${type} Track ${state.tracks.length + 1}`,
+        clips: [],
+        locked: false,
+        visible: true,
+        height: DEFAULT_TRACK_HEIGHT,
+      };
 
-    setState(prev => ({
-      ...prev,
-      tracks: [...prev.tracks, newTrack],
-    }));
+      setState((prev) => ({
+        ...prev,
+        tracks: [...prev.tracks, newTrack],
+      }));
 
-    return newTrack.id;
-  }, [state.tracks.length, saveToHistory]);
+      return newTrack.id;
+    },
+    [state.tracks.length, saveToHistory]
+  );
 
-  const removeTrack = useCallback((trackId: string) => {
-    saveToHistory();
+  const removeTrack = useCallback(
+    (trackId: string) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.filter(t => t.id !== trackId),
-      selectedClipIds: prev.selectedClipIds.filter(clipId => {
-        const clip = prev.tracks
-          .flatMap(t => t.clips)
-          .find(c => c.id === clipId);
-        return clip?.trackId !== trackId;
-      }),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.filter((t) => t.id !== trackId),
+        selectedClipIds: prev.selectedClipIds.filter((clipId) => {
+          const clip = prev.tracks.flatMap((t) => t.clips).find((c) => c.id === clipId);
+          return clip?.trackId !== trackId;
+        }),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const updateTrack = useCallback((
-    trackId: string,
-    updates: Partial<Omit<TimelineTrack, 'id' | 'clips'>>
-  ) => {
-    saveToHistory();
+  const updateTrack = useCallback(
+    (trackId: string, updates: Partial<Omit<TimelineTrack, 'id' | 'clips'>>) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track =>
-        track.id === trackId ? { ...track, ...updates } : track
-      ),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) =>
+          track.id === trackId ? { ...track, ...updates } : track
+        ),
+      }));
+    },
+    [saveToHistory]
+  );
 
   // ============================================================================
   // Clip Management
   // ============================================================================
 
-  const addClip = useCallback((
-    trackId: string,
-    source: MediaSource,
-    startTime: number
-  ): string => {
-    saveToHistory();
+  const addClip = useCallback(
+    (trackId: string, source: MediaSource, startTime: number): string => {
+      saveToHistory();
 
-    const newClip: TimelineClip = {
-      id: `clip-${Date.now()}-${Math.random()}`,
-      trackId,
-      startTime,
-      duration: source.duration ?? 5,
-      trimStart: 0,
-      trimEnd: 0,
-      source,
-      effects: [],
-      transitions: [],
-      volume: 1,
-      speed: 1,
-      opacity: 1,
-      transform: {
-        x: 0,
-        y: 0,
-        scaleX: 1,
-        scaleY: 1,
-        rotation: 0,
-        anchorX: 0.5,
-        anchorY: 0.5,
-      },
-      keyframes: [],
-    };
-
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track =>
-        track.id === trackId
-          ? { ...track, clips: [...track.clips, newClip] }
-          : track
-      ),
-      duration: Math.max(prev.duration, startTime + newClip.duration),
-    }));
-
-    return newClip.id;
-  }, [saveToHistory]);
-
-  const removeClip = useCallback((clipId: string) => {
-    saveToHistory();
-
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.filter(c => c.id !== clipId),
-      })),
-      selectedClipIds: prev.selectedClipIds.filter(id => id !== clipId),
-    }));
-  }, [saveToHistory]);
-
-  const updateClip = useCallback((
-    clipId: string,
-    updates: Partial<Omit<TimelineClip, 'id' | 'trackId'>>
-  ) => {
-    saveToHistory();
-
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId ? { ...clip, ...updates } : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
-
-  const splitClip = useCallback((clipId: string, splitTime: number) => {
-    saveToHistory();
-
-    setState(prev => {
-      const allClips = prev.tracks.flatMap(t => t.clips);
-      const clip = allClips.find(c => c.id === clipId);
-
-      if (!clip || splitTime <= clip.startTime || splitTime >= clip.startTime + clip.duration) {
-        return prev;
-      }
-
-      const relativeTime = splitTime - clip.startTime;
-
-      const clip1: TimelineClip = {
-        ...clip,
-        id: `clip-${Date.now()}-${Math.random()}-1`,
-        duration: relativeTime,
-        trimEnd: clip.trimEnd + (clip.duration - relativeTime),
+      const newClip: TimelineClip = {
+        id: `clip-${Date.now()}-${Math.random()}`,
+        trackId,
+        startTime,
+        duration: source.duration ?? 5,
+        trimStart: 0,
+        trimEnd: 0,
+        source,
+        effects: [],
+        transitions: [],
+        volume: 1,
+        speed: 1,
+        opacity: 1,
+        transform: {
+          x: 0,
+          y: 0,
+          scaleX: 1,
+          scaleY: 1,
+          rotation: 0,
+          anchorX: 0.5,
+          anchorY: 0.5,
+        },
+        keyframes: [],
       };
 
-      const clip2: TimelineClip = {
-        ...clip,
-        id: `clip-${Date.now()}-${Math.random()}-2`,
-        startTime: splitTime,
-        duration: clip.duration - relativeTime,
-        trimStart: clip.trimStart + relativeTime,
-      };
-
-      return {
+      setState((prev) => ({
         ...prev,
-        tracks: prev.tracks.map(track => ({
-          ...track,
-          clips: track.clips.flatMap(c =>
-            c.id === clipId ? [clip1, clip2] : [c]
-          ),
-        })),
-      };
-    });
-  }, [saveToHistory]);
+        tracks: prev.tracks.map((track) =>
+          track.id === trackId ? { ...track, clips: [...track.clips, newClip] } : track
+        ),
+        duration: Math.max(prev.duration, startTime + newClip.duration),
+      }));
 
-  const trimClip = useCallback((
-    clipId: string,
-    trimStart: number,
-    trimEnd: number
-  ) => {
-    updateClip(clipId, { trimStart, trimEnd });
-  }, [updateClip]);
+      return newClip.id;
+    },
+    [saveToHistory]
+  );
+
+  const removeClip = useCallback(
+    (clipId: string) => {
+      saveToHistory();
+
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.filter((c) => c.id !== clipId),
+        })),
+        selectedClipIds: prev.selectedClipIds.filter((id) => id !== clipId),
+      }));
+    },
+    [saveToHistory]
+  );
+
+  const updateClip = useCallback(
+    (clipId: string, updates: Partial<Omit<TimelineClip, 'id' | 'trackId'>>) => {
+      saveToHistory();
+
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) => (clip.id === clipId ? { ...clip, ...updates } : clip)),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
+
+  const splitClip = useCallback(
+    (clipId: string, splitTime: number) => {
+      saveToHistory();
+
+      setState((prev) => {
+        const allClips = prev.tracks.flatMap((t) => t.clips);
+        const clip = allClips.find((c) => c.id === clipId);
+
+        if (!clip || splitTime <= clip.startTime || splitTime >= clip.startTime + clip.duration) {
+          return prev;
+        }
+
+        const relativeTime = splitTime - clip.startTime;
+
+        const clip1: TimelineClip = {
+          ...clip,
+          id: `clip-${Date.now()}-${Math.random()}-1`,
+          duration: relativeTime,
+          trimEnd: clip.trimEnd + (clip.duration - relativeTime),
+        };
+
+        const clip2: TimelineClip = {
+          ...clip,
+          id: `clip-${Date.now()}-${Math.random()}-2`,
+          startTime: splitTime,
+          duration: clip.duration - relativeTime,
+          trimStart: clip.trimStart + relativeTime,
+        };
+
+        return {
+          ...prev,
+          tracks: prev.tracks.map((track) => ({
+            ...track,
+            clips: track.clips.flatMap((c) => (c.id === clipId ? [clip1, clip2] : [c])),
+          })),
+        };
+      });
+    },
+    [saveToHistory]
+  );
+
+  const trimClip = useCallback(
+    (clipId: string, trimStart: number, trimEnd: number) => {
+      updateClip(clipId, { trimStart, trimEnd });
+    },
+    [updateClip]
+  );
 
   // ============================================================================
   // Effect Management
   // ============================================================================
 
-  const addEffect = useCallback((clipId: string, effect: Effect) => {
-    saveToHistory();
+  const addEffect = useCallback(
+    (clipId: string, effect: Effect) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, effects: [...clip.effects, effect] }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId ? { ...clip, effects: [...clip.effects, effect] } : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const removeEffect = useCallback((clipId: string, effectId: string) => {
-    saveToHistory();
+  const removeEffect = useCallback(
+    (clipId: string, effectId: string) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, effects: clip.effects.filter(e => e.id !== effectId) }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId
+              ? { ...clip, effects: clip.effects.filter((e) => e.id !== effectId) }
+              : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const updateEffect = useCallback((
-    clipId: string,
-    effectId: string,
-    updates: Partial<Effect>
-  ) => {
-    saveToHistory();
+  const updateEffect = useCallback(
+    (clipId: string, effectId: string, updates: Partial<Effect>) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? {
-                ...clip,
-                effects: clip.effects.map(effect =>
-                  effect.id === effectId ? { ...effect, ...updates } : effect
-                ),
-              }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId
+              ? {
+                  ...clip,
+                  effects: clip.effects.map((effect) =>
+                    effect.id === effectId ? { ...effect, ...updates } : effect
+                  ),
+                }
+              : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
   // ============================================================================
   // Transition Management
   // ============================================================================
 
-  const addTransition = useCallback((clipId: string, transition: Transition) => {
-    saveToHistory();
+  const addTransition = useCallback(
+    (clipId: string, transition: Transition) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, transitions: [...clip.transitions, transition] }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId ? { ...clip, transitions: [...clip.transitions, transition] } : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const removeTransition = useCallback((clipId: string, transitionId: string) => {
-    saveToHistory();
+  const removeTransition = useCallback(
+    (clipId: string, transitionId: string) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, transitions: clip.transitions.filter(t => t.id !== transitionId) }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId
+              ? { ...clip, transitions: clip.transitions.filter((t) => t.id !== transitionId) }
+              : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
   // ============================================================================
   // Keyframe Management
   // ============================================================================
 
-  const addKeyframe = useCallback((clipId: string, keyframe: Keyframe) => {
-    saveToHistory();
+  const addKeyframe = useCallback(
+    (clipId: string, keyframe: Keyframe) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, keyframes: [...clip.keyframes, keyframe] }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId ? { ...clip, keyframes: [...clip.keyframes, keyframe] } : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const removeKeyframe = useCallback((clipId: string, keyframeId: string) => {
-    saveToHistory();
+  const removeKeyframe = useCallback(
+    (clipId: string, keyframeId: string) => {
+      saveToHistory();
 
-    setState(prev => ({
-      ...prev,
-      tracks: prev.tracks.map(track => ({
-        ...track,
-        clips: track.clips.map(clip =>
-          clip.id === clipId
-            ? { ...clip, keyframes: clip.keyframes.filter(k => k.id !== keyframeId) }
-            : clip
-        ),
-      })),
-    }));
-  }, [saveToHistory]);
+      setState((prev) => ({
+        ...prev,
+        tracks: prev.tracks.map((track) => ({
+          ...track,
+          clips: track.clips.map((clip) =>
+            clip.id === clipId
+              ? { ...clip, keyframes: clip.keyframes.filter((k) => k.id !== keyframeId) }
+              : clip
+          ),
+        })),
+      }));
+    },
+    [saveToHistory]
+  );
 
-  const getInterpolatedValue = useCallback((
-    keyframes: readonly Keyframe[],
-    property: string,
-    time: number
-  ): unknown => {
-    const relevantKeyframes = keyframes
-      .filter(k => k.property === property)
-      .sort((a, b) => a.time - b.time);
+  const getInterpolatedValue = useCallback(
+    (keyframes: readonly Keyframe[], property: string, time: number): unknown => {
+      const relevantKeyframes = keyframes
+        .filter((k) => k.property === property)
+        .sort((a, b) => a.time - b.time);
 
-    if (relevantKeyframes.length === 0) {
-      return undefined;
-    }
-
-    const firstKeyframe = relevantKeyframes[0];
-    if (!firstKeyframe || time <= firstKeyframe.time) {
-      return firstKeyframe?.value;
-    }
-
-    const lastKeyframe = relevantKeyframes[relevantKeyframes.length - 1];
-    if (!lastKeyframe || time >= lastKeyframe.time) {
-      return lastKeyframe?.value;
-    }
-
-    // Find keyframes to interpolate between
-    let startKeyframe: Keyframe | undefined;
-    let endKeyframe: Keyframe | undefined;
-
-    for (let i = 0; i < relevantKeyframes.length - 1; i++) {
-      const current = relevantKeyframes[i];
-      const next = relevantKeyframes[i + 1];
-
-      if (current && next && time >= current.time && time <= next.time) {
-        startKeyframe = current;
-        endKeyframe = next;
-        break;
+      if (relevantKeyframes.length === 0) {
+        return undefined;
       }
-    }
 
-    if (!startKeyframe || !endKeyframe) {
-      return lastKeyframe?.value;
-    }
+      const firstKeyframe = relevantKeyframes[0];
+      if (!firstKeyframe || time <= firstKeyframe.time) {
+        return firstKeyframe?.value;
+      }
 
-    // Calculate interpolation factor
-    const t = (time - startKeyframe.time) / (endKeyframe.time - startKeyframe.time);
-    const easingFunc = EASING_FUNCTIONS[startKeyframe.easing] ?? EASING_FUNCTIONS.linear;
-    const easedT = easingFunc ? easingFunc(t) : t;
+      const lastKeyframe = relevantKeyframes[relevantKeyframes.length - 1];
+      if (!lastKeyframe || time >= lastKeyframe.time) {
+        return lastKeyframe?.value;
+      }
 
-    // Interpolate based on value type
-    if (typeof startKeyframe.value === 'number' && typeof endKeyframe.value === 'number') {
-      return startKeyframe.value + (endKeyframe.value - startKeyframe.value) * easedT;
-    }
+      // Find keyframes to interpolate between
+      let startKeyframe: Keyframe | undefined;
+      let endKeyframe: Keyframe | undefined;
 
-    return endKeyframe.value;
-  }, []);
+      for (let i = 0; i < relevantKeyframes.length - 1; i++) {
+        const current = relevantKeyframes[i];
+        const next = relevantKeyframes[i + 1];
+
+        if (current && next && time >= current.time && time <= next.time) {
+          startKeyframe = current;
+          endKeyframe = next;
+          break;
+        }
+      }
+
+      if (!startKeyframe || !endKeyframe) {
+        return lastKeyframe?.value;
+      }
+
+      // Calculate interpolation factor
+      const t = (time - startKeyframe.time) / (endKeyframe.time - startKeyframe.time);
+      const easingFunc = EASING_FUNCTIONS[startKeyframe.easing] ?? EASING_FUNCTIONS.linear;
+      const easedT = easingFunc ? easingFunc(t) : t;
+
+      // Interpolate based on value type
+      if (typeof startKeyframe.value === 'number' && typeof endKeyframe.value === 'number') {
+        return startKeyframe.value + (endKeyframe.value - startKeyframe.value) * easedT;
+      }
+
+      return endKeyframe.value;
+    },
+    []
+  );
 
   // ============================================================================
   // Playback Control
   // ============================================================================
 
   const play = useCallback(() => {
-    setState(prev => ({ ...prev, isPlaying: true }));
+    setState((prev) => ({ ...prev, isPlaying: true }));
 
     const startTime = Date.now();
     const startPosition = state.currentTime;
@@ -846,7 +856,7 @@ export function useVideoTimeline() {
       const elapsed = (Date.now() - startTime) / 1000;
       const newTime = startPosition + elapsed;
 
-      setState(prev => {
+      setState((prev) => {
         if (newTime >= prev.duration) {
           if (prev.loop) {
             return { ...prev, currentTime: 0 };
@@ -863,7 +873,7 @@ export function useVideoTimeline() {
   }, [state.currentTime]);
 
   const pause = useCallback(() => {
-    setState(prev => ({ ...prev, isPlaying: false }));
+    setState((prev) => ({ ...prev, isPlaying: false }));
     if (playbackTimerRef.current) {
       cancelAnimationFrame(playbackTimerRef.current);
       playbackTimerRef.current = null;
@@ -872,11 +882,11 @@ export function useVideoTimeline() {
 
   const stop = useCallback(() => {
     pause();
-    setState(prev => ({ ...prev, currentTime: 0 }));
+    setState((prev) => ({ ...prev, currentTime: 0 }));
   }, [pause]);
 
   const seek = useCallback((time: number) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       currentTime: Math.max(0, Math.min(time, prev.duration)),
     }));
@@ -887,14 +897,14 @@ export function useVideoTimeline() {
   // ============================================================================
 
   const setZoom = useCallback((zoom: number) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       zoom: Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom)),
     }));
   }, []);
 
   const setScroll = useCallback((scrollX: number, scrollY: number) => {
-    setState(prev => ({ ...prev, scrollX, scrollY }));
+    setState((prev) => ({ ...prev, scrollX, scrollY }));
   }, []);
 
   // ============================================================================
@@ -902,23 +912,21 @@ export function useVideoTimeline() {
   // ============================================================================
 
   const selectClip = useCallback((clipId: string, addToSelection = false) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      selectedClipIds: addToSelection
-        ? [...prev.selectedClipIds, clipId]
-        : [clipId],
+      selectedClipIds: addToSelection ? [...prev.selectedClipIds, clipId] : [clipId],
     }));
   }, []);
 
   const deselectClip = useCallback((clipId: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      selectedClipIds: prev.selectedClipIds.filter(id => id !== clipId),
+      selectedClipIds: prev.selectedClipIds.filter((id) => id !== clipId),
     }));
   }, []);
 
   const clearSelection = useCallback(() => {
-    setState(prev => ({ ...prev, selectedClipIds: [] }));
+    setState((prev) => ({ ...prev, selectedClipIds: [] }));
   }, []);
 
   // ============================================================================

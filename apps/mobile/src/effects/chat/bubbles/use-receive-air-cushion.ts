@@ -10,18 +10,11 @@
  */
 
 import { useCallback, useEffect } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, type SharedValue } from 'react-native-reanimated'
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion'
 import { triggerHaptic } from '../core/haptic-manager'
 import { logEffectStart, logEffectEnd } from '../core/telemetry'
 import { randomRange } from '../core/seeded-rng'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 /**
  * Spring configuration for air-cushion effect

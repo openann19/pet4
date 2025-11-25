@@ -9,12 +9,14 @@ import type { MouseEvent as ReactMouseEvent } from 'react';
 import { useRippleEffect } from './use-ripple-effect';
 
 // Minimal stubs for motion primitives used by the hook
-vi.mock('@petspark/motion', () => {
+vi.mock('@petspark/motion', async () => {
+    const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
     return {
-        useSharedValue: (initial: number) => ({ value: initial }),
-        useAnimatedStyle: (factory: () => Record<string, unknown>) => factory(),
-        withTiming: (value: number) => value,
-        withSequence: (...values: number[]) => values[values.length - 1],
+        ...actual,
+        useSharedValue: vi.fn((initial: number) => ({ value: initial })),
+        useAnimatedStyle: vi.fn((factory: () => Record<string, unknown>) => factory()),
+        withTiming: vi.fn((value: number) => value),
+        withSequence: vi.fn((...values: number[]) => values[values.length - 1]),
     };
 });
 

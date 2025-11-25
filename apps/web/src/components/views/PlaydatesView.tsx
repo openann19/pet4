@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { PlaydateScheduler } from '@/components/playdates/PlaydateScheduler';
 import { PlaydateMap } from '@/components/playdates/PlaydateMap';
+import { PlaydateCard } from '@/components/playdates/PlaydateCard';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { playdatesClient } from '@petspark/core';
 import type { Playdate, PlaydateLocation } from '@petspark/core';
@@ -178,7 +179,7 @@ export function PlaydatesView(): React.JSX.Element {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {upcomingPlaydates.map((playdate) => (
-                  <PlaydateListItem
+                  <PlaydateCard
                     key={playdate.id}
                     playdate={playdate}
                     onJoin={() => handleJoin(playdate.id)}
@@ -194,7 +195,7 @@ export function PlaydatesView(): React.JSX.Element {
             <PlaydateMap
               playdates={nearbyPlaydates}
               currentLocation={currentLocation}
-              onPlaydateClick={(playdate) => {
+              onPlaydateClick={(_playdate) => {
                 // Handle playdate click
               }}
             />

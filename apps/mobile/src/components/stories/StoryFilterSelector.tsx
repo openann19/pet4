@@ -8,17 +8,7 @@ import {
   Image,
   StyleSheet,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-  FadeIn,
-  FadeOut,
-  Layout,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence, FadeIn, FadeOut, Layout, type SharedValue } from '@petspark/motion'
 import { FILTER_CATEGORIES, getFiltersByCategory } from '../../lib/story-templates'
 import type { StoryFilter } from '../../lib/story-templates'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'

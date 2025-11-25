@@ -1,7 +1,7 @@
 /**
  * All-In Chat Effects Library
  * A comprehensive effects pack for chat UIs - mix and match!
- * 
+ *
  * Features:
  * - 17 production-ready chat effects
  * - Full accessibility support (reduce motion)
@@ -9,35 +9,21 @@
  * - Zero console.* (uses project logger)
  * - Gesture-driven interactions
  * - 60fps performance optimized
- * 
+ *
  * Libraries: react, react-native, react-native-reanimated v3, react-native-gesture-handler
  * Optional: expo-linear-gradient for enhanced shimmer visuals
- * 
+ *
  * Location: apps/mobile/src/effects/chat/ui/all-in-chat-effects.tsx
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import React, { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   View,
   Pressable,
   AccessibilityInfo,
   StyleSheet,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSpring,
-  withDelay,
-  withSequence,
-  cancelAnimation,
-  interpolate,
-  interpolateColor,
-  Easing,
-  runOnJS,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSpring, withDelay, withSequence, cancelAnimation, interpolate, interpolateColor, Easing, runOnJS, type SharedValue } from '@petspark/motion'
 import {
   Gesture,
   GestureDetector,
@@ -931,7 +917,7 @@ export function PrismShimmerOverlay({
 /**
  * Interactive emoji trail effect
  * Draw sparkles or hearts with your finger
- * 
+ *
  * TODO: Disabled due to gesture-handler types/runtime mismatch in v2.16
  * The onStart/onUpdate callbacks don't accept event parameters according to types,
  * but they do at runtime. Needs gesture-handler upgrade or workaround.

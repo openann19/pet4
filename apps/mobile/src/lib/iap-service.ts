@@ -221,7 +221,7 @@ class IAPService {
       }
 
       // Request purchase from store
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const purchase = await this.iap.requestSubscription({
         sku: productId,
         ...(Platform.OS === 'android' && { 
@@ -233,10 +233,10 @@ class IAPService {
 
       // Verify receipt with backend
       const verificationResult = await this.verifyReceipt({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+         
         receiptData: (purchase.transactionReceipt ?? purchase.purchaseToken) ?? '',
         productId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+         
         transactionId: purchase.transactionId ?? '',
         platform: Platform.OS === 'ios' ? 'ios' : 'android',
         userId
@@ -244,10 +244,10 @@ class IAPService {
 
       if (!verificationResult.success) {
         // Acknowledge purchase failure (Android)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+         
         if (Platform.OS === 'android' && purchase.purchaseToken) {
           try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+             
             await this.iap.acknowledgePurchaseAndroid(purchase.purchaseToken)
           } catch (ackError) {
             logger.warn('Failed to acknowledge purchase', ackError instanceof Error ? ackError : new Error(String(ackError)))
@@ -261,16 +261,16 @@ class IAPService {
       }
 
       // Acknowledge purchase (Android)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       if (Platform.OS === 'android' && purchase.purchaseToken) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         await this.iap.acknowledgePurchaseAndroid(purchase.purchaseToken)
       }
 
       // Finish transaction (iOS)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       if (Platform.OS === 'ios' && purchase.transactionId) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         await this.iap.finishTransaction({ purchase })
       }
 
@@ -316,7 +316,7 @@ class IAPService {
       }
 
       // Request purchase from store
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const purchase = await this.iap.requestPurchase({
         sku: productId,
         ...(Platform.OS === 'android' && {
@@ -327,10 +327,10 @@ class IAPService {
 
       // Verify receipt with backend
       const verificationResult = await this.verifyReceipt({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+         
         receiptData: (purchase.transactionReceipt ?? purchase.purchaseToken) ?? '',
         productId,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+         
         transactionId: purchase.transactionId ?? '',
         platform: Platform.OS === 'ios' ? 'ios' : 'android',
         userId
@@ -344,16 +344,16 @@ class IAPService {
       }
 
       // Consume purchase (Android) - allows repurchase
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       if (Platform.OS === 'android' && purchase.purchaseToken) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         await this.iap.consumePurchaseAndroid(purchase.purchaseToken)
       }
 
       // Finish transaction (iOS)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       if (Platform.OS === 'ios' && purchase.transactionId) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         await this.iap.finishTransaction({ purchase })
       }
 
@@ -443,10 +443,10 @@ class IAPService {
       }
 
       // Get available purchases from store
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const availablePurchases = await this.iap.getAvailablePurchases()
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       if (availablePurchases.length === 0) {
         logger.info('No purchases to restore')
         return { restored: false, subscriptions: [] }
@@ -458,11 +458,11 @@ class IAPService {
       for (const purchase of availablePurchases) {
         try {
           const verificationResult = await this.verifyReceipt({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+             
             receiptData: (purchase.transactionReceipt ?? purchase.purchaseToken) ?? '',
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+             
             productId: purchase.productId,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+             
             transactionId: purchase.transactionId ?? '',
             platform: Platform.OS === 'ios' ? 'ios' : 'android',
             userId
@@ -475,7 +475,7 @@ class IAPService {
           const err = error instanceof Error ? error : new Error(String(error))
           logger.warn('Failed to verify purchase during restore', {
             error: err.message,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+             
             productId: purchase.productId
           })
         }
@@ -512,14 +512,14 @@ class IAPService {
     }
 
     // Listen for purchase updates
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+     
     this.purchaseUpdateListener = this.iap.purchaseUpdatedListener(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (purchase: any) => {
         logger.info('Purchase updated', {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+           
           productId: purchase.productId,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+           
           transactionId: purchase.transactionId
         })
 
@@ -530,15 +530,15 @@ class IAPService {
     )
 
     // Listen for purchase errors
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+     
     this.purchaseErrorListener = this.iap.purchaseErrorListener(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (error: any) => {
         const err = error instanceof Error ? error : new Error(String(error.message ?? 'Unknown error'))
         logger.error('Purchase error', err, {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+           
           code: error.code,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+           
           message: error.message
         })
       }
@@ -568,19 +568,19 @@ class IAPService {
   async cleanup(): Promise<void> {
     try {
       if (this.purchaseUpdateListener) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         this.purchaseUpdateListener.remove()
         this.purchaseUpdateListener = null
       }
 
       if (this.purchaseErrorListener) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         this.purchaseErrorListener.remove()
         this.purchaseErrorListener = null
       }
 
       if (this.isInitialized && this.iap) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+         
         await this.iap.endConnection()
         this.isInitialized = false
       }

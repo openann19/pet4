@@ -1,14 +1,7 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-  interpolate,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, interpolate } from '@petspark/motion'
 import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseGlowPulseOptions {
   duration?: number

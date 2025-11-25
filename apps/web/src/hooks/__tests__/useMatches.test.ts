@@ -133,10 +133,8 @@ describe('useMatches', () => {
       wrapper: createWrapper(),
     });
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
     expect(result.current.matches).toHaveLength(1);
@@ -240,10 +238,8 @@ describe('useMatches', () => {
       wrapper: createWrapper(),
     });
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
     });
 
     expect(result.current.matchedPets.length).toBe(1);

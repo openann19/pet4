@@ -66,8 +66,8 @@ export const queryKeys = {
 
   // Matching
   matches: {
-    list: ['matches'] as const,
-    detail: (id: string) => ['matches', id] as const,
+    list: ['matches', 'list'] as const,
+    detail: (id: string) => ['matches', 'detail', id] as const,
   },
 
   // Pets
@@ -84,8 +84,8 @@ export const queryKeys = {
 
   // Playdates
   playdates: {
-    list: ['playdates'] as const,
-    detail: (id: string) => ['playdates', id] as const,
+    list: ['playdates', 'list'] as const,
+    detail: (id: string) => ['playdates', 'detail', id] as const,
   },
 
   // Community

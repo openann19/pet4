@@ -15,7 +15,7 @@ import {
 
 import { springs, timings, reducedMotion } from './constants'
 import type { SpringConfig, TimingConfig, TransitionConfig } from './types'
-import { isTruthy, isDefined } from '../utils/guards';
+import { isTruthy } from '../utils/guards'
 
 const linearEasing = (value: number): number => Easing.linear(value)
 const easeEasing = (value: number): number => Easing.ease(value)
@@ -24,19 +24,16 @@ const easeInOutEasing = Easing.inOut(easeEasing)
 /**
  * Create a spring animation with proper reduced motion handling
  */
-export function createSpringAnimation(
-  toValue: number,
-  config: Partial<SpringConfig> = {}
-): number {
+export function createSpringAnimation(toValue: number, config: Partial<SpringConfig> = {}): number {
   const isReducedMotion = config.reducedMotion ?? false
-  
+
   if (isTruthy(isReducedMotion)) {
     // Use simplified timing animation for reduced motion
     const baseDuration = config.duration ?? timings.default.duration ?? 300
     const duration = baseDuration * reducedMotion.durationMultiplier
     return withTiming(toValue, {
       duration,
-      easing: linearEasing
+      easing: linearEasing,
     })
   }
 
@@ -54,16 +51,13 @@ export function createSpringAnimation(
 /**
  * Create a timing animation with proper reduced motion handling
  */
-export function createTimingAnimation(
-  toValue: number,
-  config: Partial<TimingConfig> = {}
-): number {
+export function createTimingAnimation(toValue: number, config: Partial<TimingConfig> = {}): number {
   const isReducedMotion = config.reducedMotion ?? false
   const duration = config.duration ?? timings.default.duration ?? 300
-  
+
   return withTiming(toValue, {
     duration: isReducedMotion ? duration * reducedMotion.durationMultiplier : duration,
-    easing: isReducedMotion ? linearEasing : (config.easing ?? easeInOutEasing)
+    easing: isReducedMotion ? linearEasing : (config.easing ?? easeInOutEasing),
   })
 }
 
@@ -76,16 +70,16 @@ export function createSequenceAnimation(
 ): number {
   const isReducedMotion = config.reducedMotion ?? false
   const finalValue = keyframes[keyframes.length - 1] ?? 0
-  
+
   if (isTruthy(isReducedMotion)) {
     // For reduced motion, just animate to final value
     return createTimingAnimation(finalValue, {
       ...config,
-      reducedMotion: true
+      reducedMotion: true,
     })
   }
 
-  const animations = keyframes.map((toValue) => {
+  const animations = keyframes.map(toValue => {
     return config.type === 'spring'
       ? createSpringAnimation(toValue, config.springConfig)
       : createTimingAnimation(toValue, config.timingConfig)
@@ -105,9 +99,10 @@ export function createDelayedAnimation(
   const isReducedMotion = config.reducedMotion ?? false
   const actualDelay = isReducedMotion ? 0 : delay
 
-  const animation = config.type === 'spring'
-    ? createSpringAnimation(toValue, config.springConfig)
-    : createTimingAnimation(toValue, config.timingConfig)
+  const animation =
+    config.type === 'spring'
+      ? createSpringAnimation(toValue, config.springConfig)
+      : createTimingAnimation(toValue, config.timingConfig)
 
   return withDelay(actualDelay, animation)
 }
@@ -149,12 +144,12 @@ export function createLoopingAnimation(
 ): number {
   const isReducedMotion = config.reducedMotion ?? false
   const firstValue = keyframes[0] ?? 0
-  
+
   if (isTruthy(isReducedMotion)) {
     // Don't loop in reduced motion mode
     return createTimingAnimation(firstValue, {
       ...config,
-      reducedMotion: true
+      reducedMotion: true,
     })
   }
 

@@ -5,7 +5,7 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
+  // Unused: useAnimatedStyle,
   withTiming,
   withSequence,
   interpolate,
@@ -38,9 +38,7 @@ export interface UseConfettiBurstReturn {
    * Returns a worklet function that computes particle style based on progress
    * Components should use: useAnimatedStyle(() => createParticleStyle(particle)())
    */
-  createParticleStyle: (
-    particle: ConfettiParticle
-  ) => () => {
+  createParticleStyle: (particle: ConfettiParticle) => () => {
     transform: {
       translateX?: number;
       translateY?: number;

@@ -128,11 +128,16 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
+        debounceDelay: 100,
       })
     );
 
     act(() => {
       result.current.handleInputChange('Hello');
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(100);
     });
 
     expect(result.current.isTyping).toBe(true);
@@ -145,7 +150,8 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
-        typingTimeout: 1000,
+        typingTimeout: 200,
+        debounceDelay: 100,
       })
     );
 
@@ -154,7 +160,13 @@ describe('useTypingManager', () => {
     });
 
     act(() => {
-      vi.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(100);
+    });
+
+    expect(result.current.isTyping).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(200);
     });
 
     await waitFor(() => {
@@ -234,6 +246,8 @@ describe('useTypingManager', () => {
   it('handles realtime client errors gracefully', async () => {
     const errorClient: RealtimeClient = {
       emit: vi.fn().mockRejectedValue(new Error('Network error')),
+      on: vi.fn(),
+      off: vi.fn(),
     } as never;
 
     const { result } = renderHook(() =>

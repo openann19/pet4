@@ -31,7 +31,9 @@ describe('Accordion', () => {
       );
 
       expect(screen.getByText('Item 1')).toBeInTheDocument();
-      expect(screen.getByText('Content 1')).toBeInTheDocument();
+      const content = screen.getByRole('region', { hidden: true });
+      expect(content).toHaveAttribute('data-slot', 'accordion-content');
+      expect(content).toHaveAttribute('data-state', 'closed');
     });
 
     it('should render multiple accordion items', () => {
@@ -50,8 +52,12 @@ describe('Accordion', () => {
 
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
-      expect(screen.getByText('Content 1')).toBeInTheDocument();
-      expect(screen.getByText('Content 2')).toBeInTheDocument();
+      const regions = screen.getAllByRole('region', { hidden: true });
+      expect(regions).toHaveLength(2);
+      regions.forEach((region) => {
+        expect(region).toHaveAttribute('data-slot', 'accordion-content');
+        expect(region).toHaveAttribute('data-state', 'closed');
+      });
     });
   });
 
@@ -88,14 +94,11 @@ describe('Accordion', () => {
       );
 
       const trigger = screen.getByRole('button', { name: /item 1/i });
+      const content = screen.getAllByRole('region', { hidden: true })[0];
       await user.click(trigger);
+      await waitFor(() => expect(content).not.toHaveAttribute('hidden'));
       await user.click(trigger);
-
-      // Content should be hidden after second click
-      await waitFor(() => {
-        const content = screen.getByText('Content 1');
-        expect(content).not.toBeVisible();
-      });
+      await waitFor(() => expect(content).toHaveAttribute('hidden'));
     });
 
     it('should support multiple items open in multiple mode', async () => {
@@ -115,14 +118,15 @@ describe('Accordion', () => {
 
       const trigger1 = screen.getByRole('button', { name: /item 1/i });
       const trigger2 = screen.getByRole('button', { name: /item 2/i });
+      const [content1, content2] = screen.getAllByRole('region', { hidden: true });
 
       await user.click(trigger1);
       await user.click(trigger2);
 
       // Both items should be open
       await waitFor(() => {
-        expect(screen.getByText('Content 1')).toBeVisible();
-        expect(screen.getByText('Content 2')).toBeVisible();
+        expect(content1).not.toHaveAttribute('hidden');
+        expect(content2).not.toHaveAttribute('hidden');
       });
     });
   });

@@ -9,3 +9,5 @@ export * from './animations'
 export * from './hooks'
 export * from './motionTokens'
 
+// Re-export core Framer Motion components
+export { AnimatePresence } from 'framer-motion'

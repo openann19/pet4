@@ -2,7 +2,7 @@
 
 import type { CallSignal, SignalingConfig } from './call-types'
 
-export type CallSignalHandler = (signal: CallSignal) => void
+export type CallSignalHandler = (signal: CallSignal) => void | Promise<void>
 export type SignalingConnectionState = 'disconnected' | 'connecting' | 'connected'
 
 export interface CallSignalingClientOptions {
@@ -64,7 +64,7 @@ export class CallSignalingClient {
           return
         }
         for (const handler of this.handlers) {
-          handler(raw)
+          void handler(raw)
         }
       } catch {
         // ignore malformed payloads

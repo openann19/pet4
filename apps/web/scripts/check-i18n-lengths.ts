@@ -11,7 +11,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { scriptLogger } from '../src/lib/script-logger';
-import { isTruthy } from '@petspark/shared'
 
 interface LengthBucket {
   key: string;
@@ -263,7 +262,9 @@ async function main(): Promise<void> {
     // Exit with error if critical issues found
     const critical = buckets.filter((b) => b.status === 'CRITICAL');
     if (critical.length > 0) {
-      scriptLogger.writeErrorLine(`\n❌ Found ${String(critical.length ?? '')} critical length violations`);
+      scriptLogger.writeErrorLine(
+        `\n❌ Found ${String(critical.length ?? '')} critical length violations`
+      );
       process.exit(1);
     }
 

@@ -14,10 +14,18 @@ import type { RTCSessionDescriptionInit, RTCIceCandidateInit } from './webrtc-ty
 const logger = createLogger('SignalingClient');
 
 export interface SignalingEvents {
-  onOffer: (offer: RTCSessionDescriptionInit, from: string, callId: string) => void;
-  onAnswer: (answer: RTCSessionDescriptionInit, from: string, callId: string) => void;
-  onIceCandidate: (candidate: RTCIceCandidateInit, from: string, callId: string) => void;
-  onCallEnd: (from: string, callId: string) => void;
+  onOffer: (offer: RTCSessionDescriptionInit, from: string, callId: string) => void | Promise<void>;
+  onAnswer: (
+    answer: RTCSessionDescriptionInit,
+    from: string,
+    callId: string
+  ) => void | Promise<void>;
+  onIceCandidate: (
+    candidate: RTCIceCandidateInit,
+    from: string,
+    callId: string
+  ) => void | Promise<void>;
+  onCallEnd: (from: string, callId: string) => void | Promise<void>;
   onError: (error: Error) => void;
 }
 
@@ -59,12 +67,16 @@ export class SignalingClient {
         switch (data.type) {
           case 'offer':
             if (data.data) {
-              this.events.onOffer?.(data.data as RTCSessionDescriptionInit, data.from, data.callId);
+              void this.events.onOffer?.(
+                data.data as RTCSessionDescriptionInit,
+                data.from,
+                data.callId
+              );
             }
             break;
           case 'answer':
             if (data.data) {
-              this.events.onAnswer?.(
+              void this.events.onAnswer?.(
                 data.data as RTCSessionDescriptionInit,
                 data.from,
                 data.callId
@@ -73,7 +85,7 @@ export class SignalingClient {
             break;
           case 'candidate':
             if (data.data) {
-              this.events.onIceCandidate?.(
+              void this.events.onIceCandidate?.(
                 data.data as RTCIceCandidateInit,
                 data.from,
                 data.callId
@@ -81,7 +93,7 @@ export class SignalingClient {
             }
             break;
           case 'end':
-            this.events.onCallEnd?.(data.from, data.callId);
+            void this.events.onCallEnd?.(data.from, data.callId);
             break;
         }
       } catch (error) {

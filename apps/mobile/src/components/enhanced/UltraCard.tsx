@@ -6,13 +6,7 @@
 import React, { useEffect, useRef } from 'react'
 import { View, StyleSheet, type ViewStyle, type ViewProps } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withDelay,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay } from '@petspark/motion'
 import { useHoverLift, useGlowPulse, useParallaxTilt } from '@mobile/effects/reanimated'
 import { springConfigs } from '@mobile/effects/reanimated/transitions'
 

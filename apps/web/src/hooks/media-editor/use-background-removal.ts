@@ -111,7 +111,7 @@ const BACKGROUND_REMOVAL_FRAGMENT_SHADER = `
   }
 `;
 
-const EDGE_REFINEMENT_FRAGMENT_SHADER = `
+const _EDGE_REFINEMENT_FRAGMENT_SHADER = `
   precision highp float;
   varying vec2 v_texCoord;
   uniform sampler2D u_image;
@@ -292,58 +292,56 @@ export function useBackgroundRemoval() {
     []
   );
 
-  const detectEdgesSobel = useCallback((imageData: ImageData): Uint8ClampedArray => {
-    const { data, width, height } = imageData;
+  const detectEdgesSobel = useCallback(
+    (imageData: ImageData): Uint8ClampedArray => {
+      const { data, width, height } = imageData;
 
-    // Convert to grayscale
-    const gray = new Uint8ClampedArray(width * height);
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
+      // Convert to grayscale
+      const gray = new Uint8ClampedArray(width * height);
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
 
-      if (r !== undefined && g !== undefined && b !== undefined) {
-        gray[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        if (r !== undefined && g !== undefined && b !== undefined) {
+          gray[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        }
       }
-    }
 
-    // Apply Sobel operators
-    const grayFull = new Uint8ClampedArray(width * height * 4);
-    for (let i = 0; i < gray.length; i++) {
-      const val = gray[i];
-      if (val !== undefined) {
-        grayFull[i * 4] = val;
-        grayFull[i * 4 + 1] = val;
-        grayFull[i * 4 + 2] = val;
-        grayFull[i * 4 + 3] = 255;
+      // Apply Sobel operators
+      const grayFull = new Uint8ClampedArray(width * height * 4);
+      for (let i = 0; i < gray.length; i++) {
+        const val = gray[i];
+        if (val !== undefined) {
+          grayFull[i * 4] = val;
+          grayFull[i * 4 + 1] = val;
+          grayFull[i * 4 + 2] = val;
+          grayFull[i * 4 + 3] = 255;
+        }
       }
-    }
 
-    const gx = applyConvolution(grayFull, width, height, SOBEL_X, 0);
-    const gy = applyConvolution(grayFull, width, height, SOBEL_Y, 0);
+      const gx = applyConvolution(grayFull, width, height, SOBEL_X, 0);
+      const gy = applyConvolution(grayFull, width, height, SOBEL_Y, 0);
 
-    // Calculate magnitude
-    const edges = new Uint8ClampedArray(width * height);
-    for (let i = 0; i < edges.length; i++) {
-      const gxVal = gx[i];
-      const gyVal = gy[i];
+      // Calculate magnitude
+      const edges = new Uint8ClampedArray(width * height);
+      for (let i = 0; i < edges.length; i++) {
+        const gxVal = gx[i];
+        const gyVal = gy[i];
 
-      if (gxVal !== undefined && gyVal !== undefined) {
-        const magnitude = Math.sqrt(gxVal * gxVal + gyVal * gyVal);
-        edges[i] = Math.min(255, Math.round(magnitude));
+        if (gxVal !== undefined && gyVal !== undefined) {
+          const magnitude = Math.sqrt(gxVal * gxVal + gyVal * gyVal);
+          edges[i] = Math.min(255, Math.round(magnitude));
+        }
       }
-    }
 
-    return edges;
-  }, [applyConvolution]);
+      return edges;
+    },
+    [applyConvolution]
+  );
 
   const gaussianBlur = useCallback(
-    (
-      data: Uint8ClampedArray,
-      width: number,
-      height: number,
-      sigma: number
-    ): Uint8ClampedArray => {
+    (data: Uint8ClampedArray, width: number, height: number, sigma: number): Uint8ClampedArray => {
       const kernelSize = Math.ceil(sigma * 3) * 2 + 1;
       const half = Math.floor(kernelSize / 2);
       const kernel = new Float32Array(kernelSize);
@@ -619,14 +617,18 @@ export function useBackgroundRemoval() {
               setProgress(40);
 
               // Use WebGL shader for chroma key removal
-              const shaderProgram = webglManager.createShaderProgram(
+              const _shaderProgram = webglManager.createShaderProgram(
                 DEFAULT_VERTEX_SHADER,
                 BACKGROUND_REMOVAL_FRAGMENT_SHADER,
                 'background-removal-chroma'
               );
 
-              const gl = webglManager.getGL();
-              const texture = webglManager.createTexture(source, {}, `source_${source.width}x${source.height}`);
+              const _gl = webglManager.getGL();
+              const _texture = webglManager.createTexture(
+                source,
+                {},
+                `source_${source.width}x${source.height}`
+              );
 
               // Set up and render (simplified - full implementation would set up geometry and uniforms)
               // For now, fallback to CPU implementation
@@ -797,11 +799,7 @@ export function useBackgroundRemoval() {
             width: foreground.width,
             height: foreground.height,
           });
-          throw new BackgroundRemovalError(
-            'Failed to get 2D context',
-            errorContext,
-            false
-          );
+          throw new BackgroundRemovalError('Failed to get 2D context', errorContext, false);
         }
 
         // Draw background
@@ -816,7 +814,8 @@ export function useBackgroundRemoval() {
             img.crossOrigin = 'anonymous';
             await new Promise<void>((resolve, reject) => {
               img.onload = () => resolve();
-              img.onerror = () => reject(new Error(`Failed to load background image: ${background}`));
+              img.onerror = () =>
+                reject(new Error(`Failed to load background image: ${background}`));
               img.src = background;
             });
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);

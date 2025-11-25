@@ -12,12 +12,7 @@ import {
   type ViewStyle,
   type TextStyle,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@mobile/effects/core/use-reduced-motion-sv'
 import { isTruthy } from '@petspark/shared';

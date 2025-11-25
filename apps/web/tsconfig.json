@@ -4,7 +4,6 @@
     "noEmit": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-    "baseUrl": ".",
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
     "paths": {
       "@/*": ["./src/*"],
@@ -25,6 +24,7 @@
     "src/test/utils/test-helpers.tsx",
     "src/test/vitest.d.ts",
     "src/types/**/*.d.ts",
+    "__mocks__",
     "*.d.ts",
     "*.ts",
     "vite.config.ts",

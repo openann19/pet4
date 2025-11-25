@@ -69,8 +69,8 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
     const request = VerificationService.createVerificationRequest(petId, userId, selectedLevel);
     setCurrentRequest(request);
     void toast.success('Verification process started!', {
-            description: `Selected ${selectedLevel} verification level`,
-          });
+      description: `Selected ${selectedLevel} verification level`,
+    });
   };
 
   const handleDocumentUpload = async (file: File, documentType: DocumentType) => {
@@ -78,15 +78,15 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
 
     if (!VerificationService.validateFileSize(file)) {
       void toast.error('File too large', {
-                description: 'Maximum file size is 10MB',
-              });
+        description: 'Maximum file size is 10MB',
+      });
       return;
     }
 
     if (!VerificationService.validateFileType(file)) {
       void toast.error('Invalid file type', {
-                description: 'Only JPG, PNG, WEBP, and PDF files are allowed',
-              });
+        description: 'Only JPG, PNG, WEBP, and PDF files are allowed',
+      });
       return;
     }
 
@@ -101,19 +101,19 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
         documents: [...activeRequest.documents, document],
       };
 
-      setCurrentRequest(updatedRequest);
-      setVerificationRequests((prev) => ({
+      void setCurrentRequest(updatedRequest);
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: updatedRequest,
       }));
 
       void toast.success('Document uploaded!', {
-                description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`,
-              });
+        description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`,
+      });
     } catch {
       void toast.error('Upload failed', {
-                description: 'Failed to upload document. Please try again.',
-              });
+        description: 'Failed to upload document. Please try again.',
+      });
     }
   };
 
@@ -130,8 +130,8 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       documents: activeRequest.documents.filter((d) => d.id !== documentId),
     };
 
-    setCurrentRequest(updatedRequest);
-    setVerificationRequests((prev) => ({
+    void setCurrentRequest(updatedRequest);
+    void setVerificationRequests((prev) => ({
       ...prev,
       [petId]: updatedRequest,
     }));
@@ -144,8 +144,8 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
 
     if (completionPercentage < 100) {
       void toast.error('Incomplete submission', {
-                description: 'Please upload all required documents before submitting',
-              });
+        description: 'Please upload all required documents before submitting',
+      });
       return;
     }
 
@@ -155,18 +155,18 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       const submittedRequest = VerificationService.submitForReview(activeRequest);
 
       setCurrentRequest(submittedRequest);
-      setVerificationRequests((prev) => ({
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: submittedRequest,
       }));
 
       void toast.success('Submitted for review!', {
-                description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`,
-              });
+        description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`,
+      });
     } catch {
       void toast.error('Submission failed', {
-                description: 'Failed to submit verification request. Please try again.',
-              });
+        description: 'Failed to submit verification request. Please try again.',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -181,19 +181,19 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
       const reviewedRequest = VerificationService.processReview(activeRequest, approve);
 
       setCurrentRequest(reviewedRequest);
-      setVerificationRequests((prev) => ({
+      void setVerificationRequests((prev) => ({
         ...prev,
         [petId]: reviewedRequest,
       }));
 
       if (isTruthy(approve)) {
         void toast.success('Verification approved! 🎉', {
-                    description: `Your pet has been verified with a trust score of ${reviewedRequest.trustScore}/100`,
-                  });
+          description: `Your pet has been verified with a trust score of ${reviewedRequest.trustScore}/100`,
+        });
       } else {
         void toast.error('Verification requires attention', {
-                    description: reviewedRequest.reviewNotes ?? 'Please review and resubmit documents',
-                  });
+          description: reviewedRequest.reviewNotes ?? 'Please review and resubmit documents',
+        });
       }
     } finally {
       setIsSimulatingReview(false);

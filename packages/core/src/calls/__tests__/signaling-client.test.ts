@@ -30,7 +30,7 @@ describe('CallSignalingClient', () => {
     })
 
     const received: CallSignal[] = []
-    const off = client.onSignal(signal => {
+    const off = client.onSignal(async signal => {
       received.push(signal)
     })
 

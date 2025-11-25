@@ -7,18 +7,10 @@
 
 import React, { useEffect } from 'react'
 import { Modal, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  FadeIn,
-  FadeOut,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, FadeIn, FadeOut } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/chat/core/reduced-motion'
 import { useFeatureFlags } from '../../config/feature-flags'
 import { springConfigs, timingConfigs } from '../../effects/reanimated/transitions'
-import { isTruthy } from '../../utils/shared';
 
 export interface MessagePeekNativeProps {
   message: {

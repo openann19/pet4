@@ -72,20 +72,25 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
 }
 
 function getConfigFromEnv(): TokenSigningConfig | null {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY || import.meta.env.LIVEKIT_API_KEY;
+  const apiKey =
+    (import.meta.env.VITE_LIVEKIT_API_KEY as string | undefined) ??
+    (import.meta.env.LIVEKIT_API_KEY as string | undefined);
   const apiSecret =
-    import.meta.env.VITE_LIVEKIT_API_SECRET || import.meta.env.LIVEKIT_API_SECRET;
+    (import.meta.env.VITE_LIVEKIT_API_SECRET as string | undefined) ??
+    (import.meta.env.LIVEKIT_API_SECRET as string | undefined);
 
   if (!apiKey || !apiSecret) {
     return null;
   }
 
-  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL || import.meta.env.LIVEKIT_WS_URL;
+  const apiUrl =
+    (import.meta.env.VITE_LIVEKIT_WS_URL as string | undefined) ??
+    (import.meta.env.LIVEKIT_WS_URL as string | undefined);
 
   return {
     apiKey,
     apiSecret,
-    issuer: import.meta.env.VITE_LIVEKIT_ISSUER || 'livekit',
+    issuer: (import.meta.env.VITE_LIVEKIT_ISSUER as string | undefined) ?? 'livekit',
     ...(apiUrl !== undefined && { apiUrl }),
   };
 }
@@ -138,17 +143,19 @@ export interface TokenPayload {
  * return await token.toJwt()
  * ```
  */
-export async function signLiveKitToken(
+export function signLiveKitToken(
   payload: TokenPayload,
   config?: TokenSigningConfig
 ): Promise<string> {
   const effectiveConfig = getEffectiveConfig(config);
 
   if (!effectiveConfig) {
-    throw new TokenSigningError(
-      'LiveKit configuration missing. Configure via Admin Panel > API Configuration > LiveKit, or set LIVEKIT_API_KEY and LIVEKIT_API_SECRET environment variables, or provide config parameter.',
-      'CONFIG_MISSING',
-      { room: payload.room, participant: payload.participant }
+    return Promise.reject(
+      new TokenSigningError(
+        'LiveKit configuration missing. Configure via Admin Panel > API Configuration > LiveKit, or set LIVEKIT_API_KEY and LIVEKIT_API_SECRET environment variables, or provide config parameter.',
+        'CONFIG_MISSING',
+        { room: payload.room, participant: payload.participant }
+      )
     );
   }
 
@@ -163,23 +170,27 @@ export async function signLiveKitToken(
       }
     );
 
-    throw new TokenSigningError(
-      'Client-side token signing is not secure. Implement token signing server-side using LiveKit SDK.',
-      'CLIENT_SIDE_SIGNING_NOT_SUPPORTED',
-      { room: payload.room, participant: payload.participant }
+    return Promise.reject(
+      new TokenSigningError(
+        'Client-side token signing is not secure. Implement token signing server-side using LiveKit SDK.',
+        'CLIENT_SIDE_SIGNING_NOT_SUPPORTED',
+        { room: payload.room, participant: payload.participant }
+      )
     );
   }
 
   // Server-side implementation would go here
   // For now, we throw an error indicating server-side implementation is required
-  throw new TokenSigningError(
-    'Token signing must be implemented server-side using livekit-server-sdk package.',
-    'SERVER_SIDE_REQUIRED',
-    {
-      room: payload.room,
-      participant: payload.participant,
-      suggestion: 'Install livekit-server-sdk and implement token signing on your backend API',
-    }
+  return Promise.reject(
+    new TokenSigningError(
+      'Token signing must be implemented server-side using livekit-server-sdk package.',
+      'SERVER_SIDE_REQUIRED',
+      {
+        room: payload.room,
+        participant: payload.participant,
+        suggestion: 'Install livekit-server-sdk and implement token signing on your backend API',
+      }
+    )
   );
 }
 
@@ -208,7 +219,7 @@ export async function signLiveKitToken(
  * }
  * ```
  */
-export async function verifyLiveKitToken(
+export function verifyLiveKitToken(
   token: string,
   config?: TokenSigningConfig
 ): Promise<TokenPayload | null> {
@@ -218,7 +229,7 @@ export async function verifyLiveKitToken(
     logger.error('LiveKit configuration missing for token verification', {
       tokenPrefix: token.substring(0, 20),
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   // Server-side implementation would use LiveKit SDK here
@@ -227,7 +238,7 @@ export async function verifyLiveKitToken(
     tokenPrefix: token.substring(0, 20),
   });
 
-  return null;
+  return Promise.resolve(null);
 }
 
 /**
@@ -251,17 +262,16 @@ export function isTokenSigningConfigured(): boolean {
  * await roomService.deleteRoom(roomId)
  * ```
  */
-export async function deleteLiveKitRoom(
-  roomId: string,
-  config?: TokenSigningConfig
-): Promise<void> {
+export function deleteLiveKitRoom(roomId: string, config?: TokenSigningConfig): Promise<void> {
   const effectiveConfig = getEffectiveConfig(config);
 
   if (!effectiveConfig) {
-    throw new TokenSigningError(
-      'LiveKit configuration missing. Configure via Admin Panel > API Configuration > LiveKit, or set LIVEKIT_API_KEY and LIVEKIT_API_SECRET environment variables, or provide config parameter.',
-      'CONFIG_MISSING',
-      { roomId }
+    return Promise.reject(
+      new TokenSigningError(
+        'LiveKit configuration missing. Configure via Admin Panel > API Configuration > LiveKit, or set LIVEKIT_API_KEY and LIVEKIT_API_SECRET environment variables, or provide config parameter.',
+        'CONFIG_MISSING',
+        { roomId }
+      )
     );
   }
 
@@ -271,13 +281,15 @@ export async function deleteLiveKitRoom(
 
   // Server-side implementation would go here
   // For now, we throw an error indicating server-side implementation is required
-  throw new TokenSigningError(
-    'Room deletion must be implemented server-side using livekit-server-sdk package.',
-    'SERVER_SIDE_REQUIRED',
-    {
-      roomId,
-      suggestion: 'Install livekit-server-sdk and implement room deletion on your backend API',
-    }
+  return Promise.reject(
+    new TokenSigningError(
+      'Room deletion must be implemented server-side using livekit-server-sdk package.',
+      'SERVER_SIDE_REQUIRED',
+      {
+        roomId,
+        suggestion: 'Install livekit-server-sdk and implement room deletion on your backend API',
+      }
+    )
   );
 }
 
@@ -317,7 +329,7 @@ export async function deleteLiveKitRoom(
  * return { vodUrl, posterUrl }
  * ```
  */
-export async function compositeStreamToHLS(
+export function compositeStreamToHLS(
   roomId: string,
   config?: TokenSigningConfig
 ): Promise<{ vodUrl: string; posterUrl: string } | null> {
@@ -327,7 +339,7 @@ export async function compositeStreamToHLS(
     logger.error('LiveKit configuration missing for HLS recording', {
       roomId,
     });
-    return null;
+    return Promise.resolve(null);
   }
 
   logger.info('HLS VOD recording requested', {
@@ -340,5 +352,5 @@ export async function compositeStreamToHLS(
     roomId,
   });
 
-  return null;
+  return Promise.resolve(null);
 }

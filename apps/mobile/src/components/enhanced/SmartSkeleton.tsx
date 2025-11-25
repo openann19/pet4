@@ -1,12 +1,6 @@
 import React, { useMemo } from 'react'
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated'
+import { Animated, useAnimatedStyle, useSharedValue, withRepeat, withTiming, Easing } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/chat/core/reduced-motion'
 import { isTruthy } from '@petspark/shared';
 

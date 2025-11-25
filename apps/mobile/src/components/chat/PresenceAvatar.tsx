@@ -8,12 +8,7 @@
 
 import React, { useMemo } from 'react'
 import { View, Image, Text, StyleSheet } from 'react-native'
-import Animated, {
-  useSharedValue,
-  withRepeat,
-  withTiming,
-  useAnimatedStyle,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, withRepeat, withTiming, useAnimatedStyle } from '@petspark/motion'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 
 // Optional gradient ring using Expo LinearGradient if available

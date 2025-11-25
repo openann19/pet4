@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RTCView } from 'react-native-webrtc';
-import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { Animated, useAnimatedStyle, withSpring } from '@petspark/motion';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@mobile/theme/colors';
 import { useWebRTC } from '@mobile/hooks/call/use-web-rtc';

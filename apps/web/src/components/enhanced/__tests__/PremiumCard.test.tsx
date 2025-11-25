@@ -3,18 +3,24 @@ import { render, screen } from '@testing-library/react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { useHoverLift } from '@petspark/motion';
 
-vi.mock('@petspark/motion', () => ({
-  useHoverLift: vi.fn(() => ({
-    animatedStyle: {},
-    onMouseEnter: vi.fn(),
-    onMouseLeave: vi.fn(),
-  })),
-  motion: {
-    durations: {
-      md: 300,
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+  return {
+    ...actual,
+    useHoverLift: vi.fn(() => ({
+      animatedStyle: {},
+      onMouseEnter: vi.fn(),
+      onMouseLeave: vi.fn(),
+    })),
+    motion: {
+      ...(actual.motion ?? {}),
+      durations: {
+        ...(actual.motion?.durations ?? {}),
+        md: 300,
+      },
     },
-  },
-}));
+  };
+});
 vi.mock('react-native-reanimated', () => ({
   useSharedValue: vi.fn(() => ({ value: 0 })),
   withTiming: vi.fn((value) => value),

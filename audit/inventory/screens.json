@@ -6,10 +6,28 @@
     "testID": "nav-adoptscreen"
   },
   {
+    "path": "apps/mobile/src/screens/AdoptionMarketplaceScreen.tsx",
+    "name": "AdoptionMarketplaceScreen",
+    "slug": "apps-mobile-src-screens-AdoptionMarketplaceScreen-tsx",
+    "testID": "nav-adoptionmarketplacescreen"
+  },
+  {
     "path": "apps/mobile/src/screens/AdoptionScreen.tsx",
     "name": "AdoptionScreen",
     "slug": "apps-mobile-src-screens-AdoptionScreen-tsx",
     "testID": "nav-adoptionscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/BillingScreen.tsx",
+    "name": "BillingScreen",
+    "slug": "apps-mobile-src-screens-BillingScreen-tsx",
+    "testID": "nav-billingscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/CallScreen.tsx",
+    "name": "CallScreen",
+    "slug": "apps-mobile-src-screens-CallScreen-tsx",
+    "testID": "nav-callscreen"
   },
   {
     "path": "apps/mobile/src/screens/ChatScreen.tsx",
@@ -36,10 +54,22 @@
     "testID": "nav-feedscreen"
   },
   {
+    "path": "apps/mobile/src/screens/GoLiveScreen.tsx",
+    "name": "GoLiveScreen",
+    "slug": "apps-mobile-src-screens-GoLiveScreen-tsx",
+    "testID": "nav-golivescreen"
+  },
+  {
     "path": "apps/mobile/src/screens/HomeScreen.tsx",
     "name": "HomeScreen",
     "slug": "apps-mobile-src-screens-HomeScreen-tsx",
     "testID": "nav-homescreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/LiveStreamScreen.tsx",
+    "name": "LiveStreamScreen",
+    "slug": "apps-mobile-src-screens-LiveStreamScreen-tsx",
+    "testID": "nav-livestreamscreen"
   },
   {
     "path": "apps/mobile/src/screens/MatchesScreen.tsx",
@@ -54,6 +84,12 @@
     "testID": "nav-matchingscreen"
   },
   {
+    "path": "apps/mobile/src/screens/PlaydatesScreen.tsx",
+    "name": "PlaydatesScreen",
+    "slug": "apps-mobile-src-screens-PlaydatesScreen-tsx",
+    "testID": "nav-playdatesscreen"
+  },
+  {
     "path": "apps/mobile/src/screens/ProfileScreen.tsx",
     "name": "ProfileScreen",
     "slug": "apps-mobile-src-screens-ProfileScreen-tsx",
@@ -64,6 +100,24 @@
     "name": "SignUpScreen",
     "slug": "apps-mobile-src-screens-SignUpScreen-tsx",
     "testID": "nav-signupscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/StoriesScreen.tsx",
+    "name": "StoriesScreen",
+    "slug": "apps-mobile-src-screens-StoriesScreen-tsx",
+    "testID": "nav-storiesscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/VerificationScreen.tsx",
+    "name": "VerificationScreen",
+    "slug": "apps-mobile-src-screens-VerificationScreen-tsx",
+    "testID": "nav-verificationscreen"
+  },
+  {
+    "path": "apps/mobile/src/screens/WelcomeScreen.tsx",
+    "name": "WelcomeScreen",
+    "slug": "apps-mobile-src-screens-WelcomeScreen-tsx",
+    "testID": "nav-welcomescreen"
   },
   {
     "path": "apps/mobile/src/screens/__tests__/AdoptionScreen.test.tsx",

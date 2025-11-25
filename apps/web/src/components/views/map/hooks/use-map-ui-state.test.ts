@@ -3,11 +3,15 @@ import { renderHook, act } from '@testing-library/react';
 import { useMapUIState } from './use-map-ui-state';
 import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 
-vi.mock('@petspark/motion', () => ({
-  useSharedValue: vi.fn((initial: number) => ({ value: initial })),
-  useAnimatedStyle: vi.fn((fn: () => unknown) => fn()),
-  withSpring: vi.fn((value: number) => value),
-}));
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+  return {
+    ...actual,
+    useSharedValue: vi.fn((initial: number) => ({ value: initial })),
+    useAnimatedStyle: vi.fn((fn: () => unknown) => fn()),
+    withSpring: vi.fn((value: number) => value),
+  };
+});
 
 describe('useMapUIState', () => {
   beforeEach(() => {
@@ -66,4 +70,3 @@ describe('useMapUIState', () => {
     expect(result.current.detailSheetStyle).toBeDefined();
   });
 });
-

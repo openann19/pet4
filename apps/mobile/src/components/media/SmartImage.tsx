@@ -7,18 +7,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { Image, StyleSheet, View, type StyleProp, type ImageStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withRepeat,
-  withSequence,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/chat/core/reduced-motion'
 import { useFeatureFlags } from '../../config/feature-flags'
 import { springConfigs } from '../../effects/reanimated/transitions'
-import { isTruthy } from '@petspark/shared';
 
 export interface SmartImageNativeProps {
   src: string

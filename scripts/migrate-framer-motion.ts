@@ -8,7 +8,7 @@
 
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join, extname } from 'path'
-import logger from '@/core/logger';
+import logger from '@/core/logger'
 
 interface MigrationPattern {
   from: RegExp
@@ -113,7 +113,7 @@ function generateMigrationReport(rootDir: string): void {
 
   logger.info(`\nMigration patterns to apply:`)
   MIGRATION_PATTERNS.forEach((pattern, index) => {
-    logger.info(`  ${String(index + 1 ?? '')}. ${String(pattern.description ?? '')}`)
+    logger.info(`  ${index + 1}. ${pattern.description ?? ''}`)
   })
 }
 

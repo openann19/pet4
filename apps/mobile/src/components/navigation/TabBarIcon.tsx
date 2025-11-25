@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { Text } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import { useNavButtonAnimation } from '@mobile/effects/reanimated'
 
 const AnimatedText = Animated.createAnimatedComponent(Text)

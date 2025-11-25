@@ -1,0 +1,7 @@
+
+> petspark-monorepo@0.1.0 lint /home/ben/Public/PETSPARK
+> eslint . --cache --cache-location ./.cache/eslint --max-warnings=0 --reporter=json
+
+Invalid option '--reporter' - perhaps you meant '--parser'?
+You're using eslint.config.js, some command line flags are no longer available. Please see https://eslint.org/docs/latest/use/command-line-interface for details.
+ ELIFECYCLE  Command failed with exit code 2.

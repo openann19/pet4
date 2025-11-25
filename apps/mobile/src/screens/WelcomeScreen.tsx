@@ -12,7 +12,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native'
-import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated'
+import { Animated, FadeInUp, FadeInDown } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { EnhancedButton } from '../components/enhanced/EnhancedButton'
 import { colors } from '../theme/colors'

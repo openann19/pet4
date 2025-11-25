@@ -1,11 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, type StyleProp, type ViewStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  Layout,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, Layout } from '@petspark/motion'
 import type { Sticker } from '../../lib/sticker-library'
 import {
   useStickerAnimation,

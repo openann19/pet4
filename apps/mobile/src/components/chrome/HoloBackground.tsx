@@ -7,12 +7,7 @@
 
 import React, { useEffect } from 'react'
 import { View, StyleSheet } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withRepeat, withTiming } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/chat/core/reduced-motion'
 import { useFeatureFlags } from '../../config/feature-flags'
 

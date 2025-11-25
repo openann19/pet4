@@ -37,20 +37,20 @@ export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   // Extended state
   readonly state: AuthState;
   readonly isInitialized: boolean;
   readonly lastLoginAt: Date | null;
   readonly sessionExpiresAt: Date | null;
   readonly error: string | null;
-  
+
   // Backward compatible methods
   login: (email: string, password: string) => Promise<User>;
   register: (email: string, password: string, displayName: string) => Promise<User>;
   logout: () => Promise<void>;
   refreshAuth: () => Promise<void>;
-  
+
   // Advanced authentication methods
   readonly signIn: (credentials: LoginCredentials) => Promise<User>;
   readonly signUp: (data: SignUpData) => Promise<User>;
@@ -58,11 +58,11 @@ export interface AuthContextType {
   readonly refreshUser: () => Promise<User | null>;
   readonly updateUser: (updates: Partial<User>) => void;
   readonly clearError: () => void;
-  
+
   // OAuth methods
   readonly signInWithGoogle: (token: string) => Promise<User>;
   readonly signInWithApple: (token: string) => Promise<User>;
-  
+
   // Session management
   readonly extendSession: () => Promise<void>;
   readonly checkSession: () => Promise<boolean>;
@@ -256,16 +256,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await refreshAuth();
       return user;
     } catch (error) {
+      logger.warn('Failed to refresh user session', error);
       return null;
     }
-  }, [user]);
+  }, [refreshAuth, user]);
 
   const updateUser = useCallback((updates: Partial<User>) => {
     if (!user) return;
-    
+
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
-    
+
     logger.info('User data updated locally', { userId: updatedUser.id, updates: Object.keys(updates) });
   }, [user]);
 
@@ -273,55 +274,55 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
   }, []);
 
-  const signInWithGoogle = useCallback(async (token: string): Promise<User> => {
+  const signInWithGoogle = useCallback((token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
-    
-    try {
-      logger.info('Signing in with Google');
-      
-      // For now, throw error as OAuth not yet implemented in API
-      throw new Error('Google sign in not yet implemented');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed';
-      setError(errorMessage);
-      logger.error('Google sign in failed', { error });
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+
+    const hasToken = typeof token === 'string' && token.length > 0;
+
+    return Promise.reject<User>(new Error('Google sign in not yet implemented'))
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        const errorMessage = err.message ?? 'Google sign in failed';
+        setError(errorMessage);
+        logger.error('Google sign in failed', { error: err, hasToken });
+        throw err;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
-  const signInWithApple = useCallback(async (token: string): Promise<User> => {
+  const signInWithApple = useCallback((token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
-    
-    try {
-      logger.info('Signing in with Apple');
-      
-      // For now, throw error as OAuth not yet implemented in API
-      throw new Error('Apple sign in not yet implemented');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Apple sign in failed';
-      setError(errorMessage);
-      logger.error('Apple sign in failed', { error });
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+
+    const hasToken = typeof token === 'string' && token.length > 0;
+
+    return Promise.reject<User>(new Error('Apple sign in not yet implemented'))
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        const errorMessage = err.message ?? 'Apple sign in failed';
+        setError(errorMessage);
+        logger.error('Apple sign in failed', { error: err, hasToken });
+        throw err;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   const extendSession = useCallback(async (): Promise<void> => {
     if (!user) return;
-    
+
     try {
       logger.info('Extending user session');
-      
+
       // Use the existing refresh method
       const response = await authApi.refresh();
       APIClient.setTokens(response.accessToken, response.refreshToken);
       setSessionExpiresAt(new Date(Date.now() + 24 * 60 * 60 * 1000)); // 24 hours
-      
+
       logger.info('Session extended successfully');
     } catch (error) {
       logger.error('Failed to extend session', { error });
@@ -331,37 +332,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const checkSession = useCallback(async (): Promise<boolean> => {
     if (!user || !sessionExpiresAt) return false;
-    
+
     const now = new Date();
     const expiresAt = new Date(sessionExpiresAt);
-    
+
     // Check if session expires within next 5 minutes
     const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
-    
+
     if (expiresAt <= fiveMinutesFromNow) {
       try {
         await extendSession();
         return true;
       } catch (error) {
-        logger.warn('Session extension failed, signing out');
+        logger.warn('Session extension failed, signing out', error);
         await signOut();
         return false;
       }
     }
-    
+
     return true;
   }, [user, sessionExpiresAt, extendSession, signOut]);
 
   // Auto session checking
   useEffect(() => {
     if (!user) return;
-    
+
     const interval = setInterval(() => {
       checkSession().catch(() => {
         // Session check failed, will be handled by checkSession
       });
     }, 60000); // Check every minute
-    
+
     return () => clearInterval(interval);
   }, [user, checkSession]);
 
@@ -381,20 +382,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isAuthenticated: !!user,
     isLoading,
-    
+
     // Extended state
     state: authState,
     isInitialized,
     lastLoginAt,
     sessionExpiresAt,
     error,
-    
+
     // Backward compatible methods
     login,
     register,
     logout,
     refreshAuth,
-    
+
     // Advanced authentication methods
     signIn,
     signUp,
@@ -402,11 +403,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshUser,
     updateUser,
     clearError,
-    
+
     // OAuth methods
     signInWithGoogle,
     signInWithApple,
-    
+
     // Session management
     extendSession,
     checkSession

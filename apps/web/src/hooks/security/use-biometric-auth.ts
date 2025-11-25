@@ -31,10 +31,10 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { getBiometricStorage, type BiometricSecureStorage } from '@/lib/security/biometric-storage';
+import { getBiometricStorage } from '@/lib/security/biometric-storage';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('use-biometric-auth');
+const _logger = createLogger('use-biometric-auth');
 
 // ============================================================================
 // Types
@@ -81,11 +81,8 @@ function generateChallenge(): Uint8Array {
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    const byte = bytes[i];
-    if (byte !== undefined) {
-      binary += String.fromCharCode(byte);
-    }
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
   }
   return btoa(binary);
 }
@@ -150,8 +147,7 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
 
     try {
       // Check if platform authenticator is available
-      const available =
-        await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+      const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
       return available;
     } catch {
       return false;
@@ -168,30 +164,29 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
 
       const challenge = generateChallenge();
 
-      const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions =
-        {
-          challenge: new Uint8Array(challenge.buffer as ArrayBuffer),
-          rp: {
-            id: rpId,
-            name: rpName,
-          },
-          user: {
-            id: stringToArrayBuffer(userId),
-            name: userName,
-            displayName,
-          },
-          pubKeyCredParams: [
-            { alg: -7, type: 'public-key' }, // ES256
-            { alg: -257, type: 'public-key' }, // RS256
-          ],
-          authenticatorSelection: {
-            authenticatorAttachment: 'platform',
-            userVerification: 'required',
-            requireResidentKey: false,
-          },
-          timeout,
-          attestation: 'none',
-        };
+      const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
+        challenge: new Uint8Array(challenge.buffer as ArrayBuffer),
+        rp: {
+          id: rpId,
+          name: rpName,
+        },
+        user: {
+          id: stringToArrayBuffer(userId),
+          name: userName,
+          displayName,
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: 'public-key' }, // ES256
+          { alg: -257, type: 'public-key' }, // RS256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+          requireResidentKey: false,
+        },
+        timeout,
+        attestation: 'none',
+      };
 
       const credential = (await navigator.credentials.create({
         publicKey: publicKeyCredentialCreationOptions,
@@ -246,16 +241,7 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
 
       return false;
     }
-  }, [
-    userId,
-    userName,
-    displayName,
-    rpId,
-    rpName,
-    timeout,
-    onError,
-    onFallback,
-  ]);
+  }, [userId, userName, displayName, rpId, rpName, timeout, onError, onFallback]);
 
   // ============================================================================
   // Authentication
@@ -279,20 +265,19 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
 
       const challenge = generateChallenge();
 
-      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions =
-        {
-          challenge: new Uint8Array(challenge.buffer as ArrayBuffer),
-          allowCredentials: [
-            {
-              id: base64ToArrayBuffer(credentialId),
-              type: 'public-key',
-              transports: ['internal'],
-            },
-          ],
-          timeout,
-          userVerification: 'required',
-          rpId,
-        };
+      const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
+        challenge: new Uint8Array(challenge.buffer as ArrayBuffer),
+        allowCredentials: [
+          {
+            id: base64ToArrayBuffer(credentialId),
+            type: 'public-key',
+            transports: ['internal'],
+          },
+        ],
+        timeout,
+        userVerification: 'required',
+        rpId,
+      };
 
       const credential = (await navigator.credentials.get({
         publicKey: publicKeyCredentialRequestOptions,
@@ -378,7 +363,7 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
 
       // Load persisted credentials
       if (registered) {
-        await biometricStorage.loadPersistedCredentials(userId);
+        biometricStorage.loadPersistedCredentials(userId);
       }
 
       // Check if session requires re-authentication

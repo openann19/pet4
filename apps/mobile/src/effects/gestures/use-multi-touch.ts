@@ -13,11 +13,7 @@
 
 import { useCallback, useRef } from 'react';
 import React from 'react';
-import {
-  useSharedValue,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring, type SharedValue } from '@petspark/motion';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { triggerHapticByContext } from '../chat/core/haptic-manager';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';

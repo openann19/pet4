@@ -8,9 +8,9 @@ import { createLogger } from '@mobile/utils/logger'
 import * as Haptics from 'expo-haptics'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native'
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import { Animated, useAnimatedStyle, useSharedValue, withTiming } from '@petspark/motion'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('FeedScreen')
 

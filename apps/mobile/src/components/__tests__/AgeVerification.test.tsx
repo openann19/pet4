@@ -2,7 +2,6 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, fireEvent } from '@testing-library/react-native'
-import '@testing-library/jest-dom/vitest'
 import { AgeVerification } from '../AgeVerification'
 
 describe('AgeVerification (UI)', () => {

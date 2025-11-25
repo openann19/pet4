@@ -6,15 +6,7 @@
 import * as Haptics from 'expo-haptics'
 import React, { useEffect } from 'react'
 import { Dimensions, Modal, StyleSheet, Text } from 'react-native'
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withSpring } from '@petspark/motion'
 import { isTruthy } from '@petspark/shared';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')

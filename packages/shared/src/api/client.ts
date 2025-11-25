@@ -1,6 +1,6 @@
 import type { ApiClientConfig, ApiResponse, RequestOptions } from './types'
 import { ApiError } from './types'
-import { isTruthy, isDefined } from '../guards';
+import { isTruthy } from '../guards';
 
 export function createApiClient(config: ApiClientConfig) {
   const { baseUrl, apiKey, timeout = 30000, headers: defaultHeaders = {} } = config

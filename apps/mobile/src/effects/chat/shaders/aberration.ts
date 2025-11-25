@@ -8,8 +8,7 @@
  */
 
 import { Skia, type SkShader } from '@shopify/react-native-skia'
-import { createLogger } from '../../../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { createLogger } from '../../../utils/logger';
 
 const logger = createLogger('aberration-shader')
 
@@ -59,18 +58,18 @@ export function createAberrationShader(config: Partial<AberrationConfig> = {}): 
   const shaderSource = `
     uniform float uAmount;
     uniform float uIntensity;
-    
+
     vec4 aberration(vec2 uv, sampler2D tex) {
       vec2 offset = (uv - 0.5) * uAmount * uIntensity;
-      
+
       // Sample channels with slight offsets
       float r = texture2D(tex, uv + offset).r;
       float g = texture2D(tex, uv).g;
       float b = texture2D(tex, uv - offset).b;
-      
+
       // Get original alpha
       float a = texture2D(tex, uv).a;
-      
+
       return vec4(r, g, b, a);
     }
   `

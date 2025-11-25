@@ -8,7 +8,7 @@
  */
 import React, { memo } from 'react'
 import { StyleSheet, Text, TouchableOpacity, type ViewStyle } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 
 import { useScrollFabMagnetic } from '@mobile/effects/chat/ui'
 import { colors } from '@mobile/theme/colors'

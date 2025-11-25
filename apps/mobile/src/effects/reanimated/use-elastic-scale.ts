@@ -3,7 +3,7 @@
  * Bouncy, elastic scale effect with overshoot for delightful interactions
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, withSequence } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withSequence } from '@petspark/motion'
 import { useCallback } from 'react'
 import type { AnimatedStyle } from './animated-view'
 

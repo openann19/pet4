@@ -4,18 +4,10 @@
  */
 
 import { useCallback, useEffect } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-  withDelay,
-  type SharedValue
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence, withDelay, type SharedValue } from '@petspark/motion'
 import { springConfigs, timingConfigs, type SpringConfig, type TimingConfig } from './transitions'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface VariantDefinition {
   opacity?: number
@@ -255,4 +247,3 @@ export function useMotionVariants(
     setCustomVariant
   }
 }
-

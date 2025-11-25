@@ -1,15 +1,7 @@
-'use client';
+"use client";
 
-import { PostDetailView } from '@/components/community/PostDetailView';
-import { Avatar } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { communityService } from '@/lib/community-service';
-import type { CommunityNotification } from '@/lib/community-types';
-import { haptics } from '@/lib/haptics';
-import { createLogger } from '@/lib/logger';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import {
   ArrowLeft,
   At,
@@ -20,54 +12,62 @@ import {
   Heart,
   UserPlus,
 } from '@phosphor-icons/react';
-import { formatDistanceToNow } from 'date-fns';
-import { MotionView, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
-import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
-import { useCallback, useEffect, useState } from 'react';
+import { MotionView, useAnimatedStyle, useSharedValue, withSpring } from '@petspark/motion';
 import { toast } from 'sonner';
 
-const logger = createLogger('NotificationsView');
+import { PostDetailView } from '@/components/community/PostDetailView';
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import { communityService } from '@/lib/community-service';
+import type { CommunityNotification } from '@/lib/community-types';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 
+const logger = createLogger('NotificationsView');
 function getNotificationIcon(type: CommunityNotification['type']) {
   switch (type) {
     case 'like':
-      return Heart
+      return Heart;
     case 'comment':
     case 'reply':
-      return ChatCircle
+      return ChatCircle;
     case 'follow':
-      return UserPlus
+      return UserPlus;
     case 'mention':
-      return At
+      return At;
     case 'moderation':
-      return CheckCircle
+      return CheckCircle;
     default:
-      return Bell
+      return Bell;
   }
 }
 
 function getNotificationMessage(notification: CommunityNotification): string {
   switch (notification.type) {
     case 'like':
-      return `${String(notification.actorName ?? '')} liked your post`
+      return `${String(notification.actorName ?? '')} liked your post`;
     case 'comment':
-      return `${String(notification.actorName ?? '')} commented on your post`
+      return `${String(notification.actorName ?? '')} commented on your post`;
     case 'reply':
-      return `${String(notification.actorName ?? '')} replied to your comment`
+      return `${String(notification.actorName ?? '')} replied to your comment`;
     case 'follow':
-      return `${String(notification.actorName ?? '')} started following you`
+      return `${String(notification.actorName ?? '')} started following you`;
     case 'mention':
-      return `${String(notification.actorName ?? '')} mentioned you`
+      return `${String(notification.actorName ?? '')} mentioned you`;
     case 'moderation':
-      return notification.content ?? 'Your content was reviewed'
+      return notification.content ?? 'Your content was reviewed';
     default:
-      return notification.content ?? 'New notification'
+      return notification.content ?? 'New notification';
   }
 }
 
-function _EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
-  const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
+function EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
+  const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 });
 
   return (
     <MotionView
@@ -82,56 +82,67 @@ function _EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
       </h2>
       <p className="text-sm text-muted-foreground max-w-sm">
         {filter === 'unread'
-          ? 'You\'re all caught up!'
-          : 'When you get notifications, they\'ll appear here'}
+          ? "You're all caught up!"
+          : "When you get notifications, they'll appear here"}
       </p>
     </MotionView>
   );
 }
 
-function _NotificationItemView({
+interface NotificationItemViewProps {
+  readonly notification: CommunityNotification;
+  readonly index: number;
+  readonly onNotificationClick: (notification: CommunityNotification) => void;
+}
+
+function NotificationItemView({
   notification,
   index,
-  onNotificationClick
-}: {
-  notification: CommunityNotification
-  index: number
-  onNotificationClick: (notification: CommunityNotification) => void
-}) {
-  const opacity = useSharedValue<number>(0)
-  const translateX = useSharedValue<number>(-20)
+  onNotificationClick,
+}: NotificationItemViewProps): JSX.Element {
+  const opacity = useSharedValue<number>(0);
+  const translateX = useSharedValue<number>(-20);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      opacity.value = withSpring(1, { damping: 25, stiffness: 400 })
-      translateX.value = withSpring(0, { damping: 25, stiffness: 400 })
-    }, index * 30)
+      opacity.value = withSpring(1, { damping: 25, stiffness: 400 });
+      translateX.value = withSpring(0, { damping: 25, stiffness: 400 });
+    }, index * 30);
 
     return () => {
-      clearTimeout(timeoutId)
-    }
-  }, [index, opacity, translateX])
+      clearTimeout(timeoutId);
+    };
+  }, [index, opacity, translateX]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [{ translateX: `${String(translateX.value)}px` }]
-  }))
+    transform: [{ translateX: `${String(translateX.value)}px` }],
+  }));
 
-  const Icon = getNotificationIcon(notification.type)
-  const message = getNotificationMessage(notification)
+  const Icon = getNotificationIcon(notification.type);
+  const message = getNotificationMessage(notification);
+  const ariaLabel = `${notification.read ? 'Read' : 'Unread'} notification: ${message}`;
 
   return (
     <MotionView
       style={animatedStyle}
       onClick={() => {
-        onNotificationClick(notification)
+        onNotificationClick(notification);
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={ariaLabel}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onNotificationClick(notification);
+        }
       }}
       className={`
         flex gap-3 p-3 rounded-lg cursor-pointer transition-colors
-        ${String(notification.read
-        ? 'hover:bg-muted/50'
-        : 'bg-primary/5 hover:bg-primary/10 border border-primary/20')
-        }
+        ${notification.read
+          ? 'hover:bg-muted/50'
+          : 'bg-primary/5 hover:bg-primary/10 border border-primary/20'}
       `}
     >
       <Avatar
@@ -143,16 +154,12 @@ function _NotificationItemView({
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
-            <p className="text-sm font-medium line-clamp-2">
-              {message}
-            </p>
+            <p className="text-sm font-medium line-clamp-2">{message}</p>
             <p className="text-xs text-muted-foreground mt-1">
               {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
             </p>
           </div>
-          {!notification.read && (
-            <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
-          )}
+          {!notification.read && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />}
         </div>
       </div>
     </MotionView>
@@ -160,9 +167,9 @@ function _NotificationItemView({
 }
 
 interface NotificationsViewProps {
-  onBack?: () => void;
-  onPostClick?: (postId: string) => void;
-  onUserClick?: (userId: string) => void;
+  readonly onBack?: () => void;
+  readonly onPostClick?: (postId: string) => void;
+  readonly onUserClick?: (userId: string) => void;
 }
 
 export default function NotificationsView({
@@ -193,99 +200,80 @@ export default function NotificationsView({
     void loadNotifications();
   }, [loadNotifications]);
 
-  const handleMarkAsRead = async (notificationId: string) => {
-    haptics.impact('light');
-    try {
-      await communityService.markNotificationRead(notificationId);
-      setNotifications(
-        notifications.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
-      );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to mark notification as read', err);
-    }
-  };
+  const handleMarkAsRead = useCallback(
+    async (notificationId: string) => {
+      haptics.impact('light');
+      try {
+        await communityService.markNotificationRead(notificationId);
+        setNotifications((current) =>
+          current.map((notification) =>
+            notification.id === notificationId ? { ...notification, read: true } : notification,
+          ),
+        );
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to mark notification as read', err);
+      }
+    },
+    [],
+  );
 
-  const handleMarkAllAsRead = async () => {
+  const filteredNotifications = useMemo(
+    () =>
+      notifications
+        .filter((notification) => filter === 'all' || !notification.read)
+        .sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
+    [notifications, filter],
+  );
+
+  const unreadCount = useMemo(
+    () => notifications.filter((notification) => !notification.read).length,
+    [notifications],
+  );
+
+  const handleMarkAllAsRead = useCallback(async () => {
     haptics.impact('medium');
     try {
-      const unreadIds = filteredNotifications.filter((n) => !n.read).map((n) => n.id);
+      const unreadIds = filteredNotifications.filter((notification) => !notification.read).map((notification) => notification.id);
       await Promise.all(unreadIds.map((id) => communityService.markNotificationRead(id)));
-      setNotifications(notifications.map((n) => ({ ...n, read: true })));
+      setNotifications((current) => current.map((notification) => ({ ...notification, read: true })));
       void toast.success('All notifications marked as read');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to mark all as read', err);
     }
-  };
+  }, [filteredNotifications]);
 
-  const handleNotificationClick = (notification: CommunityNotification) => {
-    if (!notification.read) {
-      void handleMarkAsRead(notification.id).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to mark notification as read', err, { notificationId: notification.id });
-      });
-    }
-
-    if (notification.targetType === 'post' && notification.targetId) {
-      setSelectedPostId(notification.targetId);
-      if (onPostClick) {
-        onPostClick(notification.targetId);
+  const handleNotificationClick = useCallback(
+    (notification: CommunityNotification) => {
+      if (!notification.read) {
+        void handleMarkAsRead(notification.id).catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Failed to mark notification as read', err, {
+            notificationId: notification.id,
+          });
+        });
       }
-    } else if (notification.targetType === 'user' && notification.targetId) {
-      if (onUserClick) {
-        onUserClick(notification.targetId);
+
+      if (notification.targetType === 'post' && notification.targetId) {
+        setSelectedPostId(notification.targetId);
+        if (onPostClick) {
+          onPostClick(notification.targetId);
+        }
+      } else if (notification.targetType === 'user' && notification.targetId) {
+        if (onUserClick) {
+          onUserClick(notification.targetId);
+        }
       }
-    }
-  };
-
-  const getNotificationIcon = (type: CommunityNotification['type']) => {
-    switch (type) {
-      case 'like':
-        return Heart;
-      case 'comment':
-      case 'reply':
-        return ChatCircle;
-      case 'follow':
-        return UserPlus;
-      case 'mention':
-        return At;
-      case 'moderation':
-        return CheckCircle;
-      default:
-        return Bell;
-    }
-  };
-
-  const getNotificationMessage = (notification: CommunityNotification): string => {
-    switch (notification.type) {
-      case 'like':
-        return `${notification.actorName} liked your post`;
-      case 'comment':
-        return `${notification.actorName} commented on your post`;
-      case 'reply':
-        return `${notification.actorName} replied to your comment`;
-      case 'follow':
-        return `${notification.actorName} started following you`;
-      case 'mention':
-        return `${notification.actorName} mentioned you`;
-      case 'moderation':
-        return notification.content ?? 'Your content was reviewed';
-      default:
-        return notification.content ?? 'New notification';
-    }
-  };
-
-  const filteredNotifications = notifications
-    .filter((n) => filter === 'all' || !n.read)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-  const unreadCount = notifications.filter((n) => !n.read).length;
+    },
+    [handleMarkAsRead, onPostClick, onUserClick],
+  );
 
   return (
     <PageTransitionWrapper key="notifications-view" direction="up">
       <div className="flex flex-col h-full bg-background">
-        {/* Header */}
         <header role="banner" className="flex items-center gap-4 p-4 border-b bg-card">
           {onBack && (
             <Button
@@ -319,12 +307,7 @@ export default function NotificationsView({
           </div>
         </header>
 
-        {/* Tabs */}
-        <Tabs
-          value={filter}
-          onValueChange={(v) => setFilter(v as 'all' | 'unread')}
-          className="border-b"
-        >
+        <Tabs value={filter} onValueChange={(value) => setFilter(value as 'all' | 'unread')} className="border-b">
           <TabsList className="w-full rounded-none">
             <TabsTrigger value="all" className="flex-1">
               All
@@ -335,14 +318,13 @@ export default function NotificationsView({
           </TabsList>
         </Tabs>
 
-        {/* Content */}
         <main role="main" aria-label="Notifications content">
           <ScrollArea className="flex-1">
             <div className="p-4 space-y-2">
               {loading ? (
                 <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex gap-3">
+                  {[1, 2, 3, 4, 5].map((index) => (
+                    <div key={index} className="flex gap-3">
                       <Skeleton className="w-12 h-12 rounded-full" />
                       <div className="flex-1 space-y-2">
                         <Skeleton className="h-4 w-3/4" />
@@ -352,87 +334,29 @@ export default function NotificationsView({
                   ))}
                 </div>
               ) : filteredNotifications.length === 0 ? (
-                <MotionView
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col items-center justify-center py-16 text-center"
-                >
-                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <Bell size={48} className="text-muted-foreground" />
-                  </div>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
-                  </h2>
-                  <p className="text-sm text-muted-foreground max-w-sm">
-                    {filter === 'unread'
-                      ? "You're all caught up!"
-                      : "When you get notifications, they'll appear here"}
-                  </p>
-                </MotionView>
+                <EmptyStateView filter={filter} />
               ) : (
-                filteredNotifications.map((notification, index) => {
-                  const Icon = getNotificationIcon(notification.type);
-                  const message = getNotificationMessage(notification);
-
-                  return (
-                    <MotionView
-                      key={notification.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      onClick={() => handleNotificationClick(notification)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`${notification.read ? 'Read' : 'Unread'} notification: ${message}`}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleNotificationClick(notification);
-                        }
-                      }}
-                      className={`
-                    flex gap-3 p-3 rounded-lg cursor-pointer transition-colors
-                    ${notification.read
-                          ? 'hover:bg-muted/50'
-                          : 'bg-primary/5 hover:bg-primary/10 border border-primary/20'
-                        }
-                  `}
-                    >
-                      <Avatar
-                        {...(notification.actorAvatar && { src: notification.actorAvatar })}
-                        className="w-12 h-12"
-                      >
-                        <Icon size={20} />
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p className="text-sm font-medium line-clamp-2">{message}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {formatDistanceToNow(new Date(notification.createdAt), {
-                                addSuffix: true,
-                              })}
-                            </p>
-                          </div>
-                          {!notification.read && (
-                            <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
-                          )}
-                        </div>
-                      </div>
-                    </MotionView>
-                  );
-                })
+                filteredNotifications.map((notification, index) => (
+                  <NotificationItemView
+                    // MotionView already handles keying internally; using id ensures stable identity
+                    key={notification.id}
+                    notification={notification}
+                    index={index}
+                    onNotificationClick={handleNotificationClick}
+                  />
+                ))
               )}
             </div>
           </ScrollArea>
         </main>
 
-        {/* Post Detail Dialog */}
         {selectedPostId && (
           <PostDetailView
             open={!!selectedPostId}
             onOpenChange={(open) => {
-              if (!open) setSelectedPostId(null);
+              if (!open) {
+                setSelectedPostId(null);
+              }
             }}
             postId={selectedPostId}
           />

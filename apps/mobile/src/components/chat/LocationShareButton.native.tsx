@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@mobile/theme/colors';
@@ -118,4 +118,3 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 });
-

@@ -1,13 +1,4 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSequence,
-  withDelay,
-  Easing,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, withDelay, Easing, type SharedValue } from '@petspark/motion'
 import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 

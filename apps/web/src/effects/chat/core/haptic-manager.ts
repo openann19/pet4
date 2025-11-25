@@ -39,10 +39,10 @@ interface CustomHaptics {
 // Haptics will be null on web, which is expected
 const Haptics: ExpoHaptics | null = null;
 
-async function loadExpoHaptics(): Promise<ExpoHaptics | null> {
+function loadExpoHaptics(): Promise<ExpoHaptics | null> {
   // On web, expo-haptics is never available
   // Return null immediately without attempting import
-  return null;
+  return Promise.resolve(null);
 }
 
 let custom: CustomHaptics | null = null;
@@ -69,7 +69,14 @@ async function loadCustomHaptics(): Promise<CustomHaptics | null> {
   return customHapticsLoadPromise;
 }
 
-export type HapticType = 'selection' | 'light' | 'medium' | 'strong' | 'success' | 'warning' | 'error';
+export type HapticType =
+  | 'selection'
+  | 'light'
+  | 'medium'
+  | 'strong'
+  | 'success'
+  | 'warning'
+  | 'error';
 
 export type HapticContext =
   | 'send'

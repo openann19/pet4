@@ -7,7 +7,7 @@ import { CallSignalingClient } from '@petspark/core';
 
 export interface UseSignalingClientResult {
   readonly signalingClient: CallSignalingClient;
-  readonly onSignal: (handler: (signal: CallSignal) => void) => () => void;
+  readonly onSignal: (handler: (signal: CallSignal) => void | Promise<void>) => () => void;
 }
 
 export function useSignalingClient(config: SignalingConfig): UseSignalingClientResult {

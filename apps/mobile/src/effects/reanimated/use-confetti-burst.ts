@@ -1,11 +1,4 @@
-import {
-  useSharedValue,
-  withTiming,
-  withSequence,
-  interpolate,
-  Easing,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, withTiming, withSequence, interpolate, Easing, type SharedValue } from '@petspark/motion'
 import { useCallback, useState } from 'react'
 import { Dimensions } from 'react-native'
 

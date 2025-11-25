@@ -1,10 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { PremiumCard } from '@/components/enhanced/PremiumCard'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'

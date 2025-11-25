@@ -13,13 +13,7 @@ import {
   type ViewProps,
   type StyleProp,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  runOnJS,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnJS } from '@petspark/motion'
 import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler'
 import * as Haptics from 'expo-haptics'
 import { isTruthy } from '@petspark/shared';

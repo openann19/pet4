@@ -12,7 +12,7 @@ import {
   renderCompleteStep,
 } from './render-step-content-helpers';
 
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+ 
 interface RenderStepContentProps {
   formState: CreatePetFormState;
   selectedTemplate: PetProfileTemplate | null;
@@ -27,7 +27,7 @@ interface RenderStepContentProps {
   onNext: () => void;
   onSkip: () => void;
 }
-/* eslint-enable @typescript-eslint/consistent-type-imports */
+ 
 
 export function renderStepContent({
   formState,

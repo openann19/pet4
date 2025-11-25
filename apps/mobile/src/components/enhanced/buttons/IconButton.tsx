@@ -1,11 +1,6 @@
 import React, { useCallback, useRef, useEffect } from 'react'
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSequence } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'

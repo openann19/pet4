@@ -14,7 +14,7 @@ export interface Use3DFlipCardOptions {
   stiffness?: number
 }
 
-export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
+export function use3DFlipCard(options: Use3DFlipCardOptions = {}): { frontAnimatedStyle: AnimatedStyle; backAnimatedStyle: AnimatedStyle; flip: () => void; isFlipped: boolean } {
   const { perspective = 1200, damping = 20, stiffness = 100 } = options
 
   const rotateY = useSharedValue(0)
@@ -27,7 +27,7 @@ export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
       stiffness,
     })
     setIsFlipped(!isFlipped)
-  }, [isFlipped, damping, stiffness])
+  }, [isFlipped, rotateY, damping, stiffness])
 
   const frontAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(rotateY.value, [0, 90, 180], [1, 0, 0])

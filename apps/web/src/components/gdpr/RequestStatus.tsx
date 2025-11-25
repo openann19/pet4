@@ -12,6 +12,15 @@ import { Button } from '@/components/ui/button';
 import { getGDPRService } from '@/lib/privacy/gdpr';
 import { gdprApi, type DataSubjectRequestStatus } from '@/api/gdpr-api';
 import { createLogger } from '@/lib/logger';
+import {
+  MotionView,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  Easing,
+} from '@petspark/motion';
+import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 
 const logger = createLogger('RequestStatus');
 
@@ -59,6 +68,22 @@ export function RequestStatus({ userId, onRefresh }: RequestStatusProps): React.
   const [requests, setRequests] = useState<DataSubjectRequestStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const reducedMotion = useReducedMotion();
+  const cardOpacity = useSharedValue(0);
+  const cardTranslateY = useSharedValue(12);
+
+  useEffect(() => {
+    const duration = getReducedMotionDuration(260, reducedMotion);
+    const easing = reducedMotion ? Easing.linear : Easing.out(Easing.ease);
+
+    cardOpacity.value = withTiming(1, { duration, easing });
+    cardTranslateY.value = withTiming(0, { duration, easing });
+  }, [cardOpacity, cardTranslateY, reducedMotion]);
+
+  const cardStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    transform: [{ translateY: cardTranslateY.value }],
+  }));
 
   // Fetch requests
   const fetchRequests = useCallback(async (): Promise<void> => {
@@ -97,103 +122,131 @@ export function RequestStatus({ userId, onRefresh }: RequestStatusProps): React.
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-sm text-muted-foreground">Loading requests...</p>
-        </CardContent>
-      </Card>
+      <MotionView style={cardStyle}>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-muted-foreground">Loading requests...</p>
+          </CardContent>
+        </Card>
+      </MotionView>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <p className="text-sm text-destructive">Error: {error}</p>
-            <Button variant="outline" size="sm" onClick={handleRefresh} className="mt-2">
-              Retry
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <MotionView style={cardStyle}>
+        <Card>
+          <CardContent className="p-6">
+            <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+              <p className="text-sm text-destructive">Error: {error}</p>
+              <Button variant="outline" size="sm" onClick={handleRefresh} className="mt-2">
+                Retry
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </MotionView>
     );
   }
 
   if (requests.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Request Status</CardTitle>
-          <CardDescription>View the status of your GDPR data subject requests.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">No requests found.</p>
-          <Button variant="outline" onClick={handleRefresh} className="mt-4">
-            Refresh
-          </Button>
-        </CardContent>
-      </Card>
+      <MotionView style={cardStyle}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Request Status</CardTitle>
+            <CardDescription>View the status of your GDPR data subject requests.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">No requests found.</p>
+            <Button variant="outline" onClick={handleRefresh} className="mt-4">
+              Refresh
+            </Button>
+          </CardContent>
+        </Card>
+      </MotionView>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Request Status</CardTitle>
-            <CardDescription>View the status of your GDPR data subject requests.</CardDescription>
+    <MotionView style={cardStyle}>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Request Status</CardTitle>
+              <CardDescription>View the status of your GDPR data subject requests.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleRefresh}>
+              Refresh
+            </Button>
           </div>
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
-            Refresh
-          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {requests.map((request, index) => (
+            <RequestStatusRow key={request.id} request={request} index={index} />
+          ))}
+        </CardContent>
+      </Card>
+    </MotionView>
+  );
+}
+
+interface RequestStatusRowProps {
+  request: DataSubjectRequestStatus;
+  index: number;
+}
+
+function RequestStatusRow({ request, index }: RequestStatusRowProps): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  const rowOpacity = useSharedValue(0);
+  const rowTranslateY = useSharedValue(8);
+
+  useEffect(() => {
+    const duration = getReducedMotionDuration(220, reducedMotion);
+    const easing = reducedMotion ? Easing.linear : Easing.out(Easing.ease);
+    const delay = reducedMotion ? 0 : index * 70;
+
+    rowOpacity.value = withDelay(delay, withTiming(1, { duration, easing }));
+    rowTranslateY.value = withDelay(delay, withTiming(0, { duration, easing }));
+  }, [index, reducedMotion, rowOpacity, rowTranslateY]);
+
+  const rowStyle = useAnimatedStyle(() => ({
+    opacity: rowOpacity.value,
+    transform: [{ translateY: rowTranslateY.value }],
+  }));
+
+  return (
+    <MotionView style={rowStyle} className="p-4 border rounded-lg space-y-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">{getRightLabel(request.right)}</h3>
+          <p className="text-sm text-muted-foreground">Request ID: {request.id}</p>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {requests.map((request) => (
-          <div
-            key={request.id}
-            className="p-4 border rounded-lg space-y-2"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{getRightLabel(request.right)}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Request ID: {request.id}
-                </p>
-              </div>
-              <span
-                className={`px-2 py-1 text-xs font-medium rounded border ${getStatusColor(request.status)}`}
-              >
-                {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('-', ' ')}
-              </span>
-            </div>
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded border ${getStatusColor(request.status)}`}
+        >
+          {request.status.charAt(0).toUpperCase() + request.status.slice(1).replace('-', ' ')}
+        </span>
+      </div>
 
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>Requested: {new Date(request.requestedAt).toLocaleString()}</p>
-              {request.completedAt && (
-                <p>Completed: {new Date(request.completedAt).toLocaleString()}</p>
-              )}
-              {request.reason && (
-                <p>Reason: {request.reason}</p>
-              )}
-            </div>
+      <div className="text-sm text-muted-foreground space-y-1">
+        <p>Requested: {new Date(request.requestedAt).toLocaleString()}</p>
+        {request.completedAt && <p>Completed: {new Date(request.completedAt).toLocaleString()}</p>}
+        {request.reason && <p>Reason: {request.reason}</p>}
+      </div>
 
-            {request.status === 'completed' && request.right === 'access' && (
-              <div className="p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
-                Your data export is ready. Please check your downloads or request a new export.
-              </div>
-            )}
+      {request.status === 'completed' && request.right === 'access' && (
+        <div className="p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
+          Your data export is ready. Please check your downloads or request a new export.
+        </div>
+      )}
 
-            {request.status === 'rejected' && (
-              <div className="p-2 bg-red-50 border border-red-200 rounded text-sm text-red-800">
-                Your request was rejected. Please contact support for more information.
-              </div>
-            )}
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+      {request.status === 'rejected' && (
+        <div className="p-2 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+          Your request was rejected. Please contact support for more information.
+        </div>
+      )}
+    </MotionView>
   );
 }

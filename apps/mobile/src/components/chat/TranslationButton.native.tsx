@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@mobile/theme/colors';
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';
@@ -20,10 +20,10 @@ interface TranslationButtonProps {
 }
 
 export function TranslationButton({
-  messageId,
+  messageId: _messageId,
   originalText,
-  originalLanguage,
-  targetLanguage = 'en',
+  originalLanguage: _originalLanguage,
+  targetLanguage: _targetLanguage = 'en',
   onTranslate,
   disabled = false,
 }: TranslationButtonProps): React.JSX.Element {
@@ -108,4 +108,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-

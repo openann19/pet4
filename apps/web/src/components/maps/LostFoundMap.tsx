@@ -15,7 +15,7 @@ import {
   calculateDistance,
   formatDistance,
 } from '@/lib/maps/utils';
-import MapLibreMap from '@/components/maps/MapLibreMap';
+import LazyMapLibreMap from '@/components/maps/LazyMapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { toast } from 'sonner';
@@ -100,8 +100,8 @@ export default function LostFoundMap({
     haptics.trigger('success');
     onReportSighting(selectedAlert.id, userLocation);
     void toast.success(
-            (t.lostFound as { sightingReported?: string })?.sightingReported ?? 'Sighting reported'
-          );
+      (t.lostFound as { sightingReported?: string })?.sightingReported ?? 'Sighting reported'
+    );
   };
 
   const mapCenter = useMemo((): Location => {
@@ -164,7 +164,7 @@ export default function LostFoundMap({
       </div>
 
       <div className="relative h-125 rounded-lg overflow-hidden border">
-        <MapLibreMap
+        <LazyMapLibreMap
           center={mapCenter}
           zoom={12}
           markers={mapMarkers}

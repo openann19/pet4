@@ -1,5 +1,5 @@
 // Local utilities to avoid circular dependencies with @petspark/shared
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+ 
 
 export function isDefined<T>(v: T | null | undefined): v is T {
   return v !== null && v !== undefined;

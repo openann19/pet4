@@ -147,7 +147,7 @@ export default function PlaydateScheduler({
     };
 
     setPlaydates((current: Playdate[] | undefined) => [...(current ?? []), newPlaydate]);
-    haptics.success();
+    void haptics.success();
     void toast.success('Playdate scheduled!', {
       description: `Invitation sent for ${format(new Date(playdateDate), 'MMM dd, yyyy')}`,
     });
@@ -186,7 +186,7 @@ export default function PlaydateScheduler({
           })
           .then(() => {
             void toast.success('Location shared!');
-            haptics.success();
+            void haptics.success();
           })
           .catch((error) => {
             // User cancelled or share failed
@@ -203,7 +203,7 @@ export default function PlaydateScheduler({
           .writeText(mapsUrl)
           .then(() => {
             void toast.success('Location link copied to clipboard!');
-            haptics.success();
+            void haptics.success();
           })
           .catch((error) => {
             const err = error instanceof Error ? error : new Error(String(error));
@@ -246,7 +246,7 @@ export default function PlaydateScheduler({
             : p
         )
       );
-      haptics.success();
+      void haptics.success();
       void toast.success('Playdate confirmed!', { description: 'Both parties have confirmed' });
     },
     [setPlaydates]
@@ -261,7 +261,7 @@ export default function PlaydateScheduler({
             : p
         )
       );
-      haptics.light();
+      void haptics.light();
       void toast.info('Playdate cancelled', { description: 'The other party has been notified' });
     },
     [setPlaydates]

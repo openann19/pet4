@@ -13,18 +13,11 @@
 
 import { useCallback, useRef } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
-import {
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { runOnJS, useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from '@petspark/motion'
 import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import { useReducedMotionSV } from '../core/reduced-motion'
 import { createAnimatedRibbonPath, getRibbonConfig } from '../shaders/ribbon-fx'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('swipe-reply-elastic')
 

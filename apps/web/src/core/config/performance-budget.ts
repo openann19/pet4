@@ -3,12 +3,7 @@
  * Monitors and enforces performance budgets for bundle sizes and runtime metrics
  */
 
-import type {
-  PerformanceBudgetConfig,
-  BundleBudget,
-  LoadTimeBudget,
-  RuntimeBudget,
-} from './performance-budget.config';
+import type { PerformanceBudgetConfig } from './performance-budget.config';
 import { DEFAULT_PERFORMANCE_BUDGET } from './performance-budget.config';
 import { createLogger } from '@/lib/logger';
 
@@ -50,7 +45,7 @@ export class PerformanceBudget {
   private violations: BudgetViolation[] = [];
 
   constructor(config?: PerformanceBudgetConfig) {
-    this.config = config || DEFAULT_PERFORMANCE_BUDGET;
+    this.config = config ?? DEFAULT_PERFORMANCE_BUDGET;
   }
 
   /**
@@ -89,7 +84,7 @@ export class PerformanceBudget {
       if (size > budget.chunk) {
         violations.push({
           category: 'bundle',
-          metric: `chunk:${String(chunkName ?? '')}`,
+          metric: `chunk:${chunkName}`,
           actual: size,
           budget: budget.chunk,
           severity: 'warning',

@@ -1,29 +1,30 @@
 // Type definitions for interceptors
 interface ApiRequestConfig {
-  method?: string;
-  url?: string;
-  data?: unknown;
-  headers?: Record<string, string>;
+  method?: string
+  url?: string
+  data?: unknown
+  headers?: Record<string, string>
 }
 
 interface ApiResponse {
-  status: number;
-  config: ApiRequestConfig;
-  data: unknown;
+  status: number
+  config: ApiRequestConfig
+  data: unknown
 }
 
 interface ApiError {
   response?: {
-    status?: number;
-    data: unknown;
-  };
-  message: string;
+    status?: number
+    data: unknown
+  }
+  message: string
 }
 
 // Common path patterns
-const POST_ID_PATTERN = '/posts/:id';
-const CHAT_ROOM_ID_PATTERN = '/chat/rooms/:id';
-const EVENT_ID_PATTERN = '/events/:id';
+const POST_ID_PATTERN = '/posts/:id'
+const CHAT_ROOM_ID_PATTERN = '/chat/rooms/:id'
+const EVENT_ID_PATTERN = '/events/:id'
+const USERS_PROFILE_PATTERN = '/users/profile'
 
 /**
  * API configuration for PETSPARK
@@ -34,14 +35,14 @@ export const API_CONFIG = {
   baseUrl: process.env.API_BASE_URL || 'http://localhost:3001/api',
   timeout: parseInt(process.env.API_TIMEOUT || '10000', 10),
   retryAttempts: parseInt(process.env.API_RETRY_ATTEMPTS || '3', 10),
-  
+
   // Headers
   defaultHeaders: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'application/json',
     'User-Agent': 'PETSPARK/1.0.0',
   },
-  
+
   // Endpoints
   endpoints: {
     // Authentication
@@ -60,12 +61,12 @@ export const API_CONFIG = {
       refreshToken: '/auth/refresh',
       me: '/auth/me',
     },
-    
+
     // Users
     users: {
-      profile: '/users/profile',
-      update: '/users/profile',
-      updateProfile: '/users/profile',
+      profile: USERS_PROFILE_PATTERN,
+      update: USERS_PROFILE_PATTERN,
+      updateProfile: USERS_PROFILE_PATTERN,
       avatar: '/users/avatar',
       uploadAvatar: '/users/avatar',
       settings: '/users/settings',
@@ -80,7 +81,7 @@ export const API_CONFIG = {
       block: '/users/block',
       unblock: '/users/unblock',
     },
-    
+
     // Pets
     pets: {
       list: '/pets',
@@ -98,7 +99,7 @@ export const API_CONFIG = {
       verify: '/pets/:id/verify',
       report: '/pets/:id/report',
     },
-    
+
     // Posts
     posts: {
       list: '/posts',
@@ -119,7 +120,7 @@ export const API_CONFIG = {
       feed: '/posts/feed',
       trending: '/posts/trending',
     },
-    
+
     // Chat
     chat: {
       rooms: '/chat/rooms',
@@ -139,7 +140,7 @@ export const API_CONFIG = {
       search: '/chat/search',
       unread: '/chat/unread',
     },
-    
+
     // Discovery
     discovery: {
       pets: '/discovery/pets',
@@ -152,7 +153,7 @@ export const API_CONFIG = {
       boost: '/discovery/boost',
       rewind: '/discovery/rewind',
     },
-    
+
     // Notifications
     notifications: {
       list: '/notifications',
@@ -164,7 +165,7 @@ export const API_CONFIG = {
       pushToken: '/notifications/push-token',
       test: '/notifications/test',
     },
-    
+
     // Media
     media: {
       upload: '/media/upload',
@@ -177,7 +178,7 @@ export const API_CONFIG = {
       gallery: '/media/gallery',
       search: '/media/search',
     },
-    
+
     // Location
     location: {
       update: '/location/update',
@@ -187,7 +188,7 @@ export const API_CONFIG = {
       geocode: '/location/geocode',
       reverseGeocode: '/location/reverse-geocode',
     },
-    
+
     // Events
     events: {
       list: '/events',
@@ -202,7 +203,7 @@ export const API_CONFIG = {
       nearby: '/events/nearby',
       search: '/events/search',
     },
-    
+
     // Premium
     premium: {
       subscribe: '/premium/subscribe',
@@ -217,7 +218,7 @@ export const API_CONFIG = {
       addPaymentMethod: '/premium/payment-methods',
       removePaymentMethod: '/premium/payment-methods/:id',
     },
-    
+
     // Admin
     admin: {
       dashboard: '/admin/dashboard',
@@ -231,7 +232,7 @@ export const API_CONFIG = {
       maintenance: '/admin/maintenance',
       notifications: '/admin/notifications',
     },
-    
+
     // Health
     health: {
       check: '/health',
@@ -241,7 +242,7 @@ export const API_CONFIG = {
       metrics: '/health/metrics',
     },
   } as const,
-  
+
   // HTTP methods
   methods: {
     GET: 'GET',
@@ -252,7 +253,7 @@ export const API_CONFIG = {
     HEAD: 'HEAD',
     OPTIONS: 'OPTIONS',
   } as const,
-  
+
   // Status codes
   statusCodes: {
     OK: 200,
@@ -270,7 +271,7 @@ export const API_CONFIG = {
     SERVICE_UNAVAILABLE: 503,
     GATEWAY_TIMEOUT: 504,
   } as const,
-  
+
   // Error codes
   errorCodes: {
     VALIDATION_ERROR: 'VALIDATION_ERROR',
@@ -284,46 +285,46 @@ export const API_CONFIG = {
     TIMEOUT_ERROR: 'TIMEOUT_ERROR',
     UNKNOWN_ERROR: 'UNKNOWN_ERROR',
   } as const,
-  
+
   // Request/response interceptors
   interceptors: {
     request: {
       auth: (config: ApiRequestConfig) => {
         // Add auth token to request
-        const token = localStorage.getItem('petspark_auth_token');
+        const token = localStorage.getItem('petspark_auth_token')
         if (token && config.headers) {
-          config.headers.Authorization = `Bearer ${token}`;
+          config.headers.Authorization = `Bearer ${token}`
         }
-        return config;
+        return config
       },
       logging: (config: ApiRequestConfig) => {
         // Log outgoing requests
-        console.warn(`[API] ${config.method?.toUpperCase()} ${config.url}`, config.data);
-        return config;
+        console.warn(`[API] ${config.method?.toUpperCase()} ${config.url}`, config.data)
+        return config
       },
     },
     response: {
       logging: (response: ApiResponse) => {
         // Log incoming responses
-        console.warn(`[API] ${response.status} ${response.config.url}`, response.data);
-        return response;
+        console.warn(`[API] ${response.status} ${response.config.url}`, response.data)
+        return response
       },
       error: (error: ApiError) => {
         // Handle errors globally
-        console.error('[API] Error:', error.response?.data || error.message);
-        
+        console.error('[API] Error:', error.response?.data || error.message)
+
         // Handle auth errors
         if (error.response?.status === 401) {
           // Redirect to login or refresh token
-          localStorage.removeItem('petspark_auth_token');
-          window.location.href = '/login';
+          localStorage.removeItem('petspark_auth_token')
+          window.location.href = '/login'
         }
-        
-        return Promise.reject(error);
+
+        return Promise.reject(error)
       },
     },
   },
-  
+
   // Query parameters
   queryParams: {
     pagination: {
@@ -350,7 +351,7 @@ export const API_CONFIG = {
       exclude: 'exclude',
     },
   },
-  
+
   // Response formats
   responseFormats: {
     json: 'application/json',
@@ -360,7 +361,7 @@ export const API_CONFIG = {
     html: 'text/html',
     xml: 'application/xml',
   },
-  
+
   // Cache configuration
   cache: {
     defaultTTL: 5 * 60 * 1000, // 5 minutes
@@ -371,7 +372,7 @@ export const API_CONFIG = {
       '/discovery/pets': 30 * 1000, // 30 seconds
     },
   },
-  
+
   // WebSocket configuration
   websocket: {
     url: process.env.WEBSOCKET_URL || 'ws://localhost:3001',
@@ -379,85 +380,105 @@ export const API_CONFIG = {
     maxReconnectAttempts: 10,
     heartbeatInterval: 30000,
   },
-} as const;
+} as const
 
 // Helper functions
 export function getEndpoint(path: string): string {
-  return `${API_CONFIG.baseUrl}${path}`;
+  return `${API_CONFIG.baseUrl}${path}`
 }
 
 export function getAuthEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.auth[endpoint as keyof typeof API_CONFIG.endpoints.auth]);
+  return getEndpoint(API_CONFIG.endpoints.auth[endpoint as keyof typeof API_CONFIG.endpoints.auth])
 }
 
 export function getUserEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.users[endpoint as keyof typeof API_CONFIG.endpoints.users]);
+  return getEndpoint(
+    API_CONFIG.endpoints.users[endpoint as keyof typeof API_CONFIG.endpoints.users]
+  )
 }
 
 export function getPetEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.pets[endpoint as keyof typeof API_CONFIG.endpoints.pets]);
+  return getEndpoint(API_CONFIG.endpoints.pets[endpoint as keyof typeof API_CONFIG.endpoints.pets])
 }
 
 export function getPostEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.posts[endpoint as keyof typeof API_CONFIG.endpoints.posts]);
+  return getEndpoint(
+    API_CONFIG.endpoints.posts[endpoint as keyof typeof API_CONFIG.endpoints.posts]
+  )
 }
 
 export function getChatEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.chat[endpoint as keyof typeof API_CONFIG.endpoints.chat]);
+  return getEndpoint(API_CONFIG.endpoints.chat[endpoint as keyof typeof API_CONFIG.endpoints.chat])
 }
 
 export function getDiscoveryEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.discovery[endpoint as keyof typeof API_CONFIG.endpoints.discovery]);
+  return getEndpoint(
+    API_CONFIG.endpoints.discovery[endpoint as keyof typeof API_CONFIG.endpoints.discovery]
+  )
 }
 
 export function getNotificationEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.notifications[endpoint as keyof typeof API_CONFIG.endpoints.notifications]);
+  return getEndpoint(
+    API_CONFIG.endpoints.notifications[endpoint as keyof typeof API_CONFIG.endpoints.notifications]
+  )
 }
 
 export function getMediaEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.media[endpoint as keyof typeof API_CONFIG.endpoints.media]);
+  return getEndpoint(
+    API_CONFIG.endpoints.media[endpoint as keyof typeof API_CONFIG.endpoints.media]
+  )
 }
 
 export function getLocationEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.location[endpoint as keyof typeof API_CONFIG.endpoints.location]);
+  return getEndpoint(
+    API_CONFIG.endpoints.location[endpoint as keyof typeof API_CONFIG.endpoints.location]
+  )
 }
 
 export function getEventEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.events[endpoint as keyof typeof API_CONFIG.endpoints.events]);
+  return getEndpoint(
+    API_CONFIG.endpoints.events[endpoint as keyof typeof API_CONFIG.endpoints.events]
+  )
 }
 
 export function getPremiumEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.premium[endpoint as keyof typeof API_CONFIG.endpoints.premium]);
+  return getEndpoint(
+    API_CONFIG.endpoints.premium[endpoint as keyof typeof API_CONFIG.endpoints.premium]
+  )
 }
 
 export function getAdminEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.admin[endpoint as keyof typeof API_CONFIG.endpoints.admin]);
+  return getEndpoint(
+    API_CONFIG.endpoints.admin[endpoint as keyof typeof API_CONFIG.endpoints.admin]
+  )
 }
 
 export function getHealthEndpoint(endpoint: string): string {
-  return getEndpoint(API_CONFIG.endpoints.health[endpoint as keyof typeof API_CONFIG.endpoints.health]);
+  return getEndpoint(
+    API_CONFIG.endpoints.health[endpoint as keyof typeof API_CONFIG.endpoints.health]
+  )
 }
 
 export function buildUrl(endpoint: string, params?: Record<string, unknown>): string {
-  const url = new URL(endpoint, API_CONFIG.baseUrl);
-  
+  const url = new URL(endpoint, API_CONFIG.baseUrl)
+
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        url.searchParams.append(key, String(value));
+        url.searchParams.append(key, String(value))
       }
-    });
+    })
   }
-  
-  return url.toString();
+
+  return url.toString()
 }
 
 export function buildPathWithParams(path: string, params: Record<string, string | number>): string {
-  let result = path;
-  
+  let result = path
+
   Object.entries(params).forEach(([key, value]) => {
-    result = result.replace(`:${key}`, String(value));
-  });
-  
-  return result;
+    result = result.replace(`:${key}`, String(value))
+  })
+
+  return result
 }

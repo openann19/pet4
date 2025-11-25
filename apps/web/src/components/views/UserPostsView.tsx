@@ -39,7 +39,7 @@ function _EmptyStateView({ authorName }: { authorName: string }) {
   );
 }
 
-function PostItemView({
+function _PostItemView({
   post,
   index,
   onPostClick,

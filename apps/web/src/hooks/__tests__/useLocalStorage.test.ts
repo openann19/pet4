@@ -115,7 +115,9 @@ describe('useLocalStorage', () => {
   });
 
   it('should not sync across tabs when syncAcrossTabs is false', () => {
-    renderHook(() => useLocalStorage('test-key', 'initial', { syncAcrossTabs: false }));
+    const { result } = renderHook(() =>
+      useLocalStorage('test-key', 'initial', { syncAcrossTabs: false })
+    );
 
     const storageEvent = new StorageEvent('storage', {
       key: 'test-key',
@@ -126,7 +128,7 @@ describe('useLocalStorage', () => {
       window.dispatchEvent(storageEvent);
     });
 
-    expect(getStorageItem).not.toHaveBeenCalled();
+    expect(result.current[0]).toBe('initial');
   });
 
   it('should handle TTL option', async () => {

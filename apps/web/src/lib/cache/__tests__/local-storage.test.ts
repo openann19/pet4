@@ -7,13 +7,14 @@ import {
   getStorageSize,
   isStorageAvailable,
 } from '../local-storage';
+import { createLogger } from '@/lib/logger';
 
 // Mock localStorage
 const mockLocalStorage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: vi.fn().mockReturnValue(null),
+  setItem: vi.fn().mockImplementation(() => {}),
+  removeItem: vi.fn().mockImplementation(() => {}),
+  clear: vi.fn().mockImplementation(() => {}),
   key: vi.fn(),
   length: 0,
   [Symbol.iterator]: vi.fn(),
@@ -23,14 +24,8 @@ const mockWindow = {
   localStorage: mockLocalStorage,
 };
 
-// Mock logger
-const mockLogger = {
-  error: vi.fn(),
-};
-
-vi.mock('../logger', () => ({
-  createLogger: vi.fn(() => mockLogger),
-}));
+// Get the global logger mock from the setup file - access the instance created during module initialization
+const mockLogger = vi.mocked(createLogger).mock.results[0]?.value || vi.mocked(createLogger)('LocalStorage');
 
 vi.mock('@petspark/shared', () => ({
   isTruthy: vi.fn((value) => Boolean(value)),
@@ -39,7 +34,20 @@ vi.mock('@petspark/shared', () => ({
 describe('localStorage utilities', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset localStorage mock implementations to clean state
+    mockLocalStorage.getItem.mockReturnValue(null);
+    mockLocalStorage.setItem.mockImplementation(() => {});
+    mockLocalStorage.removeItem.mockImplementation(() => {});
+    mockLocalStorage.clear.mockImplementation(() => {});
+    mockLocalStorage.key.mockReturnValue(null);
+    mockLocalStorage.length = 0;
+
+    // Mock both window.localStorage and global localStorage using Object.defineProperty
     Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
       value: mockLocalStorage,
       writable: true,
     });
@@ -194,14 +202,15 @@ describe('localStorage utilities', () => {
       const result = setStorageItem('test-key', testData);
       expect(result).toBe(true);
 
-      const expectedEntry = {
+      // Check that setItem was called with the right key and valid JSON structure
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('test-key', expect.any(String));
+
+      const storedValue = mockLocalStorage.setItem.mock.calls[0][1];
+      const parsedValue = JSON.parse(storedValue);
+      expect(parsedValue).toEqual({
         value: testData,
         timestamp: expect.any(Number),
-      };
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'test-key',
-        JSON.stringify(expectedEntry)
-      );
+      });
     });
 
     it('should set item with TTL', () => {
@@ -211,15 +220,16 @@ describe('localStorage utilities', () => {
       const result = setStorageItem('test-key', testData, options);
       expect(result).toBe(true);
 
-      const expectedEntry = {
+      // Check that setItem was called with the right key and valid JSON structure
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('test-key', expect.any(String));
+
+      const storedValue = mockLocalStorage.setItem.mock.calls[0][1];
+      const parsedValue = JSON.parse(storedValue);
+      expect(parsedValue).toEqual({
         value: testData,
         timestamp: expect.any(Number),
         ttl: 5000,
-      };
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'test-key',
-        JSON.stringify(expectedEntry)
-      );
+      });
     });
 
     it('should handle localStorage setItem errors gracefully', () => {
@@ -230,9 +240,14 @@ describe('localStorage utilities', () => {
 
       const result = setStorageItem('test-key', 'test-value');
       expect(result).toBe(false);
-      expect(mockLogger.error).toHaveBeenCalledWith('Error writing to localStorage', error, {
-        key: 'test-key',
-      });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Error writing to localStorage',
+        error,
+        {
+          key: 'test-key',
+        }
+      );
     });
   });
 
@@ -304,7 +319,7 @@ describe('localStorage utilities', () => {
 
       // Mock Object.keys to return our test keys
       const mockKeys = ['expired', 'valid', 'no-ttl', 'invalid-json'];
-      vi.mocked(Object.keys).mockReturnValue(mockKeys);
+      vi.spyOn(Object, 'keys').mockReturnValue(mockKeys);
 
       clearExpiredStorage();
 
@@ -315,7 +330,7 @@ describe('localStorage utilities', () => {
 
     it('should handle invalid JSON items gracefully', () => {
       const mockKeys = ['invalid-json'];
-      vi.mocked(Object.keys).mockReturnValue(mockKeys);
+      vi.spyOn(Object, 'keys').mockReturnValue(mockKeys);
       mockLocalStorage.getItem.mockReturnValue('invalid-json');
 
       // Should not throw
@@ -324,20 +339,24 @@ describe('localStorage utilities', () => {
 
     it('should handle errors gracefully', () => {
       const error = new Error('Storage error');
-      vi.mocked(Object.keys).mockImplementation(() => {
+      const keysSpy = vi.spyOn(Object, 'keys').mockImplementation(() => {
         throw error;
       });
 
-      // Should not throw
-      expect(() => clearExpiredStorage()).not.toThrow();
-      expect(mockLogger.error).toHaveBeenCalledWith('Error clearing expired storage', error);
+      try {
+        // Should not throw
+        expect(() => clearExpiredStorage()).not.toThrow();
+        expect(mockLogger.error).toHaveBeenCalledWith('Error clearing expired storage', error);
+      } finally {
+        keysSpy.mockRestore();
+      }
     });
   });
 
   describe('getStorageSize', () => {
     it('should calculate storage size correctly', () => {
       const mockKeys = ['key1', 'key2'];
-      vi.mocked(Object.keys).mockReturnValue(mockKeys);
+      vi.spyOn(Object, 'keys').mockReturnValue(mockKeys);
       mockLocalStorage.getItem.mockImplementation((key) => {
         return `value-for-${key}`; // 14 characters
       });
@@ -349,7 +368,7 @@ describe('localStorage utilities', () => {
 
     it('should handle null items', () => {
       const mockKeys = ['key1', 'key2'];
-      vi.mocked(Object.keys).mockReturnValue(mockKeys);
+      vi.spyOn(Object, 'keys').mockReturnValue(mockKeys);
       mockLocalStorage.getItem.mockReturnValue(null);
 
       const result = getStorageSize();
@@ -358,13 +377,17 @@ describe('localStorage utilities', () => {
 
     it('should handle errors gracefully', () => {
       const error = new Error('Storage error');
-      vi.mocked(Object.keys).mockImplementation(() => {
+      const keysSpy = vi.spyOn(Object, 'keys').mockImplementation(() => {
         throw error;
       });
 
-      const result = getStorageSize();
-      expect(result).toBe(0);
-      expect(mockLogger.error).toHaveBeenCalledWith('Error calculating storage size', error);
+      try {
+        const result = getStorageSize();
+        expect(result).toBe(0);
+        expect(mockLogger.error).toHaveBeenCalledWith('Error calculating storage size', error);
+      } finally {
+        keysSpy.mockRestore();
+      }
     });
   });
 

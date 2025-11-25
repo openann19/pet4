@@ -1,4 +1,4 @@
-import { useCallback, useState, useRef, useEffect } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { getWorkerPool } from '@/lib/worker-pool';
 import {
@@ -209,9 +209,9 @@ export const ASPECT_RATIO_PRESETS: readonly AspectRatioPreset[] = [
 // ============================================================================
 
 const FACE_DETECTION_MIN_SIZE = 20;
-const FACE_DETECTION_SCALE_FACTOR = 1.1;
-const EDGE_DETECTION_THRESHOLD = 100;
-const SEAM_CARVING_ENERGY_THRESHOLD = 0.3;
+const _FACE_DETECTION_SCALE_FACTOR = 1.1;
+const _EDGE_DETECTION_THRESHOLD = 100;
+const _SEAM_CARVING_ENERGY_THRESHOLD = 0.3;
 
 // ============================================================================
 // Hook Implementation
@@ -222,10 +222,10 @@ export function useSmartResize() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const faceDetectionModelRef = useRef<unknown>(null);
+  const _canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const _faceDetectionModelRef = useRef<unknown>(null);
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Face Detection (Simplified - uses Viola-Jones-inspired approach)
@@ -242,6 +242,9 @@ export function useSmartResize() {
         try {
           setIsProcessing(true);
           setProgress(10);
+
+          // Allow UI to update
+          await new Promise((resolve) => setTimeout(resolve, 0));
 
           // Create canvas for processing
           const canvas = document.createElement('canvas');
@@ -266,94 +269,101 @@ export function useSmartResize() {
           // In production, you'd integrate with a real ML model like MediaPipe or face-api.js
           const faces: DetectedFace[] = [];
 
-      // Convert to grayscale and detect skin tones
-      const skinPixels: Point[] = [];
+          // Convert to grayscale and detect skin tones
+          const skinPixels: Point[] = [];
 
-      for (let y = 0; y < imageData.height; y += 2) {
-        for (let x = 0; x < imageData.width; x += 2) {
-          const i = (y * imageData.width + x) * 4;
-          const r = imageData.data[i];
-          const g = imageData.data[i + 1];
-          const b = imageData.data[i + 2];
+          for (let y = 0; y < imageData.height; y += 2) {
+            for (let x = 0; x < imageData.width; x += 2) {
+              const i = (y * imageData.width + x) * 4;
+              const r = imageData.data[i];
+              const g = imageData.data[i + 1];
+              const b = imageData.data[i + 2];
 
-          if (r !== undefined && g !== undefined && b !== undefined) {
-            // Simplified skin tone detection
-            if (r > 95 && g > 40 && b > 20 &&
-                Math.max(r, g, b) - Math.min(r, g, b) > 15 &&
-                Math.abs(r - g) > 15 && r > g && r > b) {
-              skinPixels.push({ x, y });
+              if (r !== undefined && g !== undefined && b !== undefined) {
+                // Simplified skin tone detection
+                if (
+                  r > 95 &&
+                  g > 40 &&
+                  b > 20 &&
+                  Math.max(r, g, b) - Math.min(r, g, b) > 15 &&
+                  Math.abs(r - g) > 15 &&
+                  r > g &&
+                  r > b
+                ) {
+                  skinPixels.push({ x, y });
+                }
+              }
             }
           }
-        }
-      }
 
-      setProgress(60);
+          setProgress(60);
 
-      // Cluster skin pixels to find potential face regions
-      if (skinPixels.length > 100) {
-        // Simple clustering - group nearby skin pixels
-        const clusters: Point[][] = [];
-        const visited = new Set<string>();
+          // Cluster skin pixels to find potential face regions
+          if (skinPixels.length > 100) {
+            // Simple clustering - group nearby skin pixels
+            const clusters: Point[][] = [];
+            const visited = new Set<string>();
 
-        skinPixels.forEach(pixel => {
-          const key = `${pixel.x},${pixel.y}`;
-          if (visited.has(key)) return;
+            skinPixels.forEach((pixel) => {
+              const key = `${pixel.x},${pixel.y}`;
+              if (visited.has(key)) return;
 
-          const cluster: Point[] = [pixel];
-          visited.add(key);
+              const cluster: Point[] = [pixel];
+              visited.add(key);
 
-          // Find nearby pixels (simplified BFS)
-          const queue = [pixel];
-          while (queue.length > 0) {
-            const current = queue.shift();
-            if (!current) continue;
+              // Find nearby pixels (simplified BFS)
+              const queue = [pixel];
+              while (queue.length > 0) {
+                const current = queue.shift();
+                if (!current) continue;
 
-            skinPixels.forEach(other => {
-              const otherKey = `${other.x},${other.y}`;
-              if (!visited.has(otherKey)) {
-                const dist = Math.sqrt(
-                  (current.x - other.x) ** 2 + (current.y - other.y) ** 2
-                );
-                if (dist < 30) {
-                  cluster.push(other);
-                  visited.add(otherKey);
-                  queue.push(other);
-                }
+                skinPixels.forEach((other) => {
+                  const otherKey = `${other.x},${other.y}`;
+                  if (!visited.has(otherKey)) {
+                    const dist = Math.sqrt((current.x - other.x) ** 2 + (current.y - other.y) ** 2);
+                    if (dist < 30) {
+                      cluster.push(other);
+                      visited.add(otherKey);
+                      queue.push(other);
+                    }
+                  }
+                });
+              }
+
+              if (cluster.length > 50) {
+                clusters.push(cluster);
+              }
+            });
+
+            // Convert clusters to bounding boxes
+            clusters.forEach((cluster) => {
+              const xs = cluster.map((p) => p.x);
+              const ys = cluster.map((p) => p.y);
+              const minX = Math.min(...xs);
+              const maxX = Math.max(...xs);
+              const minY = Math.min(...ys);
+              const maxY = Math.max(...ys);
+
+              const width = maxX - minX;
+              const height = maxY - minY;
+
+              // Face aspect ratio heuristic
+              if (
+                width > FACE_DETECTION_MIN_SIZE &&
+                height > FACE_DETECTION_MIN_SIZE &&
+                height / width > 0.8 &&
+                height / width < 2
+              ) {
+                faces.push({
+                  x: minX,
+                  y: minY,
+                  width,
+                  height,
+                  confidence: Math.min(0.9, cluster.length / 1000),
+                });
               }
             });
           }
-
-          if (cluster.length > 50) {
-            clusters.push(cluster);
-          }
-        });
-
-        // Convert clusters to bounding boxes
-        clusters.forEach(cluster => {
-          const xs = cluster.map(p => p.x);
-          const ys = cluster.map(p => p.y);
-          const minX = Math.min(...xs);
-          const maxX = Math.max(...xs);
-          const minY = Math.min(...ys);
-          const maxY = Math.max(...ys);
-
-          const width = maxX - minX;
-          const height = maxY - minY;
-
-          // Face aspect ratio heuristic
-          if (width > FACE_DETECTION_MIN_SIZE &&
-              height > FACE_DETECTION_MIN_SIZE &&
-              height / width > 0.8 && height / width < 2) {
-            faces.push({
-              x: minX,
-              y: minY,
-              width,
-              height,
-              confidence: Math.min(0.9, cluster.length / 1000),
-            });
-          }
-        });
-      }
 
           setProgress(100);
           setIsProcessing(false);
@@ -368,7 +378,7 @@ export function useSmartResize() {
             confidence: result.confidence,
           });
 
-          return result;
+          return Promise.resolve(result);
         } catch (err) {
           const enhancedContext = enhanceErrorContext(errorContext, {
             error: err instanceof Error ? err.message : String(err),
@@ -397,64 +407,67 @@ export function useSmartResize() {
   // Smart Crop (Content-Aware)
   // ============================================================================
 
-  const calculateSmartCrop = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    targetRatio: number,
-    options: Partial<SmartCropOptions> = {}
-  ): CropRegion => {
-    const opts: SmartCropOptions = {
-      targetRatio,
-      detectFaces: true,
-      detectObjects: false,
-      preserveImportantAreas: true,
-      padding: 0.1,
-      ...options,
-    };
-
-    const sourceRatio = source.width / source.height;
-
-    // If source and target ratios are close, minimal crop needed
-    if (Math.abs(sourceRatio - targetRatio) < 0.01) {
-      return {
-        x: 0,
-        y: 0,
-        width: source.width,
-        height: source.height,
+  const calculateSmartCrop = useCallback(
+    (
+      source: HTMLImageElement | HTMLCanvasElement,
+      targetRatio: number,
+      options: Partial<SmartCropOptions> = {}
+    ): CropRegion => {
+      const opts: SmartCropOptions = {
+        targetRatio,
+        detectFaces: true,
+        detectObjects: false,
+        preserveImportantAreas: true,
+        padding: 0.1,
+        ...options,
       };
-    }
 
-    let cropRegion: CropRegion;
+      const sourceRatio = source.width / source.height;
 
-    if (targetRatio > sourceRatio) {
-      // Target is wider - crop top/bottom
-      const cropHeight = source.width / targetRatio;
-      const yOffset = opts.focusPoint
-        ? Math.max(0, Math.min(source.height - cropHeight, opts.focusPoint.y - cropHeight / 2))
-        : (source.height - cropHeight) / 2;
+      // If source and target ratios are close, minimal crop needed
+      if (Math.abs(sourceRatio - targetRatio) < 0.01) {
+        return {
+          x: 0,
+          y: 0,
+          width: source.width,
+          height: source.height,
+        };
+      }
 
-      cropRegion = {
-        x: 0,
-        y: yOffset,
-        width: source.width,
-        height: cropHeight,
-      };
-    } else {
-      // Target is taller - crop left/right
-      const cropWidth = source.height * targetRatio;
-      const xOffset = opts.focusPoint
-        ? Math.max(0, Math.min(source.width - cropWidth, opts.focusPoint.x - cropWidth / 2))
-        : (source.width - cropWidth) / 2;
+      let cropRegion: CropRegion;
 
-      cropRegion = {
-        x: xOffset,
-        y: 0,
-        width: cropWidth,
-        height: source.height,
-      };
-    }
+      if (targetRatio > sourceRatio) {
+        // Target is wider - crop top/bottom
+        const cropHeight = source.width / targetRatio;
+        const yOffset = opts.focusPoint
+          ? Math.max(0, Math.min(source.height - cropHeight, opts.focusPoint.y - cropHeight / 2))
+          : (source.height - cropHeight) / 2;
 
-    return cropRegion;
-  }, []);
+        cropRegion = {
+          x: 0,
+          y: yOffset,
+          width: source.width,
+          height: cropHeight,
+        };
+      } else {
+        // Target is taller - crop left/right
+        const cropWidth = source.height * targetRatio;
+        const xOffset = opts.focusPoint
+          ? Math.max(0, Math.min(source.width - cropWidth, opts.focusPoint.x - cropWidth / 2))
+          : (source.width - cropWidth) / 2;
+
+        cropRegion = {
+          x: xOffset,
+          y: 0,
+          width: cropWidth,
+          height: source.height,
+        };
+      }
+
+      return cropRegion;
+    },
+    []
+  );
 
   const smartCrop = useCallback(
     async (
@@ -504,35 +517,35 @@ export function useSmartResize() {
             }
           }
 
-      // Calculate crop region
-      const cropRegion = calculateSmartCrop(source, targetRatio, {
-        ...options,
-        focusPoint,
-      });
+          // Calculate crop region
+          const cropRegion = calculateSmartCrop(source, targetRatio, {
+            ...options,
+            focusPoint,
+          });
 
-      setProgress(75);
+          setProgress(75);
 
-      // Apply crop
-      const canvas = document.createElement('canvas');
-      canvas.width = cropRegion.width;
-      canvas.height = cropRegion.height;
-      const ctx = canvas.getContext('2d');
+          // Apply crop
+          const canvas = document.createElement('canvas');
+          canvas.width = cropRegion.width;
+          canvas.height = cropRegion.height;
+          const ctx = canvas.getContext('2d');
 
-      if (!ctx) {
-        throw new Error('Failed to get 2D context');
-      }
+          if (!ctx) {
+            throw new Error('Failed to get 2D context');
+          }
 
-      ctx.drawImage(
-        source,
-        cropRegion.x,
-        cropRegion.y,
-        cropRegion.width,
-        cropRegion.height,
-        0,
-        0,
-        cropRegion.width,
-        cropRegion.height
-      );
+          ctx.drawImage(
+            source,
+            cropRegion.x,
+            cropRegion.y,
+            cropRegion.width,
+            cropRegion.height,
+            0,
+            0,
+            cropRegion.width,
+            cropRegion.height
+          );
 
           setProgress(100);
           setIsProcessing(false);
@@ -572,9 +585,7 @@ export function useSmartResize() {
   // Content-Aware Scale (Seam Carving)
   // ============================================================================
 
-  const calculateEnergyMap = useCallback((
-    imageData: ImageData
-  ): Float32Array => {
+  const calculateEnergyMap = useCallback((imageData: ImageData): Float32Array => {
     const { data, width, height } = imageData;
     const energyMap = new Float32Array(width * height);
 
@@ -584,10 +595,10 @@ export function useSmartResize() {
         const idx = y * width + x;
 
         // Get surrounding pixels
-        const left = ((y * width + x - 1) * 4);
-        const right = ((y * width + x + 1) * 4);
-        const top = (((y - 1) * width + x) * 4);
-        const bottom = (((y + 1) * width + x) * 4);
+        const left = (y * width + x - 1) * 4;
+        const right = (y * width + x + 1) * 4;
+        const top = ((y - 1) * width + x) * 4;
+        const bottom = ((y + 1) * width + x) * 4;
 
         // Calculate gradients
         const gxR = (data[right] ?? 0) - (data[left] ?? 0);
@@ -627,6 +638,9 @@ export function useSmartResize() {
           setError(null);
           setProgress(10);
 
+          // Allow UI to update
+          await new Promise((resolve) => setTimeout(resolve, 0));
+
           // For now, use standard scaling with energy map calculation
           // Full seam carving implementation would be complex and CPU-intensive
           // In production, this would use WebAssembly or GPU for performance
@@ -655,7 +669,7 @@ export function useSmartResize() {
               setProgress(30);
 
               // Calculate energy map (can be done in worker)
-              const energyMap = calculateEnergyMap(imageData);
+              const _energyMap = calculateEnergyMap(imageData);
               setProgress(60);
 
               // For now, use standard scaling as seam carving is complex
@@ -763,118 +777,131 @@ export function useSmartResize() {
   // Pan & Zoom Animation
   // ============================================================================
 
-  const createPanZoomAnimation = useCallback((
-    startCrop: CropRegion,
-    endCrop: CropRegion,
-    duration: number,
-    easing: PanZoomAnimation['easing'] = 'ease-in-out'
-  ): PanZoomAnimation => {
-    return {
-      startTime: 0,
-      duration,
-      startCrop,
-      endCrop,
-      easing,
-    };
-  }, []);
+  const createPanZoomAnimation = useCallback(
+    (
+      startCrop: CropRegion,
+      endCrop: CropRegion,
+      duration: number,
+      easing: PanZoomAnimation['easing'] = 'ease-in-out'
+    ): PanZoomAnimation => {
+      return {
+        startTime: 0,
+        duration,
+        startCrop,
+        endCrop,
+        easing,
+      };
+    },
+    []
+  );
 
-  const applyPanZoomFrame = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    animation: PanZoomAnimation,
-    currentTime: number
-  ): HTMLCanvasElement => {
-    const t = Math.min(1, Math.max(0, currentTime / animation.duration));
+  const applyPanZoomFrame = useCallback(
+    (
+      source: HTMLImageElement | HTMLCanvasElement,
+      animation: PanZoomAnimation,
+      currentTime: number
+    ): HTMLCanvasElement => {
+      const t = Math.min(1, Math.max(0, currentTime / animation.duration));
 
-    // Apply easing
-    let easedT = t;
-    switch (animation.easing) {
-      case 'ease-in':
-        easedT = t * t;
-        break;
-      case 'ease-out':
-        easedT = t * (2 - t);
-        break;
-      case 'ease-in-out':
-        easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        break;
-      case 'bounce':
-        if (t < 1 / 2.75) {
-          easedT = 7.5625 * t * t;
-        } else if (t < 2 / 2.75) {
-          const t2 = t - 1.5 / 2.75;
-          easedT = 7.5625 * t2 * t2 + 0.75;
-        } else if (t < 2.5 / 2.75) {
-          const t2 = t - 2.25 / 2.75;
-          easedT = 7.5625 * t2 * t2 + 0.9375;
-        } else {
-          const t2 = t - 2.625 / 2.75;
-          easedT = 7.5625 * t2 * t2 + 0.984375;
-        }
-        break;
-    }
+      // Apply easing
+      let easedT = t;
+      switch (animation.easing) {
+        case 'ease-in':
+          easedT = t * t;
+          break;
+        case 'ease-out':
+          easedT = t * (2 - t);
+          break;
+        case 'ease-in-out':
+          easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          break;
+        case 'bounce':
+          if (t < 1 / 2.75) {
+            easedT = 7.5625 * t * t;
+          } else if (t < 2 / 2.75) {
+            const t2 = t - 1.5 / 2.75;
+            easedT = 7.5625 * t2 * t2 + 0.75;
+          } else if (t < 2.5 / 2.75) {
+            const t2 = t - 2.25 / 2.75;
+            easedT = 7.5625 * t2 * t2 + 0.9375;
+          } else {
+            const t2 = t - 2.625 / 2.75;
+            easedT = 7.5625 * t2 * t2 + 0.984375;
+          }
+          break;
+      }
 
-    // Interpolate crop region
-    const currentCrop: CropRegion = {
-      x: animation.startCrop.x + (animation.endCrop.x - animation.startCrop.x) * easedT,
-      y: animation.startCrop.y + (animation.endCrop.y - animation.startCrop.y) * easedT,
-      width: animation.startCrop.width + (animation.endCrop.width - animation.startCrop.width) * easedT,
-      height: animation.startCrop.height + (animation.endCrop.height - animation.startCrop.height) * easedT,
-    };
+      // Interpolate crop region
+      const currentCrop: CropRegion = {
+        x: animation.startCrop.x + (animation.endCrop.x - animation.startCrop.x) * easedT,
+        y: animation.startCrop.y + (animation.endCrop.y - animation.startCrop.y) * easedT,
+        width:
+          animation.startCrop.width +
+          (animation.endCrop.width - animation.startCrop.width) * easedT,
+        height:
+          animation.startCrop.height +
+          (animation.endCrop.height - animation.startCrop.height) * easedT,
+      };
 
-    // Apply crop
-    const canvas = document.createElement('canvas');
-    canvas.width = currentCrop.width;
-    canvas.height = currentCrop.height;
-    const ctx = canvas.getContext('2d');
+      // Apply crop
+      const canvas = document.createElement('canvas');
+      canvas.width = currentCrop.width;
+      canvas.height = currentCrop.height;
+      const ctx = canvas.getContext('2d');
 
-    if (ctx) {
-      ctx.drawImage(
-        source,
-        currentCrop.x,
-        currentCrop.y,
-        currentCrop.width,
-        currentCrop.height,
-        0,
-        0,
-        currentCrop.width,
-        currentCrop.height
-      );
-    }
+      if (ctx) {
+        ctx.drawImage(
+          source,
+          currentCrop.x,
+          currentCrop.y,
+          currentCrop.width,
+          currentCrop.height,
+          0,
+          0,
+          currentCrop.width,
+          currentCrop.height
+        );
+      }
 
-    return canvas;
-  }, []);
+      return canvas;
+    },
+    []
+  );
 
   // ============================================================================
   // Quick Resize Helpers
   // ============================================================================
 
-  const resizeToPreset = useCallback(async (
-    source: HTMLImageElement | HTMLCanvasElement,
-    presetId: string,
-    smartCropEnabled = true
-  ): Promise<HTMLCanvasElement> => {
-    const preset = ASPECT_RATIO_PRESETS.find(p => p.id === presetId);
+  const resizeToPreset = useCallback(
+    async (
+      source: HTMLImageElement | HTMLCanvasElement,
+      presetId: string,
+      smartCropEnabled = true
+    ): Promise<HTMLCanvasElement> => {
+      const preset = ASPECT_RATIO_PRESETS.find((p) => p.id === presetId);
 
-    if (!preset) {
-      throw new Error(`Unknown preset: ${presetId}`);
-    }
+      if (!preset) {
+        throw new Error(`Unknown preset: ${presetId}`);
+      }
 
-    if (smartCropEnabled) {
-      return await smartCrop(source, preset.ratio);
-    }
+      if (smartCropEnabled) {
+        return await smartCrop(source, preset.ratio);
+      }
 
-    // Simple resize
-    const canvas = document.createElement('canvas');
-    canvas.width = preset.width;
-    canvas.height = preset.height;
-    const ctx = canvas.getContext('2d');
+      // Simple resize
+      const canvas = document.createElement('canvas');
+      canvas.width = preset.width;
+      canvas.height = preset.height;
+      const ctx = canvas.getContext('2d');
 
-    if (ctx) {
-      ctx.drawImage(source, 0, 0, preset.width, preset.height);
-    }
+      if (ctx) {
+        ctx.drawImage(source, 0, 0, preset.width, preset.height);
+      }
 
-    return canvas;
-  }, [smartCrop]);
+      return canvas;
+    },
+    [smartCrop]
+  );
 
   // Helper function for error context enhancement
   function enhanceErrorContext(

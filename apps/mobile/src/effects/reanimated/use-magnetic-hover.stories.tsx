@@ -6,7 +6,7 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { GestureDetector } from 'react-native-gesture-handler'
-import Animated, { useAnimatedStyle } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
 import { useMagneticHover } from './use-magnetic-hover'
 
 const styles = StyleSheet.create({
@@ -70,4 +70,3 @@ export default {
 }
 
 export const Default = () => <MagneticHoverDemo />
-

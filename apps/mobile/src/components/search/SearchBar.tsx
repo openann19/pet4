@@ -5,7 +5,7 @@
  * and Reanimated micro-interactions.
  *
  * @example
- * <SearchBar 
+ * <SearchBar
  *   value={searchQuery}
  *   onChangeText={setSearchQuery}
  *   placeholder="Search pets..."
@@ -14,7 +14,7 @@
  *   onFiltersPress={handleFiltersPress}
  * />
  */
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useCallback, useRef, useEffect, useMemo } from 'react'
 import {
   View,
   TextInput,
@@ -26,14 +26,7 @@ import {
   type TextInputFocusEventData,
   type TextInputSubmitEditingEventData,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  interpolateColor,
-  runOnJS,
-} from 'react-native-reanimated'
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolateColor } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 
 import { colors } from '@/theme/colors'
@@ -70,9 +63,8 @@ export function SearchBar({
   disabled = false,
   ...textInputProps
 }: SearchBarProps): React.JSX.Element {
-  const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<TextInput>(null)
-  
+
   // Animation values
   const focusScale = useSharedValue(1)
   const borderProgress = useSharedValue(0)
@@ -80,45 +72,43 @@ export function SearchBar({
   const clearButtonScale = useSharedValue(0)
 
   // Focus/blur animation spring config
-  const springConfig = {
+  const springConfig = useMemo(() => ({
     damping: 15,
     stiffness: 300,
     mass: 0.8,
-  }
+  }), []);
 
   // Handle focus with haptic feedback
   const handleFocus = useCallback((e: NativeSyntheticEvent<TextInputFocusEventData>) => {
     if (disabled) return
-    
+
     logger.debug('SearchBar focused')
-    setIsFocused(true)
-    
+
     // Animate focus state
     focusScale.value = withSpring(1.02, springConfig)
     borderProgress.value = withTiming(1, { duration: 200 })
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    
+
     onFocus?.(e)
   }, [disabled, focusScale, borderProgress, onFocus, springConfig])
 
   // Handle blur
   const handleBlur = useCallback((e: NativeSyntheticEvent<TextInputFocusEventData>) => {
     logger.debug('SearchBar blurred')
-    setIsFocused(false)
-    
+
     // Animate blur state
     focusScale.value = withSpring(1, springConfig)
     borderProgress.value = withTiming(0, { duration: 300 })
-    
+
     onBlur?.(e)
   }, [focusScale, borderProgress, onBlur, springConfig])
 
   // Handle text change with clear button animation
   const handleChangeText = useCallback((text: string) => {
     onChangeText(text)
-    
+
     // Animate clear button visibility
     const shouldShow = text.length > 0 ? 1 : 0
     clearButtonScale.value = withSpring(shouldShow, {
@@ -132,7 +122,7 @@ export function SearchBar({
     logger.debug('SearchBar cleared')
     onChangeText('')
     inputRef.current?.focus()
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
   }, [onChangeText])
@@ -140,19 +130,19 @@ export function SearchBar({
   // Handle filter button press
   const handleFiltersPress = useCallback(() => {
     if (!onFiltersPress) return
-    
+
     logger.debug('Filter button pressed', { activeFilterCount })
-    
+
     // Animate button press
     filterButtonScale.value = withSpring(0.95, { damping: 10, stiffness: 400 })
-    
+
     setTimeout(() => {
       filterButtonScale.value = withSpring(1, springConfig)
     }, 100)
-    
+
     // Haptic feedback
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     onFiltersPress()
   }, [onFiltersPress, activeFilterCount, filterButtonScale, springConfig])
 
@@ -160,10 +150,10 @@ export function SearchBar({
   const handleSubmitEditing = useCallback((e: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
     logger.debug('SearchBar submitted', { query: value })
     inputRef.current?.blur()
-    
+
     // Haptic feedback for search submission
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     onSubmitEditing?.(e)
   }, [value, onSubmitEditing])
 

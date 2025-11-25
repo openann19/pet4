@@ -7,7 +7,7 @@
  * Location: apps/mobile/src/effects/chat/core/reanimated-skia.ts
  */
 
-import type { SharedValue } from 'react-native-reanimated'
+import type { SharedValue } from '@petspark/motion'
 
 /**
  * Hook to create a derived value from SharedValue<number> for Skia uniforms

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { View, Text, StyleSheet, ScrollView, type ViewStyle } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
 import { PremiumButton } from '../PremiumButton'

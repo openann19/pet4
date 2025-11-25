@@ -3,24 +3,30 @@ import { Home, MessageCircle, Search, Bell, Settings, User, Heart, Camera, MapPi
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { UserAvatar } from '@/components/ui/Avatar';
+import { memo } from 'react';
 
-const sidebarNavigation = [
+// Extract navigation arrays as constants to prevent recreation
+const SIDEBAR_NAVIGATION = [
   { name: 'Feed', href: '/home', icon: Home },
   { name: 'Discover', href: '/discover', icon: Search },
   { name: 'Messages', href: '/chat', icon: MessageCircle },
   { name: 'Notifications', href: '/notifications', icon: Bell },
-];
+] as const;
 
-const secondaryNavigation = [
+const SECONDARY_NAVIGATION = [
   { name: 'Profile', href: '/profile', icon: User },
   { name: 'My Pets', href: '/pets', icon: Heart },
   { name: 'Photos', href: '/photos', icon: Camera },
   { name: 'Locations', href: '/locations', icon: MapPin },
   { name: 'Settings', href: '/settings', icon: Settings },
-];
+] as const;
 
-export function Sidebar() {
+export const Sidebar = memo(function Sidebar() {
   const { user } = useAuth();
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-border bg-background px-6">
@@ -36,13 +42,13 @@ export function Sidebar() {
 
       {/* User Profile */}
       <div className="flex items-center gap-x-4 rounded-lg p-2">
-        <UserAvatar user={user!} size="lg" />
+        <UserAvatar user={user} size="lg" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold leading-6 text-foreground">
-            {user?.displayName}
+            {user.displayName}
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
-            @{user?.username}
+            @{user.username}
           </p>
         </div>
       </div>
@@ -52,7 +58,7 @@ export function Sidebar() {
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
-              {sidebarNavigation.map((item) => {
+              {SIDEBAR_NAVIGATION.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.name}>
@@ -78,7 +84,7 @@ export function Sidebar() {
 
           <li className="mt-auto">
             <ul role="list" className="-mx-2 space-y-1">
-              {secondaryNavigation.map((item) => {
+              {SECONDARY_NAVIGATION.map((item) => {
                 const Icon = item.icon;
                 return (
                   <li key={item.name}>
@@ -105,4 +111,4 @@ export function Sidebar() {
       </nav>
     </div>
   );
-}
+});

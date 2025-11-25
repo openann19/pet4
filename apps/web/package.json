@@ -48,6 +48,7 @@
     "@hookform/resolvers": "^4.1.3",
     "@petspark/chat-core": "workspace:*",
     "@petspark/config": "workspace:*",
+    "@petspark/core": "workspace:*",
     "@petspark/motion": "workspace:*",
     "@petspark/shared": "workspace:*",
     "@phosphor-icons/react": "^2.1.7",

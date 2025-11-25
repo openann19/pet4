@@ -8,12 +8,7 @@ import {
   TouchableOpacity,
   type ViewStyle,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 import { PremiumButton } from '../PremiumButton'

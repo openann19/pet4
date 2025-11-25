@@ -1,10 +1,10 @@
-import { API_CONFIG } from '@config/api';
+import { API_CONFIG } from '@config/api'
 
 type ApiResponse<T = unknown> = {
-  data: T;
-  message?: string;
-  success: boolean;
-};
+  data: T
+  message?: string
+  success: boolean
+}
 
 class _ApiError extends Error {
   constructor(
@@ -12,36 +12,33 @@ class _ApiError extends Error {
     public status: number,
     public data?: unknown
   ) {
-    super(message);
-    this.name = 'ApiError';
+    super(message)
+    this.name = 'ApiError'
   }
 }
 
 class ApiClient {
-  private baseURL: string;
-  private defaultHeaders: Record<string, string>;
+  private baseURL: string
+  private defaultHeaders: Record<string, string>
 
   constructor() {
-    this.baseURL = API_CONFIG.baseUrl;
+    this.baseURL = API_CONFIG.baseUrl
     this.defaultHeaders = {
       ...API_CONFIG.defaultHeaders,
-    };
+    }
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`;
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    const url = `${this.baseURL}${endpoint}`
     const headers: Record<string, string> = {
       ...this.defaultHeaders,
-      ...options.headers,
-    };
+      ...(options.headers as Record<string, string>),
+    }
 
     // Add auth token if available
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('petspark_auth_token')
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`
     }
 
     try {
@@ -49,82 +46,88 @@ class ApiClient {
         ...options,
         headers,
         signal: AbortSignal.timeout(API_CONFIG.timeout),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
         throw new _ApiError(
           data.message || `HTTP error! status: ${response.status}`,
           response.status,
           data
-        );
+        )
       }
 
-      return data;
+      return data
     } catch (error) {
       if (error instanceof _ApiError) {
-        throw error;
+        throw error
       }
-      
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          throw new _ApiError('Request timeout', 408);
+          throw new _ApiError('Request timeout', 408)
         }
-        throw new _ApiError(error.message, 500);
+        throw new _ApiError(error.message, 500)
       }
-      
-      throw new _ApiError('Unknown error occurred', 500);
+
+      throw new _ApiError('Unknown error occurred', 500)
     }
   }
 
   async get<T>(endpoint: string, params?: Record<string, unknown>): Promise<ApiResponse<T>> {
-    const url = params ? `${endpoint}?${new URLSearchParams(params as Record<string, string>)}` : endpoint;
-    return this.request<T>(url);
+    const url = params
+      ? `${endpoint}?${new URLSearchParams(params as Record<string, string>)}`
+      : endpoint
+    return this.request<T>(url)
   }
 
   async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : null,
-    });
+    })
   }
 
   async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : null,
-    });
+    })
   }
 
   async patch<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : null,
-    });
+    })
   }
 
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'DELETE',
-    });
+    })
   }
 
-  async upload<T>(endpoint: string, file: File, additionalData?: Record<string, unknown>): Promise<ApiResponse<T>> {
-    const formData = new FormData();
-    formData.append('file', file);
-    
+  async upload<T>(
+    endpoint: string,
+    file: File,
+    additionalData?: Record<string, unknown>
+  ): Promise<ApiResponse<T>> {
+    const formData = new FormData()
+    formData.append('file', file)
+
     if (additionalData) {
       Object.entries(additionalData).forEach(([key, value]) => {
-        formData.append(key, String(value));
-      });
+        formData.append(key, String(value))
+      })
     }
 
-    const token = localStorage.getItem('auth_token');
-    const headers: Record<string, string> = {};
-    
+    const token = localStorage.getItem('petspark_auth_token')
+    const headers: Record<string, string> = {}
+
     if (token) {
-      headers.Authorization = `Bearer ${token}`;
+      headers.Authorization = `Bearer ${token}`
     }
 
     return this.request<T>(endpoint, {
@@ -134,15 +137,19 @@ class ApiClient {
         ...headers,
         // Don't set Content-Type for FormData - browser will set it with boundary
       },
-    });
+    })
   }
 }
 
-export const apiClient = new ApiClient();
+export const apiClient = new ApiClient()
 export class ApiError extends Error {
-  constructor(message: string, public status: number, public data?: unknown) {
-    super(message);
-    this.name = 'ApiError';
+  constructor(
+    message: string,
+    public status: number,
+    public data?: unknown
+  ) {
+    super(message)
+    this.name = 'ApiError'
   }
 }
 
@@ -195,4 +202,4 @@ export const endpoints = {
     list: API_CONFIG.endpoints.notifications.list,
     markAsRead: API_CONFIG.endpoints.notifications.markAsRead,
   },
-} as const;
+} as const

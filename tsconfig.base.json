@@ -5,7 +5,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
-    "baseUrl": ".",
     "paths": {
       "@mobile/*": ["apps/mobile/src/*"],
       "@mobile": ["apps/mobile/src/index.ts"],

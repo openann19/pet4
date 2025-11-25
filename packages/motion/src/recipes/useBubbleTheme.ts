@@ -1,7 +1,7 @@
 /**
  * useBubbleTheme
  * Shared animation hook for bubble color theming
- * 
+ *
  * @packageDocumentation
  * @category Animation Hooks
  * @subcategory Chat Effects
@@ -11,7 +11,7 @@ import { useCallback, useEffect } from 'react'
 import { useSharedValue, useAnimatedStyle, withTiming, interpolate, Extrapolation, type SharedValue } from 'react-native-reanimated'
 import { timingConfigs } from '../shared-transitions'
 import { useReducedMotionSV } from '../reduced-motion'
-import { isTruthy, isDefined } from '../utils/guards';
+import { isTruthy } from '../utils/guards';
 
 export type SenderType = 'user' | 'bot' | 'system'
 export type MessageType = 'ai-answer' | 'error' | 'system-alert' | 'default'
@@ -158,4 +158,3 @@ export function useBubbleTheme(
     updateTheme
   }
 }
-

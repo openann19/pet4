@@ -1,5 +1,4 @@
-import { Easing } from './index'
-import type { PetSparkEasingFunction } from './index'
+import { Easing, type PetSparkEasingFunction } from './easing'
 
 /**
  * Production Motion Tokens

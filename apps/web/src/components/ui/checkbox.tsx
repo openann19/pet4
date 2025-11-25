@@ -207,7 +207,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
       'aria-describedby': cn(
         description && descriptionId,
         error && errorMessage && errorId
-      ).trim() || undefined,
+      ).trim() ?? undefined,
       'aria-invalid': error,
       'aria-checked': indeterminate ? ('mixed' as const) : isChecked
     }
@@ -313,7 +313,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   className
 }) => {
   const [internalValue, setInternalValue] = React.useState(defaultValue)
-  const currentValue = value !== undefined ? value : internalValue
+  const currentValue = value ?? internalValue
 
   const handleValueChange = useCallback((itemValue: string, checked: boolean) => {
     const newValue = checked
@@ -338,12 +338,12 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
     >
       {React.Children.map(children, (child, index) => {
         if (React.isValidElement(child) && child.type === Checkbox) {
-          const itemValue = child.props.value || String(index)
+          const itemValue = child.props.value ?? String(index)
           const isChecked = currentValue.includes(itemValue)
 
           return React.cloneElement(child as React.ReactElement<CheckboxProps>, {
             checked: isChecked,
-            disabled: disabled || child.props.disabled,
+            disabled: disabled ?? child.props.disabled,
             onCheckedChange: (checked: boolean) => {
               child.props.onCheckedChange?.(checked)
               handleValueChange(itemValue, checked)

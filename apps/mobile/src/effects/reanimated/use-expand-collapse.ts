@@ -1,7 +1,6 @@
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion'
 import { useEffect, useRef } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 export interface UseExpandCollapseOptions {
   isExpanded: boolean

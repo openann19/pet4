@@ -12,18 +12,7 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withDelay,
-  withSequence,
-  Easing,
-  interpolate,
-  Extrapolation,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay, withSequence, Easing, interpolate, Extrapolation, type SharedValue } from '@petspark/motion'
 import { triggerHaptic } from '../effects/chat/core/haptic-manager'
 import { useReducedMotionSV, getReducedMotionDuration } from '../effects/chat/core/reduced-motion'
 import { springConfigs, timingConfigs } from '../effects/reanimated/transitions'

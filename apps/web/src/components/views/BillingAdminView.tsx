@@ -9,6 +9,7 @@
 
 import { SubscriptionAdminPanel } from '@/components/payments/SubscriptionAdminPanel';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
+import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { getTypographyClasses } from '@/lib/typography';
 
 export function BillingAdminView(): React.JSX.Element {

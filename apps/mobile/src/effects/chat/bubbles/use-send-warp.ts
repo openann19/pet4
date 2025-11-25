@@ -10,20 +10,13 @@
  */
 
 import { useCallback, useEffect, useRef } from 'react'
-import {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Easing, useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
 import { createAberrationShader } from '../shaders/aberration'
 import { createBloomShader, getBloomImageFilter } from '../shaders/bloom'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('send-warp')
 

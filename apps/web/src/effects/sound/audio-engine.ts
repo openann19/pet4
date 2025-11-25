@@ -85,11 +85,12 @@ class AudioEngineImpl {
   /**
    * Pre-warm audio context pool for better performance
    */
-  private async warmupPool(): Promise<void> {
+  private warmupPool(): Promise<void> {
     for (let i = 0; i < this.maxPoolSize; i++) {
       const context = this.createPooledContext();
       this.contextPool.push(context);
     }
+    return Promise.resolve();
   }
 
   /**
@@ -191,7 +192,7 @@ class AudioEngineImpl {
   /**
    * Play a sound preset
    */
-  private async playPreset(
+  private playPreset(
     preset: SoundPreset,
     options: {
       volume?: number;
@@ -199,134 +200,140 @@ class AudioEngineImpl {
     } = {}
   ): Promise<void> {
     if (!this.audioContext || !this.compressorNode) {
-      return;
+      return Promise.resolve();
     }
 
-    const { volume = 1.0, spatial } = options;
-    const pooledContext = this.getPooledContext();
+    return Promise.resolve()
+      .then(() => {
+        const { volume = 1.0, spatial } = options;
+        const pooledContext = this.getPooledContext();
+        const context = pooledContext?.context ?? this.audioContext;
 
-    try {
-      const context = pooledContext?.context ?? this.audioContext;
-
-      // Create oscillator or use buffer
-      let source: AudioBufferSourceNode | OscillatorNode;
-
-      if (preset.type === 'oscillator') {
-        const oscillator = context.createOscillator();
-        oscillator.type = preset.waveform ?? 'sine';
-        oscillator.frequency.setValueAtTime(preset.frequency ?? 440, context.currentTime);
-
-        // Apply frequency envelope
-        if (preset.frequencyEnvelope) {
-          const env = preset.frequencyEnvelope;
-          oscillator.frequency.exponentialRampToValueAtTime(
-            env.target ?? preset.frequency,
-            context.currentTime + (env.duration ?? 0.1)
-          );
+        if (!context || !this.compressorNode) {
+          return;
         }
 
-        source = oscillator;
-      } else {
-        // Use audio buffer
-        if (!preset.buffer) {
-          throw new Error('Buffer preset requires audio buffer');
+        // Create oscillator or use buffer
+        let source: AudioBufferSourceNode | OscillatorNode;
+
+        if (preset.type === 'oscillator') {
+          const oscillator = context.createOscillator();
+          oscillator.type = preset.waveform ?? 'sine';
+          oscillator.frequency.setValueAtTime(preset.frequency ?? 440, context.currentTime);
+
+          // Apply frequency envelope
+          if (preset.frequencyEnvelope) {
+            const env = preset.frequencyEnvelope;
+            oscillator.frequency.exponentialRampToValueAtTime(
+              env.target ?? preset.frequency,
+              context.currentTime + (env.duration ?? 0.1)
+            );
+          }
+
+          source = oscillator;
+        } else {
+          // Use audio buffer
+          if (!preset.buffer) {
+            throw new Error('Buffer preset requires audio buffer');
+          }
+          const bufferSource = context.createBufferSource();
+          bufferSource.buffer = preset.buffer;
+          source = bufferSource;
         }
-        const bufferSource = context.createBufferSource();
-        bufferSource.buffer = preset.buffer;
-        source = bufferSource;
-      }
 
-      // Create gain node for volume control
-      const gainNode = context.createGain();
-      gainNode.gain.setValueAtTime(0, context.currentTime);
+        // Create gain node for volume control
+        const gainNode = context.createGain();
+        gainNode.gain.setValueAtTime(0, context.currentTime);
 
-      // Apply volume envelope
-      if (preset.volumeEnvelope) {
-        const env = preset.volumeEnvelope;
-        const now = context.currentTime;
+        // Apply volume envelope
+        if (preset.volumeEnvelope) {
+          const env = preset.volumeEnvelope;
+          const now = context.currentTime;
 
-        // Attack
-        gainNode.gain.linearRampToValueAtTime(
-          (env.attack?.peak ?? volume) * this.masterVolume,
-          now + (env.attack?.duration ?? 0.01)
-        );
-
-        // Sustain
-        if (isTruthy(env.sustain?.duration)) {
+          // Attack
           gainNode.gain.linearRampToValueAtTime(
-            (env.sustain?.level ?? volume * 0.8) * this.masterVolume,
-            now + env.sustain.duration
+            (env.attack?.peak ?? volume) * this.masterVolume,
+            now + (env.attack?.duration ?? 0.01)
+          );
+
+          // Sustain
+          if (isTruthy(env.sustain?.duration)) {
+            gainNode.gain.linearRampToValueAtTime(
+              (env.sustain?.level ?? volume * 0.8) * this.masterVolume,
+              now + env.sustain.duration
+            );
+          }
+
+          // Release
+          gainNode.gain.exponentialRampToValueAtTime(0.0001, now + (preset.duration ?? 0.2));
+        } else {
+          // Simple fade in/out
+          gainNode.gain.linearRampToValueAtTime(
+            volume * this.masterVolume,
+            context.currentTime + 0.01
+          );
+          gainNode.gain.exponentialRampToValueAtTime(
+            0.0001,
+            context.currentTime + (preset.duration ?? 0.2)
           );
         }
 
-        // Release
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + (preset.duration ?? 0.2));
-      } else {
-        // Simple fade in/out
-        gainNode.gain.linearRampToValueAtTime(
-          volume * this.masterVolume,
-          context.currentTime + 0.01
-        );
-        gainNode.gain.exponentialRampToValueAtTime(
-          0.0001,
-          context.currentTime + (preset.duration || 0.2)
-        );
-      }
+        // Apply spatial audio if configured
+        if (spatial) {
+          const panner = context.createPanner();
+          panner.panningModel = spatial.model ?? 'HRTF';
+          panner.distanceModel = spatial.distanceModel ?? 'inverse';
+          panner.refDistance = spatial.refDistance ?? 1;
+          panner.maxDistance = spatial.maxDistance ?? 10000;
+          panner.rolloffFactor = spatial.rolloffFactor ?? 1;
 
-      // Apply spatial audio if configured
-      if (spatial) {
-        const panner = context.createPanner();
-        panner.panningModel = spatial.model ?? 'HRTF';
-        panner.distanceModel = spatial.distanceModel ?? 'inverse';
-        panner.refDistance = spatial.refDistance ?? 1;
-        panner.maxDistance = spatial.maxDistance ?? 10000;
-        panner.rolloffFactor = spatial.rolloffFactor ?? 1;
+          if (spatial.position) {
+            panner.positionX.value = spatial.position.x;
+            panner.positionY.value = spatial.position.y;
+            panner.positionZ.value = spatial.position.z;
+          }
 
-        if (spatial.position) {
-          panner.positionX.value = spatial.position.x;
-          panner.positionY.value = spatial.position.y;
-          panner.positionZ.value = spatial.position.z;
+          source.connect(gainNode);
+          gainNode.connect(panner);
+          panner.connect(pooledContext?.gainNode ?? this.compressorNode);
+        } else {
+          source.connect(gainNode);
+          gainNode.connect(pooledContext?.gainNode ?? this.compressorNode);
         }
 
-        source.connect(gainNode);
-        gainNode.connect(panner);
-        panner.connect(pooledContext?.gainNode ?? this.compressorNode);
-      } else {
-        source.connect(gainNode);
-        gainNode.connect(pooledContext?.gainNode ?? this.compressorNode);
-      }
+        // Track active sounds
+        if (source instanceof AudioBufferSourceNode) {
+          this.activeSounds.add(source);
+          source.onended = () => {
+            this.activeSounds.delete(source);
+            if (pooledContext) {
+              this.releaseContext(pooledContext);
+            }
+          };
+        } else {
+          source.onended = () => {
+            if (pooledContext) {
+              this.releaseContext(pooledContext);
+            }
+          };
+        }
 
-      // Track active sounds
-      if (source instanceof AudioBufferSourceNode) {
-        this.activeSounds.add(source);
-        source.onended = () => {
-          this.activeSounds.delete(source);
-          if (pooledContext) {
-            this.releaseContext(pooledContext);
-          }
-        };
-      } else {
-        source.onended = () => {
-          if (pooledContext) {
-            this.releaseContext(pooledContext);
-          }
-        };
-      }
-
-      // Start playback
-      if (source instanceof OscillatorNode) {
-        source.start(context.currentTime);
-        source.stop(context.currentTime + (preset.duration ?? 0.2));
-      } else {
-        source.start(0);
-      }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to play preset', err);
-      if (pooledContext) {
-        this.releaseContext(pooledContext);
-      }
-    }
+        // Start playback
+        if (source instanceof OscillatorNode) {
+          source.start(context.currentTime);
+          source.stop(context.currentTime + (preset.duration ?? 0.2));
+        } else {
+          source.start(0);
+        }
+      })
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to play preset', err);
+        const pooledContext = this.getPooledContext();
+        if (pooledContext) {
+          this.releaseContext(pooledContext);
+        }
+      });
   }
 
   /**
@@ -494,11 +501,12 @@ class AudioEngineImpl {
   }
 }
 
+// Export singleton instance
 export const audioEngine = new AudioEngineImpl();
 
 // Auto-initialize on module load
 if (typeof window !== 'undefined') {
-  audioEngine.initialize().catch((error) => {
+  void audioEngine.initialize().catch((error: unknown) => {
     logger.warn('Failed to auto-initialize audio engine', {
       error: error instanceof Error ? error.message : String(error),
     });

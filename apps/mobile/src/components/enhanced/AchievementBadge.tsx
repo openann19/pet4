@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react'
 import { StyleSheet } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion'
 
 export interface AchievementBadgeProps {
   size?: number

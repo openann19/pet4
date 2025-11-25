@@ -4,7 +4,7 @@ import type { AnimatedStyle } from '@petspark/motion';
 import { PET_TYPES } from '../create-pet-constants';
 import type { CreatePetFormActions } from '../create-pet-types';
 
-/* eslint-disable @typescript-eslint/consistent-type-imports */
+ 
 interface TypeStepProps {
   petType: string;
   stepStyle: AnimatedStyle;
@@ -14,7 +14,7 @@ interface TypeStepProps {
   actions: CreatePetFormActions;
   onNext: () => void;
 }
-/* eslint-enable @typescript-eslint/consistent-type-imports */
+ 
 
 export function TypeStep({
   petType,

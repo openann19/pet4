@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import AdoptionApplicationReview from '../AdoptionApplicationReview';
 import { adoptionApi } from '@/api/adoption-api';
 import type { AdoptionApplication, AdoptionProfile } from '@/lib/adoption-types';
@@ -27,22 +28,19 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('@petspark/motion', () => {
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+
   const MotionView = ({
     children,
-    className,
-    onClick,
+    ...props
   }: {
-    children: React.ReactNode;
-    className?: string;
-    onClick?: () => void;
-  }) => (
-    <div className={className} onClick={onClick}>
-      {children}
-    </div>
-  );
+    children?: React.ReactNode;
+    [key: string]: unknown;
+  }) => React.createElement('div', props, children);
 
   return {
+    ...actual,
     MotionView,
   };
 });

@@ -213,7 +213,7 @@ export function useWebRTC(options: UseWebRTCOptions) {
         }
 
         localStreamRef.current = localStream;
-        await peerConnection.addLocalStream(localStream);
+        peerConnection.addLocalStream(localStream);
 
         setCallState((prev) => ({
           ...prev,
@@ -247,18 +247,18 @@ export function useWebRTC(options: UseWebRTCOptions) {
       }
     }
 
-    initialize();
+    initialize().catch((error) => logger.error('Initialize failed', error));
 
     return () => {
       mounted = false;
-      cleanup();
+      void cleanup();
     };
   }, [callId, remoteUserId, isCaller, realtimeClient, stunServers, turnServers]);
 
   /**
    * Cleanup function
    */
-  const cleanup = useCallback(async () => {
+  const cleanup = useCallback(() => {
     // Stop local stream
     if (localStreamRef.current) {
       mediaStreamManager.stopStream(localStreamRef.current);
@@ -267,7 +267,7 @@ export function useWebRTC(options: UseWebRTCOptions) {
 
     // Close peer connection
     if (peerConnectionRef.current) {
-      await peerConnectionRef.current.close();
+      peerConnectionRef.current.close();
       peerConnectionRef.current = null;
     }
 
@@ -318,8 +318,8 @@ export function useWebRTC(options: UseWebRTCOptions) {
   /**
    * End call
    */
-  const endCall = useCallback(async () => {
-    await cleanup();
+  const endCall = useCallback(() => {
+    cleanup();
     setCallState((prev) => ({
       ...prev,
       isConnected: false,

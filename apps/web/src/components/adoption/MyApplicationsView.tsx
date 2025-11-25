@@ -146,7 +146,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
           icon={<ArrowLeft size={20} weight="bold" />}
           onClick={onBack}
           className="rounded-full w-10 h-10 p-0"
-          ariaLabel="Go back"
+          aria-label="Go back"
         />
         <div>
           <h2 className="text-3xl font-bold">My Applications</h2>
@@ -180,10 +180,10 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
               >
                 <Card
                   className={`overflow-hidden ${application.status === 'approved'
-                      ? 'border-green-500/30 shadow-lg shadow-green-500/5'
-                      : application.status === 'pending'
-                        ? 'border-amber-500/30 shadow-lg shadow-amber-500/5'
-                        : ''
+                    ? 'border-green-500/30 shadow-lg shadow-green-500/5'
+                    : application.status === 'pending'
+                      ? 'border-amber-500/30 shadow-lg shadow-amber-500/5'
+                      : ''
                     }`}
                 >
                   <CardHeader>
@@ -231,12 +231,12 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                   <CardContent className="space-y-4">
                     <div
                       className={`p-4 rounded-lg border ${application.status === 'approved'
-                          ? 'bg-green-500/5 border-green-500/20'
-                          : application.status === 'pending'
-                            ? 'bg-amber-500/5 border-amber-500/20'
-                            : application.status === 'rejected'
-                              ? 'bg-red-500/5 border-red-500/20'
-                              : 'bg-muted/30 border-border'
+                        ? 'bg-green-500/5 border-green-500/20'
+                        : application.status === 'pending'
+                          ? 'bg-amber-500/5 border-amber-500/20'
+                          : application.status === 'rejected'
+                            ? 'bg-red-500/5 border-red-500/20'
+                            : 'bg-muted/30 border-border'
                         }`}
                     >
                       <p className="text-sm font-medium mb-1">Status Update</p>

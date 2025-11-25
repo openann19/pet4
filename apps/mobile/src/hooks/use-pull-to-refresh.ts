@@ -7,18 +7,9 @@ import * as Haptics from 'expo-haptics'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AccessibilityInfo, Platform } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
-import {
-  cancelAnimation,
-  runOnJS,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-  withTiming,
-  type WithSpringConfig,
-} from 'react-native-reanimated'
+import { cancelAnimation, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming, type WithSpringConfig } from '@petspark/motion'
 import { createLogger } from '../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('usePullToRefresh')
 

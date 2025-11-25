@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withRepeat,
-    interpolate,
-    Extrapolation,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withRepeat, interpolate, Extrapolation } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'
 import { useTheme } from '@/hooks/use-theme'

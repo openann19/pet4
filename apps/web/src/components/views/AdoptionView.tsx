@@ -20,7 +20,7 @@ import { VirtualGrid } from '@/components/virtual/VirtualGrid';
 
 // Type definition for global spark object
 declare global {
-   
+
   var spark: {
     user: () => Promise<{ id: string }>;
   } | undefined;
@@ -54,51 +54,51 @@ export default function AdoptionView() {
       const result = await adoptionApi.getAdoptionProfiles({ limit: 50 });
       const mappedListings = result.profiles.map(
         (p) =>
-          (({
-            id: p._id,
-            ownerId: p.shelterId,
-            ownerName: p.shelterName,
-            petId: p.petId,
-            petName: p.petName,
-            petBreed: p.breed,
-            petAge: p.age,
-            petGender: p.gender,
-            petSize: p.size,
-            petSpecies: 'dog' as const,
-            petPhotos: p.photos,
-            petDescription: p.description,
+        (({
+          id: p._id,
+          ownerId: p.shelterId,
+          ownerName: p.shelterName,
+          petId: p.petId,
+          petName: p.petName,
+          petBreed: p.breed,
+          petAge: p.age,
+          petGender: p.gender,
+          petSize: p.size,
+          petSpecies: 'dog' as const,
+          petPhotos: p.photos,
+          petDescription: p.description,
 
-            status:
-              p.status === 'available'
-                ? ('active' as const)
-                : p.status === 'pending'
-                  ? ('pending_review' as const)
-                  : p.status === 'adopted'
-                    ? ('adopted' as const)
-                    : ('pending_review' as const),
+          status:
+            p.status === 'available'
+              ? ('active' as const)
+              : p.status === 'pending'
+                ? ('pending_review' as const)
+                : p.status === 'adopted'
+                  ? ('adopted' as const)
+                  : ('pending_review' as const),
 
-            location: {
-              city: p.location.split(', ')[0] || '',
-              country: p.location.split(', ')[1] || '',
-              privacyRadiusM: 1000,
-            },
+          location: {
+            city: p.location.split(', ')[0] ?? '',
+            country: p.location.split(', ')[1] ?? '',
+            privacyRadiusM: 1000,
+          },
 
-            requirements: [],
-            vetDocuments: [],
-            vaccinated: p.vaccinated,
-            spayedNeutered: p.spayedNeutered,
-            microchipped: false,
-            goodWithKids: p.goodWithKids,
-            goodWithPets: p.goodWithPets,
-            energyLevel: p.energyLevel,
-            temperament: p.personality,
-            reasonForAdoption: p.description || 'Looking for a loving home',
-            createdAt: p.postedDate,
-            updatedAt: p.postedDate,
-            viewsCount: 0,
-            applicationsCount: 0,
-            featured: false
-          }) as AdoptionListing),
+          requirements: [],
+          vetDocuments: [],
+          vaccinated: p.vaccinated,
+          spayedNeutered: p.spayedNeutered,
+          microchipped: false,
+          goodWithKids: p.goodWithKids,
+          goodWithPets: p.goodWithPets,
+          energyLevel: p.energyLevel,
+          temperament: p.personality,
+          reasonForAdoption: p.description ?? 'Looking for a loving home',
+          createdAt: p.postedDate,
+          updatedAt: p.postedDate,
+          viewsCount: 0,
+          applicationsCount: 0,
+          featured: false
+        }) as AdoptionListing),
       );
       setListings(mappedListings);
       setCursor(result.nextCursor);
@@ -134,7 +134,7 @@ export default function AdoptionView() {
 
   const handleToggleFavorite = useCallback(
     (listingId: string) => {
-      setFavorites((currentFavorites) => {
+      void setFavorites((currentFavorites) => {
         const current = Array.isArray(currentFavorites) ? currentFavorites : [];
         if (current.includes(listingId)) return current.filter((id) => id !== listingId);
         return [...current, listingId];
@@ -212,10 +212,10 @@ export default function AdoptionView() {
             <div>
               <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
                 <Heart size={32} weight="fill" className="text-primary" aria-hidden="true" />
-                {t.adoption?.title || 'Pet Adoption'}
+                {t.adoption?.title ?? 'Pet Adoption'}
               </h1>
               <p className="text-muted-foreground">
-                {t.adoption?.subtitle || 'Find your perfect companion and give them a forever home'}
+                {t.adoption?.subtitle ?? 'Find your perfect companion and give them a forever home'}
               </p>
             </div>
 

@@ -1,7 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
+import React from 'react';
+import { CreateLostAlertDialog, type CreateLostAlertDialogProps } from '@/components/lost-found/CreateLostAlertDialog';
+import { UIProvider } from '@/contexts/UIContext';
+
+const bounceHandlers: Array<() => void> = [];
 
 vi.mock('@/effects/reanimated/animated-view', () => ({
   AnimatedView: ({ children, ...props }: { children: React.ReactNode;[key: string]: unknown }) => (
@@ -26,10 +30,14 @@ vi.mock('@/effects/reanimated/use-staggered-item', () => ({
 }));
 
 vi.mock('@/effects/reanimated/use-bounce-on-tap', () => ({
-  useBounceOnTap: ({ onPress }: { onPress?: () => void }) => ({
-    animatedStyle: { transform: [{ scale: 1 }] },
-    handlePress: onPress ?? vi.fn(),
-  }),
+  useBounceOnTap: ({ onPress }: { onPress?: () => void } = {}) => {
+    const handlePress = onPress ?? vi.fn();
+    bounceHandlers.push(handlePress);
+    return {
+      animatedStyle: { transform: [{ scale: 1 }] },
+      handlePress,
+    };
+  },
 }));
 
 vi.mock('@/lib/logger', () => ({
@@ -60,20 +68,20 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('./MapLocationPicker', () => ({
-  MapLocationPicker: ({
-    onSelect,
-    onClose,
-  }: {
-    onSelect: (lat: number, lon: number) => void;
-    onClose: () => void;
-  }) => (
-    <div data-testid="map-location-picker">
-      <button onClick={() => onSelect(40.7128, -74.006)}>Select Location</button>
-      <button onClick={onClose}>Close Map</button>
-    </div>
-  ),
-}));
+const renderDialog = (props?: Partial<CreateLostAlertDialogProps>) => {
+  const defaultProps: CreateLostAlertDialogProps = {
+    open: true,
+    onClose: vi.fn(),
+    onSuccess: vi.fn(),
+  };
+
+  const merged = { ...defaultProps, ...props };
+  return render(
+    <UIProvider>
+      <CreateLostAlertDialog {...merged} />
+    </UIProvider>
+  );
+};
 
 describe('CreateLostAlertDialog', () => {
   const mockOnClose = vi.fn();
@@ -81,26 +89,25 @@ describe('CreateLostAlertDialog', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    bounceHandlers.length = 0;
   });
 
   describe('Rendering', () => {
     it('should render dialog when open', () => {
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       expect(screen.getByText('Report Lost Pet')).toBeInTheDocument();
       expect(screen.getByText(/Help us help you find your pet/)).toBeInTheDocument();
     });
 
     it('should not render dialog when closed', () => {
-      render(
-        <CreateLostAlertDialog open={false} onClose={mockOnClose} onSuccess={mockOnSuccess} />
-      );
+      renderDialog({ open: false, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       expect(screen.queryByText('Report Lost Pet')).not.toBeInTheDocument();
     });
 
     it('should render all form sections', () => {
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       expect(screen.getByText('Pet Information')).toBeInTheDocument();
       expect(screen.getByText('Last Seen Information')).toBeInTheDocument();
@@ -108,7 +115,7 @@ describe('CreateLostAlertDialog', () => {
     });
 
     it('should render all required fields', () => {
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       expect(screen.getByLabelText(/Pet Name \*/)).toBeInTheDocument();
       expect(screen.getByLabelText(/Species \*/)).toBeInTheDocument();
@@ -121,7 +128,7 @@ describe('CreateLostAlertDialog', () => {
   describe('Form Interactions', () => {
     it('should update pet name when input changes', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       const petNameInput = screen.getByLabelText(/Pet Name \*/);
       await user.type(petNameInput, 'Max');
@@ -131,19 +138,19 @@ describe('CreateLostAlertDialog', () => {
 
     it('should update species when select changes', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       const speciesSelect = screen.getByLabelText(/Species \*/);
       await user.click(speciesSelect);
-      const catOption = screen.getByText('Cat');
+      const catOption = await screen.findByRole('option', { name: 'Cat' });
       await user.click(catOption);
 
-      expect(speciesSelect).toBeInTheDocument();
+      expect(speciesSelect).toHaveTextContent('Cat');
     });
 
     it('should add distinctive feature when Add button is clicked', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       const featureInput = screen.getByPlaceholderText(/White spot on chest/);
       await user.type(featureInput, 'White spot on chest');
@@ -165,7 +172,7 @@ describe('CreateLostAlertDialog', () => {
 
     it('should remove distinctive feature when X is clicked', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       const featureInput = screen.getByPlaceholderText(/White spot on chest/);
       await user.type(featureInput, 'White spot');
@@ -180,16 +187,10 @@ describe('CreateLostAlertDialog', () => {
         await user.click(addFeatureButton);
       }
 
-      await waitFor(() => {
-        const removeButtons = screen.getAllByRole('button');
-        const removeButton = removeButtons.find((btn) => {
-          const svg = btn.querySelector('svg');
-          return svg && svg.getAttribute('viewBox') === '0 0 256 256';
-        });
-        if (removeButton) {
-          userEvent.click(removeButton);
-        }
+      const removeButton = await screen.findByRole('button', {
+        name: /Remove feature White spot/i,
       });
+      await user.click(removeButton);
 
       await waitFor(() => {
         expect(screen.queryByText('White spot')).not.toBeInTheDocument();
@@ -200,45 +201,41 @@ describe('CreateLostAlertDialog', () => {
   describe('Map Location Picker', () => {
     it('should show map picker when Pick Location button is clicked', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
-      const pickLocationButton = screen.getByText(/Pick Location on Map/);
+      const pickLocationButton = screen.getByRole('button', { name: /Pick Location on Map/i });
       await user.click(pickLocationButton);
 
-      await waitFor(() => {
-        expect(screen.getByTestId('map-location-picker')).toBeInTheDocument();
-      });
+      await screen.findByRole('heading', { name: 'Pick Location on Map' });
     });
 
     it('should update location when location is selected', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
-      const pickLocationButton = screen.getByText(/Pick Location on Map/);
+      const pickLocationButton = screen.getByRole('button', { name: /Pick Location on Map/i });
       await user.click(pickLocationButton);
 
-      await waitFor(() => {
-        const selectButton = screen.getByText('Select Location');
-        userEvent.click(selectButton);
-      });
+      const confirmButton = await screen.findByRole('button', { name: /Confirm Location/i });
+      await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Location set: 40\.7128, -74\.0060/)).toBeInTheDocument();
+        expect(screen.getByText(/Location set: 37\.7749, -122\.4194/)).toBeInTheDocument();
       });
     });
   });
 
   describe('Form Validation', () => {
     it('should disable submit button when form is invalid', () => {
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
-      const submitButton = screen.getByText('Create Alert');
+      const submitButton = screen.getByRole('button', { name: /Create Alert/i });
       expect(submitButton).toBeDisabled();
     });
 
     it('should enable submit button when all required fields are filled', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       await user.type(screen.getByLabelText(/Pet Name \*/), 'Max');
       await user.type(screen.getByLabelText(/Date \*/), '2024-01-15');
@@ -246,19 +243,19 @@ describe('CreateLostAlertDialog', () => {
       await user.type(screen.getByLabelText(/Contact Information \*/), 'test@example.com');
 
       await waitFor(() => {
-        const submitButton = screen.getByText('Create Alert');
+        const submitButton = screen.getByRole('button', { name: /Create Alert/i });
         expect(submitButton).not.toBeDisabled();
       });
     });
 
     it('should show error toast when submitting invalid form', async () => {
-      const user = userEvent.setup();
       const { toast } = await import('sonner');
 
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
-      const submitButton = screen.getByText('Create Alert');
-      await user.click(submitButton);
+      const submitHandler = bounceHandlers[bounceHandlers.length - 1];
+      expect(submitHandler).toBeDefined();
+      submitHandler?.();
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith('Please fill in all required fields');
@@ -281,14 +278,14 @@ describe('CreateLostAlertDialog', () => {
 
       vi.mocked(lostFoundAPI.createAlert).mockResolvedValue({} as never);
 
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       await user.type(screen.getByLabelText(/Pet Name \*/), 'Max');
       await user.type(screen.getByLabelText(/Date \*/), '2024-01-15');
       await user.type(screen.getByLabelText(/Time \*/), '10:00');
       await user.type(screen.getByLabelText(/Contact Information \*/), 'test@example.com');
 
-      const submitButton = screen.getByText('Create Alert');
+      const submitButton = screen.getByRole('button', { name: /Create Alert/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -312,14 +309,14 @@ describe('CreateLostAlertDialog', () => {
 
       vi.mocked(lostFoundAPI.createAlert).mockRejectedValue(new Error('API Error'));
 
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       await user.type(screen.getByLabelText(/Pet Name \*/), 'Max');
       await user.type(screen.getByLabelText(/Date \*/), '2024-01-15');
       await user.type(screen.getByLabelText(/Time \*/), '10:00');
       await user.type(screen.getByLabelText(/Contact Information \*/), 'test@example.com');
 
-      const submitButton = screen.getByText('Create Alert');
+      const submitButton = screen.getByRole('button', { name: /Create Alert/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -334,14 +331,14 @@ describe('CreateLostAlertDialog', () => {
 
       vi.mocked(userService.user).mockResolvedValue(null);
 
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       await user.type(screen.getByLabelText(/Pet Name \*/), 'Max');
       await user.type(screen.getByLabelText(/Date \*/), '2024-01-15');
       await user.type(screen.getByLabelText(/Time \*/), '10:00');
       await user.type(screen.getByLabelText(/Contact Information \*/), 'test@example.com');
 
-      const submitButton = screen.getByText('Create Alert');
+      const submitButton = screen.getByRole('button', { name: /Create Alert/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -353,7 +350,7 @@ describe('CreateLostAlertDialog', () => {
   describe('Close Functionality', () => {
     it('should call onClose when Cancel button is clicked', async () => {
       const user = userEvent.setup();
-      render(<CreateLostAlertDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />);
+      renderDialog({ open: true, onClose: mockOnClose, onSuccess: mockOnSuccess });
 
       const cancelButton = screen.getByText('Cancel');
       await user.click(cancelButton);

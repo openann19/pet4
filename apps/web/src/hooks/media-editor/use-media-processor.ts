@@ -86,19 +86,19 @@ export interface ShaderProgram {
 // Constants
 // ============================================================================
 
-const QUALITY_SETTINGS = {
+const _QUALITY_SETTINGS = {
   low: { scale: 0.5, quality: 0.6, maxFPS: 24 },
   medium: { scale: 0.75, quality: 0.8, maxFPS: 30 },
   high: { scale: 1.0, quality: 0.92, maxFPS: 60 },
   ultra: { scale: 1.0, quality: 0.98, maxFPS: 120 },
 } as const;
 
-const MAX_CANVAS_SIZE = 8192; // WebGL max texture size
-const FRAME_BUFFER_SIZE = 30; // Number of frames to buffer for smooth playback
-const WORKER_POOL_SIZE = navigator.hardwareConcurrency || 4;
+const _MAX_CANVAS_SIZE = 8192; // WebGL max texture size
+const _FRAME_BUFFER_SIZE = 30; // Number of frames to buffer for smooth playback
+const _WORKER_POOL_SIZE = navigator.hardwareConcurrency || 4;
 
 // Default vertex shader for 2D operations
-const DEFAULT_VERTEX_SHADER = `
+const _DEFAULT_VERTEX_SHADER = `
   attribute vec2 a_position;
   attribute vec2 a_texCoord;
   varying vec2 v_texCoord;
@@ -110,7 +110,7 @@ const DEFAULT_VERTEX_SHADER = `
 `;
 
 // Default fragment shader (passthrough)
-const DEFAULT_FRAGMENT_SHADER = `
+const _DEFAULT_FRAGMENT_SHADER = `
   precision mediump float;
   varying vec2 v_texCoord;
   uniform sampler2D u_image;
@@ -131,9 +131,9 @@ export function useMediaProcessor() {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const webglManagerRef = useRef<WebGLContextManager | null>(null);
-  const operationHistoryRef = useRef<CanvasOperation[]>([]);
+  const _operationHistoryRef = useRef<CanvasOperation[]>([]);
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // WebGL Initialization
@@ -174,7 +174,11 @@ export function useMediaProcessor() {
   // ============================================================================
 
   const createShaderProgram = useCallback(
-    (vertexSource: string, fragmentSource: string, cacheKey?: string): ReturnType<WebGLContextManager['createShaderProgram']> => {
+    (
+      vertexSource: string,
+      fragmentSource: string,
+      cacheKey?: string
+    ): ReturnType<WebGLContextManager['createShaderProgram']> => {
       try {
         const webglManager = initializeWebGL();
         return webglManager.createShaderProgram(vertexSource, fragmentSource, cacheKey);
@@ -324,132 +328,137 @@ export function useMediaProcessor() {
   // Image Processing Operations
   // ============================================================================
 
-  const cropImage = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ): HTMLCanvasElement => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
+  const cropImage = useCallback(
+    (
+      source: HTMLImageElement | HTMLCanvasElement,
+      x: number,
+      y: number,
+      width: number,
+      height: number
+    ): HTMLCanvasElement => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
 
-    if (!ctx) {
-      throw new Error('Failed to get 2D context');
-    }
-
-    ctx.drawImage(source, x, y, width, height, 0, 0, width, height);
-    return canvas;
-  }, []);
-
-  const resizeImage = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    targetWidth: number,
-    targetHeight: number,
-    options: { algorithm?: 'bilinear' | 'bicubic' | 'lanczos' } = {}
-  ): HTMLCanvasElement => {
-    const canvas = document.createElement('canvas');
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-      throw new Error('Failed to get 2D context');
-    }
-
-    // Use imageSmoothingQuality for better results
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-
-    // For high-quality downscaling, use step-down approach
-    if (targetWidth < source.width / 2 || targetHeight < source.height / 2) {
-      let currentCanvas: HTMLCanvasElement | HTMLImageElement = source;
-      let currentWidth = source.width;
-      let currentHeight = source.height;
-
-      while (currentWidth > targetWidth * 2 || currentHeight > targetHeight * 2) {
-        currentWidth = Math.max(targetWidth, Math.floor(currentWidth / 2));
-        currentHeight = Math.max(targetHeight, Math.floor(currentHeight / 2));
-
-        const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = currentWidth;
-        tempCanvas.height = currentHeight;
-        const tempCtx = tempCanvas.getContext('2d');
-
-        if (!tempCtx) {
-          break;
-        }
-
-        tempCtx.imageSmoothingEnabled = true;
-        tempCtx.imageSmoothingQuality = 'high';
-        tempCtx.drawImage(currentCanvas, 0, 0, currentWidth, currentHeight);
-        currentCanvas = tempCanvas;
+      if (!ctx) {
+        throw new Error('Failed to get 2D context');
       }
 
-      ctx.drawImage(currentCanvas, 0, 0, targetWidth, targetHeight);
-    } else {
-      ctx.drawImage(source, 0, 0, targetWidth, targetHeight);
-    }
+      ctx.drawImage(source, x, y, width, height, 0, 0, width, height);
+      return canvas;
+    },
+    []
+  );
 
-    return canvas;
-  }, []);
+  const resizeImage = useCallback(
+    (
+      source: HTMLImageElement | HTMLCanvasElement,
+      targetWidth: number,
+      targetHeight: number,
+      _options: { algorithm?: 'bilinear' | 'bicubic' | 'lanczos' } = {}
+    ): HTMLCanvasElement => {
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
 
-  const rotateImage = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    degrees: number
-  ): HTMLCanvasElement => {
-    const canvas = document.createElement('canvas');
-    const radians = (degrees * Math.PI) / 180;
+      if (!ctx) {
+        throw new Error('Failed to get 2D context');
+      }
 
-    // Calculate new dimensions after rotation
-    const sin = Math.abs(Math.sin(radians));
-    const cos = Math.abs(Math.cos(radians));
-    const newWidth = Math.floor(source.width * cos + source.height * sin);
-    const newHeight = Math.floor(source.width * sin + source.height * cos);
+      // Use imageSmoothingQuality for better results
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    const ctx = canvas.getContext('2d');
+      // For high-quality downscaling, use step-down approach
+      if (targetWidth < source.width / 2 || targetHeight < source.height / 2) {
+        let currentCanvas: HTMLCanvasElement | HTMLImageElement = source;
+        let currentWidth = source.width;
+        let currentHeight = source.height;
 
-    if (!ctx) {
-      throw new Error('Failed to get 2D context');
-    }
+        while (currentWidth > targetWidth * 2 || currentHeight > targetHeight * 2) {
+          currentWidth = Math.max(targetWidth, Math.floor(currentWidth / 2));
+          currentHeight = Math.max(targetHeight, Math.floor(currentHeight / 2));
 
-    // Translate to center, rotate, then translate back
-    ctx.translate(newWidth / 2, newHeight / 2);
-    ctx.rotate(radians);
-    ctx.drawImage(source, -source.width / 2, -source.height / 2);
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = currentWidth;
+          tempCanvas.height = currentHeight;
+          const tempCtx = tempCanvas.getContext('2d');
 
-    return canvas;
-  }, []);
+          if (!tempCtx) {
+            break;
+          }
 
-  const flipImage = useCallback((
-    source: HTMLImageElement | HTMLCanvasElement,
-    horizontal: boolean,
-    vertical: boolean
-  ): HTMLCanvasElement => {
-    const canvas = document.createElement('canvas');
-    canvas.width = source.width;
-    canvas.height = source.height;
-    const ctx = canvas.getContext('2d');
+          tempCtx.imageSmoothingEnabled = true;
+          tempCtx.imageSmoothingQuality = 'high';
+          tempCtx.drawImage(currentCanvas, 0, 0, currentWidth, currentHeight);
+          currentCanvas = tempCanvas;
+        }
 
-    if (!ctx) {
-      throw new Error('Failed to get 2D context');
-    }
+        ctx.drawImage(currentCanvas, 0, 0, targetWidth, targetHeight);
+      } else {
+        ctx.drawImage(source, 0, 0, targetWidth, targetHeight);
+      }
 
-    ctx.save();
-    ctx.scale(horizontal ? -1 : 1, vertical ? -1 : 1);
-    ctx.drawImage(
-      source,
-      horizontal ? -source.width : 0,
-      vertical ? -source.height : 0
-    );
-    ctx.restore();
+      return canvas;
+    },
+    []
+  );
 
-    return canvas;
-  }, []);
+  const rotateImage = useCallback(
+    (source: HTMLImageElement | HTMLCanvasElement, degrees: number): HTMLCanvasElement => {
+      const canvas = document.createElement('canvas');
+      const radians = (degrees * Math.PI) / 180;
+
+      // Calculate new dimensions after rotation
+      const sin = Math.abs(Math.sin(radians));
+      const cos = Math.abs(Math.cos(radians));
+      const newWidth = Math.floor(source.width * cos + source.height * sin);
+      const newHeight = Math.floor(source.width * sin + source.height * cos);
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        throw new Error('Failed to get 2D context');
+      }
+
+      // Translate to center, rotate, then translate back
+      ctx.translate(newWidth / 2, newHeight / 2);
+      ctx.rotate(radians);
+      ctx.drawImage(source, -source.width / 2, -source.height / 2);
+
+      return canvas;
+    },
+    []
+  );
+
+  const flipImage = useCallback(
+    (
+      source: HTMLImageElement | HTMLCanvasElement,
+      horizontal: boolean,
+      vertical: boolean
+    ): HTMLCanvasElement => {
+      const canvas = document.createElement('canvas');
+      canvas.width = source.width;
+      canvas.height = source.height;
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        throw new Error('Failed to get 2D context');
+      }
+
+      ctx.save();
+      ctx.scale(horizontal ? -1 : 1, vertical ? -1 : 1);
+      ctx.drawImage(source, horizontal ? -source.width : 0, vertical ? -source.height : 0);
+      ctx.restore();
+
+      return canvas;
+    },
+    []
+  );
 
   // ============================================================================
   // Advanced Processing with WebGL
@@ -461,7 +470,11 @@ export function useMediaProcessor() {
         try {
           const webglManager = initializeWebGL();
           const gl = webglManager.getGL();
-          const shaderProgram = createShaderProgram(shader.vertexShader, shader.fragmentShader, shader.name);
+          const shaderProgram = createShaderProgram(
+            shader.vertexShader,
+            shader.fragmentShader,
+            shader.name
+          );
 
           // Set canvas size to match source
           if (canvasRef.current) {
@@ -568,27 +581,27 @@ export function useMediaProcessor() {
   // Export & Encoding
   // ============================================================================
 
-  const canvasToBlob = useCallback((
-    canvas: HTMLCanvasElement,
-    options: ProcessingOptions
-  ): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const mimeType = `image/${options.format}`;
-      const quality = options.compression;
+  const canvasToBlob = useCallback(
+    (canvas: HTMLCanvasElement, options: ProcessingOptions): Promise<Blob> => {
+      return new Promise((resolve, reject) => {
+        const mimeType = `image/${options.format}`;
+        const quality = options.compression;
 
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to convert canvas to blob'));
-          }
-        },
-        mimeType,
-        quality
-      );
-    });
-  }, []);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to convert canvas to blob'));
+            }
+          },
+          mimeType,
+          quality
+        );
+      });
+    },
+    []
+  );
 
   const processImage = useCallback(
     async (

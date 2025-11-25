@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useConsentManager } from '@/hooks/use-consent-manager';
@@ -15,6 +15,15 @@ import { getStorageItem, setStorageItem } from '@/lib/cache/local-storage';
 import { createLogger } from '@/lib/logger';
 import type { ConsentCategory } from '@petspark/shared';
 import { CONSENT_VERSION } from '@petspark/shared';
+import {
+  MotionView,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  Easing,
+} from '@petspark/motion';
+import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 
 const logger = createLogger('ConsentBanner');
 
@@ -30,6 +39,28 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
   const [isVisible, setIsVisible] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const consentManager = useConsentManager({ autoLoad: true });
+  const reducedMotion = useReducedMotion();
+  const bannerOpacity = useSharedValue(0);
+  const bannerTranslateY = useSharedValue(32);
+
+  useEffect(() => {
+    if (!isVisible) {
+      bannerOpacity.value = 0;
+      bannerTranslateY.value = 32;
+      return;
+    }
+
+    const duration = getReducedMotionDuration(280, reducedMotion);
+    const easing = reducedMotion ? Easing.linear : Easing.out(Easing.ease);
+
+    bannerOpacity.value = withTiming(1, { duration, easing });
+    bannerTranslateY.value = withTiming(0, { duration, easing });
+  }, [bannerOpacity, bannerTranslateY, isVisible, reducedMotion]);
+
+  const bannerStyle = useAnimatedStyle(() => ({
+    opacity: bannerOpacity.value,
+    transform: [{ translateY: bannerTranslateY.value }],
+  }));
 
   // Check if banner should be shown (only on mount)
   useEffect(() => {
@@ -151,7 +182,10 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
   return (
     <>
       {/* Consent Banner */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg p-4 md:p-6">
+      <MotionView
+        style={bannerStyle}
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg p-4 md:p-6"
+      >
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex-1">
@@ -197,7 +231,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
             </div>
           </div>
         </div>
-      </div>
+      </MotionView>
 
       {/* Preferences Dialog */}
       <Dialog open={showPreferences} onOpenChange={setShowPreferences}>
@@ -209,28 +243,17 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            {/* Essential Cookies */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <h4 className="font-semibold">Essential Cookies</h4>
-                <p className="text-sm text-muted-foreground">
-                  These cookies are necessary for the website to function and cannot be switched off.
-                </p>
-              </div>
-              <div className="ml-4">
-                <span className="text-sm font-medium text-muted-foreground">Always Active</span>
-              </div>
-            </div>
-
-            {/* Analytics Cookies */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <h4 className="font-semibold">Analytics Cookies</h4>
-                <p className="text-sm text-muted-foreground">
-                  These cookies help us understand how visitors interact with our website.
-                </p>
-              </div>
-              <div className="ml-4">
+            <PreferenceRow
+              index={0}
+              title="Essential Cookies"
+              description="These cookies are necessary for the website to function and cannot be switched off."
+              control={<span className="text-sm font-medium text-muted-foreground">Always Active</span>}
+            />
+            <PreferenceRow
+              index={1}
+              title="Analytics Cookies"
+              description="These cookies help us understand how visitors interact with our website."
+              control={
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -243,18 +266,13 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
                 </label>
-              </div>
-            </div>
-
-            {/* Marketing Cookies */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <h4 className="font-semibold">Marketing Cookies</h4>
-                <p className="text-sm text-muted-foreground">
-                  These cookies are used to deliver relevant advertisements and track campaign performance.
-                </p>
-              </div>
-              <div className="ml-4">
+              }
+            />
+            <PreferenceRow
+              index={2}
+              title="Marketing Cookies"
+              description="These cookies are used to deliver relevant advertisements and track campaign performance."
+              control={
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -267,18 +285,13 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
                 </label>
-              </div>
-            </div>
-
-            {/* Third-Party Cookies */}
-            <div className="flex items-center justify-between p-4 border rounded-lg">
-              <div className="flex-1">
-                <h4 className="font-semibold">Third-Party Cookies</h4>
-                <p className="text-sm text-muted-foreground">
-                  These cookies are set by third-party services that appear on our pages.
-                </p>
-              </div>
-              <div className="ml-4">
+              }
+            />
+            <PreferenceRow
+              index={3}
+              title="Third-Party Cookies"
+              description="These cookies are set by third-party services that appear on our pages."
+              control={
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
                     type="checkbox"
@@ -291,8 +304,8 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                   />
                   <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
                 </label>
-              </div>
-            </div>
+              }
+            />
           </div>
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setShowPreferences(false)}>
@@ -303,5 +316,42 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+interface PreferenceRowProps {
+  index: number;
+  title: string;
+  description: string;
+  control: ReactNode;
+}
+
+function PreferenceRow({ index, title, description, control }: PreferenceRowProps): React.JSX.Element {
+  const reducedMotion = useReducedMotion();
+  const rowOpacity = useSharedValue(0);
+  const rowTranslateY = useSharedValue(12);
+
+  useEffect(() => {
+    const duration = getReducedMotionDuration(220, reducedMotion);
+    const easing = reducedMotion ? Easing.linear : Easing.out(Easing.ease);
+    const delay = reducedMotion ? 0 : index * 60;
+
+    rowOpacity.value = withDelay(delay, withTiming(1, { duration, easing }));
+    rowTranslateY.value = withDelay(delay, withTiming(0, { duration, easing }));
+  }, [index, reducedMotion, rowOpacity, rowTranslateY]);
+
+  const rowStyle = useAnimatedStyle(() => ({
+    opacity: rowOpacity.value,
+    transform: [{ translateY: rowTranslateY.value }],
+  }));
+
+  return (
+    <MotionView style={rowStyle} className="flex items-center justify-between p-4 border rounded-lg">
+      <div className="flex-1">
+        <h4 className="font-semibold">{title}</h4>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+      <div className="ml-4">{control}</div>
+    </MotionView>
   );
 }

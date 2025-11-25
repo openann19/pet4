@@ -10,12 +10,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  type SharedValue,
-} from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, type SharedValue } from '@petspark/motion';
 import { useReducedMotionSV } from '../core/reduced-motion';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
@@ -58,7 +53,7 @@ export function useVoiceWaveform(options: UseVoiceWaveformOptions = {}): UseVoic
     waveform = [],
     duration = 0,
     currentTime = 0,
-    isPlaying = false,
+    isPlaying: _isPlaying = false,
     width = DEFAULT_WIDTH,
     height = DEFAULT_HEIGHT,
     color = DEFAULT_COLOR,
@@ -78,15 +73,16 @@ export function useVoiceWaveform(options: UseVoiceWaveformOptions = {}): UseVoic
       if (reducedMotion.value) {
         playheadProgress.value = progress;
       } else {
-      // Use UI config spring physics or fallback to adaptive config
-      const springConfig = animation.enableReanimated && animation.springPhysics
-        ? {
-            stiffness: animation.springPhysics.stiffness,
-            damping: animation.springPhysics.damping,
-            mass: animation.springPhysics.mass,
-          }
-        : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
-      playheadProgress.value = withSpring(progress, springConfig);
+        // Use UI config spring physics or fallback to adaptive config
+        const springConfig =
+          animation.enableReanimated && animation.springPhysics
+            ? {
+                stiffness: animation.springPhysics.stiffness,
+                damping: animation.springPhysics.damping,
+                mass: animation.springPhysics.mass,
+              }
+            : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+        playheadProgress.value = withSpring(progress, springConfig);
       }
     }
   }, [enabled, currentTime, duration, reducedMotion, hz, animation, playheadProgress]);

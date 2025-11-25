@@ -10,7 +10,7 @@
  * Location: apps/web/src/core/a11y/focus-appearance.ts
  */
 
-import { getContrastRatio, hexToRgb, getLuminance } from '../utils/contrast';
+import { getContrastRatio } from '../utils/contrast';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('focus-appearance');
@@ -85,7 +85,12 @@ function getAdjacentColors(element: HTMLElement): string[] {
   const borderRightColor = computedStyle.borderRightColor;
 
   [borderTopColor, borderBottomColor, borderLeftColor, borderRightColor].forEach((color) => {
-    if (color && color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent' && !colors.includes(color)) {
+    if (
+      color &&
+      color !== 'rgba(0, 0, 0, 0)' &&
+      color !== 'transparent' &&
+      !colors.includes(color)
+    ) {
       colors.push(color);
     }
   });
@@ -112,9 +117,9 @@ function rgbToHex(rgb: string): string {
     return rgb; // Already hex or invalid
   }
 
-  const r = parseInt(match[1] || '0', 10);
-  const g = parseInt(match[2] || '0', 10);
-  const b = parseInt(match[3] || '0', 10);
+  const r = parseInt(match[1] ?? '0', 10);
+  const g = parseInt(match[2] ?? '0', 10);
+  const b = parseInt(match[3] ?? '0', 10);
 
   return `#${[r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
 }
@@ -142,9 +147,13 @@ function checkContrastAgainstAdjacentColors(
       }
     } catch (error) {
       // Invalid color, skip
-      logger.warn('Invalid color for contrast check', error instanceof Error ? error : new Error(String(error)), {
-        color: adjacentColor,
-      });
+      logger.warn(
+        'Invalid color for contrast check',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          color: adjacentColor,
+        }
+      );
     }
   }
 
@@ -176,7 +185,7 @@ function getComputedFocusThickness(element: HTMLElement): number {
     // Box shadow format: offset-x offset-y blur-radius spread-radius color
     const parts = boxShadow.split(' ');
     if (parts.length >= 4) {
-      const spread = parseFloat(parts[3] || '0');
+      const spread = parseFloat(parts[3] ?? '0');
       if (!Number.isNaN(spread) && spread > 0) {
         return spread;
       }
@@ -196,7 +205,14 @@ export function validateFocusAppearance(
   const issues: string[] = [];
 
   // Check if element is focusable
-  if (!element.hasAttribute('tabindex') && element.tagName !== 'BUTTON' && element.tagName !== 'A' && element.tagName !== 'INPUT' && element.tagName !== 'TEXTAREA' && element.tagName !== 'SELECT') {
+  if (
+    !element.hasAttribute('tabindex') &&
+    element.tagName !== 'BUTTON' &&
+    element.tagName !== 'A' &&
+    element.tagName !== 'INPUT' &&
+    element.tagName !== 'TEXTAREA' &&
+    element.tagName !== 'SELECT'
+  ) {
     issues.push('Element is not focusable');
     return {
       valid: false,
@@ -218,13 +234,19 @@ export function validateFocusAppearance(
     const computedThickness = getComputedFocusThickness(element);
     const thicknessValid = computedThickness >= config.thickness;
     if (!thicknessValid) {
-      issues.push(`Focus indicator thickness (${computedThickness}px) is less than required (${config.thickness}px)`);
+      issues.push(
+        `Focus indicator thickness (${computedThickness}px) is less than required (${config.thickness}px)`
+      );
     }
 
     // Check contrast against adjacent colors
     const adjacentColors = getAdjacentColors(element);
     const focusColor = config.color;
-    const contrastCheck = checkContrastAgainstAdjacentColors(focusColor, adjacentColors, config.contrastRatio);
+    const contrastCheck = checkContrastAgainstAdjacentColors(
+      focusColor,
+      adjacentColors,
+      config.contrastRatio
+    );
 
     const contrastValid = contrastCheck.valid;
     if (!contrastValid) {
@@ -274,12 +296,13 @@ export function ensureFocusAppearance(
   config: FocusAppearanceConfig = DEFAULT_FOCUS_CONFIG
 ): void {
   // Check if high contrast mode is enabled
-  const isHighContrast = window.matchMedia('(prefers-contrast: high)').matches || window.matchMedia('(-ms-high-contrast: active)').matches;
+  const isHighContrast =
+    window.matchMedia('(prefers-contrast: high)').matches ??
+    window.matchMedia('(-ms-high-contrast: active)').matches;
   const activeConfig = isHighContrast ? HIGH_CONTRAST_FOCUS_CONFIG : config;
 
   // Apply focus styles
   const style = element.style;
-  const className = element.className;
 
   // Remove existing focus styles
   element.classList.remove('focus-ring', 'focus-visible-ring');
@@ -307,7 +330,9 @@ export function ensureFocusAppearance(
 /**
  * Get focus appearance CSS for a given configuration
  */
-export function getFocusAppearanceCSS(config: FocusAppearanceConfig = DEFAULT_FOCUS_CONFIG): string {
+export function getFocusAppearanceCSS(
+  config: FocusAppearanceConfig = DEFAULT_FOCUS_CONFIG
+): string {
   if (config.useOutline) {
     return `
       outline: ${config.thickness}px ${config.style} ${config.color};

@@ -98,7 +98,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
   });
 
   useEffect(() => {
-    loadUserLocation();
+    void loadUserLocation();
   }, []);
 
   const loadUserLocation = async () => {

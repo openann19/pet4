@@ -142,16 +142,14 @@ function getElementSelector(element: Element): string {
   }
 
   // Use tag + classes
-  const classes = Array.from(element.classList)
-    .slice(0, 2)
-    .join('.');
+  const classes = Array.from(element.classList).slice(0, 2).join('.');
   return classes ? `${element.tagName.toLowerCase()}.${classes}` : element.tagName.toLowerCase();
 }
 
 function getScrollDepth(): number {
   const windowHeight = window.innerHeight;
   const documentHeight = document.documentElement.scrollHeight;
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollTop = window.pageYOffset ?? document.documentElement.scrollTop;
 
   if (documentHeight <= windowHeight) return 100;
 
@@ -172,7 +170,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
     onDeadClick,
     onScrollMilestone,
     onFormAbandonment,
-    onError,
+    onError: _onError,
     trackMouseMovement = false,
     trackVisibility = false,
     rageClickThreshold = DEFAULT_RAGE_THRESHOLD,
@@ -201,9 +199,9 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
   });
 
   // Refs
-  const clickHistoryRef = useRef<
-    { element: Element; timestamp: number; x: number; y: number }[]
-  >([]);
+  const clickHistoryRef = useRef<{ element: Element; timestamp: number; x: number; y: number }[]>(
+    []
+  );
   const mousePointsRef = useRef<MousePoint[]>([]);
   const lastMousePointRef = useRef<MousePoint | null>(null);
   const totalDistanceRef = useRef(0);
@@ -211,9 +209,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
   const scrollStartTimeRef = useRef(Date.now());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const formStartTimesRef = useRef<Map<HTMLFormElement, number>>(new Map());
-  const formFieldsRef = useRef<Map<HTMLFormElement, Set<HTMLInputElement>>>(
-    new Map()
-  );
+  const formFieldsRef = useRef<Map<HTMLFormElement, Set<HTMLInputElement>>>(new Map());
 
   // ============================================================================
   // Rage Click Detection
@@ -303,13 +299,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
       const clearTimer = () => clearTimeout(deadClickTimer);
       window.addEventListener('beforeunload', clearTimer, { once: true });
     },
-    [
-      rageClickThreshold,
-      rageClickTimeWindow,
-      deadClickTimeout,
-      onRageClick,
-      onDeadClick,
-    ]
+    [rageClickThreshold, rageClickTimeWindow, deadClickTimeout, onRageClick, onDeadClick]
   );
 
   // ============================================================================
@@ -327,9 +317,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
 
       // Check for new milestones
       const newMilestones = scrollMilestones.filter(
-        (milestone) =>
-          currentDepth >= milestone &&
-          !prevDepth.milestonesReached.includes(milestone)
+        (milestone) => currentDepth >= milestone && !prevDepth.milestonesReached.includes(milestone)
       );
 
       // Record time to milestone
@@ -347,10 +335,7 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
         ...prev,
         scrollDepth: {
           maxDepth,
-          milestonesReached: [
-            ...prevDepth.milestonesReached,
-            ...newMilestones,
-          ],
+          milestonesReached: [...prevDepth.milestonesReached, ...newMilestones],
           timeToMilestone,
         },
       };
@@ -452,12 +437,12 @@ export function useBehaviorTracker(config: BehaviorTrackerConfig = {}) {
       if (fieldsFilled > 0 && fieldsFilled < totalFields) {
         const lastField = Array.from(fields).pop();
         const abandonmentEvent: FormAbandonmentEvent = {
-          formId: form.id || 'unknown',
-          formName: form.name || form.id || 'unknown',
+          formId: form.id ?? 'unknown',
+          formName: form.name ?? form.id ?? 'unknown',
           fieldsFilled,
           totalFields,
           timeSpent: Date.now() - startTime,
-          lastField: lastField?.name || lastField?.id || 'unknown',
+          lastField: lastField?.name ?? lastField?.id ?? 'unknown',
           timestamp: Date.now(),
         };
 

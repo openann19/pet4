@@ -36,6 +36,7 @@ export function useTypingManager({
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [isTyping, setIsTyping] = useState(false);
 
+  const isTypingRef = useRef(false);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lastTypingEmitRef = useRef<number>(0);
@@ -74,9 +75,23 @@ export function useTypingManager({
       });
   }, [realtimeClient, roomId, currentUserId]);
 
-  const startTyping = useCallback(() => {
-    if (isTyping) return;
+  const stopTyping = useCallback(() => {
+    if (!isTypingRef.current) return;
 
+    isTypingRef.current = false;
+    setIsTyping(false);
+    emitTypingStop();
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = undefined;
+    }
+  }, [emitTypingStop]);
+
+  const startTyping = useCallback(() => {
+    if (isTypingRef.current) return;
+
+    isTypingRef.current = true;
     setIsTyping(true);
     emitTypingStart();
 
@@ -87,19 +102,7 @@ export function useTypingManager({
     typingTimeoutRef.current = setTimeout(() => {
       stopTyping();
     }, typingTimeout);
-  }, [isTyping, typingTimeout, emitTypingStart]);
-
-  const stopTyping = useCallback(() => {
-    if (!isTyping) return;
-
-    setIsTyping(false);
-    emitTypingStop();
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = undefined;
-    }
-  }, [isTyping, emitTypingStop]);
+  }, [typingTimeout, emitTypingStart, stopTyping]);
 
   const handleInputChange = useCallback(
     (value: string) => {
@@ -194,11 +197,15 @@ export function useTypingManager({
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
-      if (isTyping) {
+      if (isTypingRef.current) {
         emitTypingStop();
       }
     };
-  }, [isTyping, emitTypingStop]);
+  }, [emitTypingStop]);
+
+  useEffect(() => {
+    isTypingRef.current = isTyping;
+  }, [isTyping]);
 
   return {
     typingUsers,

@@ -4,14 +4,15 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { UserAvatar } from '@/components/ui/Avatar';
 
-const navigation = [
+// Extract navigation array as constant to prevent recreation
+const NAVIGATION_ITEMS = [
   { name: 'Home', href: '/home', icon: Home },
   { name: 'Discover', href: '/discover', icon: Search },
   { name: 'Messages', href: '/chat', icon: MessageCircle },
   { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Profile', href: '/profile', icon: User },
   { name: 'Settings', href: '/settings', icon: Settings },
-];
+] as const;
 
 export function Navigation() {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ export function Navigation() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex md:items-center md:space-x-1">
-            {navigation.map((item) => {
+            {NAVIGATION_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
@@ -54,15 +55,17 @@ export function Navigation() {
             })}
           </div>
 
-          {/* User Avatar */}
-          <div className="flex items-center">
-            <NavLink
-              to="/profile"
-              className="flex items-center space-x-2 rounded-md p-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <UserAvatar user={user!} size="sm" />
-            </NavLink>
-          </div>
+          {/* User Avatar - Only render if user exists */}
+          {user && (
+            <div className="flex items-center">
+              <NavLink
+                to="/profile"
+                className="flex items-center space-x-2 rounded-md p-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <UserAvatar user={user} size="sm" />
+              </NavLink>
+            </div>
+          )}
         </div>
       </div>
     </nav>

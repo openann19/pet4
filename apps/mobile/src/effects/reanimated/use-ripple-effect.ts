@@ -1,4 +1,4 @@
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion'
 
 /**
  * useRippleEffect hook

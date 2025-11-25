@@ -1,6 +1,6 @@
 import { Image, Pressable, Text, View } from 'react-native'
 import type { ReactNode } from 'react'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import { useHeaderAnimation, useHeaderButtonAnimation } from '@mobile/effects/reanimated'
 
 const AnimatedView = Animated.createAnimatedComponent(View)

@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
+import { Animated, FadeIn, FadeOut } from '@petspark/motion'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import type { CallSession } from '@petspark/core'
 import type { MediaStream } from '@/types/webrtc'

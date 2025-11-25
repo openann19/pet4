@@ -9,7 +9,7 @@
 
 import { Skia, type SkSurface } from '@shopify/react-native-skia'
 import { createLogger } from '../../../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('surface-cache')
 

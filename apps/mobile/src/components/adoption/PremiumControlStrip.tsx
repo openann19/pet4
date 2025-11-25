@@ -21,14 +21,7 @@ import {
   Modal,
   StyleSheet,
 } from 'react-native'
-import Animated, {
-  FadeInUp,  
-  SlideInDown,
-  SlideOutDown,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, FadeInUp, SlideInDown, SlideOutDown, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import { colors } from '@mobile/theme/colors'

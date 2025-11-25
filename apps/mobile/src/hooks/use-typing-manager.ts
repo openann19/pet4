@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { TypingUser } from '@/lib/chat-types'
 import type { RealtimeClient } from '@/lib/realtime'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseTypingManagerOptions {
   roomId: string

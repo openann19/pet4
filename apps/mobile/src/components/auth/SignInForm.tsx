@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import { Animated, FadeInDown, FadeInUp } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { useStorage } from '../../hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'

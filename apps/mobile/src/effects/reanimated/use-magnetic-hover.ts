@@ -8,7 +8,7 @@ import { Gesture } from 'react-native-gesture-handler'
 import { useCallback, useRef } from 'react'
 import { haptic } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseMagneticHoverOptions {
   strength?: number
@@ -68,17 +68,17 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
       const { width, height } = containerDimensions.current
       const centerX = width / 2
       const centerY = height / 2
-      
+
       const deltaX = e.x - centerX
       const deltaY = e.y - centerY
-      
+
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
       const maxDist = Math.min(width, height) / 2
-      
+
       if (distance < maxDist) {
         const normalizedX = Math.max(-maxDistance, Math.min(maxDistance, deltaX * strength))
         const normalizedY = Math.max(-maxDistance, Math.min(maxDistance, deltaY * strength))
-        
+
         translateX.value = withSpring(normalizedX, { damping, stiffness })
         translateY.value = withSpring(normalizedY, { damping, stiffness })
       }
@@ -106,4 +106,3 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
     gesture,
   }
 }
-

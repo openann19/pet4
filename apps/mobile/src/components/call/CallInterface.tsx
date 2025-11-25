@@ -8,14 +8,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { Dimensions, Pressable, StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  interpolate,
-  Extrapolation,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withSequence, interpolate, Extrapolation } from '@petspark/motion'
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler'
 import * as Haptics from 'expo-haptics'
 import { useWebRTC } from '@/hooks/call/use-web-rtc'

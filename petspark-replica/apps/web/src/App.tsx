@@ -12,6 +12,7 @@ import { NotificationsPage } from '@/pages/NotificationsPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { useAuth } from '@/hooks/useAuth';
 
 function App() {
@@ -26,42 +27,44 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background font-sans antialiased">
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/home" replace />} />
-          <Route path="home" element={<HomePage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="pets/:id" element={<PetProfilePage />} />
-          <Route path="discover" element={<DiscoverPage />} />
-          <Route path="chat" element={<ChatPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
-        
-        {/* 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-      
-      <Toaster
-        position="top-right"
-        expand={false}
-        richColors
-        closeButton
-      />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-background font-sans antialiased">
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/home" replace />} />
+            <Route path="home" element={<HomePage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="pets/:id" element={<PetProfilePage />} />
+            <Route path="discover" element={<DiscoverPage />} />
+            <Route path="chat" element={<ChatPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+
+        <Toaster
+          position="top-right"
+          expand={false}
+          richColors
+          closeButton
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 

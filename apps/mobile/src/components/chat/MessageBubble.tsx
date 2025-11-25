@@ -12,24 +12,14 @@
  */
 
 import React, { memo, useCallback, useState } from 'react'
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
   StyleSheet,
   Pressable,
   AccessibilityInfo,
 } from 'react-native'
-import Animated, { 
-  Layout, 
-  FadeIn, 
-  FadeOut,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  runOnUI,
-} from 'react-native-reanimated'
+import { Animated, Layout, FadeIn, FadeOut, useSharedValue, useAnimatedStyle, withSpring, withTiming, runOnUI } from '@petspark/motion'
 import { colors } from '../../theme/colors'
 import { getTypographyStyle, spacing } from '../../theme/typography'
 import { createLogger } from '../../utils/logger'
@@ -55,7 +45,7 @@ export interface Message {
   status: MessageStatus
   createdAt: string
   timestamp?: string // Alias for compatibility
-  reactions?: Record<ReactionType, string[]> | Array<{ emoji: ReactionType; userId: string; userName: string }>
+  reactions?: Record<ReactionType, string[]> | { emoji: ReactionType; userId: string; userName: string }[]
   metadata?: Record<string, unknown>
 }
 
@@ -91,9 +81,9 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   index = 0,
   isNew = false,
   isHighlighted = false,
-  variant = 'default',
-  previousStatus,
-  roomType = 'direct',
+  variant: _variant = 'default',
+  previousStatus: _previousStatus,
+  roomType: _roomType = 'direct',
   onReact,
   onReply,
   onCopy,
@@ -104,10 +94,10 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   const scale = useSharedValue(1)
   const opacity = useSharedValue(1)
   const glowOpacity = useSharedValue(0)
-  
+
   // State for interactions
   const [showReactions, setShowReactions] = useState(false)
-  const [isLongPressing, setIsLongPressing] = useState(false)
+  const [_isLongPressing, setIsLongPressing] = useState(false)
 
   // Format timestamp
   const formatTime = useCallback((timestamp: string): string => {
@@ -118,18 +108,18 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   // Handle long press for reactions
   const handleLongPress = useCallback(() => {
     if (message.status === 'sending') return
-    
+
     runOnUI(() => {
       scale.value = withSpring(0.95, { damping: 15, stiffness: 300 })
       glowOpacity.value = withTiming(0.3, { duration: 150 })
     })()
-    
+
     setIsLongPressing(true)
     setShowReactions(true)
-    
+
     // Haptic feedback
     AccessibilityInfo.announceForAccessibility('Message options available')
-    
+
     logger.debug('Long press triggered', { messageId: message.id })
   }, [message.id, message.status, scale, glowOpacity])
 
@@ -139,7 +129,7 @@ export const MessageBubble = memo<MessageBubbleProps>(({
       scale.value = withSpring(1, { damping: 15, stiffness: 300 })
       glowOpacity.value = withTiming(0, { duration: 150 })
     })()
-    
+
     setIsLongPressing(false)
   }, [scale, glowOpacity])
 
@@ -242,13 +232,13 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   const renderReactions = useCallback(() => {
     if (!message.reactions) return null
 
-    const reactionEntries = Array.isArray(message.reactions) 
+    const reactionEntries = Array.isArray(message.reactions)
       ? message.reactions.reduce((acc, reaction) => {
-          const emoji = reaction.emoji
-          if (!acc[emoji]) acc[emoji] = []
-          acc[emoji]!.push(reaction.userId)
-          return acc
-        }, {} as Record<ReactionType, string[]>)
+        const emoji = reaction.emoji
+        if (!acc[emoji]) acc[emoji] = []
+        acc[emoji].push(reaction.userId)
+        return acc
+      }, {} as Record<ReactionType, string[]>)
       : message.reactions
 
     const entries = Object.entries(reactionEntries) as [ReactionType, string[]][]

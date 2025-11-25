@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { Animated } from '@petspark/motion';
 import { colors } from '@mobile/theme/colors';
 import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animation';
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';

@@ -12,11 +12,11 @@ import {
   type PressableProps,
   type GestureResponderEvent,
 } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 import { springConfigs } from '@/effects/reanimated/transitions'
-import { isTruthy } from '@petspark/shared';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 

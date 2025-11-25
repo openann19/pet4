@@ -6,12 +6,7 @@
 
 import React, { useCallback } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Modal } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { Animated, useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@mobile/theme/colors';
 import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animation';

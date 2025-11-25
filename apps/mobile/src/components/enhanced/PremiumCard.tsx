@@ -5,12 +5,7 @@
 
 import React, { useEffect } from 'react'
 import { View, StyleSheet, type ViewStyle, type ViewProps } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion'
 import { useHoverLift, useGlowPulse } from '@mobile/effects/reanimated'
 
 const AnimatedView = Animated.createAnimatedComponent(View)

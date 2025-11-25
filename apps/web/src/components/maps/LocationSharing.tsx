@@ -11,7 +11,7 @@ import type { Location } from '@/lib/maps/types';
 
 const logger = createLogger('LocationSharing');
 import { getCurrentLocation, snapToGrid } from '@/lib/maps/utils';
-import MapLibreMap from '@/components/maps/MapLibreMap';
+import LazyMapLibreMap from '@/components/maps/LazyMapLibreMap';
 import { openInMaps } from '@/lib/maps/deep-links';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { toast } from 'sonner';
@@ -103,7 +103,7 @@ export function LocationBubble({
           </SheetHeader>
 
           <div className="flex-1 relative">
-            <MapLibreMap
+            <LazyMapLibreMap
               center={location}
               zoom={15}
               markers={[
@@ -214,7 +214,7 @@ export function LocationPicker({
 
       {selectedLocation && (
         <div className="relative h-64 rounded-lg overflow-hidden border">
-          <MapLibreMap
+          <LazyMapLibreMap
             center={selectedLocation}
             zoom={sharingPrecise ? 15 : 13}
             onMapClick={handleMapClick}

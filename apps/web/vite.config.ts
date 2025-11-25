@@ -601,6 +601,10 @@ export default defineConfig(async (): Promise<VitestConfig> => {
           if (id.includes('simple-peer')) {
             return true;
           }
+          // Node polyfills that should be externalized
+          if (id.includes('vite-plugin-node-polyfills/shims')) {
+            return true;
+          }
           return false;
         },
         output: {
@@ -645,10 +649,8 @@ export default defineConfig(async (): Promise<VitestConfig> => {
               ) {
                 return 'utils-vendor';
               }
-              // Map library - separate chunk for lazy loading
-              if (id.includes('maplibre-gl') || id.includes('leaflet')) {
-                return 'map-vendor';
-              }
+              // Map libraries - let Vite handle dynamic imports automatically
+              // Removed manual chunk to allow proper code-splitting
               // ML/TensorFlow - separate chunk for lazy loading
               if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models')) {
                 return 'ml-vendor';
@@ -680,5 +682,5 @@ export default defineConfig(async (): Promise<VitestConfig> => {
       setupFiles: './src/test/setup.ts',
       css: true,
     },
-    };
-  });
+  };
+});

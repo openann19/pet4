@@ -9,10 +9,19 @@ import {
     SkipToComposer,
     LiveRegions,
 } from '../LiveRegions';
+import { UIProvider } from '@/contexts/UIContext';
+
+const renderWithUI = (ui: React.ReactElement) => {
+    const utils = render(<UIProvider>{ui}</UIProvider>);
+    return {
+        ...utils,
+        rerender: (next: React.ReactElement) => utils.rerender(<UIProvider>{next}</UIProvider>),
+    };
+};
 
 describe('AnnounceNewMessage', () => {
     it('announces last message with sender name when provided', () => {
-        render(<AnnounceNewMessage lastText="Hello" senderName="Alice" />);
+        renderWithUI(<AnnounceNewMessage lastText="Hello" senderName="Alice" />);
 
         const region = screen.getByRole('status', {
             name: /new message announcement/i,
@@ -22,7 +31,7 @@ describe('AnnounceNewMessage', () => {
     });
 
     it('clears announcement when there is no last message', () => {
-        const { rerender } = render(<AnnounceNewMessage lastText="Hi" senderName="Bob" />);
+        const { rerender } = renderWithUI(<AnnounceNewMessage lastText="Hi" senderName="Bob" />);
 
         rerender(<AnnounceNewMessage lastText={null} senderName={null} />);
 
@@ -36,7 +45,7 @@ describe('AnnounceNewMessage', () => {
 
 describe('AnnounceTyping', () => {
     it('announces single user typing', () => {
-        render(<AnnounceTyping userName="Charlie" />);
+        renderWithUI(<AnnounceTyping userName="Charlie" />);
 
         const region = screen.getByRole('status', {
             name: /typing indicator announcement/i,
@@ -46,7 +55,7 @@ describe('AnnounceTyping', () => {
     });
 
     it('announces multiple users typing', () => {
-        render(<AnnounceTyping userName="ignored" multipleUsers />);
+        renderWithUI(<AnnounceTyping userName="ignored" multipleUsers />);
 
         const region = screen.getByRole('status', {
             name: /typing indicator announcement/i,
@@ -63,7 +72,7 @@ describe('SkipToComposer', () => {
         const focusSpy = vi.spyOn(input, 'focus');
         const ref = { current: input } as React.RefObject<HTMLInputElement>;
 
-        render(<SkipToComposer inputRef={ref} />);
+        renderWithUI(<SkipToComposer inputRef={ref} />);
 
         const link = screen.getByRole('link', { name: /skip to message input/i });
         await user.click(link);
@@ -77,7 +86,7 @@ describe('SkipToComposer', () => {
         const focusSpy = vi.spyOn(input, 'focus');
         const ref = { current: input } as React.RefObject<HTMLInputElement>;
 
-        render(<SkipToComposer inputRef={ref} />);
+        renderWithUI(<SkipToComposer inputRef={ref} />);
 
         const link = screen.getByRole('link', { name: /skip to message input/i });
 
@@ -94,7 +103,7 @@ describe('SkipToComposer', () => {
 
 describe('LiveRegions', () => {
     it('renders children inside a live regions container', () => {
-        render(
+        renderWithUI(
             <LiveRegions>
                 <button type="button">Child control</button>
             </LiveRegions>

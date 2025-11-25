@@ -4,10 +4,9 @@
  * Mobile stories bar with Reanimated animations
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import Animated from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import type { Story } from '@petspark/core';
 import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
 import { colors } from '@mobile/theme/colors';
@@ -15,7 +14,6 @@ import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animatio
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';
 import * as Haptics from 'expo-haptics';
 
-const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface StoriesBarProps {
@@ -32,7 +30,7 @@ interface StoriesBarProps {
 }
 
 interface StoryRingProps {
-  stories: Story[];
+  _stories: Story[];
   petName: string;
   petPhoto: string;
   isOwn?: boolean;
@@ -41,7 +39,7 @@ interface StoryRingProps {
   index: number;
 }
 
-function StoryRing({ stories, petName, petPhoto, isOwn, hasUnviewed, onPress, index }: StoryRingProps) {
+function StoryRing({ _stories, petName, petPhoto, isOwn, hasUnviewed, onPress, index }: StoryRingProps) {
   const entry = useEntryAnimation({ delay: index * 50 });
   const bounce = useBounceOnTap({ scale: 0.95 });
   const scale = useSharedValue(1);
@@ -82,7 +80,6 @@ function StoryRing({ stories, petName, petPhoto, isOwn, hasUnviewed, onPress, in
 export function StoriesBar({
   allStories,
   currentUserId,
-  currentUserPetId,
   currentUserPetName,
   currentUserPetPhoto,
   onStoryRingPress,
@@ -139,7 +136,7 @@ export function StoriesBar({
         contentContainerStyle={styles.scrollContent}
       >
         <StoryRing
-          stories={ownStories as unknown as Story[]}
+          _stories={ownStories as unknown as Story[]}
           petName={currentUserPetName}
           petPhoto={currentUserPetPhoto}
           isOwn
@@ -161,7 +158,7 @@ export function StoriesBar({
           return (
             <StoryRing
               key={userId}
-              stories={userStories as unknown as Story[]}
+              _stories={userStories as unknown as Story[]}
               petName={firstStory.petName ?? 'Pet'}
               petPhoto={firstStory.petPhoto ?? ''}
               hasUnviewed={hasUnviewed}
@@ -247,4 +244,3 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 });
-

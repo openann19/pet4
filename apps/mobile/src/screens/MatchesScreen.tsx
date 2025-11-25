@@ -23,7 +23,7 @@ import { createLogger } from '@mobile/utils/logger'
 import React, { useState, useCallback, useEffect } from 'react'
 import { StyleSheet, Text, View, Modal, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeIn } from 'react-native-reanimated'
+import { Animated, FadeIn } from '@petspark/motion'
 
 const logger = createLogger('MatchesScreen')
 

@@ -1,17 +1,9 @@
 import React, { useCallback, useRef, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, ScrollView, type ViewStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  measure,
-  runOnUI,
-  type AnimatedRef,
-} from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, measure, runOnUI, type AnimatedRef } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
-import { isTruthy } from '@petspark/shared';
 
 const AnimatedView = Animated.View
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
@@ -52,7 +44,7 @@ export function PremiumTabs({
   children,
 }: PremiumTabsProps): React.JSX.Element {
   const containerRef = useRef<View>(null)
-  const tabRefs = useRef<Array<React.ComponentRef<typeof AnimatedPressable> | null>>([])
+  const tabRefs = useRef<(React.ComponentRef<typeof AnimatedPressable> | null)[]>([])
   const indicatorPosition = useSharedValue(0)
   const indicatorWidth = useSharedValue(0)
   const reducedMotion = useReducedMotionSV()

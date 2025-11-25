@@ -46,7 +46,7 @@ export function useMapLocation(): UseMapLocationReturn {
   }, [mapSettings.PRIVACY_GRID_METERS, t]);
 
   useEffect(() => {
-    requestLocation();
+    void requestLocation();
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);

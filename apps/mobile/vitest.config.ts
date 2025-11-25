@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
@@ -5,6 +6,11 @@ import react from '@vitejs/plugin-react'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = __dirname
+const nativeResolutionOrder = ['.tsx', '.ts', '.jsx', '.js']
+const includePatterns = [
+  'src/**/__tests__/**/*.{ts,tsx}',
+  'src/**/*.{test,spec}.{ts,tsx}'
+]
 
 export default defineConfig({
   resolve: {
@@ -13,12 +19,41 @@ export default defineConfig({
       '@': path.resolve(projectRoot, './src'),
       '@pet/domain': path.resolve(projectRoot, '../web/src/core/domain'),
       '@petspark/shared': path.resolve(projectRoot, '../../packages/shared/src'),
+      'react-native': path.resolve(projectRoot, './src/test/mocks/react-native.ts'),
     },
     conditions: ['import', 'module', 'default'],
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+    extensions: [
+      '.native.ts',
+      '.native.tsx',
+      '.native.js',
+      '.native.jsx',
+      '.ts',
+      '.tsx',
+      '.js',
+      '.jsx',
+      '.json',
+    ],
   },
   plugins: [
     react(),
+    {
+      name: 'native-extension-resolver',
+      enforce: 'pre',
+      resolveId(source: string, importer?: string) {
+        if (!source.endsWith('.native')) {
+          return null
+        }
+
+        const baseDir = importer ? path.dirname(importer) : projectRoot
+        for (const ext of nativeResolutionOrder) {
+          const candidate = path.resolve(baseDir, `${source}${ext}`)
+          if (fs.existsSync(candidate)) {
+            return candidate
+          }
+        }
+        return null
+      },
+    },
     // Plugin to intercept reduced-motion imports and replace with mock
     // This prevents esbuild from trying to transform the real file which has incompatible syntax
     // The real file uses dynamic imports and typeof checks that esbuild cannot transform in test environment
@@ -79,7 +114,7 @@ export default defineConfig({
     environment: 'jsdom',
     environmentOptions: { jsdom: { url: 'http://localhost/' } },
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/__tests__/**/*.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
+    include: includePatterns,
     exclude: [
       'src/**/__tests__/**/index.ts',
       'src/**/index.ts',
@@ -88,12 +123,8 @@ export default defineConfig({
     ],
     server: {
       deps: {
-        inline: [
-          '@testing-library/react-native',
-          'react-native',
-          'react-native-reanimated',
-        ],
-        external: ['react-native'],
+        inline: ['@testing-library/react-native'],
+        external: [],
       },
     },
     deps: {

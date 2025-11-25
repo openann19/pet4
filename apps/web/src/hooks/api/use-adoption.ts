@@ -22,19 +22,17 @@ export interface SubmitApplicationData {
 /**
  * Hook to get adoption profiles (infinite scroll)
  */
-export function useAdoptionProfiles(
-  filters?: Record<string, unknown>
-) {
+export function useAdoptionProfiles(filters?: Record<string, unknown>) {
   return useInfiniteQuery({
     queryKey: [...queryKeys.adoption.listings, filters],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam: _pageParam }) => {
       const response = await adoptionAPI.listProfiles({
         ...filters,
         // Add pagination params if needed
       });
       return response.items;
     },
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (_lastPage, _allPages) => {
       // Return cursor for next page if available
       return undefined;
     },

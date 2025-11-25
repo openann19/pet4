@@ -9,7 +9,7 @@
 
 import React, { useMemo } from 'react'
 import { View, Text, Image, TouchableOpacity, Linking, StyleSheet } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 
 export interface LinkPreviewProps {

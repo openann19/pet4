@@ -1,9 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "moduleSuffixes": [".native", ""],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mobile/*": ["./src/*"]
     },
     "typeRoots": [
       "../../node_modules/@types",

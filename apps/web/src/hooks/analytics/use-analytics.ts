@@ -81,7 +81,9 @@ export interface CampaignData {
   readonly content?: string;
 }
 
-export type UserProperties = Readonly<Record<string, string | number | boolean | readonly string[]>>;
+export type UserProperties = Readonly<
+  Record<string, string | number | boolean | readonly string[]>
+>;
 
 export interface AnalyticsConfig {
   readonly projectId: string;
@@ -120,7 +122,7 @@ const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const DB_NAME = 'petspark-analytics';
 const DB_VERSION = 1;
 const STORE_NAME = 'events';
-const MAX_QUEUE_SIZE = 1000;
+const _MAX_QUEUE_SIZE = 1000;
 const ENGAGEMENT_UPDATE_INTERVAL = 1000;
 
 // ============================================================================
@@ -141,8 +143,10 @@ function getAnonymousId(): string {
 }
 
 function shouldRespectDNT(): boolean {
-  return navigator.doNotTrack === '1' ||
-         (window as typeof window & { doNotTrack?: string }).doNotTrack === '1';
+  return (
+    navigator.doNotTrack === '1' ||
+    (window as typeof window & { doNotTrack?: string }).doNotTrack === '1'
+  );
 }
 
 function maskPII(value: string): string {
@@ -210,7 +214,7 @@ async function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(request.error?.message ?? 'Database error'));
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
@@ -230,7 +234,7 @@ async function persistEvent(event: AnalyticsEvent): Promise<void> {
     const store = transaction.objectStore(STORE_NAME);
     const request = store.add(event);
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(request.error?.message ?? 'Database error'));
     request.onsuccess = () => resolve();
   });
 }
@@ -242,7 +246,7 @@ async function getPersistedEvents(): Promise<readonly AnalyticsEvent[]> {
     const store = transaction.objectStore(STORE_NAME);
     const request = store.getAll();
 
-    request.onerror = () => reject(request.error);
+    request.onerror = () => reject(new Error(request.error?.message ?? 'Database error'));
     request.onsuccess = () => resolve(request.result);
   });
 }
@@ -267,7 +271,7 @@ async function clearPersistedEvents(ids: readonly string[]): Promise<void> {
         completed++;
         if (completed === total) resolve();
       };
-      request.onerror = () => reject(request.error);
+      request.onerror = () => reject(new Error(request.error?.message ?? 'Database error'));
     }
   });
 }
@@ -314,9 +318,7 @@ export function useAnalytics(config: AnalyticsConfig) {
   const flushTimerRef = useRef<number | null>(null);
   const engagementTimerRef = useRef<number | null>(null);
   const userPropertiesRef = useRef<UserProperties>({});
-  const trackingEnabledRef = useRef<boolean>(
-    !respectDNT || !shouldRespectDNT()
-  );
+  const trackingEnabledRef = useRef<boolean>(!respectDNT || !shouldRespectDNT());
 
   // ============================================================================
   // Event Flushing
@@ -418,8 +420,7 @@ export function useAnalytics(config: AnalyticsConfig) {
         ? Object.entries(properties).reduce(
             (acc, [key, value]) => ({
               ...acc,
-              [key]:
-                typeof value === 'string' ? maskPII(value) : value,
+              [key]: typeof value === 'string' ? maskPII(value) : value,
             }),
             {}
           )

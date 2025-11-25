@@ -6,7 +6,7 @@
 
 import React, { useState, useCallback } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Image, Linking } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 // MessageAttachment type - should be shared, using inline type for now
 interface MessageAttachment {
   id: string

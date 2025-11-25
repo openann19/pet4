@@ -12,9 +12,9 @@
  */
 
 import { useCallback, useRef } from 'react';
-import type { SharedValue } from '@petspark/motion';
+// Unused: import type { SharedValue } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '../core/reduced-motion';
-import { createSeededRNG, randomRange } from '../core/seeded-rng';
+import { randomRange } from '../core/seeded-rng';
 import { triggerHaptic } from '../core/haptic-manager';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { createLogger } from '@/lib/logger';
@@ -63,9 +63,7 @@ const DEFAULT_COLORS = ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#a855f7', '
  * <button onClick={() => trigger('match-123')}>Match!</button>
  * ```
  */
-export function useMatchConfetti(
-  options: UseMatchConfettiOptions = {}
-): UseMatchConfettiReturn {
+export function useMatchConfetti(options: UseMatchConfettiOptions = {}): UseMatchConfettiReturn {
   const {
     enabled = DEFAULT_ENABLED,
     particleCount: requestedParticleCount = DEFAULT_PARTICLE_COUNT,
@@ -82,10 +80,7 @@ export function useMatchConfetti(
 
   // Calculate device-aware particle count
   // Use device capability maxParticles, but allow override if requested is lower
-  const actualParticleCount = Math.min(
-    requestedParticleCount,
-    deviceCapability.maxParticles
-  );
+  const actualParticleCount = Math.min(requestedParticleCount, deviceCapability.maxParticles);
 
   const trigger = useCallback(
     (seed?: number | string) => {
@@ -116,14 +111,18 @@ export function useMatchConfetti(
       const clampedParticleCount = actualParticleCount;
 
       // Log effect start with device info
-      const deviceHz: 60 | 120 | 240 = hz >= 240 ? 240 : hz >= 120 ? 120 : 60
+      const deviceHz: 60 | 120 | 240 = hz >= 240 ? 240 : hz >= 120 ? 120 : 60;
       const effectId = logEffectStart('match-confetti', {
         particleCount: clampedParticleCount,
         duration: finalDuration,
         seed: seed ?? 'default',
         reducedMotion,
         deviceHz,
-        deviceCapability: deviceCapability.isHighEnd ? 'high-end' : deviceCapability.isMidRange ? 'mid-range' : 'low-end',
+        deviceCapability: deviceCapability.isHighEnd
+          ? 'high-end'
+          : deviceCapability.isMidRange
+            ? 'mid-range'
+            : 'low-end',
       });
       effectIdRef.current = effectId;
 
@@ -133,7 +132,11 @@ export function useMatchConfetti(
         reducedMotion,
         deviceHz: hz,
         maxParticles: deviceCapability.maxParticles,
-        deviceCapability: deviceCapability.isHighEnd ? 'high-end' : deviceCapability.isMidRange ? 'mid-range' : 'low-end',
+        deviceCapability: deviceCapability.isHighEnd
+          ? 'high-end'
+          : deviceCapability.isMidRange
+            ? 'mid-range'
+            : 'low-end',
       });
 
       // Trigger haptic feedback (celebration)

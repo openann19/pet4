@@ -10,13 +10,7 @@
  */
 
 import { useCallback, useEffect } from 'react'
-import {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { Easing, useAnimatedStyle, useSharedValue, withTiming, type SharedValue } from '@petspark/motion'
 import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'

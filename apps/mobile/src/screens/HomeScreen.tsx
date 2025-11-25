@@ -32,7 +32,7 @@ import { colors } from '@mobile/theme/colors'
 import { getTranslations } from '@mobile/i18n/translations'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
+import { Animated, FadeIn, FadeInDown } from '@petspark/motion'
 import { createLogger } from '@mobile/utils/logger'
 
 const logger = createLogger('HomeScreen')

@@ -70,7 +70,7 @@ export default function StoryViewer({
   const progressIntervalRef = useRef<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaContainerRef = useRef<HTMLDivElement>(null);
-  const swipeProgress = Reanimated.useSharedValue(0);
+  const _swipeProgress = Reanimated.useSharedValue(0);
 
   const currentStory = stories[currentIndex];
   const isOwn = currentStory?.userId === currentUserId;
@@ -161,7 +161,7 @@ export default function StoryViewer({
     swipeThreshold: 50,
   });
 
-  const mediaContainerOpacity = Reanimated.useMotionValue(1);
+  const _mediaContainerOpacity = Reanimated.useMotionValue(1);
   const mediaContainerStyle = Reanimated.useAnimatedStyle(() => {
     const opacity = gestureState.isSwiping ? 0.5 : 1;
     const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale;
@@ -292,9 +292,9 @@ export default function StoryViewer({
       }
 
       void toast.success(`Reacted with ${emoji}`, {
-                  duration: 1500,
-                  position: 'top-center',
-                });
+        duration: 1500,
+        position: 'top-center',
+      });
 
       setShowReactions(false);
     },
@@ -316,9 +316,9 @@ export default function StoryViewer({
     trackInteraction('reply');
 
     void toast.success('Reply sent!', {
-            duration: 2000,
-            position: 'top-center',
-          });
+      duration: 2000,
+      position: 'top-center',
+    });
 
     setReplyText('');
   }, [replyText, trackInteraction]);

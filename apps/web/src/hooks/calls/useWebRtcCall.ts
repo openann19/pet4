@@ -42,7 +42,7 @@ export interface WebRtcCallControls {
     remoteDisplayName: string;
     remoteAvatarUrl?: string | null;
   }) => Promise<void>;
-  handleIncomingOffer: (signal: CallOfferSignal) => Promise<void>;
+  handleIncomingOffer: (signal: CallOfferSignal) => void;
   acceptIncomingCall: () => Promise<void>;
   rejectIncomingCall: (reason?: string) => void;
   endCall: (reason?: string) => void;
@@ -308,7 +308,7 @@ export function useWebRtcCall(options: UseWebRtcCallOptions): UseWebRtcCallResul
   );
 
   const handleIncomingOffer = useCallback<UseWebRtcCallResult['handleIncomingOffer']>(
-    async (signal) => {
+    (signal) => {
       try {
         currentCallIdRef.current = signal.callId;
         remoteUserIdRef.current = signal.fromUserId;

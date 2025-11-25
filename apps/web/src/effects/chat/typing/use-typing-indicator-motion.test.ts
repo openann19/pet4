@@ -4,10 +4,13 @@ import { useTypingIndicatorMotion } from './use-typing-indicator-motion';
 import { motionTheme } from '@/config/motionTheme';
 
 // Comprehensive inline mock for the entire @petspark/motion package
-vi.mock('@petspark/motion', () => {
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
   const mockFn = (name: string) => vi.fn().mockName(`[mock]${name}`);
   return {
+    ...actual,
     Easing: {
+      ...(actual.Easing ?? {}),
       inOut: (easing: any) => easing,
       out: (easing: any) => easing,
       ease: (t: number) => t,
@@ -20,12 +23,12 @@ vi.mock('@petspark/motion', () => {
       exp: (t: number) => Math.pow(2, 10 * (t - 1)),
       in: (easing: (t: number) => number) => easing,
     },
-    useSharedValue: (initialValue: any) => ({ value: initialValue }),
-    withTiming: (toValue: any) => toValue,
-    withRepeat: (animation: any) => animation,
-    withSequence: (...animations: any[]) => animations[0],
-    withDelay: (_delay: number, animation: any) => animation,
-    useAnimatedStyle: (factory: () => any) => factory(),
+    useSharedValue: vi.fn((initialValue: any) => ({ value: initialValue })),
+    withTiming: vi.fn((toValue: any) => toValue),
+    withRepeat: vi.fn((animation: any) => animation),
+    withSequence: vi.fn((...animations: any[]) => animations[0]),
+    withDelay: vi.fn((_delay: number, animation: any) => animation),
+    useAnimatedStyle: vi.fn((factory: () => any) => factory()),
     // Add any other exports that might be used transitively
     interpolate: mockFn('interpolate'),
     MotionView: 'div',

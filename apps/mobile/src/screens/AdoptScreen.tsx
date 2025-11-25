@@ -26,7 +26,7 @@ import { getTranslations } from '@mobile/i18n/translations'
 import { createLogger } from '@mobile/utils/logger'
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeIn } from 'react-native-reanimated'
+import { Animated, FadeIn } from '@petspark/motion'
 
 const logger = createLogger('AdoptScreen')
 

@@ -46,7 +46,7 @@ import { OfflineIndicator } from '@/components/network/OfflineIndicator';
 import { useNetworkStatus } from '@/hooks/use-network-status';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { useFeedManagement, useInfiniteScroll } from '@/components/community/features/feed';
+import { useFeedManagement } from '@/components/community/features/feed';
 import { VirtualList, VirtualGrid } from '@/components/virtual';
 import { usePullToRefresh } from '@/components/community/features/pull-to-refresh';
 import { useTrendingTags } from '@/components/community/features/trending-tags';
@@ -55,6 +55,8 @@ import { getTypographyClasses } from '@/lib/typography';
 import { cn } from '@/lib/utils';
 
 const logger = createLogger('CommunityView');
+
+type CommunityFeedPost = ReturnType<typeof useFeedManagement>['posts'][number];
 
 function convertLostAlertToLostPetAlert(alert: LostAlert): LostPetAlert {
   return {
@@ -91,32 +93,25 @@ function CommunityViewContent(): JSX.Element {
     enabled: activeTab === 'feed',
   });
 
-  // Infinite scroll hook
-  const infiniteScroll = useInfiniteScroll({
-    hasMore: feedManagement.hasMore,
-    loading: feedManagement.loading,
-    onLoadMore: () => void feedManagement.loadFeed(true),
-    enabled: activeTab === 'feed',
-  });
-
   // Trending tags hook
-  const trendingTags = useTrendingTags();
+  const { trendingTags: trendingTagList, loadTrendingTags } = useTrendingTags();
 
   // Pull to refresh hook
   const pullToRefresh = usePullToRefresh({
     onRefresh: async () => {
       await feedManagement.refreshFeed();
-      await trendingTags.loadTrendingTags();
+      await loadTrendingTags();
     },
     enabled: activeTab === 'feed',
     activeTab,
   });
+  const { isRefreshing } = pullToRefresh;
 
   // Post actions hook
   const postActions = usePostActions({
     onPostCreated: () => {
       void feedManagement.refreshFeed();
-      void trendingTags.loadTrendingTags();
+      void loadTrendingTags();
     },
     onRefreshFeed: () => void feedManagement.refreshFeed(),
   });
@@ -143,7 +138,7 @@ function CommunityViewContent(): JSX.Element {
   const [selectedAdoptionProfile, setSelectedAdoptionProfile] = useState<AdoptionProfile | null>(
     null
   );
-  const [favoritedProfiles, setFavoritedProfiles] = useStorage<string[]>(
+  const [favoritedProfiles] = useStorage<string[]>(
     'favorited-adoption-profiles',
     []
   );
@@ -272,9 +267,9 @@ function CommunityViewContent(): JSX.Element {
 
   useEffect(() => {
     if (activeTab === 'feed') {
-      void trendingTags.loadTrendingTags();
+      void loadTrendingTags();
     }
-  }, [activeTab, trendingTags]);
+  }, [activeTab, loadTrendingTags]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -316,10 +311,31 @@ function CommunityViewContent(): JSX.Element {
     haptics.impact();
   }, []);
 
+  const handleRefreshFeed = useCallback(() => {
+    if (isRefreshing) {
+      return;
+    }
+
+    haptics.impact();
+    void (async () => {
+      try {
+        await feedManagement.refreshFeed();
+        await loadTrendingTags();
+        haptics.success();
+        void toast.success(t.community?.refreshed ?? 'Feed refreshed!');
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to refresh feed', err);
+        haptics.error();
+        void toast.error(t.community?.refreshError ?? 'Failed to refresh');
+      }
+    })();
+  }, [feedManagement, isRefreshing, loadTrendingTags, t]);
+
   // Animation hooks
   const headerTransition = usePageTransition({ isVisible: true, direction: 'down', duration: 300 });
   const trendingTransition = usePageTransition({
-    isVisible: trendingTags.trendingTags.length > 0,
+    isVisible: trendingTagList.length > 0,
     direction: 'up',
     duration: 300,
   });
@@ -388,6 +404,11 @@ function CommunityViewContent(): JSX.Element {
   // Adoption empty state animation
   const adoptionEmptyScale = useSharedValue(1);
   const adoptionEmptyRotation = useSharedValue(0);
+  const adoptionEmptyTransition = usePageTransition({
+    isVisible: adoptionProfiles.length === 0 && !adoptionLoading,
+    direction: 'fade',
+    duration: 500,
+  });
 
   useEffect(() => {
     if (adoptionProfiles.length === 0 && !adoptionLoading) {
@@ -435,7 +456,7 @@ function CommunityViewContent(): JSX.Element {
   })) as AnimatedStyle;
 
   // Memoize render callbacks for VirtualList and VirtualGrid
-  const renderPostItem = useCallback((post: typeof feedManagement.posts[0]) => (
+  const renderPostItem = useCallback((post: CommunityFeedPost) => (
     <div className="mb-4">
       <ErrorBoundary
         fallback={
@@ -466,7 +487,7 @@ function CommunityViewContent(): JSX.Element {
   ), [favoritedProfiles, postActions.handleToggleFavorite, handleAdoptionSelect]);
 
   const estimatePostSize = useCallback(() => 400, []);
-  const postKeyExtractor = useCallback((post: typeof feedManagement.posts[0]) => post.id, []);
+  const postKeyExtractor = useCallback((post: CommunityFeedPost) => post.id, []);
   const adoptionKeyExtractor = useCallback((profile: AdoptionProfile) => profile._id, []);
 
   const handleFeedEndReached = useCallback(() => {
@@ -497,7 +518,7 @@ function CommunityViewContent(): JSX.Element {
             <ArrowsClockwise
               size={24}
               weight="bold"
-              className={`${pullToRefresh.isRefreshing ? 'animate-spin' : ''} text-primary`}
+              className={`${isRefreshing ? 'animate-spin' : ''} text-primary`}
             />
           </MotionView>
         </MotionView>
@@ -525,28 +546,15 @@ function CommunityViewContent(): JSX.Element {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={async () => {
-                    haptics.impact();
-                    try {
-                      await feedManagement.refreshFeed();
-                      await trendingTags.loadTrendingTags();
-                      haptics.success();
-                      void toast.success(t.community?.refreshed ?? 'Feed refreshed!');
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
-                      logger.error('Failed to refresh feed', err);
-                      haptics.error();
-                      void toast.error(t.community?.refreshError ?? 'Failed to refresh');
-                    }
-                  }}
+                  onClick={handleRefreshFeed}
                   aria-label="Refresh feed"
-                  disabled={pullToRefresh.isRefreshing}
+                  disabled={isRefreshing}
                   className="shadow-md"
                 >
                   <ArrowsClockwise
                     size={20}
                     weight="bold"
-                    className={pullToRefresh.isRefreshing ? 'animate-spin' : ''}
+                    className={isRefreshing ? 'animate-spin' : ''}
                   />
                 </Button>
                 <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
@@ -582,7 +590,7 @@ function CommunityViewContent(): JSX.Element {
             {/* Feed Tab Content */}
             <TabsContent value="feed" className="mt-6 space-y-6">
               {/* Trending Tags */}
-              {trendingTags.trendingTags.length > 0 && (
+              {trendingTagList.length > 0 && (
                 <MotionView
                   style={trendingTransition.style}
                   className="bg-linear-to-br from-card via-card to-card/50 rounded-xl p-4 border border-border/50 shadow-lg"
@@ -595,7 +603,7 @@ function CommunityViewContent(): JSX.Element {
                     <Fire size={16} className="text-destructive ml-auto" weight="fill" />
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {trendingTags.trendingTags.map((tag) => (
+                    {trendingTagList.map((tag) => (
                       <Badge
                         key={tag}
                         variant="secondary"
@@ -701,12 +709,7 @@ function CommunityViewContent(): JSX.Element {
                   ))}
                 </div>
               ) : adoptionProfiles.length === 0 ? (
-                <MotionView
-                  style={
-                    usePageTransition({ isVisible: true, direction: 'fade', duration: 500 }).style
-                  }
-                  className="text-center py-20"
-                >
+                <MotionView style={adoptionEmptyTransition.style} className="text-center py-20">
                   <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                     🏠
                   </MotionView>

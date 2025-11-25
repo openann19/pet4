@@ -28,7 +28,7 @@ program
         output: options.output,
         lockFile: options.lockFile,
       })
-      console.log(chalk.green('✓ Merged packs successfully'))
+      console.warn(chalk.green('✓ Merged packs successfully'))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       console.error(chalk.red('✗ Merge failed:'), err.message)
@@ -51,7 +51,7 @@ program
         issuedBy: options.issuedBy,
         reviewedAt: options.reviewedAt,
       })
-      console.log(chalk.green('✓ Lock file generated successfully'))
+      console.warn(chalk.green('✓ Lock file generated successfully'))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       console.error(chalk.red('✗ Lock failed:'), err.message)
@@ -71,30 +71,30 @@ program
         newSpec: options.newSpec,
       })
 
-      console.log(chalk.bold('Diff Results:'))
-      console.log(chalk.green(`  Added: ${diff.added.length}`))
-      console.log(chalk.red(`  Removed: ${diff.removed.length}`))
-      console.log(chalk.yellow(`  Updated: ${diff.updated.length}`))
-      console.log(chalk.gray(`  Unchanged: ${diff.unchanged.length}`))
+      console.warn(chalk.bold('Diff Results:'))
+      console.warn(chalk.green(`  Added: ${diff.added.length}`))
+      console.warn(chalk.red(`  Removed: ${diff.removed.length}`))
+      console.warn(chalk.yellow(`  Updated: ${diff.updated.length}`))
+      console.warn(chalk.gray(`  Unchanged: ${diff.unchanged.length}`))
 
       if (diff.added.length > 0) {
-        console.log(chalk.green('\nAdded packs:'))
+        console.warn(chalk.green('\nAdded packs:'))
         for (const pack of diff.added) {
-          console.log(`  + ${pack.packId}@${pack.version}`)
+          console.warn(`  + ${pack.packId}@${pack.version}`)
         }
       }
 
       if (diff.removed.length > 0) {
-        console.log(chalk.red('\nRemoved packs:'))
+        console.warn(chalk.red('\nRemoved packs:'))
         for (const pack of diff.removed) {
-          console.log(`  - ${pack.packId}@${pack.version}`)
+          console.warn(`  - ${pack.packId}@${pack.version}`)
         }
       }
 
       if (diff.updated.length > 0) {
-        console.log(chalk.yellow('\nUpdated packs:'))
+        console.warn(chalk.yellow('\nUpdated packs:'))
         for (const pack of diff.updated) {
-          console.log(`  ~ ${pack.packId}: ${pack.oldVersion} → ${pack.newVersion}`)
+          console.warn(`  ~ ${pack.packId}: ${pack.oldVersion} → ${pack.newVersion}`)
         }
       }
     } catch (error) {
@@ -117,7 +117,7 @@ program
         registryFile: options.registryFile,
         targetVersion: options.targetVersion,
       })
-      console.log(chalk.green('✓ Pack migrated successfully'))
+      console.warn(chalk.green('✓ Pack migrated successfully'))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       console.error(chalk.red('✗ Migration failed:'), err.message)
@@ -148,7 +148,7 @@ program
         license: options.license,
         tags: options.tags,
       })
-      console.log(chalk.green('✓ Pack scaffolded successfully'))
+      console.warn(chalk.green('✓ Pack scaffolded successfully'))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       console.error(chalk.red('✗ Scaffold failed:'), err.message)

@@ -6,6 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import type { DiscoveryPreferences } from '@/components/discovery-preferences';
 import { DEFAULT_PREFERENCES } from '@/components/discovery-preferences';
 import type { SavedSearch } from '@/lib/saved-search-types';
@@ -45,24 +46,26 @@ vi.mock('@/hooks/use-storage', () => ({
     },
 }));
 
-vi.mock('@petspark/motion', () => {
-    const MotionView = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>;
+vi.mock('@petspark/motion', async () => {
+    const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
 
-    const motion = {
-        // Minimal implementations so motion.button / motion.div work in tests
-        button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-            <button type={props.type ?? 'button'} {...props}>
-                {children}
-            </button>
-        ),
-        div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-            <div {...props}>{children}</div>
-        ),
-    };
+    const MotionView = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+        <div {...props}>{children}</div>;
 
     return {
+        ...actual,
         MotionView,
-        motion,
+        motion: {
+            ...(actual.motion ?? {}),
+            button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+                <button type={props.type ?? 'button'} {...props}>
+                    {children}
+                </button>
+            ),
+            div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+                <div {...props}>{children}</div>
+            ),
+        },
     };
 });
 

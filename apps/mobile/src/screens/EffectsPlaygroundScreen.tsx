@@ -21,7 +21,7 @@ import { colors } from '@mobile/theme/colors'
 import { createLogger } from '@mobile/utils/logger'
 import React, { useCallback, useState } from 'react'
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native'
-import { withTiming } from 'react-native-reanimated'
+import { withTiming } from '@petspark/motion'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const logger = createLogger('EffectsPlaygroundScreen')

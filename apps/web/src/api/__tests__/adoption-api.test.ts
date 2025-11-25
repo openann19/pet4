@@ -64,9 +64,39 @@ const createAPIClientMock = () => {
   };
 };
 
-vi.mock('@/lib/api-client', () => ({
-  APIClient: createAPIClientMock(),
-}));
+vi.mock('@/lib/api-client', () => {
+  function createAPIClientMock() {
+    const makeRequest = async (endpoint: string, method: string, data?: unknown) => {
+      const url = new URL(`http://localhost:${testServerPort}${endpoint}`);
+      const response = await fetch(url.toString(), {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: data ? JSON.stringify(data) : undefined,
+      });
+      const text = await response.text();
+      try {
+        const json = JSON.parse(text);
+        return { data: json.data || json };
+      } catch {
+        return { data: {} };
+      }
+    };
+
+    return {
+      get: (endpoint: string) => makeRequest(endpoint, 'GET'),
+      post: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'POST', data),
+      put: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'PUT', data),
+      patch: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'PATCH', data),
+      delete: (endpoint: string) => makeRequest(endpoint, 'DELETE'),
+    };
+  }
+
+  return {
+    APIClient: createAPIClientMock(),
+  };
+});
 
 let server: ReturnType<typeof createServer>;
 let testServerPort: number;

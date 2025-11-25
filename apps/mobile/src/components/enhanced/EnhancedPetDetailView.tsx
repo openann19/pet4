@@ -5,12 +5,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { View, Text, ScrollView, Image, Pressable, StyleSheet, Modal } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 // import { useSwipeGesture } from '@/hooks/use-swipe-gesture'
 import { PremiumCard } from './PremiumCard'

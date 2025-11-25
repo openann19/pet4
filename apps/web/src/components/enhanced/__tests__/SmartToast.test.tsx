@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SmartToast } from '@/components/enhanced/SmartToast';
 import type { ToastType } from '@/components/enhanced/SmartToast';
+import React from 'react';
 
 vi.mock('react-native-reanimated', () => ({
   useSharedValue: vi.fn(() => ({ value: 0 })),
@@ -27,9 +28,13 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
     return style || {};
   }),
 }));
-vi.mock('@petspark/motion', () => ({
-  Presence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+  return {
+    ...actual,
+    Presence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+  };
+});
 
 describe('SmartToast', () => {
   const mockOnDismiss = vi.fn();

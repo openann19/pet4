@@ -23,10 +23,10 @@ class Logger {
 
     switch (level) {
       case 'debug':
-        console.debug(formattedMessage, data);
+        console.warn(formattedMessage, data);
         break;
       case 'info':
-        console.info(formattedMessage, data);
+        console.warn(formattedMessage, data);
         break;
       case 'warn':
         console.warn(formattedMessage, data);

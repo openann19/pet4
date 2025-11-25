@@ -2,6 +2,12 @@
  * Utility functions shared across PETSPARK applications
  */
 
+import type { Story } from './types';
+
+type ReadonlyRecord<K extends string | number, T> = {
+  readonly [P in K]: T;
+};
+
 // Class name utility for conditional styling
 export function cn(...inputs: (string | undefined | null | boolean)[]): string {
   return inputs.filter(Boolean).join(' ');
@@ -34,7 +40,7 @@ export function formatRelativeTime(date: Date): string {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  
+
   return formatDate(date);
 }
 
@@ -69,11 +75,11 @@ export function isValidUsername(username: string): boolean {
 // File utilities
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B';
-  
+
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
@@ -153,4 +159,17 @@ export function safeJsonStringify(obj: unknown): string {
   } catch {
     return '{}';
   }
+}
+
+// Story utilities for component parity
+export function filterActiveStories(stories: readonly Story[]): readonly Story[] {
+  const now = new Date();
+  return stories.filter(story => !story.isExpired && story.expiresAt > now);
+}
+
+export function groupStoriesByUser(stories: readonly Story[]): ReadonlyMap<string, readonly Story[]> {
+  return stories.reduce((groups, story) => {
+    const existing = groups.get(story.userId) || [];
+    return new Map(groups).set(story.userId, [...existing, story]);
+  }, new Map<string, readonly Story[]>());
 }

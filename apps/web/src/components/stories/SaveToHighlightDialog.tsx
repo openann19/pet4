@@ -44,7 +44,7 @@ export default function SaveToHighlightDialog({
   const userHighlights = (highlights ?? []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
     const highlight = userHighlights.find((h) => h.id === highlightId);
-    return highlight?.stories.some((s) => s.id === story.id) || false;
+    return highlight?.stories.some((s) => s.id === story.id) ?? false;
   };
 
   const handleSelectHighlight = (highlightId: string) => {
@@ -52,14 +52,14 @@ export default function SaveToHighlightDialog({
       void toast.error('Story already in this highlight');
       return;
     }
-    haptics.trigger('selection');
+    void haptics.trigger('selection');
     setSelectedHighlightId(highlightId);
   };
 
   const handleSaveToExisting = () => {
     if (!selectedHighlightId) return;
 
-    haptics.trigger('success');
+    void haptics.trigger('success');
 
     setHighlights((current) =>
       (current ?? []).map((h) =>
@@ -74,9 +74,9 @@ export default function SaveToHighlightDialog({
     );
 
     void toast.success('Story saved to highlight!', {
-            duration: 2000,
-            description: 'You can view it anytime in your highlights',
-          });
+      duration: 2000,
+      description: 'You can view it anytime in your highlights',
+    });
 
     onSaved?.();
     onOpenChange(false);
@@ -89,23 +89,23 @@ export default function SaveToHighlightDialog({
       return;
     }
 
-    haptics.trigger('success');
+    void haptics.trigger('success');
 
     const firstPet = userPets?.[0];
     const newHighlight = createStoryHighlight(
       story.userId,
-      firstPet?.id || story.petId,
+      firstPet?.id ?? story.petId,
       newHighlightTitle,
-      story.thumbnailUrl || story.mediaUrl,
+      story.thumbnailUrl ?? story.mediaUrl,
       [story]
     );
 
     setHighlights((current) => [...(current ?? []), newHighlight]);
 
     void toast.success('Highlight created!', {
-            duration: 2000,
-            description: `"${newHighlightTitle}" has been created with this story`,
-          });
+      duration: 2000,
+      description: `"${newHighlightTitle}" has been created with this story`,
+    });
 
     onSaved?.();
     onOpenChange(false);
@@ -158,9 +158,9 @@ export default function SaveToHighlightDialog({
                 </p>
               </div>
 
-              <div className="aspect-[9/16] max-h-48 rounded-2xl overflow-hidden bg-muted">
+              <div className="aspect-9/16 max-h-48 rounded-2xl overflow-hidden bg-muted">
                 <img
-                  src={story.thumbnailUrl || story.mediaUrl}
+                  src={story.thumbnailUrl ?? story.mediaUrl}
                   alt="Story preview"
                   className="w-full h-full object-cover"
                 />

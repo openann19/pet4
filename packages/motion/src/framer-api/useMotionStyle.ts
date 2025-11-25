@@ -14,14 +14,14 @@ export function useMotionStyle<T extends string | number>(
   motionValue: MotionValue<T>,
   transform: (value: T) => CSSProperties
 ): CSSProperties {
-  const style = useTransform(motionValue, transform)
-  
+  const _style = useTransform(motionValue, transform)
+
   // Return a getter function that returns the current style
   // This mimics the behavior of useAnimatedStyle
   return {
     get value() {
       return transform(motionValue.get())
-    }
+    },
   } as CSSProperties
 }
 
@@ -33,24 +33,24 @@ export function useMotionStyles(
   transform?: (values: Record<string, number | string>) => CSSProperties
 ): CSSProperties {
   const currentValues: Record<string, number | string> = {}
-  
+
   for (const [key, value] of Object.entries(values)) {
     currentValues[key] = value.get()
   }
-  
+
   if (transform) {
     return transform(currentValues) as CSSProperties
   }
-  
+
   // Default transform: convert to CSS properties
   const style: Record<string, string | number> = {}
-  
+
   for (const [key, val] of Object.entries(currentValues)) {
     // Convert camelCase to kebab-case for CSS properties
     const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
     style[cssKey] = val as string | number
   }
-  
+
   return style
 }
 
@@ -61,7 +61,7 @@ export function convertTransformToStyle(
   transforms: Array<{ [key: string]: number | string }>
 ): CSSProperties {
   const transformParts: string[] = []
-  
+
   for (const transform of transforms) {
     if (transform.scale !== undefined) {
       transformParts.push(`scale(${transform.scale})`)
@@ -85,9 +85,8 @@ export function convertTransformToStyle(
       transformParts.push(`rotateZ(${transform.rotateZ}deg)`)
     }
   }
-  
+
   return {
-    transform: transformParts.join(' ')
+    transform: transformParts.join(' '),
   }
 }
-

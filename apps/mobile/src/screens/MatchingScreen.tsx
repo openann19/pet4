@@ -12,10 +12,10 @@ import { createLogger } from '@mobile/utils/logger'
 import React, { useCallback, useMemo, useState } from 'react'
 import { ActivityIndicator, StyleSheet, Text, View, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeIn } from 'react-native-reanimated'
+import { Animated, FadeIn } from '@petspark/motion'
 import type { ApiResponse } from '../types/api'
 import type { Match } from '../types/pet'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('MatchingScreen')
 

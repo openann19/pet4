@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, useAnimatedStyle } from '@petspark/motion';
 import type { Playdate } from '@petspark/core';
 import { colors } from '@mobile/theme/colors';
 import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animation';
@@ -236,4 +236,3 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 });
-

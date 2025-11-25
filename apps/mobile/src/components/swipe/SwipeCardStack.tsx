@@ -5,16 +5,7 @@
 
 import React, { memo, useCallback, useMemo } from 'react'
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import Animated, {
-  cancelAnimation,
-  FadeIn,
-  FadeOut,
-  Layout,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-} from 'react-native-reanimated'
+import { Animated, cancelAnimation, FadeIn, FadeOut, Layout, useAnimatedStyle, useSharedValue, withSequence, withSpring } from '@petspark/motion'
 import { colors } from '../../theme/colors'
 import type { PetProfile } from '../../types/pet'
 import { SwipeCard } from './SwipeCard'

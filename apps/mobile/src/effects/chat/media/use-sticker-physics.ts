@@ -11,19 +11,12 @@
  */
 
 import { useCallback, useRef } from 'react'
-import {
-  Easing,
-  type SharedValue,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated'
+import { Easing, type SharedValue, useAnimatedStyle, useSharedValue, withSequence, withTiming } from '@petspark/motion'
 import { createLogger } from '../../../utils/logger'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
 import { randomRange } from '../core/seeded-rng'
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('sticker-physics')
 

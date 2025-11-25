@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   useSharedValue,
   withSpring,
@@ -25,11 +25,11 @@ type LayoutAnimationFactory = {
   delay?: (ms: number) => LayoutAnimationFactory
 }
 
-const FadeInImpl: LayoutAnimationFactory = ReanimatedLayout.FadeIn
+// FadeInImpl removed as unused
 const FadeOutImpl: LayoutAnimationFactory = ReanimatedLayout.FadeOut
 const SlideInRightImpl: LayoutAnimationFactory = ReanimatedLayout.SlideInRight
 const SlideInLeftImpl: LayoutAnimationFactory = ReanimatedLayout.SlideInLeft
-import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion'
+import { useReducedMotionSV } from '../reduced-motion'
 import { motionDurations, motionSprings } from '../motionTokens'
 import { isTruthy } from '../utils/guards'
 

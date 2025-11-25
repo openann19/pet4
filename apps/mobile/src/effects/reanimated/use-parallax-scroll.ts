@@ -3,9 +3,9 @@
  * Parallax scrolling effects for mobile using ScrollView
  */
 
-import { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, type SharedValue } from '@petspark/motion'
 import { useCallback } from 'react'
-import { useAnimatedScrollHandler } from 'react-native-reanimated'
+import { useAnimatedScrollHandler } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
 
 export interface UseParallaxScrollOptions {

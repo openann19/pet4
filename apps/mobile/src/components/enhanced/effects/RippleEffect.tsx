@@ -8,14 +8,8 @@ import {
   type ViewProps,
   type TouchableOpacityProps,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-} from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle, withTiming, withSequence } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
-import { isTruthy } from '@petspark/shared';
 
 export interface RippleEffectProps {
   color?: string
@@ -38,7 +32,7 @@ export function RippleEffect({
   testID = 'ripple-effect',
   onPress,
 }: RippleEffectProps): React.JSX.Element {
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([])
   const rippleScale = useSharedValue(0)
   const rippleOpacity = useSharedValue(opacity)
 

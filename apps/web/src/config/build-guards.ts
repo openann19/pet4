@@ -1,5 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
 /**
  * Build-time guards to prevent mock code from reaching production
  */
@@ -8,7 +6,7 @@ import { isTruthy, isDefined } from '@petspark/shared';
 // Production builds should not use legacy KV mocks - this is enforced via runtime guards below
 
 // Feature flag validation
-const VITE_USE_MOCKS = import.meta.env.VITE_USE_MOCKS;
+const VITE_USE_MOCKS = import.meta.env.VITE_USE_MOCKS as string | undefined;
 
 if (VITE_USE_MOCKS === 'true' && import.meta.env.PROD) {
   throw new Error(`
@@ -38,7 +36,7 @@ if (import.meta.env.PROD) {
     throw new Error(`
   ❌ PRODUCTION BLOCKER: Missing required environment variables
 
-  Missing: ${String(missing.join(', ') ?? '')}
+  Missing: ${missing.join(', ')}
 
   Required for production:
   ${requiredEnvVars.map((key) => `- ${key}=<value>`).join('\n')}
@@ -48,8 +46,8 @@ if (import.meta.env.PROD) {
 
 export const BUILD_CONFIG = {
   useMocks: VITE_USE_MOCKS === 'true' && !import.meta.env.PROD,
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1',
-  wsUrl: import.meta.env.VITE_WS_URL ?? 'ws://localhost:3001',
+  apiUrl: (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3001/api/v1',
+  wsUrl: (import.meta.env.VITE_WS_URL as string | undefined) ?? 'ws://localhost:3001',
   isProd: import.meta.env.PROD,
 } as const;
 

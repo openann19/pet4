@@ -7,7 +7,7 @@
  * Location: apps/web/src/core/domain/ml-matching.ts
  */
 
-import type { PetProfile, OwnerPreferences } from './pet-model';
+import type { PetProfile } from './pet-model';
 import type { MatchingWeights } from './matching-config';
 import { calculateMatchScore } from './matching-engine';
 import { createLogger } from '@/lib/logger';
@@ -160,10 +160,10 @@ export class MLMatchingWeightAdjuster {
 
     // Importance = difference between liked and passed average scores
     for (const factor of Object.keys(importance)) {
-      const likedAvg = likedFactorScores[factor];
-      const passedAvg = passedFactorScores[factor];
-      const currentImportance = importance[factor] ?? 0;
-      importance[factor] = Math.max(0, (likedAvg ?? 0) - (passedAvg ?? 0));
+      importance[factor] = Math.max(
+        0,
+        (likedFactorScores[factor] ?? 0) - (passedFactorScores[factor] ?? 0)
+      );
     }
 
     // Boost importance based on match success
@@ -177,7 +177,9 @@ export class MLMatchingWeightAdjuster {
     }
 
     // Boost importance based on message activity
-    const messageFactorScores = this.aggregateFactorScoresFromMessages(behaviorData.messageActivity);
+    const messageFactorScores = this.aggregateFactorScoresFromMessages(
+      behaviorData.messageActivity
+    );
     for (const factor of Object.keys(importance)) {
       const messageAvg = messageFactorScores[factor];
       const currentImportance = importance[factor];
@@ -214,9 +216,7 @@ export class MLMatchingWeightAdjuster {
   /**
    * Aggregate factor scores from swipe actions
    */
-  private aggregateFactorScores(
-    actions: SwipeAction[]
-  ): Record<string, number> {
+  private aggregateFactorScores(actions: SwipeAction[]): Record<string, number> {
     const totals: Record<string, number> = {};
     const counts: Record<string, number> = {};
 
@@ -246,9 +246,7 @@ export class MLMatchingWeightAdjuster {
   /**
    * Aggregate factor scores from successful matches
    */
-  private aggregateFactorScoresFromMatches(
-    matches: MatchData[]
-  ): Record<string, number> {
+  private aggregateFactorScoresFromMatches(_matches: MatchData[]): Record<string, number> {
     // In a real implementation, this would fetch factor scores for matched pets
     // For now, return empty (would need access to pet profiles and match scores)
     return {};
@@ -257,9 +255,7 @@ export class MLMatchingWeightAdjuster {
   /**
    * Aggregate factor scores from message activity
    */
-  private aggregateFactorScoresFromMessages(
-    messages: MessageActivity[]
-  ): Record<string, number> {
+  private aggregateFactorScoresFromMessages(_messages: MessageActivity[]): Record<string, number> {
     // Messages indicate engagement - higher message count = higher importance
     // In a real implementation, this would correlate message activity with factor scores
     return {};
@@ -268,9 +264,7 @@ export class MLMatchingWeightAdjuster {
   /**
    * Aggregate factor scores from view time
    */
-  private aggregateFactorScoresFromViewTime(
-    viewTimes: ViewTimeData[]
-  ): Record<string, number> {
+  private aggregateFactorScoresFromViewTime(_viewTimes: ViewTimeData[]): Record<string, number> {
     // Longer view time = more interest
     // In a real implementation, this would correlate view time with factor scores
     return {};
@@ -370,8 +364,7 @@ export class MLMatchingWeightAdjuster {
     const consistencyScore = Math.max(0, 1 - variance * 2); // Lower variance = higher score
 
     // Weighted average of confidence factors
-    const confidence =
-      sampleSizeScore * 0.4 + matchRateScore * 0.3 + consistencyScore * 0.3;
+    const confidence = sampleSizeScore * 0.4 + matchRateScore * 0.3 + consistencyScore * 0.3;
 
     return Math.min(1, Math.max(0, confidence));
   }

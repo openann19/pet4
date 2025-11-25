@@ -1,13 +1,5 @@
 import { useCallback } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, withRepeat, withSequence, withTiming, Easing } from '@petspark/motion'
 import { springConfigs } from './transitions'
 
 export type StickerAnimationType =

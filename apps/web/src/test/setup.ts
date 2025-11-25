@@ -2,6 +2,176 @@ import { expect, afterEach, beforeEach, vi } from 'vitest';
 import { cleanup, act } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+// Ensure React 18 createRoot is available globally for tests
+(global as any).createRoot = createRoot;
+
+// Mock the Image constructor for tests that need it
+class MockImage {
+  static instances: MockImage[] = [];
+
+  onload: ((event: Event) => void) | null = null;
+  onerror: ((event: Event) => void) | null = null;
+  complete = false;
+  src = '';
+  fetchPriority = '';
+
+  constructor() {
+    // Track each instance for test access
+    MockImage.instances.push(this);
+  }
+
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+}
+
+// Set up the global Image mock
+vi.stubGlobal('Image', MockImage);
+
+// Mock the Web Crypto API for tests that need it
+class MockCrypto {
+  getRandomValues = vi.fn();
+  randomUUID = vi.fn(() => 'mock-uuid-' + Math.random().toString(36).substr(2, 9));
+  subtle = {
+    importKey: vi.fn(),
+    deriveBits: vi.fn(),
+  };
+}
+
+// Set up the global crypto mock
+vi.stubGlobal('crypto', new MockCrypto());
+
+// CRITICAL: Mock framer-motion BEFORE any other imports to prevent React context errors
+// This must be at the top to intercept transitive dependencies from @petspark/motion
+vi.mock('framer-motion', () => {
+  // Simple component factory that doesn't rely on React internals during mock creation
+  const createSimpleComponent = (tag: string) => {
+    const Component = React.forwardRef<any, any>(({ children, ...props }, ref) => {
+      return React.createElement(tag, { ...props, ref }, children);
+    });
+    Component.displayName = `Motion.${tag}`;
+    return Component;
+  };
+
+  // Create all motion components
+  const motionComponents = {
+    div: createSimpleComponent('div'),
+    span: createSimpleComponent('span'),
+    button: createSimpleComponent('button'),
+    form: createSimpleComponent('form'),
+    input: createSimpleComponent('input'),
+    textarea: createSimpleComponent('textarea'),
+    label: createSimpleComponent('label'),
+    ul: createSimpleComponent('ul'),
+    ol: createSimpleComponent('ol'),
+    li: createSimpleComponent('li'),
+    h1: createSimpleComponent('h1'),
+    h2: createSimpleComponent('h2'),
+    h3: createSimpleComponent('h3'),
+    h4: createSimpleComponent('h4'),
+    h5: createSimpleComponent('h5'),
+    h6: createSimpleComponent('h6'),
+    p: createSimpleComponent('p'),
+    a: createSimpleComponent('a'),
+    img: createSimpleComponent('img'),
+    section: createSimpleComponent('section'),
+    article: createSimpleComponent('article'),
+    header: createSimpleComponent('header'),
+    footer: createSimpleComponent('footer'),
+    nav: createSimpleComponent('nav'),
+    main: createSimpleComponent('main'),
+    aside: createSimpleComponent('aside'),
+  };
+
+  // Simple provider components that just render children
+  const MotionConfig = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+
+  const AnimatePresence = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+
+  const LayoutGroup = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children);
+
+  return {
+    // Core motion components
+    motion: motionComponents,
+
+    // Context providers
+    MotionConfig,
+    AnimatePresence,
+    LayoutGroup,
+
+    // Animation functions
+    animate: vi.fn(() => Promise.resolve()),
+
+    // Hooks
+    useMotionValue: (initial: any) => ({
+      value: initial,
+      get: () => initial,
+      set: vi.fn(),
+      onChange: vi.fn(),
+    }),
+    useTransform: (value: any, transform: any) => ({
+      value: transform(value.get ? value.get() : value),
+      set: vi.fn(),
+      get: () => transform(value.get ? value.get() : value),
+    }),
+    useSpring: () => ({ value: 0 }),
+    useAnimation: () => ({
+      start: vi.fn(),
+      stop: vi.fn(),
+    }),
+    usePresence: () => [true, null],
+    useInView: () => false,
+    useScroll: () => ({
+      scrollY: { get: () => 0, set: vi.fn() },
+      scrollX: { get: () => 0, set: vi.fn() },
+    }),
+    useAnimate: () => [vi.fn(), vi.fn(() => Promise.resolve())],
+    useMotionValueEvent: () => vi.fn(),
+    useReducedMotion: () => false,
+    useTime: () => ({ value: 0 }),
+    useVelocity: () => ({ value: 0 }),
+    useAnimationFrame: () => ({ value: 0 }),
+    useElementScroll: () => ({
+      scrollY: { get: () => 0, set: vi.fn() },
+      scrollX: { get: () => 0, set: vi.fn() },
+    }),
+    useViewportScroll: () => ({
+      scrollY: { get: () => 0, set: vi.fn() },
+      scrollX: { get: () => 0, set: vi.fn() },
+    }),
+
+    // Animation utilities
+    withSpring: (toValue: number, _config?: any) => toValue,
+    withTiming: (toValue: number, _config?: any) => toValue,
+    withDelay: (delay: number, animation: any) => animation,
+    withRepeat: (animation: any, times?: number) => animation,
+    withSequence: (...animations: any[]) => animations[animations.length - 1],
+
+    // Additional exports
+    domAnimation: {},
+    motionValue: (initial: any) => ({
+      value: initial,
+      get: () => initial,
+      set: vi.fn(),
+    }),
+    AnimateSharedLayout: ({ children }: { children: React.ReactNode }) => children,
+    LazyMotion: ({ children }: { children: React.ReactNode }) => children,
+
+    // Drag controls
+    useDragControls: () => ({
+      start: vi.fn(),
+      stop: vi.fn(),
+    }),
+
+    // Types (empty objects for type compatibility)
+    PanInfo: {},
+    DragControls: {},
+  };
+});
 import { createMockMatchMedia } from './mocks/match-media';
 import { createMockIntersectionObserver } from './mocks/intersection-observer';
 import { createMockResizeObserver } from './mocks/resize-observer';
@@ -50,6 +220,38 @@ global.fetch = vi.fn(() =>
     bodyUsed: false,
   } as unknown as Response)
 ) as typeof fetch;
+
+// Automatically wrap timer callbacks in React act() during tests
+const originalSetTimeout = global.setTimeout;
+const originalSetInterval = global.setInterval;
+
+const wrapTimerHandler = (handler: TimerHandler): TimerHandler => {
+  if (typeof handler === 'function') {
+    return ((...args: unknown[]) => {
+      act(() => {
+        (handler as (...inner: unknown[]) => void)(...args);
+      });
+    }) as TimerHandler;
+  }
+
+  return (() => act(() => new Function(handler as string)())) as TimerHandler;
+};
+
+global.setTimeout = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
+  const wrapped =
+    typeof handler === 'function' || typeof handler === 'string'
+      ? wrapTimerHandler(handler)
+      : handler;
+  return originalSetTimeout(wrapped, timeout, ...args);
+}) as typeof setTimeout;
+
+global.setInterval = ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
+  const wrapped =
+    typeof handler === 'function' || typeof handler === 'string'
+      ? wrapTimerHandler(handler)
+      : handler;
+  return originalSetInterval(wrapped, timeout, ...args);
+}) as typeof setInterval;
 
 type GlobalWithDevFlag = typeof globalThis & { __DEV__?: boolean };
 
@@ -731,12 +933,6 @@ afterEach(() => {
 
   cleanupTestState();
   resetAllMocks();
-
-  // Ensure fake timers are used by default for deterministic tests
-  // Individual tests can opt out by calling vi.useRealTimers() if needed
-  if (!vi.isFakeTimers()) {
-    vi.useFakeTimers();
-  }
 });
 
 // MatchMedia shim for reduced-motion tests
@@ -1014,511 +1210,51 @@ vi.mock('@/contexts/UIContext', async () => {
   return actual;
 });
 
-// Mock @petspark/motion
-vi.mock('@petspark/motion', () => {
-  // Import mocked Reanimated functions
-  const createMockSharedValue = (initial: number) => {
+// Mock @petspark/motion by re-exporting the actual module, but keep deterministic hook stubs
+vi.mock('@petspark/motion', async () => {
+  const actual = await vi.importActual<typeof import('@petspark/motion')>('@petspark/motion');
+
+  const createMockSharedValue = <T>(initial: T) => {
     let currentValue = initial;
     return {
       get value() {
         return currentValue;
       },
-      set value(newValue: number) {
+      set value(newValue: T) {
         currentValue = newValue;
       },
       get: () => currentValue,
-      set: vi.fn((value: number) => {
+      set: vi.fn((value: T) => {
         currentValue = value;
       }),
     };
   };
 
-  const mockUseAnimatedStyle = vi.fn((fn: () => Record<string, unknown>) => {
+  const mockUseAnimatedStyle = vi.fn((factory: () => Record<string, unknown>) => {
     try {
-      return fn();
+      return factory();
     } catch {
       return {};
     }
   });
 
-  // Create Animated namespace matching react-native-reanimated mock
-  const AnimatedComponent = ({
-    children,
-    style,
-    ...props
-  }: {
-    children?: React.ReactNode;
-    style?: Record<string, unknown>;
-    [key: string]: unknown;
-  }) => {
-    return React.createElement('div', { style, ...props }, children);
-  };
-
-  const AnimatedNamespace = {
-    View: AnimatedComponent,
-    Text: AnimatedComponent,
-    Image: AnimatedComponent,
-    ScrollView: AnimatedComponent,
-    div: AnimatedComponent,
-    a: AnimatedComponent,
-  };
-
-  // MotionView component for use in components
-  const MotionView = ({
-    children,
-    style,
-    initial,
-    animate,
-    transition,
-    ...props
-  }: {
-    children?: React.ReactNode;
-    style?: Record<string, unknown>;
-    initial?: Record<string, unknown>;
-    animate?: Record<string, unknown>;
-    transition?: Record<string, unknown>;
-    [key: string]: unknown;
-  }) => {
-    return React.createElement('div', { style, ...props }, children);
-  };
-
   return {
-    // Export Animated as named export (matches motion package exports)
-    Animated: AnimatedNamespace,
-    motion: {
-      div: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        // Filter out framer-motion specific props that shouldn't be passed to DOM elements
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('div', { className, style, ...domProps }, children);
-      },
-      span: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('span', { className, style, ...domProps }, children);
-      },
-      button: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('button', { className, style, ...domProps }, children);
-      },
-      input: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('input', { className, style, ...domProps }, children);
-      },
-      a: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('a', { className, style, ...domProps }, children);
-      },
-      img: ({
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('img', { className, style, ...domProps });
-      },
-      form: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('form', { className, style, ...domProps }, children);
-      },
-      label: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('label', { className, style, ...domProps }, children);
-      },
-      select: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('select', { className, style, ...domProps }, children);
-      },
-      option: ({
-        children,
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        children?: React.ReactNode;
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('option', { className, style, ...domProps }, children);
-      },
-      textarea: ({
-        className,
-        style,
-        whileTap,
-        whileHover,
-        variants,
-        initial,
-        animate,
-        exit,
-        transition,
-        ...props
-      }: {
-        className?: string;
-        style?: Record<string, unknown>;
-        whileTap?: Record<string, unknown>;
-        whileHover?: Record<string, unknown>;
-        variants?: Record<string, Record<string, unknown>>;
-        initial?: string | Record<string, unknown>;
-        animate?: string | Record<string, unknown>;
-        exit?: string | Record<string, unknown>;
-        transition?: Record<string, unknown>;
-        [key: string]: unknown;
-      }) => {
-        const domProps = { ...props };
-        delete domProps.whileTap;
-        delete domProps.whileHover;
-        delete domProps.variants;
-        delete domProps.initial;
-        delete domProps.animate;
-        delete domProps.exit;
-        delete domProps.transition;
-
-        return React.createElement('textarea', { className, style, ...domProps });
-      },
-    },
-    MotionView,
-    MotionText: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
-      React.createElement('span', props, children),
-    MotionScrollView: ({
-      children,
-      ...props
-    }: {
-      children?: React.ReactNode;
-      [key: string]: unknown;
-    }) => React.createElement('div', props, children),
-    AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
-    Presence: ({ children }: { children?: React.ReactNode }) => children,
-    useMotionValue: vi.fn(() => ({ get: () => 0, set: vi.fn() })),
-    useSpring: vi.fn(() => ({ get: () => 0 })),
-    useTransform: vi.fn(() => ({ get: () => 0 })),
-    useAnimation: vi.fn(() => ({
-      start: vi.fn(),
-      stop: vi.fn(),
-      set: vi.fn(),
-    })),
-    useHoverLift: vi.fn((_px = 8, _scale = 1.03) => {
-      const mockStyle = { transform: [{ translateY: 0 }, { scale: 1 }] };
-      return {
-        onMouseEnter: vi.fn(),
-        onMouseLeave: vi.fn(),
-        animatedStyle: mockStyle,
-      };
-    }),
-    useSharedValue: vi.fn((initial: number) => createMockSharedValue(initial)),
+    ...actual,
+    motion: actual.motion,
+    MotionView: actual.MotionView,
+    MotionText: actual.MotionText,
+    MotionScrollView: actual.MotionScrollView,
+    useSharedValue: vi.fn(<T>(initial: T) => createMockSharedValue(initial)),
     useAnimatedStyle: mockUseAnimatedStyle,
-    useAnimatedProps: vi.fn((fn: () => Record<string, unknown>) => {
+    useAnimatedProps: vi.fn((factory: () => Record<string, unknown>) => {
       try {
-        return fn();
+        return factory();
       } catch {
         return {};
       }
     }),
-    withSpring: vi.fn((toValue: number) => toValue),
-    withTiming: vi.fn((toValue: number) => toValue),
+    withSpring: vi.fn((toValue: unknown) => toValue),
+    withTiming: vi.fn((toValue: unknown) => toValue),
     withRepeat: vi.fn((animation: unknown) => animation),
     withSequence: vi.fn((...args: unknown[]) => args[args.length - 1]),
     withDelay: vi.fn((_delay: number, animation: unknown) => animation),
@@ -1544,75 +1280,11 @@ vi.mock('@petspark/motion', () => {
       transition: {},
       animatedStyle: {},
     })),
-    usePressBounce: vi.fn((scaleOnPress = 0.96, scaleOnRelease = 1) => ({
+    usePressBounce: vi.fn(() => ({
       onPressIn: vi.fn(),
       onPressOut: vi.fn(),
-      animatedStyle: { transform: [{ scale: scaleOnRelease }] },
+      animatedStyle: { transform: [{ scale: 1 }] },
     })),
-    useOverlayTransition: vi.fn(
-      (options: UseOverlayTransitionOptions): UseOverlayTransitionReturn => {
-        const isOpen = options.isOpen;
-        const type = options.type ?? 'modal';
-        const drawerSide = options.drawerSide ?? 'right';
-
-        // Backdrop variants (same for all types)
-        const backdropVariants = {
-          initial: { opacity: 0 },
-          animate: { opacity: isOpen ? 1 : 0 },
-          exit: { opacity: 0 },
-        };
-
-        // Content variants based on type
-        let contentVariants: Record<string, Record<string, number | string>>;
-
-        if (type === 'drawer') {
-          const translateKey = drawerSide === 'left' || drawerSide === 'right' ? 'x' : 'y';
-          const translateValue = drawerSide === 'left' || drawerSide === 'top' ? -100 : 100;
-          contentVariants = {
-            initial: { [translateKey]: translateValue, opacity: 0 },
-            animate: { [translateKey]: isOpen ? 0 : translateValue, opacity: isOpen ? 1 : 0 },
-            exit: { [translateKey]: translateValue, opacity: 0 },
-          };
-        } else if (type === 'sheet') {
-          contentVariants = {
-            initial: { y: '100%', opacity: 0 },
-            animate: { y: isOpen ? 0 : '100%', opacity: isOpen ? 1 : 0 },
-            exit: { y: '100%', opacity: 0 },
-          };
-        } else {
-          // modal (default)
-          contentVariants = {
-            initial: { opacity: 0, scale: 0.95, y: 20 },
-            animate: {
-              opacity: isOpen ? 1 : 0,
-              scale: isOpen ? 1 : 0.95,
-              y: isOpen ? 0 : 20,
-            },
-            exit: { opacity: 0, scale: 0.95, y: 20 },
-          };
-        }
-
-        return {
-          backdropProps: {
-            initial: 'initial',
-            animate: isOpen ? 'animate' : 'exit',
-            exit: 'exit',
-            variants: backdropVariants,
-            transition: { duration: 0.2 },
-          },
-          contentProps: {
-            initial: 'initial',
-            animate: isOpen ? 'animate' : 'exit',
-            exit: 'exit',
-            variants: contentVariants,
-            transition: { type: 'spring', stiffness: 300, damping: 30 },
-          },
-        };
-      }
-    ),
-    animate: vi.fn((value: unknown, keyframes: unknown, options?: unknown) => {
-      return Promise.resolve(value);
-    }),
   };
 });
 

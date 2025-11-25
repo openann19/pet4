@@ -1,18 +1,19 @@
 /**
  * useThreadHighlight
  * Shared animation hook for highlighting threads/messages with glow effects
- * 
+ *
  * @packageDocumentation
  * @category Animation Hooks
  * @subcategory Chat Effects
  */
 
 import { useCallback, useEffect, useMemo } from 'react'
-import { useSharedValue, useAnimatedStyle, interpolateColor, type SharedValue } from '@petspark/motion'
+import { useSharedValue, useAnimatedStyle, type SharedValue } from '@petspark/motion'
+import { interpolate } from 'react-native-reanimated'
 import { createSpringAnimation, createTimingAnimation } from '../core/animations'
 import { useReducedMotionSV } from '../reduced-motion'
 import type { BaseAnimationConfig } from '../core/types'
-import { isTruthy, isDefined } from '../utils/guards';
+import { isTruthy } from '../utils/guards';
 
 export interface UseThreadHighlightOptions extends BaseAnimationConfig {
   /**
@@ -336,18 +337,18 @@ export function useThreadHighlight(
 
   // Create animated style
   const style = useAnimatedStyle(() => {
-    const backgroundOpacity = highlightProgress.value * 0.1
-    const backgroundColor = interpolateColor(
-      backgroundOpacity,
-      [0, 0.1],
-      [config.baseColor, config.highlightColor]
+    const backgroundOpacity = interpolate(
+      highlightProgress.value,
+      [0, 1],
+      [0, 0.1]
     )
 
     const glowOpacity = glowProgress.value + (pulseProgress.value * 0.3)
     const shadowOpacity = Math.min(glowOpacity, 1)
 
     return {
-      backgroundColor,
+      backgroundColor: config.highlightColor,
+      opacity: backgroundOpacity,
       shadowColor: config.highlightColor,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity,

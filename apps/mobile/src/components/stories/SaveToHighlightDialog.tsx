@@ -11,7 +11,7 @@ import {
   type ImageStyle,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import type { Story, StoryHighlight } from '@shared/types'
 import { useUserStore } from '@/store/user-store'
@@ -27,13 +27,7 @@ import { PremiumCard } from '@/components/enhanced/PremiumCard'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
 import { useShimmer } from '@/effects/reanimated/use-shimmer'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  interpolate,
-  Extrapolation,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation } from '@petspark/motion'
 import { springConfigs } from '@/effects/reanimated/transitions'
 
 const AnimatedView = Animated.View

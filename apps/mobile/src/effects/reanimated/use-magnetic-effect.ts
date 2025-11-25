@@ -1,9 +1,4 @@
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withSpring, type SharedValue } from '@petspark/motion'
 import { useCallback } from 'react'
 import type { AnimatedStyle } from './animated-view'
 

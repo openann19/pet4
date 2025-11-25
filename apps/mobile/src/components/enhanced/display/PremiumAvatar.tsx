@@ -8,10 +8,9 @@ import {
   type ViewProps,
   type TouchableOpacityProps,
 } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated'
+import { Animated, useSharedValue, useAnimatedStyle } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import type { ReactNode } from 'react'
-import { isTruthy } from '@petspark/shared';
 
 export interface PremiumAvatarProps {
   src?: string
@@ -142,7 +141,7 @@ export function PremiumAvatar({
                   borderRadius,
                 },
               ]}
-              accessibilityLabel={alt || name || 'Avatar'}
+              accessibilityLabel={alt ?? name ?? 'Avatar'}
             />
           ) : (
             <View
@@ -155,7 +154,7 @@ export function PremiumAvatar({
                 },
               ]}
             >
-              {icon || (
+              {icon ?? (
                 <Text style={[styles.initials, { fontSize: sizes[size].fontSize }]}>
                   {name ? getInitials(name) : '?'}
                 </Text>

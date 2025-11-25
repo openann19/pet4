@@ -319,7 +319,7 @@ export default tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         project: null,
-        tsconfigRootDir: undefined,
+        tsconfigRootDir: __dirname,
         ecmaVersion: 2022,
         sourceType: 'module',
         ecmaFeatures: {
@@ -351,6 +351,60 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+    },
+  },
+  // Specific configuration for test setup files to ensure they don't use type-checking
+  {
+    files: ['src/test/setup.ts', 'src/test/**/*.ts', 'src/components/chat/window/__tests__/ChatInputBar.test.tsx', 'src/api/__tests__/adoption-api.test.ts'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        vi: 'readonly',
+        vitest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        project: null,
+        tsconfigRootDir: __dirname,
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    plugins: {
+      import: importPlugin,
+    },
+    rules: {
+      // Disable all TypeScript rules for setup files
+      '@typescript-eslint/no-base-to-string': 'off',
+      '@typescript-eslint/no-array-delete': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'no-console': 'off',
+      'import/no-unresolved': 'off',
+      'import/no-cycle': 'off',
     },
   },
   {

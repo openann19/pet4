@@ -24,13 +24,22 @@ const BREAKPOINTS = {
 };
 
 const THEMES = ['light', 'dark'] as const;
-const STATES = ['idle', 'hover', 'focus', 'active', 'disabled', 'loading', 'error', 'empty'] as const;
+const STATES = [
+  'idle',
+  'hover',
+  'focus',
+  'active',
+  'disabled',
+  'loading',
+  'error',
+  'empty',
+] as const;
 
 // Routes to capture
 const ROUTES: RouteConfig[] = [
   { path: '/', component: 'WelcomeScreen', states: ['welcome'] },
-  { path: '/', component: 'AuthScreen', states: ['auth'] },
-  { path: '/', component: 'MainApp', states: ['main'] },
+  { path: '/auth', component: 'AuthScreen', states: ['auth'] },
+  { path: '/app', component: 'MainApp', states: ['main'] },
   { path: '/demo/pets', component: 'PetsDemoPage' },
 ];
 
@@ -83,19 +92,19 @@ async function captureState(
   if (state === 'hover') {
     // Hover over first interactive element
     const firstButton = page.locator('button, a, [role="button"]').first();
-    if (await firstButton.count() > 0) {
+    if ((await firstButton.count()) > 0) {
       await firstButton.hover();
     }
   } else if (state === 'focus') {
     // Focus first interactive element
     const firstInteractive = page.locator('button, a, input, select, textarea').first();
-    if (await firstInteractive.count() > 0) {
+    if ((await firstInteractive.count()) > 0) {
       await firstInteractive.focus();
     }
   } else if (state === 'active') {
     // Click and hold first button
     const firstButton = page.locator('button').first();
-    if (await firstButton.count() > 0) {
+    if ((await firstButton.count()) > 0) {
       await firstButton.dispatchEvent('mousedown');
     }
   } else if (state === 'disabled') {
@@ -147,12 +156,13 @@ async function captureState(
 }
 
 test.describe('UI Audit Baseline Capture', () => {
-
   for (const route of ROUTES) {
     for (const breakpoint of Object.keys(BREAKPOINTS) as Array<keyof typeof BREAKPOINTS>) {
       for (const theme of THEMES) {
-        for (const state of STATES) {
-          test(`Capture ${route.path} @ ${breakpoint} ${theme} ${state}`, async ({ page }) => {
+        for (const state of route.states || STATES) {
+          test(`Capture ${route.component} (${route.path}) @ ${breakpoint} ${theme} ${state}`, async ({
+            page,
+          }) => {
             await captureState(page, route, breakpoint, theme, state);
           });
         }

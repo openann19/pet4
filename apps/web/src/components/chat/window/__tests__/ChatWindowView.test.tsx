@@ -6,6 +6,7 @@ import type { ChatRoom, ChatMessage } from '../../../../lib/chat-types';
 import type { AnimatedStyle } from '@petspark/motion';
 import type { InputRef } from '../../../ui/input';
 import { ChatWindowView } from '../ChatWindowView';
+import { UIProvider } from '@/contexts/UIContext';
 
 const renderSpy = vi.fn<(props: Record<string, unknown>) => void>();
 
@@ -19,6 +20,8 @@ vi.mock('../ChatWindowContent', () => ({
 function createAnimatedStyleStub(): AnimatedStyle {
     return {} as AnimatedStyle;
 }
+
+const renderWithUI = (ui: React.ReactElement) => render(<UIProvider>{ui}</UIProvider>);
 
 describe('ChatWindowView', () => {
     it('renders ChatWindowContent with mapped props and live regions', () => {
@@ -145,7 +148,7 @@ describe('ChatWindowView', () => {
             toggleVideo: vi.fn(),
         };
 
-        render(
+        renderWithUI(
             <ChatWindowView
                 room={room}
                 currentUserId={currentUserId}
