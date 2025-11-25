@@ -25,11 +25,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { realtime } from '@mobile/lib/realtime'
 import { createLogger } from '@mobile/utils/logger'
 
-import { useReduceMotion } from '@mobile/effects/chat/ui/all-in-chat-effects'
-import {
-  ReactionBurst,
-  ShimmerOverlay,
-  TypingIndicator,
+import type { useReduceMotion as _useReduceMotion } from '@mobile/effects/chat/ui/all-in-chat-effects'
+import type {
+  ReactionBurst as _ReactionBurst,
+  ShimmerOverlay as _ShimmerOverlay,
+  TypingIndicator as _TypingIndicator,
 } from '@mobile/effects/chat/ui/all-in-chat-effects'
 
 const logger = createLogger('ChatScreen')
@@ -38,7 +38,7 @@ type DraftMessage = Message & {
   readonly status: 'sending' | 'sent' | 'delivered' | 'read'
 }
 
-const INITIAL_MESSAGES: DraftMessage[] = [
+const _INITIAL_MESSAGES: DraftMessage[] = [
   {
     id: '1',
     roomId: 'demo-room',
@@ -119,47 +119,55 @@ export function ChatScreen(): React.ReactElement {
   }, [localUserId, remoteUserName, remoteUserPhoto, callManager])
 
   // Handle start call
-  const handleStartCall = useCallback(async () => {
-    try {
-      await callManager.startCall(
-        remoteUserId,
-        remoteUserName,
-        remoteUserPhoto
-      )
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to start call', err)
-    }
+  const handleStartCall = useCallback(() => {
+    void (async () => {
+      try {
+        await callManager.startCall(
+          remoteUserId,
+          remoteUserName,
+          remoteUserPhoto
+        )
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to start call', err)
+      }
+    })()
   }, [callManager, remoteUserId, remoteUserName, remoteUserPhoto])
 
   // Handle end call
-  const handleEndCall = useCallback(async () => {
-    try {
-      await callManager.endCall()
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to end call', err)
-    }
+  const handleEndCall = useCallback(() => {
+    void (async () => {
+      try {
+        await callManager.endCall()
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to end call', err)
+      }
+    })()
   }, [callManager])
 
   // Handle accept call
-  const handleAcceptCall = useCallback(async () => {
-    try {
-      await callManager.acceptCall()
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to accept call', err)
-    }
+  const handleAcceptCall = useCallback(() => {
+    void (async () => {
+      try {
+        await callManager.acceptCall()
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to accept call', err)
+      }
+    })()
   }, [callManager])
 
   // Handle decline call
-  const handleDeclineCall = useCallback(async () => {
-    try {
-      await callManager.declineCall()
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to decline call', err)
-    }
+  const handleDeclineCall = useCallback(() => {
+    void (async () => {
+      try {
+        await callManager.declineCall()
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to decline call', err)
+      }
+    })()
   }, [callManager])
 
   return (

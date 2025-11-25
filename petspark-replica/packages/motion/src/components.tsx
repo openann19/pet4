@@ -9,17 +9,17 @@ import { PETSPARK_PRESETS } from './presets';
 import type { AnimationVariants, MotionProps as CustomMotionProps } from './types';
 
 // Animated Card component
-export interface AnimatedCardProps extends CustomMotionProps {
+export interface AnimatedCardProps extends Omit<CustomMotionProps, 'whileHover' | 'whileTap'> {
   readonly children: ReactNode;
   readonly className?: string;
   readonly preset?: keyof typeof PETSPARK_PRESETS;
   readonly variants?: AnimationVariants;
-  readonly whileHover?: boolean;
-  readonly whileTap?: boolean;
+  readonly enableHover?: boolean;
+  readonly enableTap?: boolean;
 }
 
 export const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
-  ({ children, className, preset = 'petCard', variants, whileHover = true, whileTap = true, ...props }, ref) => {
+  ({ children, className, preset = 'petCard', variants, enableHover = true, enableTap = true, ...props }, ref) => {
     const animationVariants = variants || PETSPARK_PRESETS[preset]?.variants;
 
     return (
@@ -29,8 +29,8 @@ export const AnimatedCard = forwardRef<HTMLDivElement, AnimatedCardProps>(
         variants={animationVariants}
         initial="hidden"
         animate="visible"
-        {...(whileHover && { whileHover: 'hover' })}
-        {...(whileTap && { whileTap: 'tap' })}
+        whileHover={enableHover ? 'hover' : undefined}
+        whileTap={enableTap ? 'tap' : undefined}
         {...props}
       >
         {children}
@@ -99,7 +99,7 @@ export const AnimatedModal = forwardRef<HTMLDivElement, AnimatedModalProps>(
             variants={animationVariants}
             initial="hidden"
             animate="visible"
-            {...(true && { exit: 'hidden' })}
+            exit="hidden"
             onClick={onClose}
             {...props}
           >
@@ -213,8 +213,8 @@ export const AnimatedAvatar = forwardRef<HTMLDivElement, AnimatedAvatarProps>(
         variants={animationVariants}
         initial="hidden"
         animate="visible"
-        {...({ whileHover: 'hover' })}
-        {...({ whileTap: 'tap' })}
+        whileHover="hover"
+        whileTap="tap"
         {...props}
       >
         {children}
@@ -245,8 +245,8 @@ export const AnimatedBadge = forwardRef<HTMLSpanElement, AnimatedBadgeProps>(
         variants={animationVariants}
         initial="hidden"
         animate={pulse ? 'pulse' : 'visible'}
-        {...({ whileHover: 'hover' })}
-        {...({ whileTap: 'tap' })}
+        whileHover="hover"
+        whileTap="tap"
         {...props}
       >
         {children}
@@ -280,7 +280,7 @@ export const AnimatedNotification = forwardRef<HTMLDivElement, AnimatedNotificat
             variants={animationVariants}
             initial="hidden"
             animate="visible"
-            {...(true && { exit: 'hidden' })}
+            exit="hidden"
             onClick={onClose}
             {...props}
           >

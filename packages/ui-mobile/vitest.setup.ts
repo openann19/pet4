@@ -1,14 +1,16 @@
 import '@testing-library/jest-native/extend-expect';
+import type { ComponentType } from 'react';
 import { vi } from 'vitest';
 
 // Type declarations for test matchers
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Vi {
     interface JestMatchers<T> {
       toBeInTheDocument(): T;
       toHaveTextContent(text: string | RegExp): T;
       toBeDisabled(): T;
-      toHaveProp(prop: string, value?: any): T;
+      toHaveProp(prop: string, value?: unknown): T;
     }
   }
 }
@@ -25,7 +27,7 @@ vi.mock('react-native', () => {
     },
     Platform: {
       OS: 'ios',
-      select: vi.fn((config: any) => config.ios || config.default),
+      select: vi.fn((config: Record<string, unknown>) => config.ios ?? config.default),
     },
     StatusBar: {
       currentHeight: 0,
@@ -81,7 +83,7 @@ vi.mock('react-native-gesture-handler', () => {
     RectButton: View,
     BorderlessButton: View,
     FlatList: View,
-    gestureHandlerRootHOC: vi.fn((component: any) => component),
+    gestureHandlerRootHOC: vi.fn((component: ComponentType) => component),
     Directions: {},
   };
 });

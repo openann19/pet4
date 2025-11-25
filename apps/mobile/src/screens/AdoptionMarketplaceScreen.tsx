@@ -7,7 +7,7 @@
  * @example
  * <AdoptionMarketplaceScreen />
  */
-import React, { useState, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { StyleSheet, Text, View, FlatList, Pressable, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Animated, FadeInUp, FadeInDown, FadeOutLeft } from '@petspark/motion'
@@ -27,8 +27,8 @@ import { getTranslations } from '@mobile/i18n/translations'
 import { createLogger } from '@mobile/utils/logger'
 
 const logger = createLogger('AdoptionMarketplaceScreen')
-const language = 'en'
-const t = getTranslations(language)
+const _language = 'en'
+const _t = getTranslations(_language)
 
 type ViewMode = 'browse' | 'my-listings' | 'applications'
 
@@ -45,7 +45,7 @@ function SegmentedControl({ options, value, onChange }: SegmentedControlProps): 
         const isSelected = option.value === value
         const isFirst = index === 0
         const isLast = index === options.length - 1
-        
+
         return (
           <Pressable
             key={option.value}
@@ -84,15 +84,15 @@ function SegmentedControl({ options, value, onChange }: SegmentedControlProps): 
 function AdoptionMarketplaceScreenContent(): React.JSX.Element {
   const networkStatus = useNetworkStatus()
   const {
-    listings,
+    listings: _listings,
     loading,
-    error,
+    error: _error,
     searchQuery,
     setSearchQuery,
     filters,
     setFilters,
-    currentUser,
-    hasMore,
+    currentUser: _currentUser,
+    hasMore: _hasMore,
     filteredListings,
     activeFilterCount,
     mode: activeMode,
@@ -112,9 +112,9 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
     logger.debug('Filters pressed', { activeFilterCount })
   }, [activeFilterCount])
 
-  const handleRemoveFilter = useCallback((filterKey: keyof typeof filters, value?: string | number | boolean) => {
+  const handleRemoveFilter = useCallback((filterKey: keyof typeof filters, _value?: string | number | boolean) => {
     const newFilters = { ...filters }
-    
+
     if (Array.isArray(newFilters[filterKey])) {
       // For array filters, remove the entire array
       delete newFilters[filterKey]
@@ -122,7 +122,7 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
       // For single value filters, remove the value
       delete newFilters[filterKey]
     }
-    
+
     setFilters(newFilters)
   }, [filters, setFilters])
 
@@ -146,10 +146,10 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
   const handleCardPress = useCallback((listing: AdoptionListing) => {
     logger.debug('Card pressed', { listingId: listing.id, petName: listing.petName })
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-    
+
     // Increment view count
     incrementView(listing.id)
-    
+
     // TODO: Navigate to listing detail screen
     // navigation.navigate('AdoptionDetail', { listingId: listing.id })
   }, [incrementView])
@@ -157,7 +157,7 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
   const handleFavoritePress = useCallback((listing: AdoptionListing) => {
     logger.debug('Favorite pressed', { listingId: listing.id, petName: listing.petName })
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     // TODO: Implement favorite toggle
     // toggleFavorite(listing.id)
   }, [])
@@ -165,7 +165,7 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
   const handleContactPress = useCallback((listing: AdoptionListing) => {
     logger.debug('Contact pressed', { listingId: listing.id, petName: listing.petName })
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    
+
     // TODO: Navigate to contact modal or chat
     // navigation.navigate('ContactSeller', { listingId: listing.id })
   }, [])
@@ -187,9 +187,9 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
   )
 
   const renderEmptyState = () => {
-    const currentListings = activeMode === 'browse' ? filteredListings : 
-                           activeMode === 'my-listings' ? userListings : []
-    
+    const _currentListings = activeMode === 'browse' ? filteredListings :
+      activeMode === 'my-listings' ? userListings : []
+
     return (
       <Animated.View
         entering={FadeInUp.delay(200).duration(500)}
@@ -197,13 +197,13 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
       >
         <Text style={styles.emptyIcon}>🐾</Text>
         <Text style={styles.emptyTitle}>
-          {activeMode === 'browse' ? 'No pets available' : 
-           activeMode === 'my-listings' ? 'No listings yet' : 'No applications yet'}
+          {activeMode === 'browse' ? 'No pets available' :
+            activeMode === 'my-listings' ? 'No listings yet' : 'No applications yet'}
         </Text>
         <Text style={styles.emptyDescription}>
           {activeMode === 'browse'
             ? searchQuery ? `No pets found matching "${searchQuery}"` : 'Check back soon for new pets looking for their forever homes.'
-            : activeMode === 'my-listings' 
+            : activeMode === 'my-listings'
               ? 'Create your first listing to help pets find their forever homes.'
               : 'Applications will appear here when you apply for pets.'}
         </Text>
@@ -330,7 +330,7 @@ function AdoptionMarketplaceScreenContent(): React.JSX.Element {
               />
             )
           )}
-          
+
           {activeMode === 'my-listings' && (
             userListingsLoading ? renderLoadingState() : (
               <FlatList

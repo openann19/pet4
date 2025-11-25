@@ -20,8 +20,8 @@ const logger = createLogger('BillingScreen');
 export function BillingScreen(): React.JSX.Element {
   const [plans, setPlans] = useState<BillingPlan[]>([]);
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [intervalFilter, setIntervalFilter] = useState<'month' | 'year'>('month');
+  const [_isLoading, setIsLoading] = useState(true);
+  const [intervalFilter, _setIntervalFilter] = useState<'month' | 'year'>('month');
 
   useEffect(() => {
     void loadData();
@@ -64,7 +64,7 @@ export function BillingScreen(): React.JSX.Element {
 
         <SubscriptionStatusCard
           subscription={subscription}
-          onManageBilling={handleManageBilling}
+          onManageBilling={() => { void handleManageBilling(); }}
         />
 
         <View style={styles.plansSection}>
@@ -74,15 +74,17 @@ export function BillingScreen(): React.JSX.Element {
               key={plan.id}
               plan={plan}
               isCurrentPlan={subscription?.planId === plan.id}
-              onSelect={async () => {
-                try {
-                  const checkout = await billingClient.createCheckoutSession(plan.id);
-                  // In a real app, open checkout URL in a web view
-                  logger.info('Checkout session created', { url: checkout.url });
-                } catch (error) {
-                  const err = error instanceof Error ? error : new Error(String(error));
-                  logger.error('Failed to create checkout session', err);
-                }
+              onSelect={() => {
+                void (async () => {
+                  try {
+                    const checkout = await billingClient.createCheckoutSession(plan.id);
+                    // In a real app, open checkout URL in a web view
+                    logger.info('Checkout session created', { url: checkout.url });
+                  } catch (error) {
+                    const err = error instanceof Error ? error : new Error(String(error));
+                    logger.error('Failed to create checkout session', err);
+                  }
+                })();
               }}
             />
           ))}

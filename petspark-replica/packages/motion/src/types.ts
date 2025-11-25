@@ -7,8 +7,8 @@ import type { Variants, Transition, AnimationControls, Variant } from 'framer-mo
 // Re-export Variant for use in other modules
 export type { Variant } from 'framer-motion'
 
-// Animation variant types
-export interface AnimationVariants extends Variants {
+// Animation variant types - extend Variants to ensure compatibility with framer-motion
+export type AnimationVariants = Variants & {
   hidden: Variant
   visible: Variant
   hover?: Variant
@@ -31,11 +31,11 @@ export interface AnimationPreset {
 export interface MotionProps {
   variants?: AnimationVariants
   transition?: Transition
-  initial?: string | boolean
-  animate?: string | boolean
-  exit?: string | boolean
-  whileHover?: string | boolean
-  whileTap?: string | boolean
+  initial?: string
+  animate?: string
+  exit?: string
+  whileHover?: string
+  whileTap?: string
   layout?: boolean
   layoutId?: string
 }

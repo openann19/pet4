@@ -53,7 +53,7 @@ export function AdoptionListingCard({
         goodWithKids,
         goodWithPets,
         energyLevel,
-        temperament,
+        temperament: _temperament,
         featured,
         distance
     } = listing;

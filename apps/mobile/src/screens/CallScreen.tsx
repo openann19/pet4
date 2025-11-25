@@ -9,14 +9,14 @@ import { View, StyleSheet, Text, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RTCView } from 'react-native-webrtc';
 import { CallControlBar } from '@/components/calls/CallControlBar.native';
-import { CallParticipantTile } from '@/components/calls/CallParticipantTile.native';
-import { useCallSession } from '@/hooks/use-call-session.native';
+import type { CallParticipantTile as _CallParticipantTile } from '@/components/calls/CallParticipantTile.native';
+import type { useCallSession as _useCallSession } from '@/hooks/use-call-session.native';
 import { colors } from '@/theme/colors';
 import { getTypographyStyle } from '@/theme/typography';
 import * as Haptics from 'expo-haptics';
 import type { CallSession } from '@petspark/core';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH, height: _SCREEN_HEIGHT } = Dimensions.get('window');
 
 export interface CallScreenProps {
   session: CallSession;
@@ -218,4 +218,3 @@ const styles = StyleSheet.create({
     color: colors.mutedForeground,
   },
 });
-
