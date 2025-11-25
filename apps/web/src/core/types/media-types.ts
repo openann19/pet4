@@ -16,7 +16,7 @@ export type FilterName = 'none' | 'mono' | 'sepia' | 'vivid' | 'cool' | 'warm' |
 export type ImageOperation =
   | { type: 'resize'; width: number; height: number }
   | { type: 'crop'; x: number; y: number; width: number; height: number }
-  | { type: 'rotate'; degrees: 90 | 180 | 270 | number }
+  | { type: 'rotate'; degrees: number }
   | { type: 'flip'; axis: 'horizontal' | 'vertical' }
   | {
       type: 'adjust';
@@ -43,7 +43,7 @@ export type ImageOperation =
 export type VideoOperation =
   | { type: 'trim'; startSec: number; endSec: number }
   | { type: 'resize'; width: number; height: number }
-  | { type: 'rotate'; degrees: 90 | 180 | 270 | number }
+  | { type: 'rotate'; degrees: number }
   | { type: 'flip'; axis: 'horizontal' | 'vertical' }
   | { type: 'speed'; rate: number }
   | {

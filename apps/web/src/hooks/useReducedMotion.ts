@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { isTruthy } from '@petspark/shared';
 
 /**
  * Hook to detect if user prefers reduced motion
@@ -26,20 +25,10 @@ export function useReducedMotion(): boolean {
       setPrefersReducedMotion(event.matches);
     };
 
-    // Modern browsers
-    if (isTruthy(mediaQuery.addEventListener)) {
-      void mediaQuery.addEventListener('change', handleChange);
-      return () => {
-        void mediaQuery.removeEventListener('change', handleChange);
-      };
-    }
-
-    // Fallback for older browsers - bind the method to preserve context
-    const boundAddListener = mediaQuery.addListener.bind(mediaQuery);
-    const boundRemoveListener = mediaQuery.removeListener.bind(mediaQuery);
-    boundAddListener(handleChange);
+    // Modern browsers use addEventListener
+    mediaQuery.addEventListener('change', handleChange);
     return () => {
-      boundRemoveListener(handleChange);
+      mediaQuery.removeEventListener('change', handleChange);
     };
   }, []);
 

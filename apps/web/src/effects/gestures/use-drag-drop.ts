@@ -355,7 +355,7 @@ export function useDragDrop(options: UseDragDropOptions = {}): UseDragDropReturn
   // Cleanup file input on unmount
   useEffect(() => {
     return () => {
-      if (fileInputRef.current && fileInputRef.current.parentNode) {
+      if (fileInputRef.current?.parentNode) {
         fileInputRef.current.parentNode.removeChild(fileInputRef.current);
       }
     };

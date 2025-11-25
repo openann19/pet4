@@ -76,6 +76,7 @@ export function useCallSession(options: UseCallSessionOptions): UseCallSessionRe
   const screenShareStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (!clientRef.current) {
       clientRef.current = new CallClient({
         iceServers,

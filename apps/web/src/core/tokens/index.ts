@@ -9,6 +9,7 @@ export { buttonTokens, getButtonTokens } from './button-colors';
 export type { ButtonTokenSet } from '../types/button-tokens';
 export { Motion } from './motion';
 export { getColorToken, getColorTokenWithOpacity, getColorCSSVar, ColorTokens } from './colors';
+import { Dimens } from './dimens';
 
 /**
  * Focus ring utilities
@@ -45,8 +46,7 @@ export const Spacing = {
   /**
    * Get spacing value in pixels
    */
-  px: (token: keyof typeof import('./dimens').Dimens.spacing): string => {
-    const { Dimens } = require('./dimens');
+  px: (token: keyof typeof Dimens.spacing): string => {
     return `${Dimens.spacing[token]}px`;
   },
 
@@ -54,9 +54,7 @@ export const Spacing = {
    * Get component spacing
    */
   component: (path: string): string => {
-    const { Dimens } = require('./dimens');
     const parts = path.split('.');
-    let _value: number | undefined;
     let current: unknown = Dimens.component;
 
     for (const part of parts) {
@@ -82,8 +80,7 @@ export const Radius = {
   /**
    * Get radius value in pixels
    */
-  px: (token: keyof typeof import('./dimens').Dimens.radius): string => {
-    const { Dimens } = require('./dimens');
+  px: (token: keyof typeof Dimens.radius): string => {
     const value = Dimens.radius[token];
     if (typeof value === 'number') {
       return `${value}px`;

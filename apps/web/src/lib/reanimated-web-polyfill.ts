@@ -40,7 +40,9 @@ export const withTiming = <T,>(value: T) => value;
 export const withRepeat = <T,>(value: T) => value;
 export const withSequence = <T,>(...values: T[]) => values[values.length - 1];
 export const withDelay = <T,>(_delay: number, value: T) => value;
-export const cancelAnimation = () => {};
+export const cancelAnimation = (): void => {
+  // no-op for web
+};
 export const runOnJS = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn;
 export const runOnUI = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn;
 

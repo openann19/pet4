@@ -29,7 +29,7 @@ export interface EffectTelemetryEvent {
 }
 
 export interface UseEffectTelemetryOptions {
-  effectName: EffectName | string;
+  effectName: string;
   enabled?: boolean;
   alertOnThreshold?: boolean;
   maxDroppedFrames?: number;

@@ -527,50 +527,53 @@ export function useWebRtcCall(options: UseWebRtcCallOptions): UseWebRtcCallResul
   }, [isScreenSharing, localStream]);
 
   useEffect(() => {
-    const unsubscribe = signalingClient.onSignal(async (signal: CallSignal) => {
-      const callId = currentCallIdRef.current;
-      if (callId && signal.callId !== callId) {
-        return;
-      }
+    const handleSignal = (signal: CallSignal): void => {
+      void (async () => {
+        const callId = currentCallIdRef.current;
+        if (callId && signal.callId !== callId) {
+          return;
+        }
 
-      switch (signal.type) {
-        case 'call-answer': {
-          const pc = ensurePeerConnection();
-          await pc.setRemoteDescription(
-            new RTCSessionDescription({ type: 'answer', sdp: signal.sdp })
-          );
-          setStatus('in-call');
-          setSession((prev: CallSession | null) =>
-            prev
-              ? {
-                  ...prev,
-                  status: 'in-call',
-                }
-              : prev
-          );
-          break;
-        }
-        case 'call-candidate': {
-          const pc = ensurePeerConnection();
-          try {
-            await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-          } catch (err) {
-            logger.error('Failed to add ICE candidate', err);
+        switch (signal.type) {
+          case 'call-answer': {
+            const pc = ensurePeerConnection();
+            await pc.setRemoteDescription(
+              new RTCSessionDescription({ type: 'answer', sdp: signal.sdp })
+            );
+            setStatus('in-call');
+            setSession((prev: CallSession | null) =>
+              prev
+                ? {
+                    ...prev,
+                    status: 'in-call',
+                  }
+                : prev
+            );
+            break;
           }
-          break;
+          case 'call-candidate': {
+            const pc = ensurePeerConnection();
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+            } catch (err) {
+              logger.error('Failed to add ICE candidate', err);
+            }
+            break;
+          }
+          case 'call-end': {
+            resetSession(signal.reason ?? 'Remote ended call');
+            break;
+          }
+          case 'call-reject': {
+            resetSession(signal.reason ?? 'Call rejected');
+            break;
+          }
+          default:
+            break;
         }
-        case 'call-end': {
-          resetSession(signal.reason ?? 'Remote ended call');
-          break;
-        }
-        case 'call-reject': {
-          resetSession(signal.reason ?? 'Call rejected');
-          break;
-        }
-        default:
-          break;
-      }
-    });
+      })();
+    };
+    const unsubscribe = signalingClient.onSignal(handleSignal);
 
     return () => {
       unsubscribe();

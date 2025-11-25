@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-redundant-type-constituents */
 import React from 'react';
 
 // Mock @petspark/motion to prevent React context issues in test environment
