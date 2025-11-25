@@ -254,19 +254,21 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
       return;
     }
 
-    const runDetection = async () => {
-      try {
-        const faces = await detectFaces();
-        setDetectedFaces(faces);
-        onFaceDetected?.(faces);
+    const runDetection = (): void => {
+      void (async () => {
+        try {
+          const faces = await detectFaces();
+          setDetectedFaces(faces);
+          onFaceDetected?.(faces);
 
-        if (faces.length > 0) {
-          logger.debug('Faces detected', { count: faces.length });
+          if (faces.length > 0) {
+            logger.debug('Faces detected', { count: faces.length });
+          }
+        } catch (err) {
+          logger.error('Face detection failed', err);
+          onError?.(err as Error);
         }
-      } catch (err) {
-        logger.error('Face detection failed', err);
-        onError?.(err as Error);
-      }
+      })();
     };
 
     faceDetectionTimerRef.current = setInterval(runDetection, faceDetectionInterval);

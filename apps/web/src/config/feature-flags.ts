@@ -27,14 +27,15 @@ export function getFeatureFlags(): FeatureFlags {
   // In production, could fetch from remote config
   if (typeof window !== 'undefined' && window) {
     const windowWithFlags = window as Window & { __FEATURE_FLAGS__?: Partial<FeatureFlags> };
-    const runtimeFlags = windowWithFlags?.__FEATURE_FLAGS__;
+    const runtimeFlags = windowWithFlags.__FEATURE_FLAGS__;
     if (runtimeFlags) {
       return { ...defaultFlags, ...runtimeFlags };
     }
   }
 
   // Check environment variables
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain -- import.meta requires explicit check
+  if (typeof import.meta !== 'undefined' && import.meta.env !== undefined) {
     return {
       enableHoloBackground: import.meta.env.VITE_ENABLE_HOLO_BG !== 'false',
       enableGlowTrail: import.meta.env.VITE_ENABLE_GLOW_TRAIL !== 'false',

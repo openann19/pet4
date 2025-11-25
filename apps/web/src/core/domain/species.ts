@@ -44,7 +44,7 @@ export const CAT_SIZE_WEIGHTS = {
 
 export function deriveLifeStage(species: Species, ageMonths: number): LifeStage {
   const stages = LIFE_STAGES[species];
-  for (const [stage, config] of Object.entries(stages)) {
+  for (const [stage, config] of Object.entries(stages) as [string, { maxMonths: number; label: { en: string; bg: string } }][]) {
     if (ageMonths <= config.maxMonths) {
       return stage as LifeStage;
     }

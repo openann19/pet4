@@ -252,7 +252,7 @@ export const Input = forwardRef<InputRef, InputProps>(
     }, [onClear, onChange, trackingId])
 
     // Determine current value for display
-    const currentValue = value !== undefined ? value : internalValue
+    const currentValue = value ?? internalValue
     const hasValue = String(currentValue).length > 0
     const characterCount = String(currentValue).length
 

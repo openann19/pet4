@@ -95,7 +95,7 @@ export default function CreateHighlightDialog({
     const firstPet = userPets?.[0];
 
     if (isTruthy(existingHighlight)) {
-      setHighlights((current) =>
+      void setHighlights((current) =>
         (current ?? []).map((h) =>
           h.id === existingHighlight.id
             ? {
@@ -118,7 +118,7 @@ export default function CreateHighlightDialog({
         selectedStoryObjects
       );
 
-      setHighlights((current) => [...(current ?? []), newHighlight]);
+      void setHighlights((current) => [...(current ?? []), newHighlight]);
       void toast.success('Highlight created!');
     }
 

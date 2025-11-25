@@ -9,7 +9,9 @@ interface TypeStepProps {
   petType: string;
   stepStyle: AnimatedStyle;
   petTypeIndicatorStyle: AnimatedStyle;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   petTypeButtonHover: ReturnType<typeof import('@/effects/reanimated/use-hover-lift').useHoverLift>;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').useBounceOnTap>;
   actions: CreatePetFormActions;
   onNext: () => void;

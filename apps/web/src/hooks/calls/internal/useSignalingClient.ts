@@ -29,6 +29,11 @@ export function useSignalingClient(config: SignalingConfig): UseSignalingClientR
 
   return {
     signalingClient,
-    onSignal: (handler) => signalingClient.onSignal(handler),
+    onSignal: (handler) => {
+      const syncHandler = (signal: CallSignal): void => {
+        void handler(signal);
+      };
+      return signalingClient.onSignal(syncHandler);
+    },
   };
 }

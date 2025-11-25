@@ -182,7 +182,7 @@ export function PlaydatesView(): React.JSX.Element {
                   <PlaydateCard
                     key={playdate.id}
                     playdate={playdate}
-                    onJoin={() => handleJoin(playdate.id)}
+                    onJoin={() => void handleJoin(playdate.id)}
                     onCheckIn={() => void handleCheckIn(playdate.id)}
                     isParticipant={playdate.participants.some((p) => p.id === 'current-user-id')}
                   />
@@ -208,7 +208,7 @@ export function PlaydatesView(): React.JSX.Element {
               <DialogTitle className={cn(getTypographyClasses('h2'))}>Schedule Playdate</DialogTitle>
             </DialogHeader>
             <PlaydateScheduler
-              onSchedule={handleSchedule}
+              onSchedule={(data) => void handleSchedule(data)}
               onCancel={() => setShowScheduler(false)}
             />
           </DialogContent>

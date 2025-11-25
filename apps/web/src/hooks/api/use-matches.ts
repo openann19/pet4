@@ -21,7 +21,7 @@ export interface Match {
 }
 
 const API_BASE_URL =
-  (import.meta.env.VITE_API_URL) ?? 'https://api.petspark.app';
+  (import.meta.env.VITE_API_URL as string | undefined) ?? 'https://api.petspark.app';
 
 async function fetchMatches(): Promise<Match[]> {
   const response = await fetch(`${String(API_BASE_URL ?? '')}/api/matches`, {
@@ -29,7 +29,7 @@ async function fetchMatches(): Promise<Match[]> {
     headers: { 'Content-Type': 'application/json' },
   });
   if (!response.ok) throw new Error('Failed to fetch matches');
-  const data = await response.json();
+  const data: Match[] | { items?: Match[] } = await response.json() as Match[] | { items?: Match[] };
   return Array.isArray(data) ? data : data.items ?? [];
 }
 
@@ -45,13 +45,13 @@ export function useMatches(): UseQueryResult<Match[]> {
 export function useMatch(matchId: string): UseQueryResult<Match> {
   return useQuery({
     queryKey: queryKeys.matches.detail(matchId),
-    queryFn: async () => {
+    queryFn: async (): Promise<Match> => {
       const response = await fetch(`${String(API_BASE_URL ?? '')}/api/matches/${String(matchId ?? '')}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
       if (!response.ok) throw new Error('Failed to fetch match');
-      return response.json();
+      return response.json() as Promise<Match>;
     },
     enabled: !!matchId,
   });

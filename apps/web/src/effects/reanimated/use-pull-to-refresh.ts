@@ -31,7 +31,7 @@ export interface UsePullToRefreshReturn {
   indicatorStyle: AnimatedStyle;
   handleTouchStart: (e: globalThis.TouchEvent) => void;
   handleTouchMove: (e: globalThis.TouchEvent) => void;
-  handleTouchEnd: () => void;
+  handleTouchEnd: () => Promise<void>;
 }
 
 export function usePullToRefresh({

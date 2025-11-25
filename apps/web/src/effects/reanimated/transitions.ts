@@ -44,7 +44,7 @@ export function createTimingTransition(config: TimingConfig = timingConfigs.smoo
 
 export function createDelayedTransition(delay: number, transition: (value: number) => unknown) {
   return (value: number) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
     withDelay(delay, { target: value, transition: transition(value) } as any);
 }
 

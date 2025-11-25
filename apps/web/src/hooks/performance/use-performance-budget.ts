@@ -217,8 +217,9 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
     let violatedBudgets = 0;
 
     // Check each budget
-    for (const [metricKey, budget] of Object.entries(budgets)) {
-      if (budget === undefined) continue;
+    for (const [metricKey, budgetValue] of Object.entries(budgets)) {
+      if (budgetValue === undefined) continue;
+      const budget = budgetValue as number;
 
       const value = metrics[metricKey];
       if (value === undefined) continue;

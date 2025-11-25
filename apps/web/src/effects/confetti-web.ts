@@ -28,7 +28,11 @@ export function toastSuccess(message: string): void {
     scalar: 1.2,
   });
   // Use sonner toast for message
-  window.toast?.success?.(message) ?? window.sonner?.success?.(message);
+  if (window.toast?.success) {
+    window.toast.success(message);
+  } else if (window.sonner?.success) {
+    window.sonner.success(message);
+  }
 }
 
 export function toastError(message: string): void {
@@ -40,7 +44,11 @@ export function toastError(message: string): void {
     scalar: 1.1,
   });
   // Use sonner toast for message
-  window.toast?.error?.(message) ?? window.sonner?.error?.(message);
+  if (window.toast?.error) {
+    window.toast.error(message);
+  } else if (window.sonner?.error) {
+    window.sonner.error(message);
+  }
 }
 
 export function toastInfo(message: string): void {
@@ -52,5 +60,9 @@ export function toastInfo(message: string): void {
     scalar: 1.0,
   });
   // Use sonner toast for message
-  window.toast?.info?.(message) ?? window.sonner?.info?.(message);
+  if (window.toast?.info) {
+    window.toast.info(message);
+  } else if (window.sonner?.info) {
+    window.sonner.info(message);
+  }
 }

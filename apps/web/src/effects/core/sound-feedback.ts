@@ -518,9 +518,7 @@ let soundService: SoundFeedbackService | null = null;
  * Get sound feedback service instance
  */
 export function getSoundFeedbackService(): SoundFeedbackService {
-  if (!soundService) {
-    soundService = new SoundFeedbackService();
-  }
+  soundService ??= new SoundFeedbackService();
   return soundService;
 }
 

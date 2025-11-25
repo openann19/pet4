@@ -1,1 +1,0 @@
-const e={Tap:()=>({onUpdate:()=>{},onEnd:()=>{}}),Pan:()=>({onUpdate:()=>{},onEnd:()=>{}})},t=({children:e,gesture:t})=>e,n={Gesture:e,GestureDetector:t};export{e as Gesture,t as GestureDetector,n as default};
