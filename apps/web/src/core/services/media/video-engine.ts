@@ -59,7 +59,7 @@ export function onVideoFrames(
   callback: VideoFrameCallback
 ): VideoFrameCleanup {
   // Check for requestVideoFrameCallback support (Chrome/Edge)
-  const rVFC = videoElement.requestVideoFrameCallback;
+  const rVFC = videoElement.requestVideoFrameCallback?.bind(videoElement);
 
   if (typeof rVFC === 'function') {
     let frameId: number | null = null;
@@ -68,7 +68,7 @@ export function onVideoFrames(
     const tick = (): void => {
       if (!isActive) return;
       callback();
-      frameId = rVFC.call(videoElement, tick);
+      frameId = rVFC(tick);
     };
 
     // Start the frame loop

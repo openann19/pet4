@@ -84,8 +84,8 @@ export function useMapPlaces(userLocation: Location | null, radiusKm: number): U
   };
 
   const handleSavePlace = (placeId: string): void => {
-    haptics.trigger('medium');
-    setSavedPlaces((current) => {
+    void haptics.trigger('medium');
+    void setSavedPlaces((current) => {
       const currentPlaces = current ?? [];
       if (currentPlaces.includes(placeId)) {
         void toast.info(t.map?.placeRemoved ?? 'Place removed from saved');
@@ -109,6 +109,7 @@ export function useMapPlaces(userLocation: Location | null, radiusKm: number): U
       filtered = filtered.filter(
         (place) =>
           place.name.toLowerCase().includes(query) ||
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- false positive: boolean OR not null coalescing
           place.description?.toLowerCase().includes(query) ||
           place.category.toLowerCase().includes(query)
       );

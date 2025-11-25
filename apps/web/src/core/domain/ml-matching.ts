@@ -303,7 +303,7 @@ export class MLMatchingWeightAdjuster {
     const adjusted: MatchingWeights = { ...baseWeights };
 
     // Calculate total current weight
-    const totalWeight = Object.values(baseWeights).reduce((sum, w) => sum + w, 0);
+    const totalWeight = (Object.values(baseWeights) as number[]).reduce((sum, w) => sum + w, 0);
 
     // Calculate desired weights based on importance
     const desiredWeights: Record<string, number> = {};
@@ -420,8 +420,6 @@ let mlAdjuster: MLMatchingWeightAdjuster | null = null;
  * Get ML matching weight adjuster instance
  */
 export function getMLMatchingWeightAdjuster(): MLMatchingWeightAdjuster {
-  if (!mlAdjuster) {
-    mlAdjuster = new MLMatchingWeightAdjuster();
-  }
+  mlAdjuster ??= new MLMatchingWeightAdjuster();
   return mlAdjuster;
 }

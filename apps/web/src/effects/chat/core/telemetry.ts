@@ -133,10 +133,10 @@ export function logEffectStart(
     if (value !== undefined && value !== null && key !== 'error') {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         analyticsMetadata[key] = value;
-      } else if (typeof value === 'object') {
+      } else if (typeof value === 'object' && value !== null) {
         analyticsMetadata[key] = JSON.stringify(value);
       } else {
-        analyticsMetadata[key] = String(value);
+        analyticsMetadata[key] = value === null || value === undefined ? '' : String(value as string | number | boolean);
       }
     }
   }

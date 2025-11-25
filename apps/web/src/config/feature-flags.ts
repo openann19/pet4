@@ -34,7 +34,7 @@ export function getFeatureFlags(): FeatureFlags {
   }
 
   // Check environment variables
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
+  if (typeof import.meta !== 'undefined' && import.meta.env !== undefined) {
     return {
       enableHoloBackground: import.meta.env.VITE_ENABLE_HOLO_BG !== 'false',
       enableGlowTrail: import.meta.env.VITE_ENABLE_GLOW_TRAIL !== 'false',
