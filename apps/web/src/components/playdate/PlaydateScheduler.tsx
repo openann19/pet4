@@ -146,7 +146,7 @@ export default function PlaydateScheduler({
       updatedAt: new Date().toISOString(),
     };
 
-    setPlaydates((current: Playdate[] | undefined) => [...(current ?? []), newPlaydate]);
+    void setPlaydates((current: Playdate[] | undefined) => [...(current ?? []), newPlaydate]);
     void haptics.success();
     void toast.success('Playdate scheduled!', {
       description: `Invitation sent for ${format(new Date(playdateDate), 'MMM dd, yyyy')}`,
@@ -239,7 +239,7 @@ export default function PlaydateScheduler({
 
   const handleConfirmPlaydate = useCallback(
     (playdateId: string) => {
-      setPlaydates((current: Playdate[] | undefined) =>
+      void setPlaydates((current: Playdate[] | undefined) =>
         (current ?? []).map((p: Playdate) =>
           p.id === playdateId
             ? { ...p, status: 'confirmed' as PlaydateStatus, updatedAt: new Date().toISOString() }
@@ -254,7 +254,7 @@ export default function PlaydateScheduler({
 
   const handleCancelPlaydate = useCallback(
     (playdateId: string) => {
-      setPlaydates((current: Playdate[] | undefined) =>
+      void setPlaydates((current: Playdate[] | undefined) =>
         (current ?? []).map((p: Playdate) =>
           p.id === playdateId
             ? { ...p, status: 'cancelled' as PlaydateStatus, updatedAt: new Date().toISOString() }

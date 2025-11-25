@@ -7,6 +7,7 @@ import type { CreatePetFormActions } from '../create-pet-types';
  
 interface PhotoInputSectionProps {
   photo: string;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
 }

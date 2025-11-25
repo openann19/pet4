@@ -18,8 +18,11 @@ interface RenderStepContentProps {
   selectedTemplate: PetProfileTemplate | null;
   stepStyle: AnimatedStyle;
   petTypeIndicatorStyle: AnimatedStyle;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   petTypeButtonHover: ReturnType<typeof import('@/effects/reanimated/use-hover-lift').useHoverLift>;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').useBounceOnTap>;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
   applyTemplate: (template: PetProfileTemplate) => void;

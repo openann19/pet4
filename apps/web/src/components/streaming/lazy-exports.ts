@@ -4,6 +4,7 @@
  */
 
 import { lazy } from 'react';
+import type { LiveStreamRoom as LiveStreamRoomType } from './LiveStreamRoom';
 
 /**
  * LiveStreamRoom - Heavy component with video streaming capabilities
@@ -22,5 +23,5 @@ import { lazy } from 'react';
 export const LiveStreamRoom = lazy(() =>
   import('./LiveStreamRoom').then((module) => ({
     default: module.LiveStreamRoom,
-  })) as Promise<{ default: typeof import('./LiveStreamRoom').LiveStreamRoom }>
+  })) as Promise<{ default: typeof LiveStreamRoomType }>
 );

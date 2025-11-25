@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 import type { Location } from '@/lib/maps/types';
 import { useEffect, useMemo, useState } from 'react';
 import { isTruthy } from '@petspark/shared';

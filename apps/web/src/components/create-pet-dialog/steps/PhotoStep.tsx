@@ -17,6 +17,7 @@ interface PhotoStepProps {
   age: string;
   _size: 'small' | 'medium' | 'large' | 'extra-large';
   _personality: string[];
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
 }

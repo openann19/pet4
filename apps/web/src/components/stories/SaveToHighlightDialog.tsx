@@ -61,7 +61,7 @@ export default function SaveToHighlightDialog({
 
     void haptics.trigger('success');
 
-    setHighlights((current) =>
+    void setHighlights((current) =>
       (current ?? []).map((h) =>
         h.id === selectedHighlightId
           ? {
@@ -100,7 +100,7 @@ export default function SaveToHighlightDialog({
       [story]
     );
 
-    setHighlights((current) => [...(current ?? []), newHighlight]);
+    void setHighlights((current) => [...(current ?? []), newHighlight]);
 
     void toast.success('Highlight created!', {
       duration: 2000,

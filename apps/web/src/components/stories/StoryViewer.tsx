@@ -514,7 +514,7 @@ export default function StoryViewer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleFullscreen}
+                onClick={() => void toggleFullscreen()}
                 className="text-white hover:bg-white/20"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >
