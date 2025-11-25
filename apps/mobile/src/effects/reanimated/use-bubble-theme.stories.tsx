@@ -7,8 +7,7 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useBubbleTheme } from './use-bubble-theme'
-import { GestureDetector, Gesture } from 'react-native-gesture-handler'
-import { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated'
+import { useDerivedValue } from 'react-native-reanimated'
 
 const styles = StyleSheet.create({
   container: {

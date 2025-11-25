@@ -6,7 +6,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { View, Text } from 'react-native';
 import { Label, FieldWrapper } from './Label.native';
-import type { LabelProps } from './Label.types';
 
 const meta: Meta<typeof Label> = {
     title: 'UI Mobile/Label',
@@ -150,7 +149,7 @@ export const Interactive: Story = {
         <View style={{ padding: 16, gap: 16 }}>
             <Label
                 interactive
-                onPress={() => console.log('Label pressed!')}
+                onPress={() => { /* Label pressed */ }}
             >
                 Clickable Label
             </Label>
@@ -158,14 +157,14 @@ export const Interactive: Story = {
                 interactive
                 enableHaptics
                 variant="success"
-                onPress={() => console.log('Haptic label pressed!')}
+                onPress={() => { /* Haptic label pressed */ }}
             >
                 Label with Haptics
             </Label>
             <Label
                 interactive
                 disabled
-                onPress={() => console.log('This should not fire')}
+                onPress={() => { /* This should not fire */ }}
             >
                 Disabled Interactive Label
             </Label>
@@ -362,7 +361,7 @@ export const Accessibility: Story = {
             <Label
                 interactive
                 accessibilityHint="Tap to show more information about this field"
-                onPress={() => console.log('Info pressed')}
+                onPress={() => { /* Info pressed */ }}
             >
                 Interactive Label with Hint
             </Label>

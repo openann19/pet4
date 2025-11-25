@@ -16,7 +16,7 @@ export default {
 }
 
 function SwipeReplyDemo() {
-  const { animatedStyle, previewStyle, gesture, reset } = useSwipeReply({
+  const { animatedStyle, previewStyle, gesture } = useSwipeReply({
     onReply: () => {
       logger.info('Reply triggered!')
     },

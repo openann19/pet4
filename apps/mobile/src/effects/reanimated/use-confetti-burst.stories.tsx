@@ -3,7 +3,6 @@
  * Demonstrates the useConfettiBurst hook for mobile celebration effects
  */
 
-import { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
 import Animated from 'react-native-reanimated'
 import { useConfettiBurst } from './use-confetti-burst'

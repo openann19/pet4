@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-nati
 import Animated from 'react-native-reanimated'
 import { useFloatingParticle } from '../use-floating-particle'
 
-const { width, height } = Dimensions.get('window')
+const { width: _width, height: _height } = Dimensions.get('window')
 
 export default {
   title: 'Mobile/Animation Hooks/useFloatingParticle',
@@ -30,7 +30,7 @@ function ParticleComponent({
   initialX = 0.5,
   initialY = 0.5,
 }: ParticleProps) {
-  const { style, start, stop, reset, isAnimating } = useFloatingParticle({
+  const { style } = useFloatingParticle({
     color,
     size,
     screenRelative,
@@ -62,7 +62,7 @@ function FloatingParticleDemo() {
 
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
-    color: `hsl(${String((index * 60) % 360 ?? '')}, 70%, 60%)`,
+    color: `hsl(${String((index * 60) % 360)}, 70%, 60%)`,
     initialX: Math.random(),
     initialY: Math.random(),
   }))
