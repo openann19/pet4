@@ -1,352 +1,155 @@
 # GitHub Copilot Instructions for PetSpark
 
-## Repository Overview
+## Architecture Overview
 
-PetSpark is a comprehensive pet social networking platform built as a **pnpm monorepo** with three main applications:
-
-- **Web App** (`apps/web`): React + Vite web application
-- **Mobile App** (`apps/mobile`): React Native + Expo mobile application
-- **Native App** (`apps/native`): Native implementation
-
-### Workspace Structure
+PetSpark is a pet social networking platform as a **pnpm monorepo**:
 
 ```
-pet3/
-├── apps/
-│   ├── web/          # Web application (React + Vite)
-│   ├── mobile/       # Mobile application (React Native + Expo)
-│   └── native/       # Native implementation
-├── packages/
-│   ├── shared/       # Shared utilities and components
-│   ├── motion/       # Animation library
-│   ├── core/         # Core utilities
-│   ├── ui-mobile/    # Mobile UI components
-│   ├── chat-core/    # Chat functionality
-│   └── config/       # Configuration
-└── .github/
-    └── instructions/ # Custom instructions for specific patterns
+apps/
+├── web/              # React 18 + Vite + Tailwind (spark-template)
+├── mobile/           # React Native + Expo 51 (petspark-mobile)
+└── backend/          # Express + Prisma + PostgreSQL (@petspark/backend)
+packages/
+├── shared/           # Cross-platform utils, types, API client (@petspark/shared)
+├── motion/           # Animation façade (@petspark/motion) - Framer Motion (web) / Reanimated (mobile)
+├── ui-mobile/        # Mobile UI components (@ui-mobile)
+├── chat-core/        # Chat domain logic (@petspark/chat-core)
+└── core/             # Core utilities (@petspark/core)
 ```
 
-## Tech Stack
+## Critical Rules (Non-Negotiable)
 
-### Web (`apps/web`)
+**BANNED in all code:**
+- `@ts-ignore`, `@ts-expect-error`, `eslint-disable*` comments
+- `any`, `as any`, untyped casts
+- `console.log/error/warn` - use typed logger from `packages/shared/src/logger.ts`
+- Magic numbers - use design tokens from `@/core/tokens`
 
-- **Framework**: React 18.3+
-- **Build Tool**: Vite
-- **Routing**: React Router v6
-- **Styling**: Tailwind CSS
-- **State Management**: TanStack Query (React Query)
-- **Testing**: Vitest, Playwright (E2E), React Testing Library
-- **TypeScript**: Strict mode enabled
-
-### Mobile (`apps/mobile`)
-
-- **Framework**: React Native + Expo 51
-- **Navigation**: React Navigation v7
-- **Styling**: React Native StyleSheet, Tailwind-like utilities
-- **State Management**: TanStack Query
-- **Animation**: React Native Reanimated, Shopify Skia
-- **Testing**: Vitest, React Native Testing Library
-
-### Shared
-
-- **Language**: TypeScript 5.7+ (strict mode)
-- **Package Manager**: pnpm 10.18.3+
-- **Node**: 18+
-- **Linting**: ESLint (TypeScript, React, JSX-A11Y)
-- **Validation**: Zod
-
-## Build Commands
-
-### Installation
+## Commands Reference
 
 ```bash
-pnpm install          # Install all dependencies
-```
+# Development
+pnpm web-dev                              # Web dev server (http://localhost:5173)
+pnpm mobile-start                         # Expo dev server
+pnpm --filter @petspark/backend dev       # Backend server (http://localhost:3001)
 
-### Development
-
-```bash
-pnpm web-dev          # Start web dev server
-pnpm mobile-start     # Start Expo development server
-pnpm mobile-android   # Run on Android
-pnpm mobile-ios       # Run on iOS
-```
-
-### Testing & Quality
-
-```bash
-# Type checking
-pnpm typecheck        # Check types in shared package
-pnpm --filter spark-template typecheck  # Web app
-pnpm --filter petspark-mobile typecheck # Mobile app
-
-# Linting
-pnpm lint             # Lint shared package
-pnpm --filter spark-template lint       # Web app
-pnpm --filter petspark-mobile lint      # Mobile app
+# Quality Gates (run before PR)
+pnpm --filter spark-template ci           # Web: typecheck + lint + test + verify
+pnpm --filter petspark-mobile ci          # Mobile: typecheck + lint + test + parity
+pnpm lint                                 # Root lint (ESLint max-warnings=0)
+pnpm typecheck                            # Root typecheck
 
 # Testing
-pnpm test             # Run shared package tests
-pnpm --filter spark-template test:run   # Web app tests
-pnpm --filter petspark-mobile test:run  # Mobile app tests
-
-# E2E Testing
-pnpm --filter spark-template e2e:smoke  # Run smoke tests
+pnpm --filter spark-template test:run     # Web unit tests (Vitest)
+pnpm --filter petspark-mobile test:run    # Mobile unit tests
+pnpm e2e:smoke                            # Playwright E2E smoke tests
 ```
 
-### CI Commands
+## Platform-Specific Patterns
 
-```bash
-# Web CI pipeline
-pnpm --filter spark-template ci
+### Animation (CRITICAL - Platform Split)
 
-# Mobile CI pipeline
-pnpm --filter petspark-mobile ci
+**Web** - Use `@petspark/motion` which wraps Framer Motion:
+```tsx
+// ✅ Correct - import from façade
+import { motion, useMotionValue, animate } from '@petspark/motion';
+
+<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
+
+// ❌ WRONG - Never import these in web code
+import { Animated } from 'react-native';        // NO!
+import Reanimated from 'react-native-reanimated'; // NO!
 ```
 
-## Code Standards
-
-### TypeScript
-
-- **Strict mode enabled** with all strict checks
-- `noUncheckedIndexedAccess: true`
-- `exactOptionalPropertyTypes: true`
-- `noImplicitReturns: true`
-- No `any` types allowed - use proper typing
-- Use `readonly` for immutable data
-- Use `as const` for literal unions
-
-### React Components
-
-- **Function components only** (no class components)
-- Use `React.memo` for pure components
-- Use `forwardRef` when exposing refs
-- Explicit `Props` type interfaces
-- Destructure props in function signature
-- Use hooks following Rules of Hooks
-
-### Code Quality
-
-- **No `console.*` statements** - use proper logging utilities
-- **No unused variables** - enforced by ESLint
-- **No magic numbers** - use named constants or design tokens
-- **Accessibility**: Include proper ARIA roles, labels, keyboard handlers
-- **Performance**: Use `useMemo`/`useCallback` for expensive operations
-- **Error Handling**: Use error boundaries, avoid silent failures
-
-### Styling
-
-- **Web**: Tailwind CSS classes, design tokens from `@/core/tokens`
-- **Mobile**: StyleSheet, Tamagui/NativeWind if standard, shared design tokens
-- **No inline styles** with magic numbers
-- Use semantic color/spacing variables
-
-### Testing
-
-- **All new code must have tests**
-- Web: `*.test.tsx` with React Testing Library
-- Mobile: `*.native.test.tsx` with React Native Testing Library
-- Hooks: `*.test.ts`
-- Minimum coverage maintained per package standards
-
-## Platform-Specific Guidelines
-
-### Web vs Mobile Development
-
-**Web Only** (use web-specific APIs):
-
-- Use `react-router-dom` for navigation
-- DOM APIs available
-- Use `next/*` imports if Next.js (not currently used)
-
-**Mobile Only** (use React Native APIs):
-
-- Use React Navigation for routing
-- Platform-specific APIs via Expo modules
-- No DOM APIs - use React Native equivalents
-
-**Shared Code** (works on both platforms):
-
-- Platform-agnostic logic in `packages/shared/`
-- Use `.native.tsx` suffix for mobile-specific implementations
-- Component structure: `Component.tsx` (web) + `Component.native.tsx` (mobile)
-
-### File Naming Convention
-
-- Web components: `ComponentName.tsx`
-- Mobile components: `ComponentName.native.tsx`
-- Shared logic: `ComponentName.ts` (no JSX)
-- Tests: `ComponentName.test.tsx` or `ComponentName.native.test.tsx`
-- Stories: `ComponentName.stories.tsx`
-
-## Mobile Parity Requirements
-
-⚠️ **Important**: When adding features to web, consider mobile parity:
-
-1. Check if component exists in mobile (`apps/mobile/`)
-2. If missing, create mobile implementation (`.native.tsx`)
-3. Export from `packages/ui-mobile/index.ts` if reusable
-4. Add to navigator in `AppNavigator.tsx` if it's a screen
-5. Include tests and stories for both platforms
-
-Run mobile parity check:
-
-```bash
-pnpm check:parity
+**Mobile** - Use React Native Reanimated directly:
+```tsx
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 ```
 
-## Architecture Patterns
+### File Naming for Platform Code
+- `Component.tsx` - Web implementation
+- `Component.native.tsx` - Mobile implementation (same filename, bundler resolves)
+- `Component.test.tsx` / `Component.native.test.tsx` - Tests
 
 ### State Management
+- **Server state**: TanStack Query v5 - define `useXxxQuery`/`useXxxMutation` hooks
+- **Client state**: Zustand (mobile) or React Context (web)
+- API hooks go in `packages/shared/src/api/` or feature-specific locations
 
-- **Server State**: TanStack Query (React Query)
-- Define `useXxxQuery`/`useXxxMutation` hooks in appropriate package
-- Implement error boundaries and retry policies
-- Use query keys consistently
+## Component Patterns
 
-### Data Layer
+```tsx
+import { memo, type FC } from 'react';
 
-- API hooks in `packages/*/api/` or feature packages
-- Centralized API client configuration
-- Type-safe responses with Zod validation
-
-### Component Structure
-
-```typescript
-// Example component pattern
-import { memo, forwardRef } from 'react';
-
-interface ComponentProps {
+interface Props {
   readonly id: string;
   readonly onAction: () => void;
 }
 
-export const Component = memo<ComponentProps>(({ id, onAction }) => {
-  // Hooks at top
-  // Event handlers
-  // Render logic
-
+export const MyComponent: FC<Props> = memo(({ id, onAction }) => {
   return (
-    <div role="region" aria-label="Component">
-      {/* Accessible markup */}
+    <div role="button" aria-label="Action" onClick={onAction}>
+      {id}
     </div>
   );
 });
-
-Component.displayName = 'Component';
+MyComponent.displayName = 'MyComponent';
 ```
 
-### Animation
+**Requirements:**
+- Explicit `Props` interface with `readonly` fields
+- `memo()` for pure components, `forwardRef` when exposing refs
+- ARIA roles/labels for accessibility
+- Tests: `*.test.tsx` with React Testing Library
 
-- **Web: Use Framer Motion** - The web app uses Framer Motion for all animations
-  - Import from `framer-motion` directly: `import { motion } from 'framer-motion'`
-  - Or use `@petspark/motion` for compatibility APIs
-  - **DO NOT** use React Native Reanimated in web code
-  - **DO NOT** import from `react-native` in web files
-- **Mobile**: React Native Reanimated + Shopify Skia
-- **Shared**: Platform-agnostic animation utilities in `packages/motion/`
-- **Migration**: See `FRAMER_MOTION_MIGRATION.md` for migration guide
+## Backend Structure
 
-#### Animation Patterns (Web)
+Express server at `apps/backend/src/`:
+- `routes/` - API endpoints (GDPR, admin, auth)
+- `services/` - Business logic (GDPRService, AuditLogger, MonitoringService)
+- `middleware/` - Auth (JWT), rate limiting, error handling
+- `prisma/schema.prisma` - PostgreSQL schema (User, Pet, Match, Conversation, etc.)
+
+## Import Paths
 
 ```tsx
-// ✅ Preferred: Declarative Framer Motion
-import { motion } from 'framer-motion';
+// Workspace packages
+import { cn } from '@petspark/shared';
+import { motion } from '@petspark/motion';
+import { SignInForm } from '@ui-mobile';
 
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.3 }}
->
-  Content
-</motion.div>
+// Web app internal (apps/web)
+import { Button } from '@/components/ui/button';
+import { tokens } from '@/core/tokens';
 
-// ✅ Alternative: Imperative with motion values
-import { useMotionValue, animate } from '@petspark/motion';
-
-const opacity = useMotionValue(0);
-animate(opacity, 1, { duration: 0.3 });
-
-// ❌ AVOID: React Native imports in web
-import { Animated } from 'react-native'; // Wrong!
+// Mobile app internal (apps/mobile) 
+import { HomeScreen } from '@mobile/screens/HomeScreen';
 ```
 
-## Git Workflow
+## Mobile Parity
 
-### Commits
+When adding web features, create mobile equivalent:
+1. Create `Component.native.tsx` alongside web version
+2. Export from `packages/ui-mobile/index.ts`
+3. Register screens in `apps/mobile/src/navigation/AppNavigator.tsx`
+4. Run `pnpm check:parity` to verify
 
-- Atomic commits per feature/fix
-- Use conventional commits: `feat(scope): description`, `fix(scope): description`
-- Keep commits focused and reviewable
+## TypeScript Configuration
 
-### PR Requirements
+Strict mode with: `noUncheckedIndexedAccess`, `noImplicitReturns`, `exactOptionalPropertyTypes` (in `src/core/`).
 
-- All tests must pass
-- Linting must be clean (0 warnings)
-- Type checking must pass
-- E2E smoke tests must pass (web)
-- Code review required before merge
+For update/patch DTOs with explicit `undefined` clearing, use:
+```tsx
+import type { OptionalWithUndef } from '@petspark/shared';
+type UpdateUser = OptionalWithUndef<User>; // Distinguishes omitted vs undefined
+```
 
-## Common Issues & Solutions
+## Key Files Reference
 
-### Mobile Parity Gap
-
-Current mobile app has ~60% feature parity with web. When adding new features:
-
-1. Implement web version first
-2. Immediately implement mobile version
-3. Use shared logic in `packages/shared/` where possible
-4. Document any platform-specific differences
-
-### Import Paths
-
-- Use workspace protocol: `@petspark/shared`, `@petspark/motion`
-- Relative imports within same package
-- Avoid circular dependencies
-
-### Performance
-
-- Code split routes with lazy loading
-- Optimize bundle size (web has budget checks)
-- Use virtualization for long lists (@shopify/flash-list on mobile)
-- Memoize expensive computations
-
-## Custom Instructions
-
-Additional specific instructions can be found in:
-
-- `.github/instructions/tsx.instructions.md` - TS/TSX paste-to-integrate pattern
-
-## Quality Gates Checklist
-
-Before submitting code, ensure:
-
-- [ ] TypeScript: No errors, no warnings
-- [ ] ESLint: Clean (0 warnings)
-- [ ] Tests: Added/updated, all passing
-- [ ] Accessibility: Roles, labels, keyboard support
-- [ ] Performance: No unnecessary re-renders
-- [ ] Mobile: Cross-platform compatibility considered
-- [ ] Documentation: Updated if needed
-- [ ] No `console.*` statements
-- [ ] No security vulnerabilities introduced
-
-## Documentation
-
-For detailed project information, see:
-
-- `QUICK_REFERENCE.md` - Feature parity overview
-- `EXECUTIVE_SUMMARY.md` - High-level project summary
-- `MOBILE_PARITY_IMPLEMENTATION_PLAN.md` - Mobile implementation guide
-- `WEB_VS_MOBILE_ANALYSIS.md` - Platform comparison
-
-## Support
-
-For questions about:
-
-- **Architecture**: Review monorepo structure and package dependencies
-- **Testing**: Check existing test files in the same package
-- **Styling**: Refer to design tokens in `@/core/tokens`
-- **Mobile**: See React Native/Expo documentation and existing mobile components
-- **Web**: Check Vite config and existing web component patterns
+- `apps/web/src/components/` - UI components (Radix UI primitives)
+- `apps/web/src/effects/` - Animation hooks and visual effects
+- `apps/web/src/pages/` - Route pages
+- `apps/mobile/src/screens/` - Mobile screens
+- `apps/mobile/src/navigation/AppNavigator.tsx` - Navigation stack
+- `packages/motion/src/index.ts` - Animation façade exports
+- `FRAMER_MOTION_MIGRATION.md` - Animation migration guide
